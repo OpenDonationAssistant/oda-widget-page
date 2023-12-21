@@ -1,0 +1,39 @@
+html, body, .PaymentAlerts {
+	background-color: green;
+}
+
+.image-container {
+	flex-grow: 1;
+	display: flex;
+}
+
+.alert-image {
+	border: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.message {
+	width: 100%;
+	flex-grow: 0;
+}
+
+.message-header {
+	color: rgb(251, 140, 43);
+	font-size: 45px;
+	width: 100%;
+	font-weight: bolder;
+	text-align: center;
+}
+
+.message-body {
+	font-size: 35px;
+	color: white;
+	text-align: center;
+	/* background-color: rgba(0,0,0,.7); */
+}
+
+.PaymentAlerts {
+	display: flex;
+	flex-direction: column;
+}

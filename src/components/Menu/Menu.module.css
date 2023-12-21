@@ -1,0 +1,24 @@
+.logo {
+  height: 25px;
+}
+
+.menubutton {
+  border: none;
+  line-height: 0px;
+}
+
+.widgetmenu {
+  margin-top: 2px;
+  width: 250px;
+  position: absolute;
+  z-index: 5000;
+  text-align: right;
+  border: 1px solid gray;
+  min-width: 250px;
+}
+
+.widgetmenu button {
+  width: 100%;
+  border-radius: 0px;
+  border-bottom: 1px solid gray;
+}

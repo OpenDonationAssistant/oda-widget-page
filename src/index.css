@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.vjs-control-bar,
+.vjs-poster,
+.vjs-modal-dialog,
+.vjs-big-play-button,
+.vjs-loading-spinner {
+  display: none !important;
+}
+
+.playlist .list-group {
+  border-radius: 0px;
+}
+
+.playlist .list-group-item {
+  background-color: black;
+  border-radius: 0px;
+  color: white;
+  border: none;
+  position: relative;
+}
+
+.add-button-container .add {
+  width: 100%;
+  text-align: center;
+  line-height: 0;
+}
+
+.add-button-container .add span {
+  width: 100%;
+  font-size: 30px;
+}
+
+.add-popup {
+  width: 100%;
+}
+
+.widget-menu {
+  z-index: 5000;
+  text-align: right;
+  border: 1px solid gray;
+  min-width: 250px;
+}
+
+.widget-menu button {
+  width: 100%;
+  border-radius: 0px;
+  border-bottom: 1px solid gray;
+}
+
+.upload-button {
+  background-color: #151a33;
+  color: #7885bd;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 4px;
+}
+
+.upload-button:hover {
+  cursor: pointer;
+}
+
+input[type="file"] {
+  display: none;
+}

@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+
+  build-and-push:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    -
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    -
+      name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: ghcr.io/opendonationassistent/oda-widgets:${{ github.ref_name }}

@@ -1,0 +1,24 @@
+.donaters-list {
+  color: white;
+  font-size: 28px;
+  position: relative;
+  animation: linear dotleft 60s infinite;
+  white-space: nowrap;
+}
+
+.donaters-top {
+	text-align: center;
+}
+
+.donaters-list .donater {
+  margin-right: 30px;
+}
+
+@keyframes dotleft {
+  0% {
+    left: 100%;
+  }
+  100% {
+    left: -100%;
+  }
+}

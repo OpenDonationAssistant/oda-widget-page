@@ -1,0 +1,143 @@
+.widget-settings {
+  margin-top: 10px;
+  color: white;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 20px;
+  margin-bottom: 5px;
+}
+
+.widget-settings-item {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  margin-bottom: 4px;
+	min-height: 30px;
+	flex-wrap: wrap;
+}
+
+.widget-settings-name {
+  display: inline-block;
+}
+
+.widget-settings-value:focus-visible,
+.widget-settings-value:focus {
+	outline:none;
+}
+
+.widget-settings-value {
+  display: inline-block;
+  width: 80px;
+  border-radius: 5px;
+  border: 1px solid #684aff;
+  background: none;
+  color: white;
+  text-align: center;
+}
+
+textarea.widget-settings-value {
+	text-align: left;
+}
+
+.widget-settings-value.select{
+  width: 220px;
+	border:none;
+	background-color: rgb(43, 53, 102);
+}
+
+.widget-settings-value.select:focus,
+.widget-settings-value.select:focus-visible {
+	outline:none;
+}
+
+.widget-settings-value.select option{
+	color: white;
+}
+
+.widget-settings-value.select option{
+	background-color: none;
+}
+
+.payment-alerts-previews {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.payment-alerts-previews-item {
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+	position: relative;
+}
+
+.payment-alert-image-preview {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #684aff;
+  display: inline-block;
+}
+
+.payment-alert-image-preview.selected {
+  border: 8px solid red;
+}
+
+.payment-alert-image-preview:hover {
+  cursor: pointer;
+}
+
+.payment-alert-settings {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #684aff;
+}
+
+.payment-alert-settings-tabs {
+	padding-top: 5px;
+	margin-bottom: 20px;
+}
+
+.payment-alert-settings-tab-image {
+  display: inline-block;
+}
+
+.payment-alert-settings-tab-voice {
+  display: inline-block;
+}
+
+.settings-tab-item {
+  margin-right: 10px;
+  background-color: #111529;
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+	color: #7885bd;
+	user-select: none;
+}
+
+.settings-tab-item:hover {
+	cursor:pointer;
+}
+
+.settings-tab-item.active {
+	background-color:#684aff;
+	color: white;
+}
+
+.color-value {
+	width: 30px;
+	height: 30px;
+	border-radius: 5px;
+	border: 3px solid white;
+	margin-right: 25px;
+}
+
+.widget-settings-item .react-colorful {
+	position: absolute;
+	right: 74px;
+	z-index: 2;
+}

@@ -1,0 +1,14 @@
+.widget-list {
+  margin-left: 400px;
+  max-width: 700px;
+  padding-top: 20px;
+}
+
+.widget-list-title {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  width: 200px;
+  color: #7987bf;
+}
+

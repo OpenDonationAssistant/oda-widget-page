@@ -1,0 +1,42 @@
+.widget-button {
+  border: 1px solid #151a33;
+  background-color: #151a33;
+  color: #6b7bbc;
+  margin-left: 3px;
+  height: 40px;
+  width: 40px;
+  border-radius: 40px;
+	border: 1px solid #151a33;
+}
+
+.widget-button:hover {
+	color: #674afd;
+	border: 1px solid #674afd;
+}
+
+.widget-button.widget-button-accept {
+	background-color: #45d3c2;
+	color: black;
+}
+
+.widget-button.widget-button-decline {
+	background-color: #45d3c2;
+	color: black;
+}
+
+.widget-button .material-symbols-sharp {
+  vertical-align: bottom;
+}
+
+.widget-button-url .material-symbols-sharp {
+  margin-left: -2px;
+}
+
+.widget-button-list {
+	min-width: 100px;
+	margin-top: 20px;
+  position: relative;
+	text-align: right;
+  right: 0;
+  display: inline-block;
+}

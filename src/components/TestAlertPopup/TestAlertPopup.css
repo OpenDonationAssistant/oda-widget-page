@@ -1,0 +1,42 @@
+.test-alert-popup {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 2px solid gray;
+	z-index: 2;
+	position: absolute;
+	top: 0px;
+	width: 250px;
+	background: black;
+}
+
+.test-alert-popup .test-alert-field-label {
+	text-align: left;
+}
+
+.test-alert-popup input {
+	width: 100%;
+}
+
+.test-alert-popup textarea {
+	width: 100%;
+}
+
+.test-alert-buttons {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 10px;
+}
+
+.test-alert-popup .btn {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.test-alert-field-label {
+	color: white;
+	margin-right: 10px;
+}

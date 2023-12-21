@@ -1,0 +1,55 @@
+.toolbar {
+  position: fixed;
+  height: 100%;
+  width: 250px;
+  border-right: 1px solid #674afd;
+  background-color: #151a33;
+}
+
+.toolbar .material-symbols-sharp {
+  vertical-align: bottom;
+}
+
+.toolbar-button {
+	background: none;
+  color: white;
+  border: none;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  margin-left: 10px;
+  margin-top: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 90%;
+  text-align: left;
+}
+
+.toolbar-button:hover {
+	background: #111529;
+  border-radius: 5px;
+}
+
+.toolbar-button.active {
+  background: #684aff;
+  border-radius: 5px;
+}
+
+.toolbar-title {
+  color: white;
+  margin-top: 20px;
+  padding-bottom: 10px;
+  font-weight: 900;
+  text-align: center;
+	font-size: 50px;
+}
+
+.toolbar-button-title {
+  margin-left: 10px;
+}
+
+.oda-logo {
+	width: 200px;
+	height: 200px;
+}
