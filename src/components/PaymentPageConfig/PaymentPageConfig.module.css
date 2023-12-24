@@ -1,0 +1,52 @@
+.paymentpageconfig {
+  color: white;
+	margin-left: 100px;
+	margin-right: 100px;
+	padding-top: 50px;
+	padding-left: 20px;
+	padding-right: 20px;
+  flex: 1 0 auto;
+  margin-top: 10px;
+}
+
+.paymentpage {
+  height: 100%;
+  display: flex;
+}
+
+.widgetsettingsitem {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.widgetsettingsname {
+	flex: 1 0 auto;
+}
+
+.widgetsettingsvalue {
+  display: inline-block;
+  width: 120px;
+  border-radius: 5px;
+  border: 1px solid #684aff;
+  background: none;
+  color: white;
+  text-align: center;
+}
+
+.widgetsettingsvalue:focus-visible,
+.widgetsettingsvalue:focus {
+	outline:none;
+}
+
+.backgroundimage {
+	width: 400px;
+	height: 300px;
+	display: inline-block;
+	flex: 0 0 auto;
+  border: 1px solid #684aff;
+}
+
+.backgroundimage:hover {
+	cursor:pointer;
+}

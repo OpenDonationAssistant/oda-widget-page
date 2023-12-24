@@ -1,5 +1,5 @@
 .toolbar {
-  position: fixed;
+  /* position: fixed; */
   height: 100%;
   width: 250px;
   border-right: 1px solid #674afd;
@@ -38,7 +38,7 @@
 
 .toolbar-title {
   color: white;
-  margin-top: 20px;
+  padding-top: 20px;
   padding-bottom: 10px;
   font-weight: 900;
   text-align: center;

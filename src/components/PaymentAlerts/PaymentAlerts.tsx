@@ -320,15 +320,13 @@ function PaymentAlerts({}: {}) {
         />
       ))}
       <div className="PaymentAlerts h-100">
-			<div className={`${imageWidth && imageHeight ? "text-center" : "image-container"}`}>
         {image && (
           <img
             src={image}
             style={calculateImageStyle(imageWidth, imageHeight)}
-            className="alert-image"
+            className="alert-image image-container"
           />
         )}
-				</div>
         <div className="message">
           <div style={headerStyle} className="message-header">
             {alert.amount != undefined && alert.amount != null
@@ -364,7 +362,8 @@ function calculateImageStyle(
         height: imageHeight + "px",
       }
     : {
-				objectFit: "contain"
+				objectFit: "fill",
+				maxWidth: "100%"
       };
 }
 

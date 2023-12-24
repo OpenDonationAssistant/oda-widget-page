@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import WidgetConfiguration from "./WidgetConfiguration";
-import Toolbar from "./Toolbar";
+import Toolbar, { Page } from "./Toolbar";
 import { WidgetsContext } from "./WidgetsContext";
 import axios from "axios";
 import { useLoaderData } from "react-router";
@@ -9,7 +9,7 @@ import { defaultSettings } from "./WidgetSettings";
 const backgroundColor = (
   <style
     dangerouslySetInnerHTML={{
-      __html: `html, body {background-color: #0c122e}`,
+      __html: `html, body {background-color: #0c122e; height: 100%;}`,
     }}
   />
 );
@@ -109,9 +109,9 @@ export default function ConfigurationPage({}: {}) {
   );
 
   return (
-    <>
+    <div className="configuration-container">
       {backgroundColor}
-      <Toolbar />
+      <Toolbar page={Page.WIDGETS}/>
       <div className="widget-list">
         <WidgetsContext.Provider value={context}>
           {widgets.map((data) => (
@@ -153,6 +153,6 @@ export default function ConfigurationPage({}: {}) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

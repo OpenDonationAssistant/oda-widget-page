@@ -1,28 +1,48 @@
 import React from "react";
 import "./css/Toolbar.css";
+import { useNavigate } from "react-router";
 
-export default function Toolbar() {
+enum Page {
+  WIDGETS,
+  GATEWAYS,
+  PAYMENTPAGE,
+}
+
+export default function Toolbar({ page }: { page: Page }) {
+  const navigate = useNavigate();
   return (
     <div className="toolbar">
       <div className="toolbar-title">
-			<img className="oda-logo" src={`${process.env.PUBLIC_URL}/favicon.png`}/>
-			</div>
-      <button className="toolbar-button">
-        <span className="material-symbols-sharp">rss_feed</span>
-        <span className="toolbar-button-title">News</span>
-      </button>
-      <button className="toolbar-button active">
+        <img
+          className="oda-logo"
+          src={`${process.env.PUBLIC_URL}/favicon.png`}
+        />
+      </div>
+      <button
+        className={`toolbar-button ${page === Page.WIDGETS ? "active" : ""}`}
+        onClick={() => navigate(`/configuration/widgets`)}
+      >
         <span className="material-symbols-sharp">widgets</span>
         <span className="toolbar-button-title">Widgets</span>
       </button>
-      <button className="toolbar-button">
-        <span className="material-symbols-sharp">credit_card</span>
-        <span className="toolbar-button-title">Payment Gateways</span>
-      </button>
-      <button className="toolbar-button">
+      <button
+        className={`toolbar-button ${
+          page === Page.PAYMENTPAGE ? "active" : ""
+        }`}
+        onClick={() => navigate(`/configuration/payment-page`)}
+      >
         <span className="material-symbols-sharp">language</span>
         <span className="toolbar-button-title">Donation page</span>
+      </button>
+      <button
+        className={`toolbar-button ${page === Page.GATEWAYS ? "active" : ""}`}
+        onClick={() => navigate(`/configuration/gateways`)}
+      >
+        <span className="material-symbols-sharp">credit_card</span>
+        <span className="toolbar-button-title">Payment Gateways</span>
       </button>
     </div>
   );
 }
+
+export { Page };
