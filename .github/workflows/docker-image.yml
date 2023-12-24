@@ -1,10 +1,10 @@
 name: Release
 
+permissions: write-all
+
 on:
   push:
   workflow_dispatch:
-
-permissions: write-all
 
 jobs:
 
