@@ -42,8 +42,12 @@
 .backgroundimage {
 	width: 400px;
 	height: 300px;
-	display: inline-block;
-	flex: 0 0 auto;
+  border: 1px solid #684aff;
+}
+
+.logoimage {
+	width: 110px;
+	height: 110px;
   border: 1px solid #684aff;
 }
 

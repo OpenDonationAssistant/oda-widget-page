@@ -32,6 +32,8 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [isRequestsEnabled, setRequestsEnabled] = useState(false);
   const [requestCost, setRequestCost] = useState(100);
   const [email, setEmail] = useState("");
+	const [fio, setFio] = useState("");
+	const [inn, setInn] = useState("");
 
   function listenPaymentPageConfigUpdated() {
     setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
@@ -39,6 +41,8 @@ export default function PaymentPageConfigComponent({}: {}) {
       !paymentPageConfig.current?.requestsDisabledPermanently ?? false,
     );
     setEmail(paymentPageConfig.current?.email ?? "");
+		setFio(paymentPageConfig.current?.fio ?? "");
+		setInn(paymentPageConfig.current?.inn ?? "");
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +89,39 @@ export default function PaymentPageConfigComponent({}: {}) {
       <Toolbar page={Page.PAYMENTPAGE} />
       <div className={classes.paymentpageconfig}>
         <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>ФИО</div>
+          <input
+            value={fio}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) =>
+              paymentPageConfig.current?.setFio(e.target.value)
+            }
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>ИНН</div>
+          <input
+            value={inn}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) =>
+              paymentPageConfig.current?.setInn(e.target.value)
+            }
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Контактный e-mail</div>
+          <input
+            value={email}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) =>
+              paymentPageConfig.current?.setEmail(e.target.value)
+            }
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>Фоновое изображение</div>
           <label className="upload-button">
             <input type="file" onChange={handleBackUpload} />
@@ -101,7 +138,7 @@ export default function PaymentPageConfigComponent({}: {}) {
           <label className="upload-button">
             <input type="file" onChange={handleLogoUpload} />
             <img
-              className={classes.backgroundimage}
+              className={classes.logoimage}
               src={`${
                 process.env.REACT_APP_CDN_ENDPOINT
               }/logo-${recipientId}.png?random=${Date.now()}`}
@@ -132,17 +169,6 @@ export default function PaymentPageConfigComponent({}: {}) {
             className={classes.widgetsettingsvalue}
             onChange={(e) =>
               paymentPageConfig.current?.setRequestsCost(Number(e.target.value))
-            }
-          />
-        </div>
-        <div className={classes.widgetsettingsitem}>
-          <div className={classes.widgetsettingsname}>Контактный e-mail</div>
-          <input
-            value={email}
-            className={classes.widgetsettingsvalue}
-            style={{ width: "250px" }}
-            onChange={(e) =>
-              paymentPageConfig.current?.setEmail(e.target.value)
             }
           />
         </div>

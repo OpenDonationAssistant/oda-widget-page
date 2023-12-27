@@ -4,6 +4,8 @@ import { log } from "../../logging";
 export class PaymentPageConfig {
   config: any = {};
   email: string = "";
+	fio: string = "";
+	inn: string = "";
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
@@ -20,6 +22,8 @@ export class PaymentPageConfig {
           json.value["media.requests.disabled.permanently"] ?? false;
         this.requestCost = json.value["media.requests.cost"] ?? 100;
         this.email = json.value["email"] ?? "";
+				this.fio = json.value["fio"] ?? "";
+				this.inn = json.value["inn"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -67,6 +71,20 @@ export class PaymentPageConfig {
     this.updateConfig(this.config);
     this.sendEventPaymentPageUpdated();
   }
+
+	setFio(fio: string) {
+    this.fio = fio;
+    this.config.value["fio"] = this.fio;
+    this.updateConfig(this.config);
+    this.sendEventPaymentPageUpdated();
+	}
+
+	setInn(inn: string) {
+    this.inn = inn;
+    this.config.value["inn"] = this.inn;
+    this.updateConfig(this.config);
+    this.sendEventPaymentPageUpdated();
+	}
 
   updateConfig(config: any) {
     axios.post(
