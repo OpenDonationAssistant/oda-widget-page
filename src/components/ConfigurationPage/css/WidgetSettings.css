@@ -141,8 +141,40 @@ textarea.widget-settings-value {
 	margin-right: 25px;
 }
 
-.widget-settings-item .react-colorful {
+.color-value:hover {
+	cursor:pointer;
+}
+
+.color-picker-popup {
 	position: absolute;
-	right: 74px;
+	right: 70px;
 	z-index: 2;
+	background-color: rgba(0,0,0,1.0);
+	padding: 2px;
+	border: 1px solid #684aff;
+}
+
+.color-picker-popup .react-colorful {
+	width: initial;
+}
+
+.color-picker-value {
+	border-radius: 5px;
+	margin-top: 5px;
+}
+
+.widget-settings-radiobutton img {
+	width: 400px;
+	margin-bottom: 20px;
+	border: 1px solid #684aff;
+	margin-left: 5px;
+}
+
+.widget-settings-radiobutton img:hover {
+	cursor: pointer;
+}
+
+.widget-settings-radiocontainer {
+	display: flex;
+	flex-direction: column;
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
-export default function ColorPicker({value, onChange}) {
+export default function ColorPicker({ value, onChange }) {
   const [isOpen, toggle] = useState(false);
   return (
     <>
@@ -10,12 +10,24 @@ export default function ColorPicker({value, onChange}) {
         style={{ backgroundColor: value }}
         onClick={() => toggle(!isOpen)}
       />
-      {isOpen && (<HexColorPicker
-        color={value}
-        onChange={(newValue) => {
-          onChange(newValue);
-        }}
-      />)}
+      {isOpen && (
+        <>
+          <div className="color-picker-popup">
+            <HexColorPicker
+              color={value}
+              onChange={(newValue) => {
+                onChange(newValue);
+                toggle(!isOpen);
+              }}
+            />
+            <input
+              className="color-picker-value"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

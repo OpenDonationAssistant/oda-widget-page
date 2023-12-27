@@ -8,6 +8,11 @@
 
 .donaters-top {
 	text-align: center;
+	display: inline;
+}
+
+.donaters-title {
+	text-align: center;
 }
 
 .donaters-list .donater {

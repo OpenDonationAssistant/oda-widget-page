@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { ChangeEvent, useContext } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import ColorPicker from "./ColorPicker";
 
@@ -70,7 +70,7 @@ export default function DonatersTopListSettings({
       {config.get(id)?.properties?.map((prop) => (
         <div key={prop.name} className="widget-settings-item">
           <div className="widget-settings-name">{prop.displayName}</div>
-          {(!prop.type || prop.type == "string") && (prop.type != "custom") && (
+          {(!prop.type || prop.type == "string") && prop.type != "custom" && (
             <input
               value={prop.value}
               className="widget-settings-value"
@@ -94,7 +94,7 @@ export default function DonatersTopListSettings({
               onChange={(value) => update(prop.name, value)}
             />
           )}
-					{prop.name === "type" && (
+          {prop.name === "type" && (
             <select
               value={prop.value}
               className="widget-settings-value select"
@@ -102,18 +102,73 @@ export default function DonatersTopListSettings({
             >
               <option key="All">All</option>
               <option key="Top">Top</option>
+              <option key="Last">Last</option>
             </select>
-					)}
-					{prop.name === "period" && (
+          )}
+          {prop.name === "period" && (
             <select
               value={prop.value}
               className="widget-settings-value select"
               onChange={(e) => update(prop.name, e.target.value)}
             >
               <option key="month">month</option>
-              <option key="month">day</option>
+              <option key="day">day</option>
             </select>
-					)}
+          )}
+          {prop.name === "layout" && (
+            <>
+              <div className="widget-settings-radiocontainer">
+                <label className="widget-settings-radiobutton">
+                  <input
+                    title="vertical"
+                    type="radio"
+                    value="vertical"
+                    checked={prop.value === "vertical"}
+                    onChange={(e) => update(prop.name, e.target.value)}
+                  />
+                  <img
+                    title="vertical"
+                    src={`/icons/vertical.jpg`}
+                    onClick={() => update(prop.name, "vertical")}
+                  />
+                </label>
+                <label className="widget-settings-radiobutton">
+                  <input
+                    title="horizontal"
+                    type="radio"
+                    value="horizontal"
+                    checked={prop.value === "horizontal"}
+                    onChange={(e) => update(prop.name, e.target.value)}
+                  />
+                  <img
+                    title="horizontal"
+                    src={`/icons/horizontal.jpg`}
+                    onClick={() => update(prop.name, "horizontal")}
+                  />
+                </label>
+              </div>
+            </>
+          )}
+          {prop.type === "text" && (
+            <>
+              <textarea
+                style={{ width: "100%" }}
+                className="widget-settings-value"
+                value={prop.value}
+                onChange={(e) => update(prop.name, e.target.value)}
+              />
+            </>
+          )}
+          {prop.type === "number" && (
+            <>
+              <input
+                value={prop.value}
+                type="number"
+                className="widget-settings-value"
+                onChange={(e) => update(prop.name, e.target.value)}
+              />
+            </>
+          )}
         </div>
       ))}
     </>
