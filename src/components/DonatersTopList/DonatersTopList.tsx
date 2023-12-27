@@ -7,6 +7,14 @@ import { findSetting } from "../utils";
 import { setupCommandListener, subscribe } from "../../socket";
 import FontImport from "../FontImport/FontImport";
 
+const overflowHiddenForRootElement = (
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `#root {overflow: hidden;}`,
+    }}
+  />
+);
+
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
   const { recipientId, settings, conf, widgetId } = useLoaderData();
@@ -46,7 +54,7 @@ export default function DonatersTopList({}: {}) {
   const color = findSetting(settings, "color", "white");
   const textStyle = {
     fontSize: fontSize ? fontSize + "px" : "unset",
-		lineHeight: fontSize ? fontSize + "px" : "unset",
+    lineHeight: fontSize ? fontSize + "px" : "unset",
     fontFamily: font ? font : "unset",
     color: color,
   };
@@ -54,6 +62,7 @@ export default function DonatersTopList({}: {}) {
   return (
     <>
       <FontImport font={font} />
+			{overflowHiddenForRootElement}
       {"All" === type && (
         <div className="donaters-list" style={textStyle}>
           {donaters &&
