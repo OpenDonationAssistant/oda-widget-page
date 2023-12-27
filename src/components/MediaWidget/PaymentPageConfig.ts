@@ -3,6 +3,7 @@ import { log } from "../../logging";
 
 export class PaymentPageConfig {
   config: any = {};
+  email: string = "";
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
@@ -14,17 +15,11 @@ export class PaymentPageConfig {
       .then((data) => data.data)
       .then((json) => {
         this.config = json;
-        this.requestsEnabled = json.value["media.requests.enabled"];
-        this.requestsEnabled = this.requestsEnabled
-          ? this.requestsEnabled
-          : true;
+        this.requestsEnabled = json.value["media.requests.enabled"] ?? true;
         this.requestsDisabledPermanently =
-          json.value["media.requests.disabled.permanently"];
-        this.requestsDisabledPermanently = this.requestsDisabledPermanently
-          ? this.requestsDisabledPermanently
-          : false;
-        this.requestCost = json.value["media.requests.cost"];
-        this.requestCost = this.requestCost ? this.requestCost : 100;
+          json.value["media.requests.disabled.permanently"] ?? false;
+        this.requestCost = json.value["media.requests.cost"] ?? 100;
+        this.email = json.value["email"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -62,6 +57,13 @@ export class PaymentPageConfig {
   setRequestsCost(cost: number) {
     this.requestCost = cost;
     this.config.value["media.requests.cost"] = this.requestCost;
+    this.updateConfig(this.config);
+    this.sendEventPaymentPageUpdated();
+  }
+
+  setEmail(email: string) {
+    this.email = email;
+    this.config.value["email"] = this.email;
     this.updateConfig(this.config);
     this.sendEventPaymentPageUpdated();
   }

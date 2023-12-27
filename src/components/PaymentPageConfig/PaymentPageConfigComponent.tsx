@@ -31,12 +31,14 @@ export default function PaymentPageConfigComponent({}: {}) {
   const paymentPageConfig = useRef<PaymentPageConfig>(null);
   const [isRequestsEnabled, setRequestsEnabled] = useState(false);
   const [requestCost, setRequestCost] = useState(100);
+  const [email, setEmail] = useState("");
 
   function listenPaymentPageConfigUpdated() {
     setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
     setRequestsEnabled(
       !paymentPageConfig.current?.requestsDisabledPermanently ?? false,
     );
+    setEmail(paymentPageConfig.current?.email ?? "");
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +131,18 @@ export default function PaymentPageConfigComponent({}: {}) {
             value={requestCost}
             className={classes.widgetsettingsvalue}
             onChange={(e) =>
-              paymentPageConfig.current?.setRequestsCost(e.target.value)
+              paymentPageConfig.current?.setRequestsCost(Number(e.target.value))
+            }
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Контактный e-mail</div>
+          <input
+            value={email}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) =>
+              paymentPageConfig.current?.setEmail(e.target.value)
             }
           />
         </div>
