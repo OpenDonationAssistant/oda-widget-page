@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import Toolbar, { Page } from "../ConfigurationPage/Toolbar";
 import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
+import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 
 const backgroundColor = (
   <style
@@ -27,7 +28,17 @@ function uploadFile(file, name) {
 export default function PaymentPageConfigComponent({}: {}) {
   const { recipientId } = useLoaderData();
   const navigate = useNavigate();
+  const paymentPageConfig = useRef<PaymentPageConfig>(null);
   const [isRequestsEnabled, setRequestsEnabled] = useState(false);
+  const [requestCost, setRequestCost] = useState(100);
+
+  function listenPaymentPageConfigUpdated() {
+    setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
+    setRequestsEnabled(
+      !paymentPageConfig.current?.requestsDisabledPermanently ?? false,
+    );
+  }
+
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
@@ -35,6 +46,7 @@ export default function PaymentPageConfigComponent({}: {}) {
       uploadFile(file, `back-${recipientId}.jpg`).then(() => navigate(0));
     }
   };
+
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
@@ -45,9 +57,25 @@ export default function PaymentPageConfigComponent({}: {}) {
 
   const handleTogglingRequests = (e: ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
-      setRequestsEnabled(e.target.value === "enabled");
+      paymentPageConfig.current?.toggleRequestsPermanently();
     }
   };
+
+  useEffect(() => {
+    paymentPageConfig.current = new PaymentPageConfig();
+  }, [recipientId]);
+
+  useEffect(() => {
+    document.addEventListener(
+      "paymentPageUpdated",
+      listenPaymentPageConfigUpdated,
+    );
+    return () =>
+      document.removeEventListener(
+        "paymentPageUpdated",
+        listenPaymentPageConfigUpdated,
+      );
+  }, [recipientId]);
 
   return (
     <div className={classes.paymentpage}>
@@ -98,7 +126,11 @@ export default function PaymentPageConfigComponent({}: {}) {
           </div>
           <input
             type="number"
+            value={requestCost}
             className={classes.widgetsettingsvalue}
+            onChange={(e) =>
+              paymentPageConfig.current?.setRequestsCost(e.target.value)
+            }
           />
         </div>
       </div>
