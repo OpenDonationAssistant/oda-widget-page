@@ -21,7 +21,7 @@ export default function PlayerControl({}: {}) {
       const id = url.substring(index + 5);
       axios
         .get(
-          `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/available?playlistId=${id}`,
+          `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlists/${id}`,
         )
         .then((data) => data.data)
         .then((videos) => {

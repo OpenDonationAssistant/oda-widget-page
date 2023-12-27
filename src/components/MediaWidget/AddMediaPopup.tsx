@@ -24,7 +24,7 @@ export default function AddMediaPopup() {
   function addPlaylistItems(playlistId: string) {
     return axios
       .get(
-        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlist/${playlistId}`,
+        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlists/${playlistId}`,
       )
       .then((data) => data.data)
       .then((list) => {

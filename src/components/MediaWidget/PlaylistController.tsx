@@ -102,10 +102,6 @@ export class PlaylistController {
       this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
         ? this.fallback
         : this.requested;
-    const oldIndex =
-      this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
-        ? this.fallbackIndex
-        : this.requestedIndex;
     this.updatePlaylist(oldPlaylist.concat(songs));
   };
 
