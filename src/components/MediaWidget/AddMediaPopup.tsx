@@ -77,7 +77,6 @@ export default function AddMediaPopup() {
         src: url,
         type: "video/youtube",
         id: id,
-        originId: id,
         owner: recipientId,
         title: "Manually added video",
       };

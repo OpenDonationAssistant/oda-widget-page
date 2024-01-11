@@ -12,6 +12,7 @@ import VideoDuration from "./VideoDuration";
 import { Song } from "./types";
 import ProgressBar from "./ProgressBar";
 import VideoPopupToggler from "./VideoPopupToggler";
+import { PlayerState } from "./IPlayer";
 
 let options: VideoJsPlayerOptions = {
   autoplay: false,
@@ -56,8 +57,13 @@ export default function Player({
         log.debug(`Playing ${JSON.stringify(song)}`);
         setSong(song);
         if (playerRef.current && song) {
+          log.debug(`playing in ${playerRef.current.uuid}`);
+          log.debug(playerRef.current.currentSource());
           playerRef.current.src(song);
+          log.debug(playerRef.current.currentSource());
+          playerRef.current.pause();
           playerRef.current.play();
+          log.debug(playerRef.current.currentSource());
         }
       },
     };
@@ -83,72 +89,69 @@ export default function Player({
   }
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (playerRef.current) {
-        return;
+    if (playerRef.current) {
+      return;
+    }
+
+    if (!playlistController.currentSong()) {
+      return;
+    }
+
+    console.log("Creating new player instance");
+
+    const videoElement = document.createElement("video-js");
+    videoElement.setAttribute("id", "mediaplayer");
+
+    videoElement.classList.add("vjs-big-play-centered");
+    videoRef.current?.appendChild(videoElement);
+    options.sources = playlistController.currentSong();
+
+    playerRef.current = videojs(videoElement, options);
+    const player = playerRef.current;
+    player.src(playlistController.currentSong());
+    player.uuid = uuidv4();
+    player.volume(0.5);
+    player.off("play");
+    player.on("play", () => {
+      log.debug("start playing");
+      setShowPlayButton(false);
+      pausedByCommand = false;
+      pausedManually = false;
+      sendAlert(
+        player.currentSource().title,
+        playlistController.currentIndex(),
+        playlistController.currentPlaylist().length,
+      );
+    });
+    player.off("pause");
+    player.on("pause", () => {
+      log.debug("pause player");
+      pausedManually = false;
+      setShowPlayButton(true);
+      sendAlert(null, 0, 0);
+    });
+    player.off("ended");
+    player.on("ended", () => {
+      log.debug("song ended");
+      sendAlert(null, 0, 0);
+      setShowPlayButton(true);
+      setPreviousListen(playlistController.currentIndex());
+      playlistController.markListened(playerRef.current.currentSource().id);
+      playlistController.next();
+    });
+    player.off("error");
+    player.on("error", function () {
+      console.log(player.error());
+      setShowPlayButton(true);
+      setPreviousListen(playlistController.currentIndex());
+      if (playerRef.current.currentSource().originId) {
+        markListened(playerRef.current.currentSource().originId);
       }
-
-      if (!playlistController.currentSong()) {
-        return;
-      }
-
-      console.log("Creating new player instance");
-
-      const videoElement = document.createElement("video-js");
-      videoElement.setAttribute("id", "mediaplayer");
-
-      videoElement.classList.add("vjs-big-play-centered");
-      videoRef.current?.appendChild(videoElement);
-      options.sources = playlistController.currentSong();
-
-      playerRef.current = videojs(videoElement, options);
-      const player = playerRef.current;
-      player.src(playlistController.currentSong());
-      player.uuid = uuidv4();
-      player.volume(0.5);
-      player.off("play");
-      player.on("play", () => {
-        setShowPlayButton(false);
-        pausedByCommand = false;
-        pausedManually = false;
-        sendAlert(
-          player.currentSource().title,
-          playlistController.currentIndex(),
-          playlistController.currentPlaylist().length,
-        );
-      });
-      player.off("pause");
-      player.on("pause", () => {
-        pausedManually = false;
-        setShowPlayButton(true);
-        sendAlert(null, 0, 0);
-      });
-      player.off("ended");
-      player.on("ended", () => {
-        setShowPlayButton(true);
-        setPreviousListen(playlistController.currentIndex());
-        if (playerRef.current.currentSource().originId) {
-          markListened(playerRef.current.currentSource().originId);
-        }
-        playlistController.next();
-        sendAlert(null, 0, 0);
-      });
-      player.off("error");
-      // player.on("error", function () {
-      //   console.log("2");
-      //   console.log(player.error());
-      //   setShowPlayButton(true);
-      //   setPreviousListen(playlistController.currentIndex());
-      //   if (playerRef.current.currentSource().originId) {
-      //     markListened(playerRef.current.currentSource().originId);
-      //   }
-      // playlistController.next();
-      // sendAlert(null, 0, 0);
-      // });
-      console.log("created: " + playerRef.current.uuid);
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }, [playerRef, videoRef, playlistController]);
+    playlistController.next();
+    sendAlert(null, 0, 0);
+    });
+    console.log("created: " + playerRef.current.uuid);
+  }, [song, playlistController]);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.playerCommands, (message) => {
@@ -166,17 +169,31 @@ export default function Player({
           playerRef.current.pause();
         }
       }
+      // if (
+      //   json.command === "resume" &&
+      //   playerRef.current &&
+      //   (pausedByCommand ||
+      //     (!pausedManually &&
+      //       playerRef.current.ended() &&
+      //       previousListen &&
+      //       previousListen + 1 == playlistController.currentIndex()))
+      // ) {
+      //   console.log("start playing by command");
+      //   console.log(playerRef.current.src());
+      //   playerRef.current.play();
+      // }
       if (
         json.command === "resume" &&
-        playerRef.current &&
         (pausedByCommand ||
-          (!pausedManually &&
-            playerRef.current.ended() &&
-            previousListen &&
-            previousListen + 1 == playlistController.currentIndex()))
+          (
+            !pausedManually &&
+            playerRef.current &&
+            playerRef.current.ended()
+          )
+        )
       ) {
         console.log("start playing by command");
-        playerRef.current.play();
+        playlistController.next();
       }
       if (json.command === "play") {
         playerRef.current.play();

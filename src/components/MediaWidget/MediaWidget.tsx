@@ -20,7 +20,7 @@ export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData();
 
   const [playlistSize, setPlaylistSize] = useState<number>(0);
-  const [index, setIndex] = useState<number>(0);
+  const [index, setIndex] = useState<number>(-1);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
@@ -53,6 +53,7 @@ export default function MediaWidget({}: {}) {
         originId: json.id,
         owner: "Аноним",
         title: json.title,
+        listened: false
       };
       playlistController.current?.handleNewRequestedSongEvent(song);
       message.ack();

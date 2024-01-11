@@ -136,11 +136,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* flex-wrap: wrap; */
 }
 
-.videoImplToggler{
+.videoImplToggler {
   flex: 0 0 auto;
   margin-right: 10px;
+  margin-left: 10px;
 }
 
 .videoImpl {
@@ -150,12 +152,15 @@
 }
 
 .song-title-container {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   padding-left: 10px;
   padding-top: 10px;
   color: rgb(13, 110, 253);
   min-height: 50px;
   display: inline-block;
+  overflow-x: hidden;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .add-button-container .btn.add {
@@ -173,6 +178,7 @@
   padding-top: 15px;
   padding-right: 15px;
   font-size: 14px;
+  display: inline-block;
 }
 
 .faded {
@@ -329,7 +335,7 @@ iframe {
 .videoImplToggler button {
   border-radius: 5px;
   background: none;
-  color:white;
+  color: white;
   height: 30px;
   border: 1x solid rgb(110, 110, 110);
 }

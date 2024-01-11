@@ -10,29 +10,26 @@ import { PlaylistController } from "./PlaylistController";
 
 export default function Playlist({
   playlistController,
-}:{
-	playlistController: PlaylistController
+}: {
+  playlistController: PlaylistController;
 }) {
   const { recipientId, settings, widgetId } = useLoaderData();
   const activeRef = useRef<HTMLDivElement>(null);
   const [playlist, setPlaylist] = useState<Song[]>([]);
   const [current, setCurrent] = useState(-1);
 
-
   function remove(index: number) {
     try {
-      axios
-        .patch(
-          process.env.REACT_APP_API_ENDPOINT +
-            "/media/" +
-            playlist[index > -1 ? index : 0].originId,
-          {
+      const originId = playlist[index > -1 ? index : 0].originId;
+      if (originId) {
+        axios
+          .patch(`${process.env.REACT_APP_API_ENDPOINT}/media/${originId}`, {
             listened: true,
-          },
-        )
-        .catch(function (error) {
-          console.log(error);
-        });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -57,7 +54,7 @@ export default function Playlist({
     let updatedPlaylist = Array.from(playlist);
     updatedPlaylist.splice(source.index, 1);
     updatedPlaylist.splice(destination.index, 0, song);
-		playlistController.updatePlaylist(updatedPlaylist);
+    playlistController.updatePlaylist(updatedPlaylist);
   }
 
   useEffect(() => {
@@ -67,7 +64,7 @@ export default function Playlist({
       playlistController: playlistController,
     };
 
-		playlistController.addPlaylist(playlistAdapter);
+    playlistController.addPlaylist(playlistAdapter);
   }, [setPlaylist, setCurrent]);
 
   useEffect(() => {
@@ -122,7 +119,6 @@ export default function Playlist({
                           <button
                             className="btn btn-outline-light play"
                             onClick={() => {
-															// todo
                               playlistController.updateIndex(number);
                             }}
                           >

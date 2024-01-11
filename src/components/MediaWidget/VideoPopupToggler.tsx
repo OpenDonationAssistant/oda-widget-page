@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Toggle from "react-toggle";
-import { log } from "../../logging";
 import "react-toggle/style.css";
 
 enum VIDEO_IMPL {
@@ -9,7 +8,7 @@ enum VIDEO_IMPL {
 }
 
 export default function VideoPopupToggler({}) {
-  const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(VIDEO_IMPL.REMOTE);
+  const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(VIDEO_IMPL.EMBEDDED);
   return (
     <>
       <div className="videoImplToggler">
@@ -25,7 +24,7 @@ export default function VideoPopupToggler({}) {
               }
             }}
           />
-          <span className="videoImpl">{videoImpl === VIDEO_IMPL.REMOTE ? "Remote mode" : "Embedded mode"}</span>
+          <span className="videoImpl">{videoImpl === VIDEO_IMPL.REMOTE ? "Remote" : "Embedded"}</span>
         </label>
         </div>
     </>
