@@ -1,21 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
 import { findSetting } from "../utils";
 import { useLoaderData } from "react-router";
 import AddMediaPopup from "./AddMediaPopup";
+import { Song } from "./types";
+import { PlaylistController } from "./PlaylistController";
 
 export default function Playlist({
-  playlist,
-  current,
-  playFn,
-  updatePlaylistFn,
+  playlistController,
+}:{
+	playlistController: PlaylistController
 }) {
-  const activeRef = useRef();
-  const { settings } = useLoaderData();
+  const { recipientId, settings, widgetId } = useLoaderData();
+  const activeRef = useRef<HTMLDivElement>(null);
+  const [playlist, setPlaylist] = useState<Song[]>([]);
+  const [current, setCurrent] = useState(-1);
 
-  function remove(index) {
+
+  function remove(index: number) {
     try {
       axios
         .patch(
@@ -34,7 +38,7 @@ export default function Playlist({
     }
     let updated = Array.from(playlist);
     updated.splice(index, 1);
-    updatePlaylistFn(updated);
+    playlistController.updatePlaylist(updated);
   }
 
   function onDragEnd(result) {
@@ -53,8 +57,18 @@ export default function Playlist({
     let updatedPlaylist = Array.from(playlist);
     updatedPlaylist.splice(source.index, 1);
     updatedPlaylist.splice(destination.index, 0, song);
-    updatePlaylistFn(updatedPlaylist);
+		playlistController.updatePlaylist(updatedPlaylist);
   }
+
+  useEffect(() => {
+    let playlistAdapter = {
+      setPlaylist: setPlaylist,
+      setCurrent: setCurrent,
+      playlistController: playlistController,
+    };
+
+		playlistController.addPlaylist(playlistAdapter);
+  }, [setPlaylist, setCurrent]);
 
   useEffect(() => {
     if (activeRef.current) {
@@ -108,7 +122,8 @@ export default function Playlist({
                           <button
                             className="btn btn-outline-light play"
                             onClick={() => {
-                              playFn(number);
+															// todo
+                              playlistController.updateIndex(number);
                             }}
                           >
                             <span className="material-symbols-sharp">

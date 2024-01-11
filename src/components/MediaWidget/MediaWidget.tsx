@@ -14,27 +14,36 @@ import { log } from "../../logging";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
+import { Song } from "./types";
 
 export default function MediaWidget({}: {}) {
-  const [playlist, setPlaylist] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const playlistController = useRef<PlaylistController>(null);
+  const { recipientId, conf, widgetId } = useLoaderData();
+
+  const [playlistSize, setPlaylistSize] = useState<number>(0);
+  const [index, setIndex] = useState<number>(0);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
-  const { recipientId, conf, widgetId } = useLoaderData();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
-  const [requestsEnabled, setRequestsEnabled] = useState(true);
-
-  useEffect(() => {
-    playlistController.current = new PlaylistController(
+  const playlistController = useRef<PlaylistController>(
+    new PlaylistController(
       recipientId,
-      setPlaylist,
-      setCurrent,
-      (tab) => {
+      // todo убрать/заменить на сигналы/эвенты
+      (tab: PLAYLIST_TYPE) => {
         setActiveTab(tab);
         log.debug(`using tab ${tab}`);
       },
-    );
+    ),
+  );
+  playlistController.current.addPlaylist({
+    setPlaylist: (songs: Song[]) => {
+      setPlaylistSize(songs.length);
+    },
+    setCurrent: setIndex,
+    playlistController: playlistController.current,
+  });
+
+  useEffect(() => {
+    // todo вытащить в playlistController
     subscribe(widgetId, conf.topic.media, (message) => {
       let json = JSON.parse(message.body);
       let song = {
@@ -52,19 +61,6 @@ export default function MediaWidget({}: {}) {
     paymentPageConfig.current = new PaymentPageConfig();
   }, [recipientId, widgetId]);
 
-  useEffect(() => {
-    function toggle(event) {
-      log.debug(`toggle requests: ${event.detail}`);
-      setRequestsEnabled(event.detail);
-    }
-    log.debug("create mediawidget listener for media-requests toggler");
-    document.addEventListener("toggleMediaRequests", toggle);
-    return () => {
-      log.debug("destroy mediawidget listener for media-requests toggler");
-      document.removeEventListener("toggleMediaRequests", toggle);
-    };
-  }, [widgetId]);
-
   return (
     <>
       <style
@@ -74,23 +70,17 @@ export default function MediaWidget({}: {}) {
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
-        <Player
-          playlist={playlist}
-          tab={activeTab}
-          current={current}
-          updateCurrentFn={(newIndex) =>
-            playlistController.current.updateIndex(newIndex)
-          }
-        />
+        {playlistController.current && (
+          <Player
+            tab={activeTab}
+            playlistController={playlistController.current}
+          />
+        )}
         <div className="playlist-controls">
           <Menu>
             <MenuEventButton text="Hide/Show video" event="toggleVideo" />
             <MenuButton
-              text={
-                requestsEnabled
-                  ? "Disable music requests"
-                  : "Enable music request"
-              }
+              text="Toggle music requests"
               handler={() => paymentPageConfig.current?.toggleMediaRequests()}
             />
           </Menu>
@@ -123,22 +113,14 @@ export default function MediaWidget({}: {}) {
             </li>
           </ul>
           <div className="video-counter">
-            {`${playlist[current] ? current + 1 : 0} / ${
-              playlist[current] ? playlist.length : 0
-            }`}
+            {`${index + 1} / ${playlistSize}`}
           </div>
         </div>
-        <Playlist
-          recipientId={recipientId}
-          playlist={playlist}
-          current={current}
-          updatePlaylistFn={(newPlaylist) =>
-            playlistController.current.updatePlaylist(newPlaylist)
-          }
-          playFn={(newIndex) =>
-            playlistController.current.updateIndex(newIndex)
-          }
-        />
+        {playlistController.current && (
+          <>
+            <Playlist playlistController={playlistController.current} />
+          </>
+        )}
       </div>
     </>
   );

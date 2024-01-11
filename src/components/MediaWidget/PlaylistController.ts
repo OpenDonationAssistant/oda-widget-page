@@ -2,6 +2,8 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { log } from "../../logging";
 import { Song } from "./types";
+import { IPlaylist } from "./IPlaylist";
+import { IPlayer } from "./IPlayer";
 
 export enum PLAYLIST_TYPE {
   REQUESTED,
@@ -13,24 +15,18 @@ export class PlaylistController {
   fallback: Song[] = [];
   requestedIndex = -1;
   fallbackIndex = -1;
-  updatePlaylistFn;
-  updateIndexFn;
-  recipientId;
-  currentPlaylist;
-  playlistChangedFn: Function;
 
-  constructor(
-    recipientId: string,
-    updatePlaylistFn: Function,
-    updateIndexFn: Function,
-    playlistChangedFn: Function,
-  ) {
-    this.updatePlaylistFn = updatePlaylistFn;
-    this.updateIndexFn = updateIndexFn;
+  recipientId;
+  currentPlaylistType = PLAYLIST_TYPE.REQUESTED;
+  playlistChangedFn: Function;
+  playlists: IPlaylist[] = [];
+  players: IPlayer[] = [];
+
+  constructor(recipientId: string, playlistChangedFn: Function) {
     this.recipientId = recipientId;
-    this.currentPlaylist = PLAYLIST_TYPE.REQUESTED;
     this.playlistChangedFn = playlistChangedFn;
-    log.info("Loading playlist for " + JSON.stringify(recipientId));
+
+    log.info(`Loading playlist for ${JSON.stringify(recipientId)}`);
     document.removeEventListener("addSongs", this.addSongs);
     document.addEventListener("addSongs", this.addSongs);
 
@@ -58,12 +54,57 @@ export class PlaylistController {
       });
   }
 
+  clearPlayers(){
+    this.players = [];
+  }
+
+  addPlayer(player: IPlayer): PlaylistController {
+    this.players.push(player);
+    return this;
+  }
+
+  clearPlaylists(){
+    this.playlists = [];
+  }
+
+  addPlaylist(playlist: IPlaylist): PlaylistController {
+    this.playlists.push(playlist);
+    return this;
+  }
+
+  previous() {
+    if (this.currentIndex() > 0) {
+      this.updateIndex(this.currentIndex() - 1);
+    }
+  }
+
+  next() {
+    log.debug(`updating index to ${this.currentIndex() + 1}`);
+    if (this.currentIndex() == this.currentPlaylist().length) {
+      return;
+    }
+    this.updateIndex(this.currentIndex() + 1);
+  }
+
+  currentIndex(): number {
+    return this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL
+      ? this.fallbackIndex
+      : this.requestedIndex;
+  }
+
+  currentPlaylist(): Song[] {
+    return this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL
+      ? this.fallback
+      : this.requested;
+  }
+
+  currentSong(): Song | null {
+    return this.currentPlaylist()[this.currentIndex()];
+  }
+
   addSong(song: Song) {
     fillSongData(this.recipientId, [song]).then((updated) => {
-      const oldPlaylist =
-        this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
-          ? this.fallback
-          : this.requested;
+      const oldPlaylist = this.currentPlaylist();
       if (oldPlaylist.some((existing) => existing.originId === song.originId)) {
         log.debug("skipping updating playlist because of same song");
         return;
@@ -72,13 +113,17 @@ export class PlaylistController {
     });
   }
 
+  addSongs = (event) => {
+    this.updatePlaylist(this.currentPlaylist().concat(event.detail));
+  };
+
   handleNewRequestedSongEvent(song: Song) {
     log.debug(
       `adding song ${JSON.stringify(song)}, requested current index: ${
         this.requestedIndex
       }`,
     );
-    if (this.currentPlaylist === PLAYLIST_TYPE.PERSONAL) {
+    if (this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL) {
       log.debug("switch to requested playlist for new song");
       this.switchToRequested();
     }
@@ -96,51 +141,51 @@ export class PlaylistController {
     }
   }
 
-  addSongs = (event) => {
-    const songs: Song[] = event.detail;
-    const oldPlaylist =
-      this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
-        ? this.fallback
-        : this.requested;
-    this.updatePlaylist(oldPlaylist.concat(songs));
-  };
-
   updatePlaylist(newPlaylist: Song[]) {
-    log.debug(`updating playlist, current: ${this.currentPlaylist}`);
-    const oldPlaylist =
-      this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
-        ? this.fallback
-        : this.requested;
-    const oldIndex =
-      this.currentPlaylist === PLAYLIST_TYPE.PERSONAL
-        ? this.fallbackIndex
-        : this.requestedIndex;
-    let song = oldPlaylist[oldIndex];
-    log.debug("SEARCHING FOR SONG(" + oldIndex + ") : " + JSON.stringify(song));
-    if (song) {
-      let index = newPlaylist.findIndex((it) => it.id === song.id);
-      log.debug("FOUND INDEX: " + index);
-      this.updateIndex(index > -1 ? index : oldIndex);
-    }
-    if (this.currentPlaylist === PLAYLIST_TYPE.REQUESTED) {
+    log.debug(
+      `updating playlist, current: ${
+        this.currentPlaylistType === PLAYLIST_TYPE.REQUESTED
+          ? "requested"
+          : "personal"
+      }`,
+    );
+    // const oldIndex = this.currentIndex(); //-1
+    // let song = this.currentSong(); //undefined
+
+    // todo возможно стоит это выпилить
+    // log.debug(`SEARCHING FOR SONG(${oldIndex}) : ${JSON.stringify(song)}`);
+    // if (song) {
+    //   let index = newPlaylist.findIndex((it) => it.id === song.id);
+    //   log.debug(`FOUND INDEX: ${index}`);
+    //   this.updateIndex(index > -1 ? index : oldIndex);
+    // }
+
+    if (this.currentPlaylistType === PLAYLIST_TYPE.REQUESTED) {
       this.requested = newPlaylist;
     }
-    if (this.currentPlaylist === PLAYLIST_TYPE.PERSONAL) {
+    if (this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL) {
       this.fallback = newPlaylist;
     }
-    this.updatePlaylistFn(newPlaylist);
+    this.playlists.forEach((playlist) => playlist.setPlaylist(newPlaylist));
   }
 
   updateIndex(newIndex: number) {
     log.debug(
-      `updating index for ${newIndex} in playlist ${this.currentPlaylist}, current personal: ${this.fallbackIndex}, current requested: ${this.requestedIndex}`,
+      `updating index for ${newIndex} in playlist ${
+        this.currentPlaylistType === PLAYLIST_TYPE.REQUESTED
+          ? "requested"
+          : "personal"
+      }, current personal: ${this.fallbackIndex}, current requested: ${
+        this.requestedIndex
+      }`,
     );
-    this.updateIndexFn(newIndex);
-    if (this.currentPlaylist === PLAYLIST_TYPE.PERSONAL) {
+    this.playlists.forEach(playlist => playlist.setCurrent(newIndex));
+    if (this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL) {
       this.fallbackIndex = newIndex;
     }
-    if (this.currentPlaylist === PLAYLIST_TYPE.REQUESTED) {
+    if (this.currentPlaylistType === PLAYLIST_TYPE.REQUESTED) {
       this.requestedIndex = newIndex;
+      // todo порефачить вложенные if
       if (this.requestedIndex >= this.requested.length) {
         this.handleRequestedPlaylistEnd();
       }
@@ -148,22 +193,26 @@ export class PlaylistController {
     log.debug(
       `updated indexes, requested: ${this.requestedIndex}, personal: ${this.fallbackIndex}`,
     );
+    const song = this.currentSong();
+    if (song) {
+      this.players.forEach(player => player.play(song));
+    }
   }
 
   switchToFallback() {
     log.debug("switching to personal");
-    this.currentPlaylist = PLAYLIST_TYPE.PERSONAL;
+    this.currentPlaylistType = PLAYLIST_TYPE.PERSONAL;
     this.playlistChangedFn(PLAYLIST_TYPE.PERSONAL);
-    this.updatePlaylistFn(this.fallback);
-    this.updateIndexFn(this.fallbackIndex);
+    this.playlists.forEach(playlist => playlist.setPlaylist(this.fallback));
+    this.playlists.forEach(playlist => playlist.setCurrent(this.fallbackIndex));
   }
 
   switchToRequested() {
     log.debug("switching to requested");
-    this.currentPlaylist = PLAYLIST_TYPE.REQUESTED;
+    this.currentPlaylistType = PLAYLIST_TYPE.REQUESTED;
     this.playlistChangedFn(PLAYLIST_TYPE.REQUESTED);
-    this.updatePlaylistFn(this.requested);
-    this.updateIndexFn(this.requestedIndex);
+    this.playlists.forEach(playlist => playlist.setPlaylist(this.requested));
+    this.playlists.forEach(playlist => playlist.setCurrent(this.requestedIndex));
   }
 }
 
