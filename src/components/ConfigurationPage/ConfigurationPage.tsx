@@ -36,6 +36,7 @@ const types = [
   { name: "payments", description: "Payment History" },
   { name: "player-control", description: "Music Player Remote Control" },
   { name: "donation-timer", description: "Donation Timer" },
+  { name: "donation-timer", description: "Donation Timer" },
 ];
 
 export default function ConfigurationPage({}: {}) {

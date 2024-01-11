@@ -134,6 +134,9 @@ const defaultSettings = {
   "player-control": {
     properties: [],
   },
+  "player-popup": {
+    properties: [],
+  },
   payments: {
     properties: [
       {
