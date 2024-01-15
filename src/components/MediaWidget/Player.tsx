@@ -60,10 +60,8 @@ export default function Player({
           log.debug(`playing in ${playerRef.current.uuid}`);
           log.debug(playerRef.current.currentSource());
           playerRef.current.src(song);
-          log.debug(playerRef.current.currentSource());
           playerRef.current.pause();
           playerRef.current.play();
-          log.debug(playerRef.current.currentSource());
         }
       },
     };
