@@ -6,6 +6,7 @@ export class PaymentPageConfig {
   email: string = "";
 	fio: string = "";
 	inn: string = "";
+  arbitraryText: string|null = null;
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
@@ -24,6 +25,8 @@ export class PaymentPageConfig {
         this.email = json.value["email"] ?? "";
 				this.fio = json.value["fio"] ?? "";
 				this.inn = json.value["inn"] ?? "";
+        this.arbitraryText =
+          json.value["arbitraryText"] ?? null;
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -85,6 +88,13 @@ export class PaymentPageConfig {
     this.updateConfig(this.config);
     this.sendEventPaymentPageUpdated();
 	}
+
+  setArbitraryText(arbitraryText:string){
+    this.arbitraryText = arbitraryText;
+    this.config.value["arbitraryText"] = arbitraryText;
+    this.updateConfig(this.config);
+    this.sendEventPaymentPageUpdated();
+  }
 
   updateConfig(config: any) {
     axios.post(

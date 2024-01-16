@@ -34,6 +34,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [email, setEmail] = useState("");
 	const [fio, setFio] = useState("");
 	const [inn, setInn] = useState("");
+  const [arbitraryText, setArbitraryText] = useState<string|null>(null);
 
   function listenPaymentPageConfigUpdated() {
     setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
@@ -43,6 +44,7 @@ export default function PaymentPageConfigComponent({}: {}) {
     setEmail(paymentPageConfig.current?.email ?? "");
 		setFio(paymentPageConfig.current?.fio ?? "");
 		setInn(paymentPageConfig.current?.inn ?? "");
+    setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -144,6 +146,17 @@ export default function PaymentPageConfigComponent({}: {}) {
               }/logo-${recipientId}.png?random=${Date.now()}`}
             />
           </label>
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Текст на странице</div>
+          <textarea
+            value={arbitraryText ?? ""}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) =>
+              paymentPageConfig.current?.setArbitraryText(e.target.value)
+            }
+          />
         </div>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>
