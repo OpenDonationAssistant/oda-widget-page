@@ -152,7 +152,7 @@ export default function PaymentPageConfigComponent({}: {}) {
           <textarea
             value={arbitraryText ?? ""}
             className={classes.widgetsettingsvalue}
-            style={{ width: "250px" }}
+            style={{ width: "250px", textAlign: "left" }}
             onChange={(e) =>
               paymentPageConfig.current?.setArbitraryText(e.target.value)
             }
