@@ -14,15 +14,17 @@ export default function BaseSettings({
 }) {
   const { config, setConfig } = useContext(WidgetsContext);
 
-  function update(key: string, value: string) {
+  function update(key: string, value: any) {
     setConfig((oldConfig) => {
-      let updatedProperties = oldConfig.get(id)?.properties.map((it) => {
+      const widgetSettings = oldConfig.get(id);
+      let updatedProperties = widgetSettings?.properties.map((it) => {
         if (it.name === key) {
           it.value = value;
         }
         return it;
       });
-      return new Map(oldConfig).set(id, { properties: updatedProperties });
+      widgetSettings.properties = updatedProperties;
+      return new Map(oldConfig).set(id,widgetSettings);
     });
     onChange.call({});
   }
@@ -61,7 +63,21 @@ export default function BaseSettings({
               />
             </>
           )}
-          {prop.type === "custom" && customHandler ? customHandler(prop) : <></>}
+          {prop.type === "boolean" && (
+            <>
+              <input
+                type="checkbox"
+                className="widget-settings-value"
+                checked={true === prop.value}
+                onChange={(e) => update(prop.name, !prop.value)}
+              />
+            </>
+          )}
+          {prop.type === "custom" && customHandler ? (
+            customHandler(prop)
+          ) : (
+            <></>
+          )}
         </div>
       ))}
     </>

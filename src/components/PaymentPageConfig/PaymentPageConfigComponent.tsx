@@ -13,7 +13,7 @@ const backgroundColor = (
   />
 );
 
-function uploadFile(file, name) {
+function uploadFile(file, name: string) {
   return axios.put(
     `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}?public=true`,
     { file: file },
@@ -28,13 +28,14 @@ function uploadFile(file, name) {
 export default function PaymentPageConfigComponent({}: {}) {
   const { recipientId } = useLoaderData();
   const navigate = useNavigate();
-  const paymentPageConfig = useRef<PaymentPageConfig>(null);
+  const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [isRequestsEnabled, setRequestsEnabled] = useState(false);
   const [requestCost, setRequestCost] = useState(100);
   const [email, setEmail] = useState("");
-	const [fio, setFio] = useState("");
-	const [inn, setInn] = useState("");
-  const [arbitraryText, setArbitraryText] = useState<string|null>(null);
+  const [fio, setFio] = useState("");
+  const [inn, setInn] = useState("");
+  const [arbitraryText, setArbitraryText] = useState<string | null>(null);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
 
   function listenPaymentPageConfigUpdated() {
     setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
@@ -42,8 +43,8 @@ export default function PaymentPageConfigComponent({}: {}) {
       !paymentPageConfig.current?.requestsDisabledPermanently ?? false,
     );
     setEmail(paymentPageConfig.current?.email ?? "");
-		setFio(paymentPageConfig.current?.fio ?? "");
-		setInn(paymentPageConfig.current?.inn ?? "");
+    setFio(paymentPageConfig.current?.fio ?? "");
+    setInn(paymentPageConfig.current?.inn ?? "");
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
   }
 
@@ -66,6 +67,9 @@ export default function PaymentPageConfigComponent({}: {}) {
   const handleTogglingRequests = (e: ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
       paymentPageConfig.current?.toggleRequestsPermanently();
+      if (!hasChanges) {
+        setHasChanges(true);
+      }
     }
   };
 
@@ -96,9 +100,12 @@ export default function PaymentPageConfigComponent({}: {}) {
             value={fio}
             className={classes.widgetsettingsvalue}
             style={{ width: "250px" }}
-            onChange={(e) =>
-              paymentPageConfig.current?.setFio(e.target.value)
-            }
+            onChange={(e) => {
+              paymentPageConfig.current?.setFio(e.target.value);
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
           />
         </div>
         <div className={classes.widgetsettingsitem}>
@@ -107,9 +114,12 @@ export default function PaymentPageConfigComponent({}: {}) {
             value={inn}
             className={classes.widgetsettingsvalue}
             style={{ width: "250px" }}
-            onChange={(e) =>
-              paymentPageConfig.current?.setInn(e.target.value)
-            }
+            onChange={(e) => {
+              paymentPageConfig.current?.setInn(e.target.value);
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
           />
         </div>
         <div className={classes.widgetsettingsitem}>
@@ -118,9 +128,12 @@ export default function PaymentPageConfigComponent({}: {}) {
             value={email}
             className={classes.widgetsettingsvalue}
             style={{ width: "250px" }}
-            onChange={(e) =>
-              paymentPageConfig.current?.setEmail(e.target.value)
-            }
+            onChange={(e) => {
+              paymentPageConfig.current?.setEmail(e.target.value);
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
           />
         </div>
         <div className={classes.widgetsettingsitem}>
@@ -153,9 +166,12 @@ export default function PaymentPageConfigComponent({}: {}) {
             value={arbitraryText ?? ""}
             className={classes.widgetsettingsvalue}
             style={{ width: "250px", textAlign: "left" }}
-            onChange={(e) =>
-              paymentPageConfig.current?.setArbitraryText(e.target.value)
-            }
+            onChange={(e) => {
+              paymentPageConfig.current?.setArbitraryText(e.target.value);
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
           />
         </div>
         <div className={classes.widgetsettingsitem}>
@@ -180,11 +196,38 @@ export default function PaymentPageConfigComponent({}: {}) {
             type="number"
             value={requestCost}
             className={classes.widgetsettingsvalue}
-            onChange={(e) =>
-              paymentPageConfig.current?.setRequestsCost(Number(e.target.value))
-            }
+            onChange={(e) => {
+              paymentPageConfig.current?.setRequestsCost(
+                Number(e.target.value),
+              );
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
           />
         </div>
+        {hasChanges && (
+          <div className={classes.buttons}>
+            <button
+              className={classes.cancelButton}
+              onClick={() => {
+                paymentPageConfig.current?.reloadConfig();
+                setHasChanges(false);
+              }}
+            >
+              Отменить
+            </button>
+            <button
+              className={classes.saveButton}
+              onClick={() => {
+                paymentPageConfig.current?.save();
+                setHasChanges(false);
+              }}
+            >
+              Сохранить
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

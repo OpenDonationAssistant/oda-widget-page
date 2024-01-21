@@ -36,12 +36,11 @@ const types = [
   { name: "payments", description: "Payment History" },
   { name: "player-control", description: "Music Player Remote Control" },
   { name: "donation-timer", description: "Donation Timer" },
-  { name: "donation-timer", description: "Donation Timer" },
 ];
 
 export default function ConfigurationPage({}: {}) {
   const [config, setConfig] = useState(new Map());
-	
+
   function updateConfig(id: string, key: string, value) {
     setConfig((oldConfig) => {
       let updatedProperties = oldConfig.get(id)?.properties.map((it) => {
@@ -135,7 +134,7 @@ export default function ConfigurationPage({}: {}) {
                 className="new-widget-type-button"
                 onClick={() => {
                   addWidget(type.name, widgets.length)
-                    .then((ignore) => loadSettings())
+                    .then(() => loadSettings())
                     .then((updatedSettings) => setWidgets(updatedSettings));
                   setShowAddWidgetPopup(false);
                 }}

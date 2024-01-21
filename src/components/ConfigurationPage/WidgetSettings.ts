@@ -154,7 +154,14 @@ const defaultSettings = {
     ],
   },
   "payment-alerts": {
-    properties: [],
+    properties: [
+      {
+        name: "useGreenscreen",
+        type: "boolean",
+        value: false,
+        displayName: "Использовать greenscreen"
+      },
+    ],
     alerts: [],
   },
   "player-info": {

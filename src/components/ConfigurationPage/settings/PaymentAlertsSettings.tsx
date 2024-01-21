@@ -3,6 +3,7 @@ import { useState } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import axios from "axios";
 import ColorPicker from "./ColorPicker";
+import BaseSettings from "./BaseSettings";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -221,10 +222,11 @@ export default function PaymentAlertSettings({
       ],
     });
 
-    setConfig(
-      new Map(config).set(id, {
-        alerts: alerts,
-      }),
+    setConfig((oldConfig) => {
+      const alertConfig = oldConfig.get(id);
+      alertConfig.alerts = alerts;
+      return new Map(config).set(id, alertConfig);
+    }
     );
 
     setSelected(alerts.length - 1);
@@ -268,13 +270,13 @@ export default function PaymentAlertSettings({
       console.log(file);
       uploadFile(file).then((ignore) => {
         setConfig((oldConfig) => {
-          const alerts = config.get(id)?.alerts;
+          const alertConfig = oldConfig.get(id);
+          const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
           updatedAlerts.image = file.name;
           alerts[selected] = updatedAlerts;
-          const newConfig = new Map(oldConfig).set(id, {
-            alerts: alerts,
-          });
+          alertConfig.alerts = alerts;
+          const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
         });
         onChange.call({});
@@ -288,13 +290,13 @@ export default function PaymentAlertSettings({
       console.log(file);
       uploadFile(file).then((ignore) => {
         setConfig((oldConfig) => {
-          const alerts = config.get(id)?.alerts;
+          const alertConfig = oldConfig.get(id);
+          const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
           updatedAlerts.audio = file.name;
           alerts[selected] = updatedAlerts;
-          const newConfig = new Map(oldConfig).set(id, {
-            alerts: alerts,
-          });
+          alertConfig.alerts = alerts;
+          const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
         });
         onChange.call({});
@@ -548,6 +550,7 @@ export default function PaymentAlertSettings({
 
   return (
     <>
+      <BaseSettings id={id} onChange={onChange} />
       {previews()}
       {selected > -1 && (
         <div className="payment-alert-settings">

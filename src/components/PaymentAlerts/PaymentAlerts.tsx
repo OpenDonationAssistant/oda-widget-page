@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./PaymentAlerts.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,10 +10,12 @@ import MessageTitle from "./sections/MessageTitle";
 import AlertImage from "./sections/AlertImage/AlertImage";
 import FontLoader from "../FontLoader/FontLoader";
 import ImageCache from "../ImageCache/ImageCache";
+import { findSetting } from "../utils";
 
 function PaymentAlerts({}: {}) {
   const { recipientId, settings, conf, widgetId } = useLoaderData();
   const navigate = useNavigate();
+  const [useGreenscreen, setUseGreenscreen] = useState<boolean>(true);
   const alertController = useRef<AlertController>(
     new AlertController(settings, recipientId),
   );
@@ -21,6 +23,10 @@ function PaymentAlerts({}: {}) {
   useEffect(() => {
     alertController.current.listen(widgetId, conf);
   }, [alertController]);
+
+  useEffect(() => {
+    setUseGreenscreen(findSetting(settings, "useGreenscreen", true));
+  },[settings]);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.alertWidgetCommans, (message) => {
@@ -41,7 +47,7 @@ function PaymentAlerts({}: {}) {
     <>
       <style
         dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%; background-color: green;}`,
+          __html: `html, body {height: 100%; background-color: ${useGreenscreen ? "green" : "rgba(0,0,0,0)"};}`,
         }}
       />
       <FontLoader fontProvider={alertController.current} />

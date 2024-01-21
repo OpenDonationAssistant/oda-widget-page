@@ -14,11 +14,12 @@ import { log } from "../../logging";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
+import { Song } from "./types";
 
 export default function MediaWidget({}: {}) {
   const [playlist, setPlaylist] = useState([]);
   const [current, setCurrent] = useState(0);
-  const playlistController = useRef<PlaylistController>(null);
+  const playlistController = useRef<PlaylistController|null>(null);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
   const { recipientId, conf, widgetId } = useLoaderData();
@@ -30,7 +31,7 @@ export default function MediaWidget({}: {}) {
       recipientId,
       setPlaylist,
       setCurrent,
-      (tab) => {
+      (tab: PLAYLIST_TYPE) => {
         setActiveTab(tab);
         log.debug(`using tab ${tab}`);
       },
@@ -53,7 +54,7 @@ export default function MediaWidget({}: {}) {
   }, [recipientId, widgetId]);
 
   useEffect(() => {
-    function toggle(event) {
+    const toggle: EventListenerOrEventListenerObject = (event: { detail: boolean }) => {
       log.debug(`toggle requests: ${event.detail}`);
       setRequestsEnabled(event.detail);
     }
@@ -78,8 +79,8 @@ export default function MediaWidget({}: {}) {
           playlist={playlist}
           tab={activeTab}
           current={current}
-          updateCurrentFn={(newIndex) =>
-            playlistController.current.updateIndex(newIndex)
+          updateCurrentFn={(newIndex:number) =>
+            playlistController.current?.updateIndex(newIndex)
           }
         />
         <div className="playlist-controls">
@@ -91,7 +92,10 @@ export default function MediaWidget({}: {}) {
                   ? "Disable music requests"
                   : "Enable music request"
               }
-              handler={() => paymentPageConfig.current?.toggleMediaRequests()}
+              handler={() => {
+                paymentPageConfig.current?.toggleMediaRequests()
+                paymentPageConfig.current?.save();
+              }}
             />
           </Menu>
           <ul className="playlist-tabs nav nav-underline">
@@ -129,14 +133,13 @@ export default function MediaWidget({}: {}) {
           </div>
         </div>
         <Playlist
-          recipientId={recipientId}
           playlist={playlist}
           current={current}
-          updatePlaylistFn={(newPlaylist) =>
-            playlistController.current.updatePlaylist(newPlaylist)
+          updatePlaylistFn={(newPlaylist: Song[]) =>
+            playlistController.current?.updatePlaylist(newPlaylist)
           }
-          playFn={(newIndex) =>
-            playlistController.current.updateIndex(newIndex)
+          playFn={(newIndex: number) =>
+            playlistController.current?.updateIndex(newIndex)
           }
         />
       </div>
