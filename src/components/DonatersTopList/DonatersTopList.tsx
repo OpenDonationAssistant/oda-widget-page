@@ -32,7 +32,11 @@ export default function DonatersTopList({}: {}) {
       .then((response) => response.data)
       .then((data) => {
         const map = new Map();
-        Object.keys(data).forEach((key) => map.set(key, data[key]));
+        Object.keys(data)
+          .filter((key) => key)
+          .forEach((key) => {
+            map.set(key, data[key]);
+          });
         const sortedMap =
           type === "Last"
             ? map
@@ -54,7 +58,6 @@ export default function DonatersTopList({}: {}) {
 
   const type = findSetting(settings, "type", "All");
   const titleFontSize = findSetting(settings, "titleFontSize", "24px");
-  console.log(`title font size: ${titleFontSize}`);
   const fontSize = findSetting(settings, "fontSize", "24px");
   const titleFont = findSetting(settings, "titleFont", "Roboto");
   const font = findSetting(settings, "font", "Roboto");
@@ -79,7 +82,7 @@ export default function DonatersTopList({}: {}) {
   donatersTopStyle.fontSize = titleFontSize + "px";
   donatersTopStyle.fontFamily = titleFont;
   donatersTopStyle.color = titleColor;
-	donatersTopStyle.backgroundColor = `rgba(0, 0, 0, ${titleAlphaChannel})`;
+  donatersTopStyle.backgroundColor = `rgba(0, 0, 0, ${titleAlphaChannel})`;
 
   console.log(donatersTopStyle);
 
