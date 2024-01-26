@@ -1,6 +1,7 @@
 import React from "react";
 import "./css/Toolbar.css";
 import { useNavigate } from "react-router";
+import ODALogo from "../ODALogo/ODALogo";
 
 enum Page {
   WIDGETS,
@@ -13,10 +14,7 @@ export default function Toolbar({ page }: { page: Page }) {
   return (
     <div className="toolbar">
       <div className="toolbar-title">
-        <img
-          className="oda-logo"
-          src={`${process.env.PUBLIC_URL}/favicon.png`}
-        />
+        <ODALogo/>
       </div>
       <button
         className={`toolbar-button ${page === Page.WIDGETS ? "active" : ""}`}
