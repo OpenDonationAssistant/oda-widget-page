@@ -15,6 +15,23 @@ const overflowHiddenForRootElement = (
   />
 );
 
+const fullHeight = (
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `html, body { height: 100%; }`,
+    }}
+  />
+);
+
+function hexToRgb(hex: string) {
+  var bigint = parseInt(hex.substring(1), 16);
+  var r = (bigint >> 16) & 255;
+  var g = (bigint >> 8) & 255;
+  var b = bigint & 255;
+
+  return { r, g, b };
+}
+
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
   const { recipientId, settings, conf, widgetId } = useLoaderData();
@@ -57,15 +74,26 @@ export default function DonatersTopList({}: {}) {
   }, [recipientId]);
 
   const type = findSetting(settings, "type", "All");
-  const titleFontSize = findSetting(settings, "titleFontSize", "24px");
-  const fontSize = findSetting(settings, "fontSize", "24px");
-  const titleFont = findSetting(settings, "titleFont", "Roboto");
-  const font = findSetting(settings, "font", "Roboto");
-  const titleColor = findSetting(settings, "titleColor", "white");
-  const color = findSetting(settings, "color", "white");
+
   const title = findSetting(settings, "title", "Донатеры");
-  const alphaChannel = findSetting(settings, "alphaChannel", "1.0");
+  const titleColor = findSetting(settings, "titleColor", "black");
+  const titleBackgroundColor = hexToRgb(
+    findSetting(settings, "titleBackgroundColor", "white"),
+  );
   const titleAlphaChannel = findSetting(settings, "titleAlphaChannel", "1.0");
+  const titleFont = findSetting(settings, "titleFont", "Roboto");
+  const titleFontSize = findSetting(settings, "titleFontSize", "24px");
+
+  const color = findSetting(settings, "color", "black");
+  const backgroundColor = hexToRgb(
+    findSetting(settings, "backgroundColor", "white"),
+  );
+  const alphaChannel = findSetting(settings, "alphaChannel", "1.0");
+  const font = findSetting(settings, "font", "Roboto");
+  const fontSize = findSetting(settings, "fontSize", "24px");
+
+  console.log(`color: ${JSON.stringify(backgroundColor)}`);
+  console.log(`title color: ${JSON.stringify(titleBackgroundColor)}`);
 
   // todo rename to listStyle - it's not only text style
   const textStyle = {
@@ -73,7 +101,6 @@ export default function DonatersTopList({}: {}) {
     lineHeight: fontSize ? fontSize + "px" : "unset",
     fontFamily: font ? font : "unset",
     color: color,
-    backgroundColor: `rgba(0, 0, 0, ${alphaChannel})`,
   };
   textStyle.display = layout === "vertical" ? "block" : "inline";
   textStyle.marginLeft = layout === "vertical" ? "0px" : "20px";
@@ -82,15 +109,20 @@ export default function DonatersTopList({}: {}) {
   donatersTopStyle.fontSize = titleFontSize + "px";
   donatersTopStyle.fontFamily = titleFont;
   donatersTopStyle.color = titleColor;
-  donatersTopStyle.backgroundColor = `rgba(0, 0, 0, ${titleAlphaChannel})`;
-
-  console.log(donatersTopStyle);
+  donatersTopStyle.backgroundColor = `rgba(${titleBackgroundColor.r}, ${titleBackgroundColor.g}, ${titleBackgroundColor.b}, ${titleAlphaChannel})`;
 
   return (
     <>
       <FontImport font={font} />
       <FontImport font={titleFont} />
       {overflowHiddenForRootElement}
+      {fullHeight}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `#root { background-color: rgba(${backgroundColor.r}, ${backgroundColor.g}, ${backgroundColor.b}, ${alphaChannel}); }`,
+        }}
+      />
+
       {"All" === type && (
         <div className="donaters-list" style={textStyle}>
           {donaters &&

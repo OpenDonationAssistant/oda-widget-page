@@ -80,7 +80,6 @@ export default function WidgetConfiguration({
   }
 
   function saveSettings() {
-    console.log(config.get(id));
     return axios.patch(
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
       {

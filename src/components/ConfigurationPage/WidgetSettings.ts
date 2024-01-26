@@ -35,7 +35,7 @@ const defaultSettings = {
         name: "font",
         type: "fontselect",
         value: "Roboto",
-        displayName: "Шрифт",
+        displayName: "Шрифт списка",
       },
       {
         name: "titleFontSize",
@@ -47,7 +47,7 @@ const defaultSettings = {
         name: "fontSize",
         type: "number",
         value: "24",
-        displayName: "Размер шрифта",
+        displayName: "Размер шрифта списка",
       },
       {
         name: "titleColor",
@@ -56,10 +56,22 @@ const defaultSettings = {
         displayName: "Цвет заголовка",
       },
       {
+        name: "titleBackgroundColor",
+        type: "color",
+        value: "#000000",
+        displayName: "Цвет фона заголовка",
+      },
+      {
         name: "color",
         type: "color",
         value: "#ffffff",
-        displayName: "Цвет",
+        displayName: "Цвет списка",
+      },
+      {
+        name: "backgroundColor",
+        type: "color",
+        value: "#000000",
+        displayName: "Цвет фона списка",
       },
       {
         name: "titleAlphaChannel",

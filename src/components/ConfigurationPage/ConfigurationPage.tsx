@@ -75,10 +75,11 @@ export default function ConfigurationPage({}: {}) {
       const settings = defaultSettings[it.type];
       const mergedSettings = settings.properties.map((prop) => {
 				const value = it.config?.properties?.find((sameprop) => sameprop.name === prop.name)?.value;
+        const updatedProp = structuredClone(prop);
 				if (value != null){
-				  prop.value = value;
+				  updatedProp.value = value;
 				}
-				return prop;
+				return updatedProp;
       });
 			if (it.config) {
 				it.config.properties = mergedSettings;
