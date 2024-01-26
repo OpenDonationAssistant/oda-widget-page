@@ -16,7 +16,7 @@ function base64ToArrayBuffer(base64) {
 export class VoiceController {
   audioCtx = new AudioContext();
   playingSource: AudioBufferSourceNode | null = null;
-  onEndHandler: any|null = null;
+  onEndHandler: any | null = null;
   recipientId: string;
 
   constructor(recipientId: string) {
@@ -24,6 +24,7 @@ export class VoiceController {
   }
 
   pronounceTitle(alert: any, data: any, onEndHandler: any) {
+    log.debug("start to pronounce title");
     const playIfMessageEmpty = this.findSetting(
       alert.properties,
       "enableVoiceWhenMessageIsEmpty",
@@ -40,7 +41,6 @@ export class VoiceController {
       }
       return;
     }
-    log.debug("text to voice " + data.message);
     const message = data?.message?.trim();
     const headerForVoice = message
       ? this.findSetting(alert.properties, "voiceTextTemplate", null)
@@ -59,50 +59,86 @@ export class VoiceController {
       .replace("<amount>", data.amount.amount)
       .replace("<minoramount>", data.amount.amount * 100)
       .replace("<streamer>", this.recipientId);
-    this.voiceByGoogle(resultText).then((audio) =>
-      this.pronounce(audio, onEndHandler),
-    );
-  }
-
-  pronounceMessage(alert: any, data: any, onEndHandler: any) {
-    if (!data || !data.message || data.message.length === 0) {
+    try {
+      this.voiceByGoogle(resultText).then((audio) =>
+        this.pronounce(audio, onEndHandler),
+      );
+    } catch (error) {
+      console.log(error);
       if (onEndHandler) {
         onEndHandler();
       }
-      return;
     }
-    this.voiceByMCS(data.message).then((audio) =>
-      this.pronounce(audio, onEndHandler),
-    );
+  }
+
+  pronounceMessage(alert: any, data: any, onEndHandler: any) {
+    log.debug("start to pronounce message");
+    try {
+      if (!data || !data.message || data.message.length === 0) {
+        if (onEndHandler) {
+          onEndHandler();
+        }
+        return;
+      }
+      this.voiceByMCS(data.message).then((audio) =>
+        this.pronounce(audio, onEndHandler),
+      );
+    } catch (error) {
+      console.log(error);
+      if (onEndHandler) {
+        onEndHandler();
+      }
+    }
   }
 
   private pronounce(buffer: ArrayBuffer, onEndHandler: any) {
-    this.audioCtx.decodeAudioData(
-      buffer,
-      (buf) => {
-        let source = this.audioCtx.createBufferSource();
+    this.audioCtx
+      .decodeAudioData(
+        buffer,
+        (buf) => {
+          let source = this.audioCtx.createBufferSource();
+          if (onEndHandler) {
+            this.onEndHandler = onEndHandler;
+            source.addEventListener("ended", onEndHandler);
+          }
+          this.playingSource = source;
+          source.connect(this.audioCtx.destination);
+          source.buffer = buf;
+          source.loop = false;
+          source.start(0);
+        },
+        (err) => {
+          console.log(err);
+        },
+      )
+      .catch((error) => {
+        console.log(error);
         if (onEndHandler) {
-          this.onEndHandler = onEndHandler;
-          source.addEventListener("ended", onEndHandler);
+          console.log('calling onEndHandler');
+          onEndHandler();
         }
-        this.playingSource = source;
-        source.connect(this.audioCtx.destination);
-        source.buffer = buf;
-        source.loop = false;
-        source.start(0);
-      },
-      (err) => {
-        console.log(err);
-      },
-    );
+      });
   }
 
   playAudio(alert: any, onEndHandler: any) {
-    fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`, {
-      method: "GET",
-    })
-      .then((response) => response.arrayBuffer())
-      .then((buffer) => this.pronounce(buffer, onEndHandler));
+    try {
+      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`, {
+        method: "GET",
+      })
+        .then((response) => response.arrayBuffer())
+        .then((buffer) => this.pronounce(buffer, onEndHandler))
+        .catch((error) => {
+          console.log(error);
+          if (onEndHandler) {
+            onEndHandler();
+          }
+        });
+    } catch (error) {
+      console.log(error);
+      if (onEndHandler) {
+        onEndHandler();
+      }
+    }
   }
 
   interrupt() {

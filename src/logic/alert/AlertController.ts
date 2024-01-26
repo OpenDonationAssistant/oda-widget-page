@@ -142,6 +142,7 @@ export class AlertController {
     this.voiceController.playAudio(alert, () => {
       this.voiceController.pronounceTitle(alert, data, () =>
         this.voiceController.pronounceMessage(alert, data, () => {
+          log.debug("clearing alert");
           this.clear();
           this.resumePlayer();
           ackFunction();
