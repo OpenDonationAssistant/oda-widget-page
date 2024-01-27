@@ -23,6 +23,17 @@ export class VoiceController {
     this.recipientId = recipientId;
   }
 
+  playAudio(alert: any, onEndHandler: any) {
+    try {
+        this.pronounce(structuredClone(alert.buffer), onEndHandler);
+    } catch (error) {
+      console.log(error);
+      if (onEndHandler) {
+        onEndHandler();
+      }
+    }
+  }
+
   pronounceTitle(alert: any, data: any, onEndHandler: any) {
     log.debug("start to pronounce title");
     const playIfMessageEmpty = this.findSetting(
@@ -92,6 +103,7 @@ export class VoiceController {
   }
 
   private pronounce(buffer: ArrayBuffer, onEndHandler: any) {
+    console.log(buffer);
     this.audioCtx
       .decodeAudioData(
         buffer,
@@ -118,34 +130,6 @@ export class VoiceController {
           onEndHandler();
         }
       });
-  }
-
-  playAudio(alert: any, onEndHandler: any) {
-    try {
-      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`, {
-        method: "GET",
-      })
-        .then((response) => response.arrayBuffer())
-        .then((buffer) => this.pronounce(buffer, onEndHandler))
-        .catch((error) => {
-          console.log(error);
-          if (onEndHandler) {
-            onEndHandler();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-      if (onEndHandler) {
-        onEndHandler();
-      }
-    }
-  }
-
-  interrupt() {
-    if (this.playingSource) {
-      this.playingSource.removeEventListener("ended", this.onEndHandler);
-      this.playingSource.stop();
-    }
   }
 
   private async voiceByMCS(message: string): Promise<ArrayBuffer> {
@@ -178,6 +162,13 @@ export class VoiceController {
     });
     const json = await response.json();
     return base64ToArrayBuffer(json.audioContent);
+  }
+
+  interrupt() {
+    if (this.playingSource) {
+      this.playingSource.removeEventListener("ended", this.onEndHandler);
+      this.playingSource.stop();
+    }
   }
 
   private findSetting(properties, key: string, defaultValue: any | null) {

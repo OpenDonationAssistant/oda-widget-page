@@ -47,7 +47,7 @@ export default function Menu({ children }: { children: React.ReactNode }) {
       >
         <img
           className={classes.logo}
-          src={`${process.env.PUBLIC_URL}/favicon.png`}
+          src={`${process.env.PUBLIC_URL}/favicon.ico`}
         />
       </button>
       <div

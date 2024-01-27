@@ -17,24 +17,30 @@ export class AlertController {
   private fontLoaders: IFontLoader[] = [];
   private imageLoaders: IImageLoader[] = [];
   private voiceController: VoiceController;
+  private _recipientId: string;
 
   constructor(settings: any, recipientId: string) {
     this.settings = settings;
-    this.handleSettings();
-    this.voiceController = new VoiceController(recipientId);
+    this._recipientId = recipientId;
   }
 
   listen(widgetId: string, conf: any) {
     this.conf = conf;
-    subscribe(widgetId, this.conf.topic.alerts, (message) => {
-      log.info(`Received alert: ${message.body}`);
-      let json = JSON.parse(message.body);
-      const alert = this.findAlert(json);
-      if (alert) {
-        this.renderAlert(alert, json, () => message.ack());
-      }
-      log.info("Alert is handled");
-    });
+    this.handleSettings()
+      .then(() => {
+        this.voiceController = new VoiceController(this._recipientId);
+      })
+      .then(() => {
+        subscribe(widgetId, this.conf.topic.alerts, (message) => {
+          log.info(`Received alert: ${message.body}`);
+          let json = JSON.parse(message.body);
+          const alert = this.findAlert(json);
+          if (alert) {
+            this.renderAlert(alert, json, () => message.ack());
+          }
+          log.info("Alert is handled");
+        });
+      });
   }
 
   private pausePlayer() {
@@ -84,6 +90,7 @@ export class AlertController {
   }
 
   private preloadImages() {
+    log.debug(`preload images`);
     this.imageLoaders.forEach((loader) => {
       this.sortedAlerts
         .map((alert) => alert.image)
@@ -91,13 +98,29 @@ export class AlertController {
     });
   }
 
-  handleSettings() {
+  async handleSettings() {
     const sorted = this.settings.config.alerts.sort(
       (a, b) => a.trigger.amount - b.trigger.amount,
     );
     this.sortedAlerts = sorted;
-    log.debug(this.sortedAlerts);
+    log.debug(`loading audio`);
+    await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
+    log.debug(`alerts: ${JSON.stringify(this.sortedAlerts)}`);
     this.preloadImages();
+  }
+
+  loadAudio(alert: any): Promise<any> {
+    log.debug(`load ${alert.audio}`);
+    return fetch(
+      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`,
+      {
+        method: "GET",
+      },
+    )
+      .then((response) => response.arrayBuffer())
+      .then((buffer) => {
+        alert.buffer = buffer;
+      });
   }
 
   private findSetting(properties, key: string, defaultValue: any | null) {
