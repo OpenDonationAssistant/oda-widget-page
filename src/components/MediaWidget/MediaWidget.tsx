@@ -106,13 +106,6 @@ export default function MediaWidget({}: {}) {
             {`${index + 1} / ${playlistSize}`}
           </div>
         </div>
-        {playlistController.current && (
-          <>
-            <PlaylistComponent
-              playlistController={playlistController.current}
-            />
-          </>
-        )}
       </div>
     </>
   );
