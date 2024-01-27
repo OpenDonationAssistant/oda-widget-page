@@ -7,5 +7,6 @@ export enum PlayerState{
 }
 
 export interface IPlayer {
+  id: string;
 	play(song: Song): void;
 }
