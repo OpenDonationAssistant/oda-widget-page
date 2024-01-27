@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
 import { v4 as uuidv4 } from "uuid";
-import Playlist from "./Playlist";
+import PlaylistComponent from "./PlaylistComponent";
 import Player from "./Player";
 import { PLAYLIST_TYPE, PlaylistController } from "./PlaylistController";
 import { setupCommandListener, subscribe } from "../../socket";
@@ -119,7 +119,7 @@ export default function MediaWidget({}: {}) {
         </div>
         {playlistController.current && (
           <>
-            <Playlist playlistController={playlistController.current} />
+            <PlaylistComponent playlistController={playlistController.current} />
           </>
         )}
       </div>

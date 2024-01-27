@@ -60,7 +60,6 @@ export default function Player({
           log.debug(`playing in ${playerRef.current.uuid}`);
           log.debug(playerRef.current.currentSource());
           playerRef.current.src(song);
-          playerRef.current.pause();
           playerRef.current.play();
         }
       },
@@ -145,8 +144,8 @@ export default function Player({
       if (playerRef.current.currentSource().originId) {
         markListened(playerRef.current.currentSource().originId);
       }
-    playlistController.next();
-    sendAlert(null, 0, 0);
+      playlistController.next();
+      sendAlert(null, 0, 0);
     });
     console.log("created: " + playerRef.current.uuid);
   }, [song, playlistController]);
@@ -167,28 +166,23 @@ export default function Player({
           playerRef.current.pause();
         }
       }
-      // if (
-      //   json.command === "resume" &&
-      //   playerRef.current &&
-      //   (pausedByCommand ||
-      //     (!pausedManually &&
-      //       playerRef.current.ended() &&
-      //       previousListen &&
-      //       previousListen + 1 == playlistController.currentIndex()))
-      // ) {
-      //   console.log("start playing by command");
-      //   console.log(playerRef.current.src());
-      //   playerRef.current.play();
-      // }
+      if (
+        json.command === "resume" &&
+        playerRef.current &&
+        (pausedByCommand ||
+          (!pausedManually &&
+            playerRef.current.ended() &&
+            previousListen &&
+            previousListen + 1 == playlistController.currentIndex()))
+      ) {
+        console.log("start playing by command");
+        console.log(playerRef.current.src());
+        playerRef.current.play();
+      }
       if (
         json.command === "resume" &&
         (pausedByCommand ||
-          (
-            !pausedManually &&
-            playerRef.current &&
-            playerRef.current.ended()
-          )
-        )
+          (!pausedManually && playerRef.current && playerRef.current.ended()))
       ) {
         console.log("start playing by command");
         playlistController.next();

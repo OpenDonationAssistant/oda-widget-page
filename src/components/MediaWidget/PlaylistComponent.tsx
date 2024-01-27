@@ -8,7 +8,7 @@ import AddMediaPopup from "./AddMediaPopup";
 import { Song } from "./types";
 import { PlaylistController } from "./PlaylistController";
 
-export default function Playlist({
+export default function PlaylistComponent({
   playlistController,
 }: {
   playlistController: PlaylistController;
