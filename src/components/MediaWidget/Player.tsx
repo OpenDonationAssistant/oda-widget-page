@@ -5,7 +5,7 @@ import { markListened } from "./api";
 import { v4 as uuidv4 } from "uuid";
 import { publish, subscribe } from "../../socket";
 import { useLoaderData } from "react-router";
-import { PLAYLIST_TYPE, PlaylistController } from "./PlaylistController";
+import { PlaylistController } from "./PlaylistController";
 import { log } from "../../logging";
 import { VideoJsPlayer, VideoJsPlayerOptions } from "video.js";
 import VideoDuration from "./VideoDuration";
@@ -13,6 +13,7 @@ import { Song } from "./types";
 import ProgressBar from "./ProgressBar";
 import VideoPopupToggler from "./VideoPopupToggler";
 import { PlayerState } from "./IPlayer";
+import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
 
 let options: VideoJsPlayerOptions = {
   autoplay: false,
@@ -90,9 +91,9 @@ export default function Player({
       return;
     }
 
-    if (!playlistController.currentSong()) {
-      return;
-    }
+    // if (!playlistController.currentSong()) {
+    //   return;
+    // }
 
     console.log("Creating new player instance");
 
@@ -105,7 +106,7 @@ export default function Player({
 
     playerRef.current = videojs(videoElement, options);
     const player = playerRef.current;
-    player.src(playlistController.currentSong());
+    // player.src(playlistController.currentSong());
     player.uuid = uuidv4();
     player.volume(0.5);
     player.off("play");

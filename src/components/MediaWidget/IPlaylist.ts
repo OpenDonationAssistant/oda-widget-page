@@ -1,8 +1,8 @@
+import { Playlist } from "../../logic/playlist/Playlist";
 import { PlaylistController } from "./PlaylistController";
-import { Song } from "./types";
 
 export interface IPlaylist {
-	setPlaylist(playlist: Song[]): void;
+	setPlaylist(playlist: Playlist): void;
 	setCurrent(current: number): void;
 
 	playlistController: PlaylistController;

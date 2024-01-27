@@ -5,30 +5,21 @@ import { Song } from "./types";
 import { IPlaylist } from "./IPlaylist";
 import { IPlayer } from "./IPlayer";
 import { markListened } from "./api";
-
-export enum PLAYLIST_TYPE {
-  REQUESTED,
-  PERSONAL,
-}
+import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
 
 export class PlaylistController {
-  requested: Song[] = [];
-  fallback: Song[] = [];
-  requestedIndex = -1;
-  fallbackIndex = -1;
-  requestedPlaylistFinished = true;
+  requested: Playlist = new Playlist(PLAYLIST_TYPE.REQUESTED);
+  fallback: Playlist = new Playlist(PLAYLIST_TYPE.PERSONAL);
+  current: Playlist = this.requested;
+  playlistRenderers: IPlaylist[] = [];
+  playerRenderers: IPlayer[] = [];
 
   recipientId;
-  currentPlaylistType = PLAYLIST_TYPE.REQUESTED;
-  playlistChangedFn: Function;
-  playlists: IPlaylist[] = [];
-  players: IPlayer[] = [];
 
-  constructor(recipientId: string, playlistChangedFn: Function) {
+  constructor(recipientId: string) {
     this.recipientId = recipientId;
-    this.playlistChangedFn = playlistChangedFn;
 
-    log.info(`Loading playlist for ${JSON.stringify(recipientId)}`);
+    log.info(`Loading playlist for ${recipientId}`);
     document.removeEventListener("addSongs", this.addSongs);
     document.addEventListener("addSongs", this.addSongs);
 
@@ -52,25 +43,25 @@ export class PlaylistController {
         return fillSongData(recipientId, songs);
       })
       .then((playlist) => {
-        this.updatePlaylist(playlist);
+        playlist.forEach(song => this.requested.addSong(song));
       });
   }
 
   clearPlayers() {
-    this.players = [];
+    this.playerRenderers = [];
   }
 
   addPlayer(player: IPlayer): PlaylistController {
-    this.players.push(player);
+    this.playerRenderers.push(player);
     return this;
   }
 
   clearPlaylists() {
-    this.playlists = [];
+    this.playlistRenderers = [];
   }
 
   addPlaylist(playlist: IPlaylist): PlaylistController {
-    this.playlists.push(playlist);
+    this.playlistRenderers.push(playlist);
     return this;
   }
 
@@ -102,27 +93,13 @@ export class PlaylistController {
   }
 
   currentPlaylist(): Song[] {
-    return this.currentPlaylistType === PLAYLIST_TYPE.PERSONAL
-      ? this.fallback
-      : this.requested;
-  }
-
-  currentSong(): Song | null {
-    return this.currentPlaylist()[this.currentIndex()];
+    return this.current.songs();
   }
 
   async addSong(song: Song) {
     const updated = await fillSongData(this.recipientId, [song]);
-    const oldPlaylist = this.currentPlaylist();
-    if (
-      oldPlaylist.some(
-        (existing) => existing.originId && existing.originId === song.originId,
-      )
-    ) {
-      log.debug("skipping updating playlist because of same song");
-      return;
-    }
-    this.updatePlaylist([...oldPlaylist, updated[0]]);
+    this.current.addSong(updated[0]);
+    this.updatePlaylist(this.current.songs());
   }
 
   addSongs = (event) => {

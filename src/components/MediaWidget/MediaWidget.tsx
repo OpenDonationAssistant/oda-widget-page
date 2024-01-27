@@ -6,7 +6,7 @@ import "./MediaWidget.css";
 import { v4 as uuidv4 } from "uuid";
 import PlaylistComponent from "./PlaylistComponent";
 import Player from "./Player";
-import { PLAYLIST_TYPE, PlaylistController } from "./PlaylistController";
+import { PlaylistController } from "./PlaylistController";
 import { setupCommandListener, subscribe } from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
@@ -15,6 +15,7 @@ import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
 import { Song } from "./types";
+import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
 
 export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData();
@@ -25,18 +26,12 @@ export default function MediaWidget({}: {}) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
   const playlistController = useRef<PlaylistController>(
-    new PlaylistController(
-      recipientId,
-      // todo убрать/заменить на сигналы/эвенты
-      (tab: PLAYLIST_TYPE) => {
-        setActiveTab(tab);
-        log.debug(`using tab ${tab}`);
-      },
-    ),
+    new PlaylistController(recipientId),
   );
   playlistController.current.addPlaylist({
-    setPlaylist: (songs: Song[]) => {
-      setPlaylistSize(songs.length);
+    setPlaylist: (playlist: Playlist) => {
+      setPlaylistSize(playlist.songs().length);
+      setActiveTab(playlist.getType());
     },
     setCurrent: setIndex,
     playlistController: playlistController.current,
@@ -53,7 +48,7 @@ export default function MediaWidget({}: {}) {
         originId: json.id,
         owner: "Аноним",
         title: json.title,
-        listened: false
+        listened: false,
       };
       playlistController.current?.handleNewRequestedSongEvent(song);
       message.ack();
@@ -119,7 +114,9 @@ export default function MediaWidget({}: {}) {
         </div>
         {playlistController.current && (
           <>
-            <PlaylistComponent playlistController={playlistController.current} />
+            <PlaylistComponent
+              playlistController={playlistController.current}
+            />
           </>
         )}
       </div>
