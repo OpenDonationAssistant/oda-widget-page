@@ -66,12 +66,6 @@ export default function MediaWidget({}: {}) {
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
-        {playlistController.current && (
-          <Player
-            tab={activeTab}
-            playlistController={playlistController.current}
-          />
-        )}
         <div className="playlist-controls">
           <Menu>
             <MenuEventButton text="Hide/Show video" event="toggleVideo" />
