@@ -3,7 +3,8 @@ import { PlaylistController } from "./PlaylistController";
 
 export interface IPlaylistRenderer {
   id: string;
-	setPlaylist(playlist: Playlist): void;
+	bindPlaylist(playlist: Playlist): void;
+  unbind(): void;
 
 	playlistController: PlaylistController;
 }

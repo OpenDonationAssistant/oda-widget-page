@@ -4,21 +4,27 @@ import { log } from "../../logging";
 import { Song } from "./types";
 import { IPlaylistRenderer } from "./IPlaylist";
 import { IPlayer } from "./IPlayer";
-import { markListened } from "./api";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
+import { subscribe } from "../../socket";
 
 export class PlaylistController {
-  requested: Playlist = new Playlist(PLAYLIST_TYPE.REQUESTED);
-  personal: Playlist = new Playlist(PLAYLIST_TYPE.PERSONAL);
-  current: Playlist = this.requested;
+  playlists = new Map<PLAYLIST_TYPE, Playlist>();
+  current: Playlist;
 
   playlistRenderers: IPlaylistRenderer[] = [];
   players: IPlayer[] = [];
 
   recipientId;
 
-  constructor(recipientId: string) {
+  constructor(recipientId: string, widgetId: string, conf: any) {
     this.recipientId = recipientId;
+    const requested = new Playlist(PLAYLIST_TYPE.REQUESTED);
+    this.current = requested;
+    this.playlists.set(PLAYLIST_TYPE.REQUESTED, requested);
+    this.playlists.set(
+      PLAYLIST_TYPE.PERSONAL,
+      new Playlist(PLAYLIST_TYPE.PERSONAL),
+    );
 
     log.info(`Loading playlist for ${recipientId}`);
 
@@ -44,12 +50,30 @@ export class PlaylistController {
         return fillSongData(recipientId, songs);
       })
       .then((playlist) => {
-        playlist.forEach((song) => this.requested.addSong(song));
+        playlist.forEach((song) => this.current.addSong(song));
       });
+
+    subscribe(widgetId, conf.topic.media, (message) => {
+      let json = JSON.parse(message.body);
+      let song = {
+        src: json.url,
+        type: "video/youtube",
+        id: uuidv4(),
+        originId: json.id,
+        owner: "Аноним",
+        title: json.title,
+        listened: false,
+      };
+      this.handleNewRequestedSongEvent(song);
+      message.ack();
+    });
   }
 
-  clearPlayers() {
-    this.players = [];
+  handleNewRequestedSongEvent(song:Song){
+    this.playlists.get(PLAYLIST_TYPE.REQUESTED)?.addSong(song);
+    if (this.current.getType() == PLAYLIST_TYPE.PERSONAL) {
+      this.switchTo(PLAYLIST_TYPE.REQUESTED);
+    }
   }
 
   addPlayer(player: IPlayer): PlaylistController {
@@ -57,27 +81,21 @@ export class PlaylistController {
     return this;
   }
 
-  clearPlaylists() {
-    this.playlistRenderers = [];
-  }
-
-  addPlaylist(playlist: IPlaylistRenderer): PlaylistController {
+  addPlaylistRenderer(playlist: IPlaylistRenderer): PlaylistController {
     this.playlistRenderers.push(playlist);
+    playlist.bindPlaylist(this.current);
     return this;
   }
 
-  switchToPersonal() {
-    log.debug("switching to personal");
-    this.playlistRenderers.forEach((renderer) =>
-      renderer.setPlaylist(this.personal),
-    );
-  }
-
-  switchToRequested() {
-    log.debug("switching to requested");
-    this.playlistRenderers.forEach((renderer) =>
-      renderer.setPlaylist(this.requested),
-    );
+  switchTo(type: PLAYLIST_TYPE) {
+    log.debug(`switching to ${type}`);
+    const playlist = this.playlists.get(type);
+    if (playlist) {
+      this.playlistRenderers.forEach((renderer) => {
+        renderer.unbind();
+        renderer.bindPlaylist(playlist);
+      });
+    }
   }
 }
 
