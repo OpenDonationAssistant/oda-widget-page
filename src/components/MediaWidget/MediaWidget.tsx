@@ -4,37 +4,60 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
 import { PlaylistController } from "./PlaylistController";
-import { setupCommandListener} from "../../socket";
+import { setupCommandListener } from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
+import { IPlaylistChangesListener } from "../../logic/playlist/PlaylistChangesListener";
+import PlaylistComponent from "./PlaylistComponent";
+import VideoJSComponent from "./VideoJSComponent";
+import { Song } from "./types";
 import { log } from "../../logging";
 
 export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData();
 
+  const [playlist, setPlaylist] = useState<Playlist>(
+    new Playlist(PLAYLIST_TYPE.REQUESTED),
+  );
   const [playlistSize, setPlaylistSize] = useState<number>(0);
   const [index, setIndex] = useState<number>(-1);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
   const playlistController = useRef<PlaylistController>();
+  const [song, setSong] = useState<Song|null>(null);
 
   useEffect(() => {
+    const playlistListener: IPlaylistChangesListener = {
+      id: widgetId,
+      trigger(playlist: Playlist) {
+        log.debug(`updating MediaWidget because of changes in Playlist`);
+        setPlaylistSize(playlist.songs().length);
+        setIndex(playlist.index() ?? -1);
+        setActiveTab(playlist.type());
+        setSong(playlist.song());
+      },
+    };
     setupCommandListener(widgetId, () => navigate(0));
     paymentPageConfig.current = new PaymentPageConfig();
-    playlistController.current = new PlaylistController(recipientId, widgetId, conf);
+    playlistController.current = new PlaylistController(
+      recipientId,
+      widgetId,
+      conf,
+    );
     playlistController.current.addPlaylistRenderer({
       id: widgetId,
-      bindPlaylist: (playlist: Playlist) => {
-        log.debug(`switch to playlist: ${playlist.getType()}`);
-        setPlaylistSize(playlist.songs().length);
-        setActiveTab(playlist.getType());
+      bind: (playlist: Playlist) => {
+        setPlaylist(playlist);
+        playlist.addListener(playlistListener);
       },
-      unbind: () => {},
+      unbind: (playlist: Playlist) => {
+        playlist.removeListener(widgetId);
+      },
       playlistController: playlistController.current,
     });
   }, [recipientId, widgetId]);
@@ -48,6 +71,7 @@ export default function MediaWidget({}: {}) {
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
+        {song && playlistController.current && <VideoJSComponent playlistController={playlistController.current} song={song}/>}
         <div className="playlist-controls">
           <Menu>
             <MenuEventButton text="Hide/Show video" event="toggleVideo" />
@@ -88,6 +112,7 @@ export default function MediaWidget({}: {}) {
             {`${index + 1} / ${playlistSize}`}
           </div>
         </div>
+        {playlist && <PlaylistComponent playlist={playlist} />}
       </div>
     </>
   );

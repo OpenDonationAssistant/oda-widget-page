@@ -1,42 +1,22 @@
 import React, { useState } from "react";
 import { useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import axios from "axios";
 import { findSetting } from "../utils";
 import { useLoaderData } from "react-router";
 import AddMediaPopup from "./AddMediaPopup";
+import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
-import { PlaylistController } from "./PlaylistController";
 
 export default function PlaylistComponent({
-  playlistController,
+  playlist
 }: {
-  playlistController: PlaylistController;
+  playlist: Playlist
 }) {
   const { recipientId, settings, widgetId } = useLoaderData();
   const activeRef = useRef<HTMLDivElement>(null);
-  const [playlist, setPlaylist] = useState<Song[]>([]);
-  const [current, setCurrent] = useState(-1);
+  const [current, setCurrent] = useState(0);
+  const [songs, setSongs] = useState<Song[]>([]);
 
-  function remove(index: number) {
-    try {
-      const originId = playlist[index > -1 ? index : 0].originId;
-      if (originId) {
-        axios
-          .patch(`${process.env.REACT_APP_API_ENDPOINT}/media/${originId}`, {
-            listened: true,
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    let updated = Array.from(playlist);
-    updated.splice(index, 1);
-    playlistController.updatePlaylist(updated);
-  }
 
   function onDragEnd(result) {
     if (!result.destination) {
@@ -49,23 +29,19 @@ export default function PlaylistComponent({
     ) {
       return;
     }
-
-    let song = playlist[source.index];
-    let updatedPlaylist = Array.from(playlist);
-    updatedPlaylist.splice(source.index, 1);
-    updatedPlaylist.splice(destination.index, 0, song);
-    playlistController.updatePlaylist(updatedPlaylist);
+    playlist.moveSong(source.index, destination.index);
   }
 
   useEffect(() => {
-    let playlistAdapter = {
-      setPlaylist: setPlaylist,
-      setCurrent: setCurrent,
-      playlistController: playlistController,
-    };
-
-    playlistController.addPlaylist(playlistAdapter);
-  }, [setPlaylist, setCurrent]);
+    playlist.addListener({
+      id: `${widgetId}_playlist`,
+      trigger(playlist: Playlist){
+        setSongs(playlist.songs());
+        setCurrent(playlist.index() ?? 0);
+      }
+    });
+    // todo cleanup function
+  },[playlist]);
 
   useEffect(() => {
     if (activeRef.current) {
@@ -102,9 +78,9 @@ export default function PlaylistComponent({
             className="playlist"
           >
             <ul {...provided.droppableProps} className="list-group">
-              {playlist.map((song, number) => {
+              {songs.map((song, index) => {
                 return (
-                  <Draggable key={song.id} draggableId={song.id} index={number}>
+                  <Draggable key={song.id} draggableId={song.id} index={index}>
                     {(draggable) => (
                       <li
                         ref={draggable.innerRef}
@@ -112,14 +88,14 @@ export default function PlaylistComponent({
                         {...draggable.dragHandleProps}
                         key={song.id}
                         className={`list-group-item ${
-                          number === current ? "active" : ""
+                          index === current ? "active" : ""
                         }`}
                       >
                         <div className="item-buttons">
                           <button
                             className="btn btn-outline-light play"
                             onClick={() => {
-                              playlistController.updateIndex(number);
+                              playlist.setIndex(index);
                             }}
                           >
                             <span className="material-symbols-sharp">
@@ -138,28 +114,28 @@ export default function PlaylistComponent({
                           </button>
                           <button
                             className="btn btn-outline-light delete"
-                            onClick={() => remove(number)}
+                            onClick={() => playlist.removeSong(index)}
                           >
                             <span className="material-symbols-sharp">
                               delete
                             </span>
                           </button>
                         </div>
-                        {number === current && (
+                        {index === current && (
                           <div
                             style={playlistSongTitleStyle}
                             className="song-title"
                             ref={activeRef}
                           >
-                            {number + 1}. {song.title}
+                            {index + 1}. {song.title}
                           </div>
                         )}
-                        {number !== current && (
+                        {index !== current && (
                           <div
                             style={playlistSongTitleStyle}
                             className="song-title"
                           >
-                            {number + 1}. {song.title}
+                            {index + 1}. {song.title}
                           </div>
                         )}
                         <div style={playlistNicknameStyle} className="owner">

@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { log } from "../../logging";
 import { Song } from "./types";
 import { IPlaylistRenderer } from "./IPlaylist";
-import { IPlayer } from "./IPlayer";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
 import { subscribe } from "../../socket";
 
@@ -12,7 +11,6 @@ export class PlaylistController {
   current: Playlist;
 
   playlistRenderers: IPlaylistRenderer[] = [];
-  players: IPlayer[] = [];
 
   recipientId;
 
@@ -71,30 +69,40 @@ export class PlaylistController {
 
   handleNewRequestedSongEvent(song:Song){
     this.playlists.get(PLAYLIST_TYPE.REQUESTED)?.addSong(song);
-    if (this.current.getType() == PLAYLIST_TYPE.PERSONAL) {
+    if (this.current.type() == PLAYLIST_TYPE.PERSONAL) {
       this.switchTo(PLAYLIST_TYPE.REQUESTED);
     }
   }
 
-  addPlayer(player: IPlayer): PlaylistController {
-    this.players.push(player);
-    return this;
+  previousSong(){
+    const index = this.current.index();
+    if (index != null && index > 0) {
+      this.current.setIndex(index - 1);
+    }
+  }
+
+  finishSong(){
+    const song = this.current.song();
+    if (song?.id){
+      this.current.markListened(song?.id);
+    }
   }
 
   addPlaylistRenderer(playlist: IPlaylistRenderer): PlaylistController {
     this.playlistRenderers.push(playlist);
-    playlist.bindPlaylist(this.current);
+    playlist.bind(this.current);
     return this;
   }
 
   switchTo(type: PLAYLIST_TYPE) {
-    log.debug(`switching to ${type}`);
+    log.debug(`switching to ${type == PLAYLIST_TYPE.PERSONAL ? "personal" : "requested"}`);
     const playlist = this.playlists.get(type);
     if (playlist) {
       this.playlistRenderers.forEach((renderer) => {
-        renderer.unbind();
-        renderer.bindPlaylist(playlist);
+        renderer.unbind(this.current);
+        renderer.bind(playlist);
       });
+      this.current = playlist;
     }
   }
 }
