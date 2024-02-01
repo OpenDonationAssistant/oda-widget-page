@@ -21,6 +21,7 @@ import Login from "./components/Login/Login";
 import DonationTimer from "./components/DonationTimer/DonationTimer";
 import type { Params } from "react-router-dom";
 import PaymentPageConfigComponent from "./components/PaymentPageConfig/PaymentPageConfigComponent";
+import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 
 async function widgetSettingsLoader({
   params,
@@ -64,7 +65,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/configuration/gateways",
-    element: <ConfigurationPage />,
+    element: <PaymentGatewaysConfiguration />,
     loader: widgetSettingsLoader,
   },
   {
