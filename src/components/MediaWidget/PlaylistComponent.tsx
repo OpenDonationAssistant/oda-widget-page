@@ -17,7 +17,6 @@ export default function PlaylistComponent({
   const [current, setCurrent] = useState(0);
   const [songs, setSongs] = useState<Song[]>([]);
 
-
   function onDragEnd(result) {
     if (!result.destination) {
       return;
@@ -95,6 +94,10 @@ export default function PlaylistComponent({
                           <button
                             className="btn btn-outline-light play"
                             onClick={() => {
+                              const id = playlist.song()?.id
+                              if (id) {
+                                playlist.markListened(id);
+                              }
                               playlist.setIndex(index);
                             }}
                           >
@@ -161,7 +164,7 @@ export default function PlaylistComponent({
                 <span className="material-symbols-sharp">add</span>
               </button>
             </div>
-            <AddMediaPopup />
+            <AddMediaPopup playlist={playlist} />
           </div>
         )}
       </Droppable>

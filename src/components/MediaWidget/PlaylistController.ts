@@ -41,7 +41,6 @@ export class PlaylistController {
               originId: element.id,
               owner: "Аноним",
               title: element.title,
-              listened: false,
             };
           },
         );
@@ -60,7 +59,6 @@ export class PlaylistController {
         originId: json.id,
         owner: "Аноним",
         title: json.title,
-        listened: false,
       };
       this.handleNewRequestedSongEvent(song);
       message.ack();
@@ -88,9 +86,9 @@ export class PlaylistController {
     }
   }
 
-  addPlaylistRenderer(playlist: IPlaylistRenderer): PlaylistController {
-    this.playlistRenderers.push(playlist);
-    playlist.bind(this.current);
+  addPlaylistRenderer(renderer: IPlaylistRenderer): PlaylistController {
+    this.playlistRenderers.push(renderer);
+    renderer.bind(this.current);
     return this;
   }
 

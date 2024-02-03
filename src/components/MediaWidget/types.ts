@@ -1,8 +1,3 @@
-interface Playlist {
-  title: string;
-  id: string;
-}
-
 interface Song {
   src: string;
   type: string;
@@ -10,7 +5,6 @@ interface Song {
   originId: string|null;
   owner: string;
   title: string;
-  listened: boolean;
 }
 
-export { Playlist, Song };
+export { Song };

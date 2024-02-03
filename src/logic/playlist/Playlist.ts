@@ -94,7 +94,6 @@ class Playlist {
   markListened(id: string): void {
     this._songs.map((song) => {
       if (song.id === id) {
-        song.listened = true;
         if (song.originId) {
           markListened(song.originId);
         }

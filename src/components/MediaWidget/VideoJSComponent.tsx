@@ -11,6 +11,7 @@ import VideoPopupToggler from "./VideoPopupToggler";
 import ProgressBar from "./ProgressBar";
 import VideoDuration from "./VideoDuration";
 import { PlaylistController } from "./PlaylistController";
+import { subscribe } from "../../socket";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -36,13 +37,33 @@ export default function VideoJSComponent({
   song: Song;
   playlistController: PlaylistController;
 }) {
-  const { widgetId } = useLoaderData();
+  const { conf, widgetId } = useLoaderData();
   const videoRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<VideoJsPlayer>(null);
-  const [hideVideo, setHideVideo] = useState(false);
+  const [hideVideo, setHideVideo] = useState(true);
   const [playerState, setPlayerState] = useState<PLAYER_STATE>(
     PLAYER_STATE.PAUSED,
   );
+  const pausedByCommand = useRef<boolean>(false);
+  const [player, setPlayer] = useState<VideoJsPlayer|null>(null);
+
+  function freeze() {
+    log.debug(`freezing player`);
+    if (player && !player.paused()) {
+      pausedByCommand.current = true;
+      player.pause();
+    }
+  }
+
+  function unfreeze() {
+    log.debug(`unfreezing player`);
+    if (!player) {
+      return;
+    }
+    if (pausedByCommand.current) {
+      pausedByCommand.current = false;
+      player.play();
+    }
+  }
 
   function listenToggleVideoEvent() {
     log.debug(`toggle video`);
@@ -56,6 +77,28 @@ export default function VideoJSComponent({
   }, [widgetId]);
 
   useEffect(() => {
+    subscribe(widgetId, conf.topic.playerCommands, (message) => {
+      let json = JSON.parse(message.body);
+      if (json.command === "pause") {
+        freeze();
+      }
+      if (json.command === "resume") {
+        unfreeze();
+      }
+      if (json.command === "play") {
+        player.play();
+      }
+      if (json.command === "volume") {
+        player.volume(json.value);
+      }
+      if (json.command === "next") {
+        playlistController.finishSong();
+      }
+      message.ack();
+    });
+  }, [widgetId]);
+
+  useEffect(() => {
     log.debug("Creating new player instance");
     log.debug(`playing song ${JSON.stringify(song)}`);
 
@@ -65,10 +108,8 @@ export default function VideoJSComponent({
     videoRef.current?.appendChild(videoElement);
     options.sources = song;
 
-    playerRef.current = videojs(videoElement, options);
-    const player = playerRef.current;
+    const player = videojs(videoElement, options);
     player.src(song);
-    player.uuid = uuidv4();
     player.volume(0.5);
     player.on("play", () => {
       log.debug("start playing");
@@ -86,22 +127,20 @@ export default function VideoJSComponent({
       log.error(player.error());
       playlistController.finishSong();
     });
-    log.debug(`created: ${playerRef.current.uuid}`);
+    setPlayer(player);
     return () => {
-      playerRef.current.dispose();
+      player.dispose();
     };
   }, [song]);
 
   return (
     <>
-      {hideVideo && (
-        <>
-          <div className="player-header">
-            <div className="song-title-container">{song?.title}</div>
-            <VideoPopupToggler />
-          </div>
-        </>
-      )}
+      <>
+        <div className="player-header">
+          <div className="song-title-container">{song?.title}</div>
+          <VideoPopupToggler/>
+        </div>
+      </>
       <div
         className="video-player"
         data-vjs-player
@@ -109,7 +148,7 @@ export default function VideoJSComponent({
       >
         <div ref={videoRef} />
       </div>
-      <ProgressBar player={playerRef.current} />
+      <ProgressBar player={player} />
       <div className="player-container">
         <div className="video-controls">
           <div className="video-buttons">
@@ -125,7 +164,7 @@ export default function VideoJSComponent({
               <button
                 className="btn btn-outline-light"
                 disabled={song == null}
-                onClick={() => playerRef.current.play()}
+                onClick={() => player.play()}
               >
                 <span className="material-symbols-sharp">play_arrow</span>
               </button>
@@ -135,7 +174,7 @@ export default function VideoJSComponent({
                 className="btn btn-outline-light"
                 disabled={song == null}
                 onClick={() => {
-                  playerRef.current.pause();
+                  player.pause();
                 }}
               >
                 <span className="material-symbols-sharp">pause</span>
@@ -150,7 +189,7 @@ export default function VideoJSComponent({
             >
               <span className="material-symbols-sharp">skip_next</span>
             </button>
-            <VideoDuration player={playerRef.current} />
+            <VideoDuration player={player} />
           </div>
         </div>
       </div>

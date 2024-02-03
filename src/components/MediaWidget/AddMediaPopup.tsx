@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Playlist } from "./types";
 import axios from "axios";
 import { useLoaderData } from "react-router";
 import { log } from "../../logging";
+import { Playlist } from "../../logic/playlist/Playlist";
+import { Song } from "./types";
 
-export default function AddMediaPopup() {
+export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
   const { recipientId } = useLoaderData();
@@ -40,7 +41,7 @@ export default function AddMediaPopup() {
           };
           return song;
         });
-        document.dispatchEvent(new CustomEvent("addSongs", { detail: songs }));
+        songs.forEach((song:Song) => playlist.addSong(song));
         return list.title;
       });
   }
@@ -79,8 +80,9 @@ export default function AddMediaPopup() {
         id: id,
         owner: recipientId,
         title: "Manually added video",
+        originId: null
       };
-      document.dispatchEvent(new CustomEvent("addSongs", { detail: [song] }));
+      playlist.addSong(song);
     }
     document.getElementById("new-media-input").value = "";
     setShowNewMediaPopup(false);
