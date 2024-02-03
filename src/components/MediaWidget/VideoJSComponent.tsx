@@ -116,7 +116,7 @@ export default function VideoJSComponent({
 
     const player = videojs(videoElement, options);
     player.src(song);
-    player.volume(0.5)t
+    player.volume(0.5);
     player.on("play", () => {
       log.debug("start playing");
       setPlayerState(PLAYER_STATE.PLAYING);
