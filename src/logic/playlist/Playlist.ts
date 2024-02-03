@@ -30,7 +30,7 @@ class Playlist {
     }
     this._songs.push(song);
     if (this._index == null) {
-      this._index = 0;
+      this._index = this._songs.length - 1;
     }
     this.triggerListeners();
   }
@@ -120,6 +120,7 @@ class Playlist {
   }
 
   addListener(listener: IPlaylistChangesListener) {
+    log.debug(`adding listener, current songs amount: ${this._songs.length}, index: ${this.index}`);
     this._listeners.push(listener);
     listener.trigger(this);
   }

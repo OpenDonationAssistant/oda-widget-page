@@ -25,20 +25,23 @@ export default function MediaWidget({}: {}) {
     new Playlist(PLAYLIST_TYPE.REQUESTED),
   );
   const [playlistSize, setPlaylistSize] = useState<number>(0);
-  const [index, setIndex] = useState<number>(-1);
+  const [index, setIndex] = useState<number | null>(null);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
   const playlistController = useRef<PlaylistController>();
-  const [song, setSong] = useState<Song|null>(null);
+  const [song, setSong] = useState<Song | null>(null);
 
   useEffect(() => {
     const playlistListener: IPlaylistChangesListener = {
       id: widgetId,
       trigger(playlist: Playlist) {
-        log.debug(`updating MediaWidget because of changes in Playlist`);
+        log.debug(
+          `updating MediaWidget because of changes in Playlist, index: ${playlist.index()}`,
+        );
         setPlaylistSize(playlist.songs().length);
-        setIndex(playlist.index() ?? -1);
+        const index = playlist.index();
+        setIndex(index != null ? index + 1 : null);
         setActiveTab(playlist.type());
         setSong(playlist.song());
       },
@@ -74,9 +77,14 @@ export default function MediaWidget({}: {}) {
         <RequestsDisabledWarning />
         <div className="player-header">
           <div className="song-title-container">{song?.title ?? ""}</div>
-          <VideoPopupToggler/>
+          <VideoPopupToggler />
         </div>
-        {song && playlistController.current && <VideoJSComponent playlistController={playlistController.current} song={song}/>}
+        {song && playlistController.current && (
+          <VideoJSComponent
+            playlistController={playlistController.current}
+            song={song}
+          />
+        )}
         <div className="playlist-controls">
           <Menu>
             <MenuEventButton text="Hide/Show video" event="toggleVideo" />
@@ -117,7 +125,7 @@ export default function MediaWidget({}: {}) {
             </li>
           </ul>
           <div className="video-counter">
-            {`${index + 1} / ${playlistSize}`}
+            {`${index ? index : "-"} / ${playlistSize}`}
           </div>
         </div>
         {playlist && <PlaylistComponent playlist={playlist} />}

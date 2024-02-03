@@ -14,7 +14,7 @@ export default function PlaylistComponent({
 }) {
   const { recipientId, settings, widgetId } = useLoaderData();
   const activeRef = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState<number|null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
 
   function onDragEnd(result) {
@@ -36,7 +36,7 @@ export default function PlaylistComponent({
       id: `${widgetId}_playlist`,
       trigger(playlist: Playlist){
         setSongs(playlist.songs());
-        setCurrent(playlist.index() ?? 0);
+        setCurrent(playlist.index());
       }
     });
     // todo cleanup function
