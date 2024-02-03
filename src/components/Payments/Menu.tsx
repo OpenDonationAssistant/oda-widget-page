@@ -46,7 +46,6 @@ export default function Menu({ config, socket }) {
         title:
           "DARK AGE - Afterlife (2013) // Official Music Video // AFM Records",
         thumbnail: "https://i.ytimg.com/vi/at1e2XnbOuw/maxresdefault.jpg",
-        listened: false,
         ready: true,
       }),
     });

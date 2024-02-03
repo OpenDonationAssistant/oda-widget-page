@@ -19,7 +19,7 @@ function PlayerInfo() {
       log.debug(`Received: ${message.body}`);
       let json = JSON.parse(message.body);
       setAlert(json);
-      setLeft(json.count - json.number);
+      setLeft(json.count && json.number ? json.count - json.number : 0);
       message.ack();
     });
 		setupCommandListener(widgetId, () => navigate(0));

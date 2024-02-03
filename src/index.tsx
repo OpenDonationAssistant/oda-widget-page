@@ -22,6 +22,7 @@ import DonationTimer from "./components/DonationTimer/DonationTimer";
 import type { Params } from "react-router-dom";
 import PaymentPageConfigComponent from "./components/PaymentPageConfig/PaymentPageConfigComponent";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
+import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 
 async function widgetSettingsLoader({
   params,
@@ -91,6 +92,11 @@ const router = createBrowserRouter([
   {
     path: "/player-info/:widgetId",
     element: <PlayerInfo />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/player-popup/:widgetId",
+    element: <PlayerPopup />,
     loader: widgetSettingsLoader,
   },
   {

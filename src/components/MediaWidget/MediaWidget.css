@@ -132,11 +132,36 @@
   right: 10px;
 }
 
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* flex-wrap: wrap; */
+}
+
+.videoImplToggler {
+  flex: 0 0 auto;
+  margin-right: 10px;
+  margin-left: 10px;
+  padding-top: 15px;
+}
+
+.videoImpl {
+  margin-left: 5px;
+  color: white;
+  vertical-align: top;
+}
+
 .song-title-container {
+  flex: 1 1 150px;
   padding-left: 10px;
   padding-top: 10px;
   color: rgb(13, 110, 253);
   min-height: 50px;
+  display: inline-block;
+  overflow-x: hidden;
+  white-space: nowrap;
+  width: 150px;
 }
 
 .add-button-container .btn.add {
@@ -154,6 +179,7 @@
   padding-top: 15px;
   padding-right: 15px;
   font-size: 14px;
+  display: inline-block;
 }
 
 .faded {
@@ -301,4 +327,16 @@ iframe {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 10px;
+}
+
+.videoImplToggler {
+  height: 100%;
+}
+
+.videoImplToggler button {
+  border-radius: 5px;
+  background: none;
+  color: white;
+  height: 30px;
+  border: 1x solid rgb(110, 110, 110);
 }

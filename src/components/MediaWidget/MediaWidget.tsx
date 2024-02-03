@@ -3,68 +3,64 @@ import { useRef, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
-import { v4 as uuidv4 } from "uuid";
-import Playlist from "./Playlist";
-import Player from "./Player";
-import { PLAYLIST_TYPE, PlaylistController } from "./PlaylistController";
-import { setupCommandListener, subscribe } from "../../socket";
+import { PlaylistController } from "./PlaylistController";
+import { setupCommandListener } from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
-import { log } from "../../logging";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
+import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
+import { IPlaylistChangesListener } from "../../logic/playlist/PlaylistChangesListener";
+import PlaylistComponent from "./PlaylistComponent";
+import VideoJSComponent from "./VideoJSComponent";
 import { Song } from "./types";
+import { log } from "../../logging";
 
 export default function MediaWidget({}: {}) {
-  const [playlist, setPlaylist] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const playlistController = useRef<PlaylistController|null>(null);
+  const { recipientId, conf, widgetId } = useLoaderData();
+
+  const [playlist, setPlaylist] = useState<Playlist>(
+    new Playlist(PLAYLIST_TYPE.REQUESTED),
+  );
+  const [playlistSize, setPlaylistSize] = useState<number>(0);
+  const [index, setIndex] = useState<number>(-1);
   const paymentPageConfig = useRef<PaymentPageConfig>();
   const navigate = useNavigate();
-  const { recipientId, conf, widgetId } = useLoaderData();
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
-  const [requestsEnabled, setRequestsEnabled] = useState(true);
+  const playlistController = useRef<PlaylistController>();
+  const [song, setSong] = useState<Song|null>(null);
 
   useEffect(() => {
-    playlistController.current = new PlaylistController(
-      recipientId,
-      setPlaylist,
-      setCurrent,
-      (tab: PLAYLIST_TYPE) => {
-        setActiveTab(tab);
-        log.debug(`using tab ${tab}`);
+    const playlistListener: IPlaylistChangesListener = {
+      id: widgetId,
+      trigger(playlist: Playlist) {
+        log.debug(`updating MediaWidget because of changes in Playlist`);
+        setPlaylistSize(playlist.songs().length);
+        setIndex(playlist.index() ?? -1);
+        setActiveTab(playlist.type());
+        setSong(playlist.song());
       },
-    );
-    subscribe(widgetId, conf.topic.media, (message) => {
-      let json = JSON.parse(message.body);
-      let song = {
-        src: json.url,
-        type: "video/youtube",
-        id: uuidv4(),
-        originId: json.id,
-        owner: "Аноним",
-        title: json.title,
-      };
-      playlistController.current?.handleNewRequestedSongEvent(song);
-      message.ack();
-    });
+    };
     setupCommandListener(widgetId, () => navigate(0));
     paymentPageConfig.current = new PaymentPageConfig();
+    playlistController.current = new PlaylistController(
+      recipientId,
+      widgetId,
+      conf,
+    );
+    playlistController.current.addPlaylistRenderer({
+      id: widgetId,
+      bind: (playlist: Playlist) => {
+        setPlaylist(playlist);
+        playlist.addListener(playlistListener);
+      },
+      unbind: (playlist: Playlist) => {
+        playlist.removeListener(widgetId);
+      },
+      playlistController: playlistController.current,
+    });
   }, [recipientId, widgetId]);
-
-  useEffect(() => {
-    const toggle: EventListenerOrEventListenerObject = (event: { detail: boolean }) => {
-      log.debug(`toggle requests: ${event.detail}`);
-      setRequestsEnabled(event.detail);
-    }
-    log.debug("create mediawidget listener for media-requests toggler");
-    document.addEventListener("toggleMediaRequests", toggle);
-    return () => {
-      log.debug("destroy mediawidget listener for media-requests toggler");
-      document.removeEventListener("toggleMediaRequests", toggle);
-    };
-  }, [widgetId]);
 
   return (
     <>
@@ -75,25 +71,14 @@ export default function MediaWidget({}: {}) {
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
-        <Player
-          playlist={playlist}
-          tab={activeTab}
-          current={current}
-          updateCurrentFn={(newIndex:number) =>
-            playlistController.current?.updateIndex(newIndex)
-          }
-        />
+        {song && playlistController.current && <VideoJSComponent playlistController={playlistController.current} song={song}/>}
         <div className="playlist-controls">
           <Menu>
             <MenuEventButton text="Hide/Show video" event="toggleVideo" />
             <MenuButton
-              text={
-                requestsEnabled
-                  ? "Disable music requests"
-                  : "Enable music request"
-              }
+              text="Toggle music requests"
               handler={() => {
-                paymentPageConfig.current?.toggleMediaRequests()
+                paymentPageConfig.current?.toggleMediaRequests();
                 paymentPageConfig.current?.save();
               }}
             />
@@ -106,7 +91,7 @@ export default function MediaWidget({}: {}) {
                 }`}
                 onClick={() => {
                   setActiveTab(PLAYLIST_TYPE.REQUESTED);
-                  playlistController.current?.switchToRequested();
+                  playlistController.current?.switchTo(PLAYLIST_TYPE.REQUESTED);
                 }}
               >
                 Requested
@@ -119,7 +104,7 @@ export default function MediaWidget({}: {}) {
                 }`}
                 onClick={() => {
                   setActiveTab(PLAYLIST_TYPE.PERSONAL);
-                  playlistController.current?.switchToFallback();
+                  playlistController.current?.switchTo(PLAYLIST_TYPE.PERSONAL);
                 }}
               >
                 Personal
@@ -127,21 +112,10 @@ export default function MediaWidget({}: {}) {
             </li>
           </ul>
           <div className="video-counter">
-            {`${playlist[current] ? current + 1 : 0} / ${
-              playlist[current] ? playlist.length : 0
-            }`}
+            {`${index + 1} / ${playlistSize}`}
           </div>
         </div>
-        <Playlist
-          playlist={playlist}
-          current={current}
-          updatePlaylistFn={(newPlaylist: Song[]) =>
-            playlistController.current?.updatePlaylist(newPlaylist)
-          }
-          playFn={(newIndex: number) =>
-            playlistController.current?.updateIndex(newIndex)
-          }
-        />
+        {playlist && <PlaylistComponent playlist={playlist} />}
       </div>
     </>
   );

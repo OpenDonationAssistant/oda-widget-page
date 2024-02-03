@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export function markListened(id) {
+export function markListened(id:string) {
   try {
     axios
       .patch(`${process.env.REACT_APP_API_ENDPOINT}/media/${id}`, {
