@@ -145,12 +145,6 @@ export default function VideoJSComponent({
 
   return (
     <>
-      <>
-        <div className="player-header">
-          <div className="song-title-container">{song?.title}</div>
-          <VideoPopupToggler/>
-        </div>
-      </>
       <div
         className="video-player"
         data-vjs-player

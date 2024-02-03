@@ -16,6 +16,7 @@ import PlaylistComponent from "./PlaylistComponent";
 import VideoJSComponent from "./VideoJSComponent";
 import { Song } from "./types";
 import { log } from "../../logging";
+import VideoPopupToggler from "./VideoPopupToggler";
 
 export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData();
@@ -71,6 +72,10 @@ export default function MediaWidget({}: {}) {
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
+        <div className="player-header">
+          <div className="song-title-container">{song?.title ?? ""}</div>
+          <VideoPopupToggler/>
+        </div>
         {song && playlistController.current && <VideoJSComponent playlistController={playlistController.current} song={song}/>}
         <div className="playlist-controls">
           <Menu>
