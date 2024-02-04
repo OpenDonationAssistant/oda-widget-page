@@ -10,16 +10,20 @@ import FontImport from "../FontImport/FontImport";
 
 function PlayerInfo() {
   const navigate = useNavigate();
-  const [alert, setAlert] = useState({});
   const [left, setLeft] = useState(0);
   const { settings, conf, widgetId } = useLoaderData();
+  const [title, setTitle] = useState<string|null>(null);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.player, (message) => {
       log.debug(`Received: ${message.body}`);
       let json = JSON.parse(message.body);
-      setAlert(json);
-      setLeft(json.count && json.number ? json.count - json.number : 0);
+      if (json.title) {
+        setTitle(json.title);
+      }
+      if (json.count != null && json.number != null) {
+        setLeft(json.count - json.number);
+      }
       message.ack();
     });
 		setupCommandListener(widgetId, () => navigate(0));
@@ -40,11 +44,8 @@ function PlayerInfo() {
       <div className="player-info-container" data-vjs-player>
         <div className="player-info"></div>
         <span className="player-info-text" style={textStyle}>
-          {alert.title != undefined && alert.title
-            ? (left > 1 ? "Треков в очереди: " + left + ", " : "") +
-              "играет: " +
-              alert.title
-            : ""}
+          {title && (left > 1) && `Треков в очереди: ${left}, играет ${left}`}
+          {title && !(left > 1) && `Играет: ${left}`}
         </span>
       </div>
     </>

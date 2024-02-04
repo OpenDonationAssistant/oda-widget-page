@@ -126,9 +126,6 @@ export default function PlayerControl({}: {}) {
         >
           Pause
         </button>
-        <button className="btn btn-primary" onClick={() => reload()}>
-          Reload
-        </button>
       </div>
       <div>
         <input

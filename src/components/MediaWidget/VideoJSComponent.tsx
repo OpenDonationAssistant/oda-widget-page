@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import videojs from "video.js";
 import "videojs-youtube";
 import { Song } from "./types";
@@ -7,7 +6,6 @@ import { VideoJsPlayer } from "video.js";
 import { VideoJsPlayerOptions } from "video.js";
 import { log } from "../../logging";
 import { useLoaderData } from "react-router";
-import VideoPopupToggler from "./VideoPopupToggler";
 import ProgressBar from "./ProgressBar";
 import VideoDuration from "./VideoDuration";
 import { PlaylistController } from "./PlaylistController";
@@ -44,7 +42,8 @@ export default function VideoJSComponent({
     PLAYER_STATE.PAUSED,
   );
   const pausedByCommand = useRef<boolean>(false);
-  const [player, setPlayer] = useState<VideoJsPlayer|null>(null);
+  const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
+  const commandHandler = useRef<Function | null>(null);
 
   function freeze() {
     log.debug(`freezing player`);
@@ -77,7 +76,7 @@ export default function VideoJSComponent({
   }, [widgetId]);
 
   useEffect(() => {
-    subscribe(widgetId, conf.topic.playerCommands, (message) => {
+    commandHandler.current = (message) => {
       let json = JSON.parse(message.body);
       if (json.command === "pause") {
         freeze();
@@ -95,7 +94,20 @@ export default function VideoJSComponent({
         playlistController.finishSong();
       }
       message.ack();
-    });
+    };
+  }, [player]);
+
+  useEffect(() => {
+    subscribe(
+      widgetId,
+      conf.topic.playerCommands,
+      (message) => {
+        log.debug(`message: ${JSON.stringify(message)}`);
+        if (commandHandler.current){
+          commandHandler.current(message);
+        }
+      }
+    );
   }, [widgetId]);
 
   function sendAlert(title: string) {

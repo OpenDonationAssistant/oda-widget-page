@@ -16,7 +16,7 @@ export class AlertController {
   private alertImageRenderers: IAlertImageRenderer[] = [];
   private fontLoaders: IFontLoader[] = [];
   private imageLoaders: IImageLoader[] = [];
-  private voiceController: VoiceController;
+  private voiceController: VoiceController | null = null;
   private _recipientId: string;
 
   constructor(settings: any, recipientId: string) {
@@ -162,9 +162,9 @@ export class AlertController {
     this.renderImage(alert);
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
-    this.voiceController.playAudio(alert, () => {
-      this.voiceController.pronounceTitle(alert, data, () =>
-        this.voiceController.pronounceMessage(alert, data, () => {
+    this.voiceController?.playAudio(alert, () => {
+      this.voiceController?.pronounceTitle(alert, data, () =>
+        this.voiceController?.pronounceMessage(alert, data, () => {
           log.debug("clearing alert");
           this.clear();
           this.resumePlayer();
@@ -176,7 +176,7 @@ export class AlertController {
   }
 
   interrupt() {
-    this.voiceController.interrupt();
+    this.voiceController?.interrupt();
     this.clear();
     this.resumePlayer();
     if (this.ackFunction) {
