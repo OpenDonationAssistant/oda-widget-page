@@ -25,7 +25,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ghcr.io/opendonationassistant/oda-widget-page:master
+        tags: ghcr.io/opendonationassistant/oda-widget-page:${{ github.RUN_NUMBER }}
 
     - name: Deploying new version
       uses: appleboy/ssh-action@v1.0.3
