@@ -3,7 +3,7 @@ import { log } from "./logging";
 
 export default async function auth() {
   const sessionInfo = await axios
-    .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/info`)
+    .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
     .then((json) => {
 			log.debug(`login info: ${JSON.stringify(json.data)}`)
       return json.data;
