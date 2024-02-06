@@ -207,6 +207,8 @@ export class AlertController {
       );
       if (showTime) {
         setTimeout(() => renderer.setImage(null), showTime * 1000);
+      } else {
+        renderer.setImage(null);
       }
       renderer.setStyle(
         this.calculateImageStyle(
@@ -272,13 +274,16 @@ export class AlertController {
       "messageColor",
       "#fb8c2b",
     );
+    const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     this.messageRenderers.forEach((renderer) => {
       renderer.setStyle({
         fontSize: messageFontSize ? messageFontSize + "px" : "unset",
         fontFamily: messageFont ? messageFont : "unset",
         color: messageColor,
       });
-      renderer.setMessage(data.message);
+      if (showTime) {
+        setTimeout(() => renderer.setMessage(data.message), showTime * 1000);
+      }
     });
   }
 
