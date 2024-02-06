@@ -202,13 +202,11 @@ export class AlertController {
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
-      renderer.setImage(
-        `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
-      );
+        renderer.setImage(
+          `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
+        );
       if (showTime) {
         setTimeout(() => renderer.setImage(null), showTime * 1000);
-      } else {
-        renderer.setImage(null);
       }
       renderer.setStyle(
         this.calculateImageStyle(
@@ -283,6 +281,8 @@ export class AlertController {
       });
       if (showTime) {
         setTimeout(() => renderer.setMessage(data.message), showTime * 1000);
+      } else {
+        renderer.setMessage(data.message);
       }
     });
   }
