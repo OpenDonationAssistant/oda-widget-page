@@ -249,12 +249,12 @@ export default function PaymentAlertSettings({
   }
 
   function deleteAlert() {
-    const alerts = config.get(id)?.alerts;
+    const oldConfig = config.get(id) ?? {};
+    const alerts = oldConfig?.alerts ?? [];
     alerts.splice(selected, 1);
+    oldConfig.alerts = alerts;
     setConfig(
-      new Map(config).set(id, {
-        alerts: alerts,
-      }),
+      new Map(config).set(id, oldConfig),
     );
   }
 
@@ -312,8 +312,8 @@ export default function PaymentAlertSettings({
 
   function update(key: string, value: any) {
     setConfig((oldConfig) => {
-      let updatedProperties = oldConfig
-        .get(id)
+      const widgetConfig = oldConfig.get(id) ?? {};
+      let updatedProperties = widgetConfig
         ?.alerts?.at(selected)
         ?.properties.map((it) => {
           if (it.name === key) {
@@ -329,7 +329,8 @@ export default function PaymentAlertSettings({
           }
           return it;
         });
-      return new Map(oldConfig).set(id, { alerts: updatedAlerts });
+      widgetConfig.alerts = updatedAlerts;
+      return new Map(oldConfig).set(id, widgetConfig);
     });
     onChange.call({});
   }
