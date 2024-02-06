@@ -147,7 +147,14 @@ const defaultSettings = {
     properties: [],
   },
   "player-popup": {
-    properties: [],
+    properties: [
+      {
+        name: "audioOnly",
+        type: "boolean",
+        value: false,
+        displayName: "Воспроизводить только звук",
+      }
+    ],
   },
   payments: {
     properties: [

@@ -84,6 +84,12 @@ export default function PaymentAlertSettings({
           displayName: "Высота изображения в пикселях",
         },
         {
+          tab: "image",
+          name: "imageShowTime",
+          value: null,
+          displayName: "Сколько времени показывать изображение (сек)",
+        },
+        {
           tab: "header",
           name: "nicknameFont",
           type: "fontselect",

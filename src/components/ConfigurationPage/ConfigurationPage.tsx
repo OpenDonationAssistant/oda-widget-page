@@ -5,6 +5,7 @@ import { WidgetsContext } from "./WidgetsContext";
 import axios from "axios";
 import { useLoaderData } from "react-router";
 import { defaultSettings } from "./WidgetSettings";
+import { log } from "../../logging";
 
 const backgroundColor = (
   <style
@@ -36,6 +37,7 @@ const types = [
   { name: "payments", description: "Payment History" },
   { name: "player-control", description: "Music Player Remote Control" },
   { name: "donation-timer", description: "Donation Timer" },
+  { name: "player-popup", description: "Video Popup" },
 ];
 
 export default function ConfigurationPage({}: {}) {
@@ -73,6 +75,7 @@ export default function ConfigurationPage({}: {}) {
 
     widgets.forEach((it) => {
       const settings = defaultSettings[it.type];
+      log.debug(`default settings for ${it.type} are ${JSON.stringify(settings)}`);
       const mergedSettings = settings.properties.map((prop) => {
 				const value = it.config?.properties?.find((sameprop) => sameprop.name === prop.name)?.value;
         const updatedProp = structuredClone(prop);
@@ -81,9 +84,9 @@ export default function ConfigurationPage({}: {}) {
 				}
 				return updatedProp;
       });
-			if (it.config) {
-				it.config.properties = mergedSettings;
-			}
+      log.debug(`merged settings for ${it.type} are ${JSON.stringify(mergedSettings)}`);
+      it.config = it.config ?? {};
+      it.config.properties = mergedSettings;
       widgetSettings.set(it.id, it.config);
     });
 

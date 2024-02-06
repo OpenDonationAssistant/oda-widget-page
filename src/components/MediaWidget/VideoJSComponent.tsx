@@ -9,7 +9,7 @@ import { useLoaderData } from "react-router";
 import ProgressBar from "./ProgressBar";
 import VideoDuration from "./VideoDuration";
 import { PlaylistController } from "./PlaylistController";
-import { publish, subscribe } from "../../socket";
+import { publish, subscribe, unsubscribe } from "../../socket";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -31,9 +31,11 @@ enum PLAYER_STATE {
 export default function VideoJSComponent({
   song,
   playlistController,
+  isRemote,
 }: {
-  song: Song;
+  song: Song | null;
   playlistController: PlaylistController;
+  isRemote: boolean;
 }) {
   const { conf, widgetId } = useLoaderData();
   const videoRef = useRef<HTMLDivElement>(null);
@@ -98,17 +100,22 @@ export default function VideoJSComponent({
   }, [player]);
 
   useEffect(() => {
-    subscribe(
-      widgetId,
-      conf.topic.playerCommands,
-      (message) => {
-        log.debug(`message: ${JSON.stringify(message)}`);
-        if (commandHandler.current){
-          commandHandler.current(message);
-        }
+    subscribe(widgetId, conf.topic.playerCommands, (message) => {
+      log.debug(`message: ${JSON.stringify(message)}`);
+      if (commandHandler.current) {
+        commandHandler.current(message);
       }
-    );
+    });
+    return () => unsubscribe(widgetId, conf.topic.playerCommands);
   }, [widgetId]);
+
+  useEffect(() => {
+    if (!isRemote || song === null) {
+      return;
+    }
+    log.debug(`sending song ${JSON.stringify(song)} to remote player`);
+    publish(conf.topic.remoteplayer, { command: "play", song: song });
+  }, [isRemote, song]);
 
   function sendAlert(title: string) {
     publish(conf.topic.player, {
@@ -117,6 +124,9 @@ export default function VideoJSComponent({
   }
 
   useEffect(() => {
+    if (isRemote || song === null) {
+      return;
+    }
     log.debug("Creating new player instance");
     log.debug(`playing song ${JSON.stringify(song)}`);
 
@@ -132,7 +142,9 @@ export default function VideoJSComponent({
     player.on("play", () => {
       log.debug("start playing");
       setPlayerState(PLAYER_STATE.PLAYING);
-      sendAlert(song.title);
+      if (song) {
+        sendAlert(song.title);
+      }
     });
     player.on("pause", () => {
       log.debug("pause player");
@@ -153,18 +165,20 @@ export default function VideoJSComponent({
     return () => {
       player.dispose();
     };
-  }, [song]);
+  }, [song, isRemote]);
 
   return (
     <>
-      <div
-        className="video-player"
-        data-vjs-player
-        style={hideVideo ? { visibility: "hidden", height: "1px" } : {}}
-      >
-        <div ref={videoRef} />
-      </div>
-      <ProgressBar player={player} />
+      {!isRemote && song && (
+        <div
+          className="video-player"
+          data-vjs-player
+          style={hideVideo ? { visibility: "hidden", height: "1px" } : {}}
+        >
+          <div ref={videoRef} />
+        </div>
+      )}
+      {!isRemote && <ProgressBar player={player} />}
       <div className="player-container">
         <div className="video-controls">
           <div className="video-buttons">
@@ -180,7 +194,17 @@ export default function VideoJSComponent({
               <button
                 className="btn btn-outline-light"
                 disabled={song == null}
-                onClick={() => player.play()}
+                onClick={() => {
+                  if (isRemote) {
+                    publish(conf.topic.remoteplayer, {
+                      command: "resume",
+                    });
+                    setPlayerState(PLAYER_STATE.PLAYING);
+                  }
+                  if (!isRemote) {
+                    player.play();
+                  }
+                }}
               >
                 <span className="material-symbols-sharp">play_arrow</span>
               </button>
@@ -190,7 +214,15 @@ export default function VideoJSComponent({
                 className="btn btn-outline-light"
                 disabled={song == null}
                 onClick={() => {
-                  player.pause();
+                  if (isRemote) {
+                    publish(conf.topic.remoteplayer, {
+                      command: "pause",
+                    });
+                    setPlayerState(PLAYER_STATE.PAUSED);
+                  }
+                  if (!isRemote) {
+                    player.pause();
+                  }
                 }}
               >
                 <span className="material-symbols-sharp">pause</span>
@@ -205,7 +237,7 @@ export default function VideoJSComponent({
             >
               <span className="material-symbols-sharp">skip_next</span>
             </button>
-            <VideoDuration player={player} />
+            {!isRemote && <VideoDuration player={player} />}
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ enum VIDEO_IMPL {
   REMOTE,
 }
 
-export default function VideoPopupToggler({}) {
+export default function VideoPopupToggler({ onChange }: { onChange: Function}) {
   const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(VIDEO_IMPL.EMBEDDED);
   return (
     <>
@@ -22,6 +22,7 @@ export default function VideoPopupToggler({}) {
               if (videoImpl === VIDEO_IMPL.EMBEDDED) {
                 setVideoImpl(VIDEO_IMPL.REMOTE);
               }
+              onChange();
             }}
           />
           <span className="videoImpl">{videoImpl === VIDEO_IMPL.REMOTE ? "Remote" : "Embedded"}</span>

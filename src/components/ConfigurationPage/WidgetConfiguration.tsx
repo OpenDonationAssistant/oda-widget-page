@@ -23,14 +23,6 @@ interface WidgetConfigurationProps {
 
 function getSettingsWidget(id: string, type: string, onChange: Function) {
   switch (type) {
-    case "payments":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "media":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "player-info":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "player-control":
-      return <BaseSettings id={id} onChange={onChange} />;
     case "payment-alerts":
       return <PaymentAlertSettings id={id} onChange={onChange} />;
     case "donaters-top-list":
@@ -38,7 +30,7 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
     case "donation-timer":
       return <DonationTimerSettings id={id} onChange={onChange} />;
     default:
-      <></>;
+      return <BaseSettings id={id} onChange={onChange} />;
   }
 }
 

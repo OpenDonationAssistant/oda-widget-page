@@ -163,14 +163,17 @@ export class AlertController {
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
     this.voiceController?.playAudio(alert, () => {
-      this.voiceController?.pronounceTitle(alert, data, () =>
-        this.voiceController?.pronounceMessage(alert, data, () => {
-          log.debug("clearing alert");
-          this.clear();
-          this.resumePlayer();
-          ackFunction();
-          this.sendEndNotification();
-        }),
+      this.voiceController?.pronounceTitle(
+        alert,
+        data,
+        () =>
+          this.voiceController?.pronounceMessage(alert, data, () => {
+            log.debug("clearing alert");
+            this.clear();
+            this.resumePlayer();
+            ackFunction();
+            this.sendEndNotification();
+          }),
       );
     });
   }
@@ -196,11 +199,15 @@ export class AlertController {
     log.debug(
       `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
     );
+    const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
       renderer.setImage(
         `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
       );
+      if (showTime) {
+        setTimeout(() => renderer.setImage(null), showTime * 1000);
+      }
       renderer.setStyle(
         this.calculateImageStyle(
           this.findSetting(alert.properties, "imageWidth", 100),

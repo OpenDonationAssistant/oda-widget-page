@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
 import { PlaylistController } from "./PlaylistController";
-import { setupCommandListener } from "../../socket";
+import { publish, setupCommandListener } from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
@@ -31,9 +31,10 @@ export default function MediaWidget({}: {}) {
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
   const playlistController = useRef<PlaylistController>();
   const [song, setSong] = useState<Song | null>(null);
+  const [isRemote, setIsRemote] = useState<boolean>(false);
 
   useEffect(() => {
-    const playlistListener: IPlaylistChangesListener = {
+    const playlistListener = {
       id: widgetId,
       trigger(playlist: Playlist) {
         log.debug(
@@ -77,12 +78,18 @@ export default function MediaWidget({}: {}) {
         <RequestsDisabledWarning />
         <div className="player-header">
           <div className="song-title-container">{song?.title ?? ""}</div>
-          <VideoPopupToggler />
+          <VideoPopupToggler
+            onChange={() => {
+              publish(conf.topic.remoteplayer, { command: "stop" });
+              setIsRemote((old) => !old);
+            }}
+          />
         </div>
-        {song && playlistController.current && (
+        {playlistController.current && (
           <VideoJSComponent
             playlistController={playlistController.current}
             song={song}
+            isRemote={isRemote}
           />
         )}
         <div className="playlist-controls">

@@ -56,9 +56,7 @@ export class VoiceController {
     const headerForVoice = message
       ? this.findSetting(alert.properties, "voiceTextTemplate", null)
       : this.findSetting(alert.properties, "voiceEmptyTextTemplate", null);
-    const text = headerForVoice
-      ? headerForVoice
-      : "Пользователь <username> отправил сообщение";
+    const text = headerForVoice ?? "";
     const templates = text.split("\n");
     const choosenTemplate =
       templates.length > 1
@@ -71,9 +69,13 @@ export class VoiceController {
       .replace("<minoramount>", data.amount.amount * 100)
       .replace("<streamer>", this.recipientId);
     try {
-      this.voiceByGoogle(resultText).then((audio) =>
-        this.pronounce(audio, onEndHandler),
-      );
+      if (resultText.length > 0){
+        this.voiceByGoogle(resultText).then((audio) =>
+          this.pronounce(audio, onEndHandler),
+        );
+      } else {
+        onEndHandler();
+      }
     } catch (error) {
       console.log(error);
       if (onEndHandler) {

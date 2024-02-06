@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import ColorPicker from "./ColorPicker";
 import FontSelect from "./FontSelect";
+import { log } from "../../../logging";
 
 export default function BaseSettings({
   id,

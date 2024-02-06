@@ -63,6 +63,11 @@ export class PlaylistController {
       this.handleNewRequestedSongEvent(song);
       message.ack();
     });
+    subscribe(widgetId, conf.topic.finishedmedia, (message) => {
+      const song = JSON.parse(message.body);
+      this.current.markListened(song.id);
+      message.ack();
+    });
   }
 
   handleNewRequestedSongEvent(song:Song){
