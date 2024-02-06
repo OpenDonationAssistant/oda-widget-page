@@ -22,6 +22,9 @@ export default function AlertImage({
       {image && (
         <img src={image} style={style} className={classes.alertimage} />
       )}
+      {!image && (
+        <div style={{ height: "40%", flex: "0 1 auto"}}></div>
+      )}
     </>
   );
 }
