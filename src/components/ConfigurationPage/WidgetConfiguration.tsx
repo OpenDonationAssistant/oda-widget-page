@@ -28,7 +28,7 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
     case "donaters-top-list":
       return <DonatersTopListSettings id={id} onChange={onChange} />;
     case "donation-timer":
-      return <DonationTimerSettings id={id} onChange={onChange} />;
+      return <BaseSettings id={id} onChange={onChange} />;
     default:
       return <BaseSettings id={id} onChange={onChange} />;
   }

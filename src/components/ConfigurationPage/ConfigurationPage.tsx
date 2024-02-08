@@ -38,14 +38,15 @@ const types = [
   { name: "player-control", description: "Music Player Remote Control" },
   { name: "donation-timer", description: "Donation Timer" },
   { name: "player-popup", description: "Video Popup" },
+  { name: "roulette", description: "Roulette" },
 ];
 
 export default function ConfigurationPage({}: {}) {
   const [config, setConfig] = useState(new Map());
 
-  function updateConfig(id: string, key: string, value) {
+  function updateConfig(id: string, key: string, value: any) {
     setConfig((oldConfig) => {
-      let updatedProperties = oldConfig.get(id)?.properties.map((it) => {
+      let updatedProperties = oldConfig.get(id)?.properties.map((it: any) => {
         if (it.name === key) {
           it.value = value;
         }

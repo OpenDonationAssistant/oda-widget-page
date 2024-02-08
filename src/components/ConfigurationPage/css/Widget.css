@@ -98,10 +98,6 @@
   cursor: pointer;
 }
 
-.widget-button.widget-button-more {
-  border-radius: 4px;
-}
-
 .widget-button-menu {
   color: #6b7bbc;
   background-color: #151a33;

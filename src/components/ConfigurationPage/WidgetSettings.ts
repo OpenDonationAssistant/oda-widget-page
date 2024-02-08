@@ -97,7 +97,7 @@ const defaultSettings = {
     properties: [
       {
         name: "resetOnLoad",
-        type: "custom",
+        type: "boolean",
         value: true,
         displayName: "Обнулять таймер при открытии",
       },
@@ -153,7 +153,7 @@ const defaultSettings = {
         type: "boolean",
         value: false,
         displayName: "Воспроизводить только звук",
-      }
+      },
     ],
   },
   payments: {
@@ -178,7 +178,7 @@ const defaultSettings = {
         name: "useGreenscreen",
         type: "boolean",
         value: false,
-        displayName: "Использовать greenscreen"
+        displayName: "Использовать greenscreen",
       },
     ],
     alerts: [],
@@ -204,6 +204,27 @@ const defaultSettings = {
       },
     ],
   },
+  roulette: {
+    properties: [
+      {
+        name: "font",
+        type: "fontselect",
+        value: "Roboto",
+        displayName: "Шрифт",
+      },
+      {
+        name: "fontSize",
+        value: "24",
+        displayName: "Размер шрифта",
+      },
+      {
+        name: "color",
+        type: "color",
+        value: "#000000",
+        displayName: "Цвет",
+      },
+    ],
+  },
 };
 
 interface WidgetProperties {
@@ -216,11 +237,11 @@ interface WidgetProperties {
 
 class WidgetSettings {
   properties: WidgetProperties[];
-	type: string;
+  type: string;
 
-  constructor(type:string, properties: WidgetProperties[]) {
+  constructor(type: string, properties: WidgetProperties[]) {
     this.properties = properties;
-		this.type = type;
+    this.type = type;
   }
 
   findSetting(key: string) {
@@ -228,7 +249,9 @@ class WidgetSettings {
     if (setting) {
       return setting.value;
     }
-    return defaultSettings[this.type].properties.find((prop: WidgetProperties) => key === prop.name);
+    return defaultSettings[this.type].properties.find(
+      (prop: WidgetProperties) => key === prop.name,
+    );
   }
 }
 

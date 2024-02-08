@@ -23,6 +23,7 @@ import type { Params } from "react-router-dom";
 import PaymentPageConfigComponent from "./components/PaymentPageConfig/PaymentPageConfigComponent";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
+import ReelWidget from "./pages/Reel/ReelWidget";
 
 async function widgetSettingsLoader({
   params,
@@ -107,6 +108,11 @@ const router = createBrowserRouter([
   {
     path: "/donaters-top-list/:widgetId",
     element: <DonatersTopList />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/roulette/:widgetId",
+    element: <ReelWidget />,
     loader: widgetSettingsLoader,
   },
   {

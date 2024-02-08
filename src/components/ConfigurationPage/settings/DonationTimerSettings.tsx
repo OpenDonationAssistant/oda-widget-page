@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import BaseSettings from "./BaseSettings";
 import { WidgetsContext } from "../WidgetsContext";
+import BooleanPropertyInput from "./properties/BooleanPropertyInput";
 
 export default function DonationTimerSettings({
   id,
@@ -15,17 +16,13 @@ export default function DonationTimerSettings({
     return (
       <>
         {prop.name === "resetOnLoad" && (
-          <>
-            <input
-							type="checkbox"
-              className="widget-settings-value"
-              checked={true === prop.value}
-              onChange={(e) => {
-                updateConfig(id, prop.name, !prop.value);
-                onChange.apply({});
-              }}
-            />
-          </>
+          <BooleanPropertyInput
+            prop={prop}
+            onChange={(e) => {
+              updateConfig(id, prop.name, !prop.value);
+              onChange.apply({});
+            }}
+          />
         )}
       </>
     );
