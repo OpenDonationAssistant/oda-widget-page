@@ -15,13 +15,11 @@
 /* CSS */
 .widget-button {
   border: 1px solid #151a33;
-  margin-left: 10px;
   background-color: #151a33;
-  color: #6b7bbc;
+  color: #7885bd;
   border-radius: 4px;
   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
   box-sizing: border-box;
-  color: #fff;
   cursor: pointer;
   font-family:
     "Akzidenz Grotesk BQ Medium",
@@ -66,4 +64,5 @@
   border: 1px solid red;
   background: #e62143;
   color: white;
+  margin-left: 10px;
 }

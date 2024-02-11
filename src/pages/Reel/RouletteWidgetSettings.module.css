@@ -5,14 +5,18 @@
   align-items: end;
 }
 
-.addoptionsbutton {
-  border: none;
-  background-color: initial;
-  color: #684aff;
+.addbuttoncontainer {
+  width: 60%;
+  text-align: center;
+  padding-top: 20px;
 }
 
-.addbuttoncontainer {
-  width: 50%;
-  text-align: center;
-  padding-top: 10px;
+.option {
+  width: 60%;
+  display: flex;
+  align-items: center;
+}
+
+.option .widget-settings-value {
+  width: unset;
 }
