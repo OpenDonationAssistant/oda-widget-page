@@ -41,6 +41,9 @@
   top: 10px;
   font-family: "Martian Mono", monospace;
 }
+.payment-alert-settings .widget-settings-name {
+  width: 50%;
+}
 
 .widget-settings-value:focus-visible,
 .widget-settings-value:focus {
@@ -51,6 +54,15 @@
   border-width: 3px;
   border-image: linear-gradient(to right, #11998e, #38ef7d);
   border-image-slice: 1;
+}
+
+.widget-settings-value:hover {
+  cursor: pointer;
+}
+
+.widget-settings-item,
+.widget-settings-item label:hover {
+  cursor: default;
 }
 
 .widget-settings-value {
@@ -71,6 +83,7 @@
 .textarea-container {
   width: 100%;
   text-align: right;
+  padding-top: 5px;
 }
 
 .widget-settings-value {
@@ -82,6 +95,7 @@
 
 textarea.widget-settings-value {
   text-align: left;
+  width: 50%;
 }
 
 .widget-settings-value.select {
@@ -224,4 +238,6 @@ textarea.widget-settings-value {
 .widget-settings-radiocontainer {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  text-align: right;
 }

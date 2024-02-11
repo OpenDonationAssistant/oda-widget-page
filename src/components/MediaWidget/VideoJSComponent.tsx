@@ -115,6 +115,7 @@ export default function VideoJSComponent({
     }
     log.debug(`sending song ${JSON.stringify(song)} to remote player`);
     publish(conf.topic.remoteplayer, { command: "play", song: song });
+    setPlayerState(PLAYER_STATE.PLAYING);
   }, [isRemote, song]);
 
   function sendAlert(title: string) {
@@ -127,7 +128,6 @@ export default function VideoJSComponent({
     if (isRemote || song === null) {
       return;
     }
-    log.debug("Creating new player instance");
     log.debug(`playing song ${JSON.stringify(song)}`);
 
     const videoElement = document.createElement("video-js");

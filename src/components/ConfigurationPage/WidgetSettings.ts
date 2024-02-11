@@ -223,6 +223,15 @@ const defaultSettings = {
         value: "#000000",
         displayName: "Цвет",
       },
+      {
+        name: "optionList",
+        type: "custom",
+        value: [
+          "Ничего",
+          "Выигрыш"
+        ],
+        displayName: "Призы",
+      }
     ],
   },
 };

@@ -24,12 +24,12 @@ export default function PlayerPopup({}) {
   const videoRef = useRef(null);
   const [hideVideo, setHideVideo] = useState(false);
   const { recipientId, settings, conf, widgetId } = useLoaderData();
-  const [song, setSong] = useState<Song|null>(null);
+  const [song, setSong] = useState<Song | null>(null);
 
   useEffect(() => {
     const audioOnly = findSetting(settings, "audioOnly", false);
     setHideVideo(audioOnly);
-  },[conf]);
+  }, [conf]);
 
   function createPlayer(song: Song) {
     if (playerRef.current) {
@@ -49,7 +49,10 @@ export default function PlayerPopup({}) {
     playerRef.current.uuid = uuidv4();
     playerRef.current.on("ended", () => {
       log.debug(`finished playing song`);
-			publish(conf.topic.finishedmedia, song);
+      publish(conf.topic.remoteplayerfeedback, {
+        state: "finished",
+        song: song,
+      });
       playerRef.current?.dispose();
       playerRef.current = null;
     });
@@ -60,17 +63,17 @@ export default function PlayerPopup({}) {
     subscribe(widgetId, conf.topic.remoteplayer, (message) => {
       let json = JSON.parse(message.body);
       log.debug(`playing ${JSON.stringify(json.song)}`);
-      if (json.command === "play"){
+      if (json.command === "play") {
         setSong(json.song);
       }
-      if (json.command === "stop"){
+      if (json.command === "stop") {
         playerRef.current?.dispose();
         setSong(null);
       }
-      if (json.command === "pause"){
+      if (json.command === "pause") {
         playerRef.current?.pause();
       }
-      if (json.command === "resume"){
+      if (json.command === "resume") {
         playerRef.current?.play();
       }
       message.ack();
