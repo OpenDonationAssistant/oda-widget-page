@@ -13,6 +13,7 @@ import BaseSettings from "./settings/BaseSettings";
 import DonatersTopListSettings from "./settings/DonatersTopListSettings";
 import DonationTimerSettings from "./settings/DonationTimerSettings";
 import { socket } from "../../socket";
+import RouletteWidgetSettings from "../../pages/Reel/RouletteWidgetSettings";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -23,22 +24,14 @@ interface WidgetConfigurationProps {
 
 function getSettingsWidget(id: string, type: string, onChange: Function) {
   switch (type) {
-    case "payments":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "media":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "player-info":
-      return <BaseSettings id={id} onChange={onChange} />;
-    case "player-control":
-      return <BaseSettings id={id} onChange={onChange} />;
     case "payment-alerts":
       return <PaymentAlertSettings id={id} onChange={onChange} />;
     case "donaters-top-list":
       return <DonatersTopListSettings id={id} onChange={onChange} />;
-    case "donation-timer":
-      return <DonationTimerSettings id={id} onChange={onChange} />;
+    case "roulette":
+      return <RouletteWidgetSettings id={id} onChange={onChange} />;
     default:
-      <></>;
+      return <BaseSettings id={id} onChange={onChange} />;
   }
 }
 

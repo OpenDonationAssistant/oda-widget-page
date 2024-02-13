@@ -44,6 +44,11 @@ function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
   log.info(`${id} connected`);
 }
 
+function unsubscribe(id: string, topic: string){
+  log.info(`Deleting subscription ${id} with topic ${topic}`);
+  socket.unsubscribe(`${id}-${topic}`);
+}
+
 function setupCommandListener(widgetId: string, reloadFn: Function) {
   subscribe(widgetId, "/topic/commands", (message) => {
     console.log(`Command: ${message.body}`);
@@ -63,4 +68,4 @@ function publish(topic: string, payload: any) {
   });
 }
 
-export { socket, subscribe, setupCommandListener, publish };
+export { socket, subscribe, unsubscribe, setupCommandListener, publish };

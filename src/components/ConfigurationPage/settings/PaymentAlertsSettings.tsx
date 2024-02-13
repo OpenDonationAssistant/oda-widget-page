@@ -4,6 +4,7 @@ import { WidgetsContext } from "../WidgetsContext";
 import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
+import BooleanPropertyInput from "./properties/BooleanPropertyInput";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -82,6 +83,12 @@ export default function PaymentAlertSettings({
           name: "imageHeight",
           value: null,
           displayName: "Высота изображения в пикселях",
+        },
+        {
+          tab: "image",
+          name: "imageShowTime",
+          value: null,
+          displayName: "Сколько времени показывать изображение (сек)",
         },
         {
           tab: "header",
@@ -226,8 +233,7 @@ export default function PaymentAlertSettings({
       const alertConfig = oldConfig.get(id);
       alertConfig.alerts = alerts;
       return new Map(config).set(id, alertConfig);
-    }
-    );
+    });
 
     setSelected(alerts.length - 1);
   }
@@ -243,13 +249,11 @@ export default function PaymentAlertSettings({
   }
 
   function deleteAlert() {
-    const alerts = config.get(id)?.alerts;
+    const oldConfig = config.get(id) ?? {};
+    const alerts = oldConfig?.alerts ?? [];
     alerts.splice(selected, 1);
-    setConfig(
-      new Map(config).set(id, {
-        alerts: alerts,
-      }),
-    );
+    oldConfig.alerts = alerts;
+    setConfig(new Map(config).set(id, oldConfig));
   }
 
   function uploadFile(file) {
@@ -306,9 +310,9 @@ export default function PaymentAlertSettings({
 
   function update(key: string, value: any) {
     setConfig((oldConfig) => {
-      let updatedProperties = oldConfig
-        .get(id)
-        ?.alerts?.at(selected)
+      const widgetConfig = oldConfig.get(id) ?? {};
+      let updatedProperties = widgetConfig?.alerts
+        ?.at(selected)
         ?.properties.map((it) => {
           if (it.name === key) {
             it.value = value;
@@ -323,7 +327,8 @@ export default function PaymentAlertSettings({
           }
           return it;
         });
-      return new Map(oldConfig).set(id, { alerts: updatedAlerts });
+      widgetConfig.alerts = updatedAlerts;
+      return new Map(oldConfig).set(id, widgetConfig);
     });
     onChange.call({});
   }
@@ -480,32 +485,30 @@ export default function PaymentAlertSettings({
               </select>
             )}
             {prop.type === "color" && (
-              <ColorPicker
-                value={prop.value}
-                onChange={(value) => update(prop.name, value)}
-              />
+              <div className="color-container">
+                <ColorPicker
+                  value={prop.value}
+                  onChange={(value) => update(prop.name, value)}
+                />
+              </div>
             )}
             {prop.type === "text" && (
               <>
-                <textarea
-                  style={{ width: "100%" }}
-                  className="widget-settings-value"
-                  value={prop.value}
-                  onChange={(e) => update(prop.name, e.target.value)}
-                />
+                <div className="textarea-container">
+                  <textarea
+                    style={{ width: "50%" }}
+                    className="widget-settings-value"
+                    value={prop.value}
+                    onChange={(e) => update(prop.name, e.target.value)}
+                  />
+                </div>
               </>
             )}
             {prop.type === "boolean" && (
-              <>
-                <input
-                  type="checkbox"
-                  className="widget-settings-value"
-                  checked={true === prop.value}
-                  onChange={(e) => {
-                    update(prop.name, !prop.value);
-                  }}
-                />
-              </>
+              <BooleanPropertyInput
+                prop={prop}
+                onChange={() => update(prop.name, !prop.value)}
+              />
             )}
           </div>
         ))}
@@ -522,10 +525,12 @@ export default function PaymentAlertSettings({
         </>
       )}
       {"image" === tab && (
-        <label className="upload-button">
-          <input type="file" onChange={handleFileChange} />
-          Загрузить изображение
-        </label>
+        <div className="upload-button-container">
+          <label className="upload-button">
+            <input type="file" onChange={handleFileChange} />
+            Загрузить изображение
+          </label>
+        </div>
       )}
       {"sound" === tab && (
         <>

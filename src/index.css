@@ -60,6 +60,10 @@ code {
   border-bottom: 1px solid gray;
 }
 
+.upload-button-container {
+  width: 100%;
+  text-align: right;
+}
 .upload-button {
   background-color: #151a33;
   color: #7885bd;
@@ -67,6 +71,7 @@ code {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-right: 10px;
+  margin-top: 20px;
   border-radius: 4px;
 }
 

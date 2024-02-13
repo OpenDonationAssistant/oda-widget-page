@@ -63,25 +63,36 @@ export class PlaylistController {
       this.handleNewRequestedSongEvent(song);
       message.ack();
     });
+    subscribe(
+      `${widgetId}_playlistController`,
+      conf.topic.remoteplayerfeedback,
+      (message) => {
+        const feedback = JSON.parse(message.body);
+        if (feedback.state === "finished") {
+          this.current.markListened(feedback.song.id);
+        }
+        message.ack();
+      },
+    );
   }
 
-  handleNewRequestedSongEvent(song:Song){
+  handleNewRequestedSongEvent(song: Song) {
     this.playlists.get(PLAYLIST_TYPE.REQUESTED)?.addSong(song);
     if (this.current.type() == PLAYLIST_TYPE.PERSONAL) {
       this.switchTo(PLAYLIST_TYPE.REQUESTED);
     }
   }
 
-  previousSong(){
+  previousSong() {
     const index = this.current.index();
     if (index != null && index > 0) {
       this.current.setIndex(index - 1);
     }
   }
 
-  finishSong(){
+  finishSong() {
     const song = this.current.song();
-    if (song?.id){
+    if (song?.id) {
       this.current.markListened(song?.id);
     }
   }
@@ -93,7 +104,11 @@ export class PlaylistController {
   }
 
   switchTo(type: PLAYLIST_TYPE) {
-    log.debug(`switching to ${type == PLAYLIST_TYPE.PERSONAL ? "personal" : "requested"}`);
+    log.debug(
+      `switching to ${
+        type == PLAYLIST_TYPE.PERSONAL ? "personal" : "requested"
+      }`,
+    );
     const playlist = this.playlists.get(type);
     if (playlist) {
       this.playlistRenderers.forEach((renderer) => {

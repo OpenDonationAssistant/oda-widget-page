@@ -1,6 +1,9 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Amatic+SC&family=Protest+Strike&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap");
+
 .configuration-container {
   height: 100%;
-	display: flex;
+  display: flex;
 }
 
 .widget-settings {
@@ -14,53 +17,104 @@
 
 .widget-settings-item {
   display: flex;
+  position: relative;
   justify-content: space-between;
-  margin-top: 4px;
+  margin-top: 10px;
   margin-bottom: 4px;
-	min-height: 30px;
-	flex-wrap: wrap;
+  min-height: 30px;
+  flex-wrap: wrap;
+}
+.widget-settings-item:hover .widget-settings-name {
+  color: #11998e;
+}
+
+.widget-settings-item:hover .widget-settings-value {
+  color: #11998e;
 }
 
 .widget-settings-name {
-  display: inline-block;
+  position: absolute;
+  display: block;
+  transition: 0.2s;
+  font-size: 1rem;
+  cursor: text;
+  top: 10px;
+  font-family: "Martian Mono", monospace;
+}
+.payment-alert-settings .widget-settings-name {
+  width: 50%;
 }
 
 .widget-settings-value:focus-visible,
 .widget-settings-value:focus {
-	outline:none;
+  outline: none;
+  padding-bottom: 6px;
+  font-weight: 700;
+  color: #38ef7d;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #11998e, #38ef7d);
+  border-image-slice: 1;
+}
+
+.widget-settings-value:hover {
+  cursor: pointer;
+}
+
+.widget-settings-item,
+.widget-settings-item label:hover {
+  cursor: default;
 }
 
 .widget-settings-value {
-  display: inline-block;
-  width: 80px;
-  border-radius: 5px;
-  border: 1px solid #684aff;
-  background: none;
-  color: white;
-  text-align: center;
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 1rem;
+  font-family: "Martian Mono", monospace;
+  color: #fff;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+  text-align: right;
+}
+
+.textarea-container {
+  width: 100%;
+  text-align: right;
+  padding-top: 5px;
+}
+
+.widget-settings-value {
+  &:required,
+  &:invalid {
+    box-shadow: none;
+  }
 }
 
 textarea.widget-settings-value {
-	text-align: left;
+  text-align: left;
+  width: 50%;
 }
 
-.widget-settings-value.select{
-  width: 220px;
-	border:none;
-	background-color: rgb(43, 53, 102);
+.widget-settings-value.select {
+  width: 100%;
+  border: none;
+  background-color: rgb(43, 53, 102);
 }
 
 .widget-settings-value.select:focus,
 .widget-settings-value.select:focus-visible {
-	outline:none;
+  outline: none;
 }
 
-.widget-settings-value.select option{
-	color: white;
+.widget-settings-value.select option {
+  color: white;
 }
 
-.widget-settings-value.select option{
-	background-color: none;
+.widget-settings-value.select option {
+  background-color: none;
 }
 
 .payment-alerts-previews {
@@ -75,7 +129,7 @@ textarea.widget-settings-value {
   padding-right: 5px;
   padding-top: 5px;
   padding-bottom: 5px;
-	position: relative;
+  position: relative;
 }
 
 .payment-alert-image-preview {
@@ -100,8 +154,8 @@ textarea.widget-settings-value {
 }
 
 .payment-alert-settings-tabs {
-	padding-top: 5px;
-	margin-bottom: 20px;
+  padding-top: 5px;
+  margin-bottom: 20px;
 }
 
 .payment-alert-settings-tab-image {
@@ -120,61 +174,70 @@ textarea.widget-settings-value {
   padding-right: 10px;
   padding-top: 4px;
   padding-bottom: 4px;
-	color: #7885bd;
-	user-select: none;
+  color: #7885bd;
+  user-select: none;
 }
 
 .settings-tab-item:hover {
-	cursor:pointer;
+  cursor: pointer;
 }
 
 .settings-tab-item.active {
-	background-color:#684aff;
-	color: white;
+  background-color: #684aff;
+  color: white;
+}
+
+.color-container {
+  width: 100%;
+  text-align: right;
+  margin-top: 10px;
 }
 
 .color-value {
-	width: 30px;
-	height: 30px;
-	border-radius: 5px;
-	border: 3px solid white;
-	margin-right: 25px;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: 3px solid white;
+  display: inline-block;
 }
 
 .color-value:hover {
-	cursor:pointer;
+  cursor: pointer;
 }
 
 .color-picker-popup {
-	position: absolute;
-	right: 70px;
-	z-index: 2;
-	background-color: rgba(0,0,0,1.0);
-	padding: 2px;
-	border: 1px solid #684aff;
+  position: absolute;
+  right: 30px;
+  top: 0;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 1);
+  padding: 2px;
+  border: 1px solid #684aff;
 }
 
 .color-picker-popup .react-colorful {
-	width: initial;
+  width: initial;
 }
 
 .color-picker-value {
-	border-radius: 5px;
-	margin-top: 5px;
+  border-radius: 5px;
+  margin-top: 5px;
 }
 
 .widget-settings-radiobutton img {
-	width: 400px;
-	margin-bottom: 20px;
-	border: 1px solid #684aff;
-	margin-left: 5px;
+  width: 400px;
+  margin-bottom: 20px;
+  border: 1px solid #684aff;
+  margin-left: 5px;
 }
 
 .widget-settings-radiobutton img:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .widget-settings-radiocontainer {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: right;
 }

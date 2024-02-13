@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useContext } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import ColorPicker from "./ColorPicker";
+import BaseSettings from "./BaseSettings";
 
 const fonts = [
   "Roboto",
@@ -67,33 +68,12 @@ export default function DonatersTopListSettings({
 
   return (
     <>
+      <BaseSettings id={id} onChange={onChange}/>
       {config.get(id)?.properties?.map((prop) => (
+        <>
+        {prop.type === "custom" && (
         <div key={prop.name} className="widget-settings-item">
-          <div className="widget-settings-name">{prop.displayName}</div>
-          {(!prop.type || prop.type == "string") && prop.type != "custom" && (
-            <input
-              value={prop.value}
-              className="widget-settings-value"
-              onChange={(e) => update(prop.name, e.target.value)}
-            />
-          )}
-          {prop.type === "fontselect" && (
-            <select
-              value={prop.value}
-              className="widget-settings-value select"
-              onChange={(e) => update(prop.name, e.target.value)}
-            >
-              {fonts.sort().map((font) => (
-                <option key={font}>{font}</option>
-              ))}
-            </select>
-          )}
-          {prop.type === "color" && (
-            <ColorPicker
-              value={prop.value}
-              onChange={(value) => update(prop.name, value)}
-            />
-          )}
+          <label className="widget-settings-name">{prop.displayName}</label>
           {prop.name === "type" && (
             <select
               value={prop.value}
@@ -149,28 +129,11 @@ export default function DonatersTopListSettings({
               </div>
             </>
           )}
-          {prop.type === "text" && (
-            <>
-              <textarea
-                style={{ width: "100%" }}
-                className="widget-settings-value"
-                value={prop.value}
-                onChange={(e) => update(prop.name, e.target.value)}
-              />
-            </>
-          )}
-          {prop.type === "number" && (
-            <>
-              <input
-                value={prop.value}
-                type="number"
-                className="widget-settings-value"
-                onChange={(e) => update(prop.name, e.target.value)}
-              />
-            </>
-          )}
         </div>
-      ))}
+        )}
+        </>
+      ))
+      }
     </>
   );
 }
