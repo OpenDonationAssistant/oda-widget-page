@@ -133,7 +133,7 @@ export class AlertController {
 
   findAlert(json) {
     const index = this.sortedAlerts.findLastIndex(
-      (alert) => alert.trigger.amount <= json.amount.amount,
+      (alert) => alert.trigger.amount <= json.amount.major,
     );
 
     log.debug(`choosen alert index: ${index}`);
@@ -245,8 +245,8 @@ export class AlertController {
       "<username> - <amount>",
     );
     const title = nicknameTextTemplate
-      .replace("<username>", data.senderName ? data.senderName : "Аноним")
-      .replace("<amount>", `${data.amount.amount} ${data.amount.currency}`);
+      .replace("<username>", data.nickname ? data.nickname : "Аноним")
+      .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
 
     const headerFontSize = this.findSetting(
       alert.properties,

@@ -81,9 +81,7 @@ function Payments({}: {}) {
 
   function updatePayments() {
     axios
-      .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/payment?recipientId=${recipientId}`,
-      )
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
       .then((data) => data.data)
       .then((json) => {
         let updatedDateToPaymentsMap = dateToPaymentsMap;
@@ -105,7 +103,7 @@ function Payments({}: {}) {
 
         axios
           .get(
-            `${process.env.REACT_APP_API_ENDPOINT}/media/${attachQueryString}?recipientId=${recipientId}`,
+            `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/video/${attachQueryString}`,
           )
           .then((data) => data.data)
           .then((json) => {
@@ -114,7 +112,7 @@ function Payments({}: {}) {
               updatedAttachmentTitles.set(attach.id, attach.title);
             });
             setAttachmentTitles(updatedAttachmentTitles);
-            log.debug(updatedAttachmentTitles);
+            log.debug(`${JSON.stringify(updatedAttachmentTitles)}`);
           });
 
         json.forEach((payment) => {
@@ -129,7 +127,7 @@ function Payments({}: {}) {
           updatedDateToPaymentsMap.set(date, paymentsInThatDate);
         });
 
-        log.debug(updatedDateToPaymentsMap);
+        log.debug(`${JSON.stringify(updatedDateToPaymentsMap)}`);
         setDateToPaymentsMap((prev) => updatedDateToPaymentsMap);
         setTodayPayments((prev) =>
           setDisplayedTimeForTodayPayments(updatedDateToPaymentsMap.get(today)),
@@ -146,10 +144,10 @@ function Payments({}: {}) {
   function resendAlert(data) {
     publish(conf.topic.alerts, {
       id: data.id,
-      senderName: data.senderName ? data.senderName : "Аноним",
+      nickname: data.nickname ? data.nickname : "Аноним",
       message: data.message,
       amount: {
-        amount: data.amount.amount,
+        major: data.amount.major,
         currency: "RUB",
       },
     });
@@ -163,6 +161,8 @@ function Payments({}: {}) {
     if (index > -1) {
       dates.splice(index, 1);
     }
+    log.debug(`using payment dates array: ${JSON.stringify(dates)}`);
+    console.log(dates);
     return dates;
   }
 
@@ -186,7 +186,7 @@ function Payments({}: {}) {
               payments
             </span>{" "}
             <span style={nicknameStyle}>
-              {data.senderName ? data.senderName : "Аноним"}
+              {data.nickname ? data.nickname : "Аноним"}
             </span>
           </div>
           <div className="payment-time">
@@ -212,7 +212,7 @@ function Payments({}: {}) {
           </button>
         </div>
         <div className="payment-info">
-          <div className="payment-amount">{`\u20BD${data.amount.amount}`}</div>
+          <div className="payment-amount">{`\u20BD${data.amount.major}`}</div>
           {data.attachments && data.attachments.length === 1 && (
             <>
               <div className="single-attach-title">

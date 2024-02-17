@@ -34,74 +34,74 @@ export default function BaseSettings({
   return (
     <>
       {config.get(id)?.properties?.map((prop) => (
-      <>
-        {(prop.type !== "custom" || customHandler) && (
-        <div key={prop.name} className="widget-settings-item">
-          {prop.type !== "custom" && (
-            <label
-              htmlFor={`${id}_${prop.name}`}
-              className="widget-settings-name"
-            >
-              {prop.displayName}
-            </label>
-          )}
-          {(!prop.type || prop.type == "string") && (
-            <input
-              id={`${id}_${prop.name}`}
-              value={prop.value}
-              className="widget-settings-value"
-              onChange={(e) => update(prop.name, e.target.value)}
-            />
-          )}
-          {prop.type === "fontselect" && (
-            <FontSelect
-              prop={prop}
-              onChange={(value) => update(prop.name, value)}
-            />
-          )}
-          {prop.type === "color" && (
-            <div className="color-container">
-              <ColorPicker
-                value={prop.value}
-                onChange={(value) => update(prop.name, value)}
-              />
-            </div>
-          )}
-          {prop.type === "text" && (
-            <>
-              <div className="textarea-container">
-                <textarea
-                  style={{ width: "50%" }}
-                  className="widget-settings-value"
+        <>
+          {(prop.type !== "custom" || customHandler) && (
+            <div key={prop.name} className="widget-settings-item">
+              {prop.type !== "custom" && (
+                <label
+                  htmlFor={`${id}_${prop.name}`}
+                  className="widget-settings-name"
+                >
+                  {prop.displayName}
+                </label>
+              )}
+              {(!prop.type || prop.type == "string") && (
+                <input
+                  id={`${id}_${prop.name}`}
                   value={prop.value}
+                  className="widget-settings-value"
                   onChange={(e) => update(prop.name, e.target.value)}
                 />
-              </div>
-            </>
+              )}
+              {prop.type === "fontselect" && (
+                <FontSelect
+                  prop={prop}
+                  onChange={(value) => update(prop.name, value)}
+                />
+              )}
+              {prop.type === "color" && (
+                <div className="color-container">
+                  <ColorPicker
+                    value={prop.value}
+                    onChange={(value) => update(prop.name, value)}
+                  />
+                </div>
+              )}
+              {prop.type === "text" && (
+                <>
+                  <div className="textarea-container">
+                    <textarea
+                      style={{ width: "50%" }}
+                      className="widget-settings-value"
+                      value={prop.value}
+                      onChange={(e) => update(prop.name, e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+              {prop.type === "boolean" && (
+                <BooleanPropertyInput
+                  prop={prop}
+                  onChange={() => update(prop.name, !prop.value)}
+                />
+              )}
+              {prop.type === "custom" && customHandler ? (
+                customHandler(prop)
+              ) : (
+                <></>
+              )}
+              {prop.type === "number" && (
+                <>
+                  <input
+                    value={prop.value}
+                    type="number"
+                    className="widget-settings-value"
+                    onChange={(e) => update(prop.name, e.target.value)}
+                  />
+                </>
+              )}
+            </div>
           )}
-          {prop.type === "boolean" && (
-            <BooleanPropertyInput
-              prop={prop}
-              onChange={() => update(prop.name, !prop.value)}
-            />
-          )}
-          {prop.type === "custom" && customHandler ? (
-            customHandler(prop)
-          ) : (
-            <></>
-          )}
-          {prop.type === "number" && (
-            <>
-              <input
-                value={prop.value}
-                type="number"
-                className="widget-settings-value"
-                onChange={(e) => update(prop.name, e.target.value)}
-              />
-            </>
-          )}
-        </div>
-        )}
         </>
       ))}
     </>
