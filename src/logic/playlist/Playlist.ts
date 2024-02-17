@@ -1,6 +1,7 @@
 import { markListened } from "../../components/MediaWidget/api";
 import { Song } from "../../components/MediaWidget/types";
 import { log } from "../../logging";
+import { publish } from "../../socket";
 import { IPlaylistChangesListener } from "./PlaylistChangesListener";
 
 enum PLAYLIST_TYPE {
@@ -13,9 +14,11 @@ class Playlist {
   _index: number | null = null;
   _type: PLAYLIST_TYPE;
   _listeners: IPlaylistChangesListener[] = [];
+  topic: string;
 
-  constructor(type: PLAYLIST_TYPE) {
+  constructor(type: PLAYLIST_TYPE, topic: string) {
     this._type = type;
+    this.topic = topic;
   }
 
   addSong(song: Song) {
@@ -131,6 +134,10 @@ class Playlist {
   }
 
   triggerListeners() {
+    publish(this.topic, {
+      count: this._index === null ? 0 : this._songs.length,
+      number: this._index === null ?  0 : this._index
+    });
     this._listeners.forEach((listener) => listener.trigger(this));
   }
 }

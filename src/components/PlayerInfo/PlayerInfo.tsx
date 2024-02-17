@@ -18,7 +18,7 @@ function PlayerInfo() {
     subscribe(widgetId, conf.topic.player, (message) => {
       log.debug(`Received: ${message.body}`);
       let json = JSON.parse(message.body);
-      if (json.title) {
+      if (json.title !== null) {
         setTitle(json.title);
       }
       if (json.count != null && json.number != null) {
