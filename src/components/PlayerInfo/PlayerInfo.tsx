@@ -44,8 +44,8 @@ function PlayerInfo() {
       <div className="player-info-container" data-vjs-player>
         <div className="player-info"></div>
         <span className="player-info-text" style={textStyle}>
-          {title && (left > 1) && `Треков в очереди: ${left}, играет ${left}`}
-          {title && !(left > 1) && `Играет: ${left}`}
+          {title && (left > 1) && `Треков в очереди: ${left}, играет ${title}`}
+          {title && !(left > 1) && `Играет: ${title}`}
         </span>
       </div>
     </>
