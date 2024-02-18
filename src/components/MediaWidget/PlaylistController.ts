@@ -16,12 +16,12 @@ export class PlaylistController {
 
   constructor(recipientId: string, widgetId: string, conf: any) {
     this.recipientId = recipientId;
-    const requested = new Playlist(PLAYLIST_TYPE.REQUESTED);
+    const requested = new Playlist(PLAYLIST_TYPE.REQUESTED, conf.topic.player);
     this.current = requested;
     this.playlists.set(PLAYLIST_TYPE.REQUESTED, requested);
     this.playlists.set(
       PLAYLIST_TYPE.PERSONAL,
-      new Playlist(PLAYLIST_TYPE.PERSONAL),
+      new Playlist(PLAYLIST_TYPE.PERSONAL, conf.topic.player),
     );
 
     log.info(`Loading playlist for ${recipientId}`);
