@@ -74,7 +74,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   };
 
   useEffect(() => {
-    paymentPageConfig.current = new PaymentPageConfig();
+    paymentPageConfig.current = new PaymentPageConfig(recipientId);
   }, [recipientId]);
 
   useEffect(() => {

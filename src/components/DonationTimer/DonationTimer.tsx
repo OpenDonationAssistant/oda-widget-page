@@ -55,7 +55,7 @@ export default function DonationTimer({}: {}) {
     }
     axios
       .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/payment?recipientId=${recipientId}`,
+        `${process.env.REACT_APP_API_ENDPOINT}/payments`,
       )
       .then((response) => response.data)
       .then((data) => {

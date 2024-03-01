@@ -44,7 +44,7 @@ export default function DonatersTopList({}: {}) {
   function updateDonaters() {
     axios
       .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/recipient/${recipientId}/donaters?period=${period}`,
+        `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
       )
       .then((response) => response.data)
       .then((data) => {
@@ -58,7 +58,7 @@ export default function DonatersTopList({}: {}) {
           type === "Last"
             ? map
             : new Map(
-                [...map.entries()].sort((a, b) => b[1].amount - a[1].amount),
+                [...map.entries()].sort((a, b) => b[1].major - a[1].major),
               );
         setDonaters(sortedMap);
       });
@@ -66,8 +66,10 @@ export default function DonatersTopList({}: {}) {
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.alerts, (message) => {
-      updateDonaters();
-      message.ack();
+      setTimeout(() => {
+        updateDonaters();
+        message.ack();
+      }, 3000);
     });
     setupCommandListener(widgetId, () => navigate(0));
     updateDonaters();
@@ -129,7 +131,7 @@ export default function DonatersTopList({}: {}) {
             donaters.size > 0 &&
             Array.from(donaters.keys()).map((donater) => (
               <span key={donater} style={textStyle} className="donater">
-                {donater} - {donaters.get(donater).amount}{" "}
+                {donater} - {donaters.get(donater).major}{" "}
                 {donaters.get(donater).currency}{" "}
               </span>
             ))}
@@ -147,7 +149,7 @@ export default function DonatersTopList({}: {}) {
                 .slice(0, topsize)
                 .map((donater) => (
                   <div key={donater} style={textStyle} className="donater">
-                    {donater} - {donaters.get(donater).amount}{" "}
+                    {donater} - {donaters.get(donater).major}{" "}
                     {donaters.get(donater).currency}{" "}
                   </div>
                 ))}
@@ -166,7 +168,7 @@ export default function DonatersTopList({}: {}) {
                 .slice(0, topsize)
                 .map((donater) => (
                   <div key={donater} style={textStyle} className="donater">
-                    {donater} - {donaters.get(donater).amount}{" "}
+                    {donater} - {donaters.get(donater).major}{" "}
                     {donaters.get(donater).currency}{" "}
                   </div>
                 ))}

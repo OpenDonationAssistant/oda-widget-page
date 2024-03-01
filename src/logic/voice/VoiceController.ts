@@ -144,7 +144,7 @@ export class VoiceController {
   private async voiceByGoogle(message: string): Promise<ArrayBuffer> {
     let body = {
       input: {
-        ssml: '<speak><break time="1s"/>' + message + ".</speak>",
+        ssml: '<speak>' + message + ".</speak>",
       },
       voice: {
         languageCode: "ru-RU",

@@ -48,7 +48,7 @@ export default function MediaWidget({}: {}) {
       },
     };
     setupCommandListener(widgetId, () => navigate(0));
-    paymentPageConfig.current = new PaymentPageConfig();
+    paymentPageConfig.current = new PaymentPageConfig(recipientId);
     playlistController.current = new PlaylistController(
       recipientId,
       widgetId,

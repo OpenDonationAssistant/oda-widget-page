@@ -28,25 +28,25 @@ export class PlaylistController {
 
     axios
       .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/media?recipientId=${recipientId}`,
+        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/video`,
       )
       .then((response) => {
         let songs = response.data;
         songs = songs.map(
-          (element: { url: string; id: string; title: string }) => {
+          (element: { url: string; id: string; title: string; owner: string }) => {
             return {
               src: element.url,
               type: "video/youtube",
               id: uuidv4(),
               originId: element.id,
-              owner: "Аноним",
+              owner: element.owner,
               title: element.title,
             };
           },
         );
-        return fillSongData(recipientId, songs);
+        return songs;
       })
-      .then((playlist) => {
+      .then((playlist: Song[]) => {
         playlist.forEach((song) => this.current.addSong(song));
       });
 
@@ -118,26 +118,4 @@ export class PlaylistController {
       this.current = playlist;
     }
   }
-}
-
-async function fillSongData(recipientId: string, playlist: Song[]) {
-  log.info(`Trying to find songs for ${recipientId}`);
-  let response = await axios.get(
-    `${process.env.REACT_APP_API_ENDPOINT}/payment?recipientId=${recipientId}`,
-  );
-  let updatedPlaylist = playlist;
-  response.data.forEach(
-    (item: { attachments: (string | null)[]; senderName: string | null }) =>
-      item.attachments.forEach((attach: string | null) => {
-        updatedPlaylist = updatedPlaylist.map((song) => {
-          if (song.originId === attach) {
-            song.owner = item.senderName ? item.senderName : "Аноним";
-            return song;
-          } else {
-            return song;
-          }
-        });
-      }),
-  );
-  return updatedPlaylist;
 }

@@ -91,12 +91,12 @@ function Payments({}: {}) {
         const attachQueryString = json
           .reduce((attachmentIds, payment) => {
             const paymentAttachIds = payment.attachments
-              .reduce(
+              ?.reduce(
                 (paymentAttachmentIds, attach) =>
                   `${paymentAttachmentIds},${attach}`,
                 "",
               )
-              .substring(1);
+              ?.substring(1) ?? "";
             return `${attachmentIds},${paymentAttachIds}`;
           }, "")
           .substring(1);
@@ -167,6 +167,7 @@ function Payments({}: {}) {
   }
 
   function paymentList(data) {
+    log.debug(`rendering ${JSON.stringify(data)}`);
     const nicknameFontSize = findSetting(settings, "nicknameFontSize", "24px");
     const nicknameStyle = nicknameFontSize
       ? { fontSize: nicknameFontSize + "px" }

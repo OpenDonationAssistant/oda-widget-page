@@ -1,11 +1,12 @@
 import axios from "axios";
 
-export function markListened(id:string) {
+export function markListened(id: string) {
   try {
     axios
-      .patch(`${process.env.REACT_APP_API_ENDPOINT}/media/${id}`, {
-        listened: true,
-      })
+      .patch(
+        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/video/${id}`,
+        {},
+      )
       .catch(function (error) {
         console.log(error);
       });

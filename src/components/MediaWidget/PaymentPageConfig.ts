@@ -11,10 +11,10 @@ export class PaymentPageConfig {
   requestsDisabledPermanently = false;
   requestCost = 100;
 
-  constructor() {
+  constructor(recipientId: string) {
     log.debug("Loading PaymentPageConfig");
     axios
-      .get(`${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage`)
+      .get(`${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${recipientId}`)
       .then((data) => data.data)
       .then((json) => {
         this.config = json;
