@@ -64,9 +64,9 @@ export class VoiceController {
         : text;
     const resultText = choosenTemplate
       .trim()
-      .replace("<username>", data.senderName ? data.senderName : "Аноним")
-      .replace("<amount>", data.amount.amount)
-      .replace("<minoramount>", data.amount.amount * 100)
+      .replace("<username>", data.nickname ? data.nickname : "Аноним")
+      .replace("<amount>", data.amount.major)
+      .replace("<minoramount>", data.amount.major * 100)
       .replace("<streamer>", this.recipientId);
     try {
       if (resultText.length > 0){
