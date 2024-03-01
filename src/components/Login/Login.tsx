@@ -12,6 +12,7 @@ async function loader({ params }) {
 }
 
 function tokenRequest(login: string, password: string): Promise<String> {
+  console.log(`loging with login: ${login}, password: ${password}`);
   return axios
     .post(
       "https://auth.oda.digital/realms/ODA/protocol/openid-connect/token",
