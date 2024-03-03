@@ -9,6 +9,10 @@ enum PLAYLIST_TYPE {
   PERSONAL,
 }
 
+function nameOf(type: PLAYLIST_TYPE) {
+  return type === PLAYLIST_TYPE.PERSONAL ? "personal" : "requested";
+}
+
 class Playlist {
   _songs: Song[] = [];
   _index: number | null = null;
@@ -47,6 +51,9 @@ class Playlist {
       markListened(originId);
     }
     this._songs.splice(index, 1);
+    if (this._songs.length == 0) {
+      this._index = null;
+    }
     this.triggerListeners();
   }
 
@@ -123,22 +130,33 @@ class Playlist {
   }
 
   addListener(listener: IPlaylistChangesListener) {
-    log.debug(`adding listener, current songs amount: ${this._songs.length}, index: ${this.index}`);
     this._listeners.push(listener);
+    log.debug(
+      `adding listener ${listener.id} to playlist ${nameOf(
+        this.type(),
+      )}, current songs amount: ${this._songs.length}, index: ${
+        this.index()
+      }, total listeners count: ${this._listeners.length}`,
+    );
     listener.trigger(this);
   }
 
   removeListener(id: string) {
-    const index = this._listeners.findIndex((listener) => (listener.id = id));
+    log.debug(`listeners before removing ${id}: ${JSON.stringify(this._listeners)}`);
+    const index = this._listeners.findIndex((listener) => (listener.id === id));
     this._listeners.splice(index, 1);
+    log.debug(`listeners after removing ${id}: ${JSON.stringify(this._listeners)}`);
   }
 
   triggerListeners() {
     publish(this.topic, {
       count: this._index === null ? 0 : this._songs.length,
-      number: this._index === null ?  0 : this._index
+      number: this._index === null ? 0 : this._index,
     });
-    this._listeners.forEach((listener) => listener.trigger(this));
+    this._listeners.forEach((listener) => {
+      listener.trigger(this);
+      log.debug(`playlist ${nameOf(this.type())} notifing listener ${listener.id}`);
+    });
   }
 }
 

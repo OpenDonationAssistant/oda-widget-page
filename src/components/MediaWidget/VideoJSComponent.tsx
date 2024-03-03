@@ -10,6 +10,8 @@ import ProgressBar from "./ProgressBar";
 import VideoDuration from "./VideoDuration";
 import { PlaylistController } from "./PlaylistController";
 import { publish, subscribe, unsubscribe } from "../../socket";
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -46,6 +48,13 @@ export default function VideoJSComponent({
   const pausedByCommand = useRef<boolean>(false);
   const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
   const commandHandler = useRef<Function | null>(null);
+  const [volume, setVolume] = useState<number>(() => {
+    const vol = localStorage.getItem("volume");
+    if (vol) {
+      return JSON.parse(vol);
+    }
+    return 50;
+  });
 
   function freeze() {
     log.debug(`freezing player`);
@@ -58,10 +67,12 @@ export default function VideoJSComponent({
   function unfreeze() {
     log.debug(`unfreezing player`);
     if (!player) {
+      log.debug(`cancel unfreeze because of missing player`);
       return;
     }
     if (pausedByCommand.current) {
       pausedByCommand.current = false;
+      log.debug(`calling player.play()`);
       player.play();
     }
   }
@@ -138,7 +149,7 @@ export default function VideoJSComponent({
 
     const player = videojs(videoElement, options);
     player.src(song);
-    player.volume(0.5);
+    player.volume(volume/100);
     player.on("play", () => {
       log.debug("start playing");
       setPlayerState(PLAYER_STATE.PLAYING);
@@ -166,6 +177,13 @@ export default function VideoJSComponent({
       player.dispose();
     };
   }, [song, isRemote]);
+
+  useEffect(() => {
+    if (player) {
+      player.volume(volume/100);
+      localStorage.setItem("volume", JSON.stringify(volume));
+    }
+  },[volume]);
 
   return (
     <>
@@ -240,6 +258,9 @@ export default function VideoJSComponent({
             {!isRemote && <VideoDuration player={player} />}
           </div>
         </div>
+        <Slider value={volume} onChange={(value) => {
+          setVolume(value);
+        }} />
       </div>
     </>
   );

@@ -11,6 +11,16 @@
 
 .player-container {
   flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+}
+
+.player-container .rc-slider {
+  width: 100px;
+}
+
+.player-container .rc-slider-track {
+  background-color: rgb(13,110,253);
 }
 
 .playlist {

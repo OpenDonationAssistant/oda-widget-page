@@ -15,25 +15,47 @@ export class PlaylistController {
   recipientId;
 
   constructor(recipientId: string, widgetId: string, conf: any) {
-    this.recipientId = recipientId;
     const requested = new Playlist(PLAYLIST_TYPE.REQUESTED, conf.topic.player);
+    const personal = new Playlist(PLAYLIST_TYPE.PERSONAL, conf.topic.player);
+    const playlistEndListener = {
+      id: `playlistController_${widgetId}`,
+      trigger: (playlist: Playlist) => {
+        log.debug(
+          `checking playlist end, total song count: ${
+            playlist.songs().length
+          }, current index: ${playlist.index()}`,
+        );
+        if (playlist.index() !== null) {
+          return;
+        }
+        const personalIndex = personal.index();
+        if (personalIndex === null) {
+          return;
+        }
+        if (personalIndex < personal.songs().length) {
+          this.switchTo(PLAYLIST_TYPE.PERSONAL);
+        }
+      },
+    };
+    requested.addListener(playlistEndListener);
     this.current = requested;
+    this.recipientId = recipientId;
     this.playlists.set(PLAYLIST_TYPE.REQUESTED, requested);
-    this.playlists.set(
-      PLAYLIST_TYPE.PERSONAL,
-      new Playlist(PLAYLIST_TYPE.PERSONAL, conf.topic.player),
-    );
+    this.playlists.set(PLAYLIST_TYPE.PERSONAL, personal);
 
     log.info(`Loading playlist for ${recipientId}`);
 
     axios
-      .get(
-        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/video`,
-      )
+      .get(`${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/video`)
       .then((response) => {
         let songs = response.data;
         songs = songs.map(
-          (element: { url: string; id: string; title: string; owner: string }) => {
+          (element: {
+            url: string;
+            id: string;
+            title: string;
+            owner: string;
+          }) => {
             return {
               src: element.url,
               type: "video/youtube",
