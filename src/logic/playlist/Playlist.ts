@@ -150,8 +150,8 @@ class Playlist {
 
   triggerListeners() {
     publish(this.topic, {
-      count: this._index === null ? 0 : this._songs.length,
-      number: this._index === null ? 0 : this._index,
+      count: this._index === null || this._type === PLAYLIST_TYPE.PERSONAL ? 0 : this._songs.length,
+      number: this._index === null || this._type === PLAYLIST_TYPE.PERSONAL ? 0 : this._index,
     });
     this._listeners.forEach((listener) => {
       listener.trigger(this);
