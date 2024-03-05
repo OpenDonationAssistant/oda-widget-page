@@ -11,7 +11,6 @@ import RequestsDisabledWarning from "./RequestsDisabledWarning";
 import MenuEventButton from "../Menu/MenuEventButton";
 import MenuButton from "../Menu/MenuButton";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
-import { IPlaylistChangesListener } from "../../logic/playlist/PlaylistChangesListener";
 import PlaylistComponent from "./PlaylistComponent";
 import VideoJSComponent from "./VideoJSComponent";
 import { Song } from "./types";
@@ -32,6 +31,7 @@ export default function MediaWidget({}: {}) {
   const playlistController = useRef<PlaylistController>();
   const [song, setSong] = useState<Song | null>(null);
   const [isRemote, setIsRemote] = useState<boolean>(false);
+  const [repeat, enableRepeat] = useState<boolean>(false);
 
   useEffect(() => {
     const playlistListener = {
@@ -66,6 +66,13 @@ export default function MediaWidget({}: {}) {
       playlistController: playlistController.current,
     });
   }, [recipientId, widgetId]);
+
+  useEffect(() => {
+    if (!playlistController.current) {
+      return;
+    }
+    playlistController.current.repeat = repeat;
+  }, [repeat, playlistController]);
 
   return (
     <>
@@ -134,6 +141,14 @@ export default function MediaWidget({}: {}) {
           <div className="video-counter">
             {`${index ? index : "-"} / ${playlistSize}`}
           </div>
+          <button
+            className="repeat-button"
+            onClick={() => enableRepeat((old) => !old)}
+          >
+            <span className="material-symbols-sharp">
+              {repeat ? "repeat_on" : "repeat"}
+            </span>
+          </button>
         </div>
         {playlist && <PlaylistComponent playlist={playlist} />}
       </div>

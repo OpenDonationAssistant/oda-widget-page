@@ -247,6 +247,20 @@ iframe {
   align-items: baseline;
 }
 
+.repeat-button {
+  line-height: 0px;
+  margin-left: 0px;
+  padding: 0px;
+  border: none;
+  color: white;
+  background: none;
+  margin-right: 5px;
+}
+
+.repeat-button span.material-symbols-sharp{
+  vertical-align: middle;
+}
+
 .video-counter {
   flex: 0 0;
   color: white;

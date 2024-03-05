@@ -9,6 +9,7 @@ import { subscribe } from "../../socket";
 export class PlaylistController {
   playlists = new Map<PLAYLIST_TYPE, Playlist>();
   current: Playlist;
+  private _repeat = false;
 
   playlistRenderers: IPlaylistRenderer[] = [];
 
@@ -29,11 +30,14 @@ export class PlaylistController {
           return;
         }
         const personalIndex = personal.index();
-        if (personalIndex === null) {
-          return;
+        if (personalIndex !== null) {
+          if (personalIndex < personal.songs().length) {
+            this.switchTo(PLAYLIST_TYPE.PERSONAL);
+            return;
+          }
         }
-        if (personalIndex < personal.songs().length) {
-          this.switchTo(PLAYLIST_TYPE.PERSONAL);
+        if (this._repeat) {
+          playlist.setIndex(0);
         }
       },
     };
@@ -139,5 +143,11 @@ export class PlaylistController {
       });
       this.current = playlist;
     }
+  }
+  public get repeat() {
+    return this._repeat;
+  }
+  public set repeat(value) {
+    this._repeat = value;
   }
 }
