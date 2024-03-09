@@ -43,7 +43,7 @@ class Playlist {
   }
 
   removeSong(index: number) {
-    if (index < 0 || index > this._songs.length) {
+    if (index < 0 || index >= this._songs.length) {
       return;
     }
     const originId = this._songs[index].originId;
@@ -51,7 +51,10 @@ class Playlist {
       markListened(originId);
     }
     this._songs.splice(index, 1);
-    if (this._songs.length == 0) {
+    if (
+      this._songs.length == 0 ||
+      (this._index && this._index >= this._songs.length)
+    ) {
       this._index = null;
     }
     this.triggerListeners();
