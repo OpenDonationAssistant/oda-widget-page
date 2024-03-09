@@ -108,6 +108,7 @@ class Playlist {
     this._songs.map((song) => {
       if (song.id === id) {
         if (song.originId) {
+          log.debug(`mark as listened: ${song.title}`);
           markListened(song.originId);
         }
       }
@@ -119,11 +120,13 @@ class Playlist {
   }
 
   nextSong() {
+    log.debug(`setting next song`);
     if (this._index != null) {
       this._index = this._index + 1;
       if (this._index >= this._songs.length) {
         this._index = null;
       }
+      log.debug(`next song index: ${this._index}`);
     }
     this.triggerListeners();
   }

@@ -118,6 +118,7 @@ export class PlaylistController {
 
   finishSong() {
     const song = this.current.song();
+    log.debug(`finishing song: ${JSON.stringify(song)}`);
     if (song?.id) {
       this.current.markListened(song?.id);
     }
