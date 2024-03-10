@@ -14,7 +14,7 @@ import DonatersTopList from "./components/DonatersTopList/DonatersTopList";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
 import { config } from "./config";
-import { log } from "./logging";
+import { log, setLoglevel } from "./logging";
 import auth from "./auth";
 import axios from "axios";
 import Login from "./components/Login/Login";
@@ -44,6 +44,7 @@ async function widgetSettingsLoader({
   }
 
   const conf = await config(recipientId);
+  setLoglevel(conf.loglevel);
   log.debug(`Configuration: ${JSON.stringify(conf)}`);
   const widgetId = params.widgetId;
 

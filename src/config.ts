@@ -11,6 +11,7 @@ interface Config {
     paymentWidgetCommands: string;
     mediaWidgetCommands: string;
   };
+  loglevel: string;
 }
 
 async function config(recipientId: string): Promise<Config> {
@@ -27,6 +28,7 @@ async function config(recipientId: string): Promise<Config> {
           paymentWidgetCommands: "",
           mediaWidgetCommands: "",
         },
+        loglevel: "error"
       });
     });
   }
