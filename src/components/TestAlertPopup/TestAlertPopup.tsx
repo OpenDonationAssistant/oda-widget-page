@@ -13,10 +13,11 @@ export default function TestAlertPopup({ config }: { config: Config }) {
   function sendTestAlert() {
     publish(config.topic.alerts, {
       id: "ae7d3c02-209b-4b69-a95b-2a60de4aff9b",
-      senderName: nickname ? nickname : "Аноним",
+      nickname: nickname ? nickname : "Аноним",
       message: message ? message : "Тестовое сообщение",
       amount: {
-        amount: amount ? parseInt(amount) : 40,
+        major: amount ? parseInt(amount) : 40,
+        minor: 0,
         currency: "RUB",
       },
     });
