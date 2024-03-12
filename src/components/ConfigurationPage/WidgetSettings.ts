@@ -204,7 +204,7 @@ const defaultSettings = {
       },
     ],
   },
-  roulette: {
+  reel: {
     properties: [
       {
         name: "font",
@@ -222,6 +222,18 @@ const defaultSettings = {
         type: "color",
         value: "#000000",
         displayName: "Цвет",
+      },
+      {
+        name: "type",
+        type: "custom",
+        value: "eachpayment",
+        displayName: "Условие",
+      },
+      {
+        name: "requiredAmount",
+        type: "number",
+        value: "100",
+        displayName: "Требуемая сумма",
       },
       {
         name: "optionList",

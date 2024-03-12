@@ -2,6 +2,8 @@ import axios from "axios";
 import { log } from "./logging";
 
 export default async function auth() {
+  // const token = localStorage.getItem('access-token');
+  // const headers = token ? { Authorization: `Bearer ${token}`} : {};
   const sessionInfo = await axios
     .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
     .then((json) => {

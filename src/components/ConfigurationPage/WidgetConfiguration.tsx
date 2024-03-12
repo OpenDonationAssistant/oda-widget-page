@@ -28,7 +28,7 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
       return <PaymentAlertSettings id={id} onChange={onChange} />;
     case "donaters-top-list":
       return <DonatersTopListSettings id={id} onChange={onChange} />;
-    case "roulette":
+    case "reel":
       return <RouletteWidgetSettings id={id} onChange={onChange} />;
     default:
       return <BaseSettings id={id} onChange={onChange} />;

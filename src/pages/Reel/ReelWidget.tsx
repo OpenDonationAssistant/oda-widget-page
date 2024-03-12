@@ -1,17 +1,35 @@
-import Glide from '@glidejs/glide';
+import Glide from "@glidejs/glide";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { setupCommandListener } from "../../socket";
+import { setupCommandListener, subscribe } from "../../socket";
+import classes from "./ReelWidget.module.css";
+import { log } from "../../logging";
+import { findSetting } from "../../components/utils";
 
 export default function ReelWidget({}) {
   const { recipientId, settings, conf, widgetId } = useLoaderData();
   const navigate = useNavigate();
   const glideRef = useRef<HTMLDivElement | null>(null);
+  const glide = useRef<Glide | null>(null);
+  const [active, setActive] = useState<string | null>(null);
+  const [highlight, setHighlight] = useState<boolean>(false);
 
   useEffect(() => {
+    subscribe(widgetId, conf.topic.reel, (message) => {
+      log.info(`Received reel command: ${message.body}`);
+      let json = JSON.parse(message.body);
+      setActive(json.selection);
+      setTimeout(() => {
+        log.debug(`clear active and highlight`);
+        setActive(null);
+        setHighlight(false);
+        glideRef.current?.classList.add('hidden');
+      }, 20000);
+      message.ack();
+    });
     setupCommandListener(widgetId, () => navigate(0));
   }, [widgetId]);
 
@@ -20,24 +38,60 @@ export default function ReelWidget({}) {
       return;
     }
 
-    const glide = new Glide('.glide',{ type: 'carousel',perView: 3, rewind: true, animationDuration: 140 }).mount();
-    setupScroll(glide, 20);
+    glide.current = new Glide(".glide", {
+      type: "carousel",
+      perView: 5,
+      rewind: true,
+      animationDuration: 140,
+      focusAt: "center",
+    }).mount();
   }, [glideRef]);
 
-  function setupScroll(glide:any, iteration: number){
-    if (iteration < 1){
+  useEffect(() => {
+    if (!active) {
       return;
     }
-    const scroll = () => glide.go(`=${getRndInteger(0,3)}`);
+    glideRef.current?.classList.remove('hidden');
+    log.debug(`selecting ${active} for reel`);
+    setupScroll(glide.current, 40, () => {
+      const index = options.findIndex((option) => option === active);
+      glide.current.go(`=${index}`);
+      log.debug('highlight selection');
+      setHighlight(true);
+    });
+  }, [active]);
+
+  function setupScroll(glide: any, iteration: number, result: Function) {
+    if (iteration < 1) {
+      result();
+      return;
+    }
+    const selected = getRndInteger(0, 3);
+    const scroll = () => glide.go(`=${selected}`);
+    console.log(`selected: ${selected}`);
+    if (iteration === 1) {
+      console.log(`setActive to ${selected}`);
+    }
     setTimeout(() => {
       scroll();
-      setupScroll(glide, iteration - 1);
+      setupScroll(glide, iteration - 1, result);
     }, 140);
   }
 
   function getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
   }
+
+  const fontSize = findSetting(settings, "fontSize", "24px");
+  const font = findSetting(settings, "font", "Roboto");
+  const color = findSetting(settings, "color", "white");
+  const textStyle = {
+    fontSize: fontSize ? fontSize + "px" : "unset",
+    fontFamily: font ? font : "unset",
+    color: color,
+  };
+  const options = findSetting(settings, "optionList", []);
+  console.log(options);
 
   return (
     <>
@@ -46,14 +100,20 @@ export default function ReelWidget({}) {
           __html: `html, body {height: 100%; background-color: "rgba(0,0,0,0)";}`,
         }}
       />
-      <div>
-        <div className="glide" ref={glideRef}>
+      <div style={textStyle}>
+        <div className={`glide hidden`} ref={glideRef}>
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides">
-              <li className="glide__slide">0</li>
-              <li className="glide__slide">1</li>
-              <li className="glide__slide">2</li>
-              <li className="glide__slide">3</li>
+              {options.map((option) => (
+                <li
+                  key={option}
+                  className={`glide__slide ${classes.reelitem} ${
+                    highlight && active === option ? classes.active : ""
+                  }`}
+                >
+                  {option}
+                </li>
+              ))}
             </ul>
           </div>
         </div>

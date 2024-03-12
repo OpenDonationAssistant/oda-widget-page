@@ -82,3 +82,15 @@ code {
 input[type="file"] {
   display: none;
 }
+
+.hidden {
+  visibility: hidden;
+}
+
+.glide__slides {
+  align-items: center;
+}
+
+.glide {
+  overflow-wrap: break-word;
+}

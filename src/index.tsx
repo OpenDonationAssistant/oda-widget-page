@@ -112,7 +112,7 @@ const router = createBrowserRouter([
     loader: widgetSettingsLoader,
   },
   {
-    path: "/roulette/:widgetId",
+    path: "/reel/:widgetId",
     element: <ReelWidget />,
     loader: widgetSettingsLoader,
   },

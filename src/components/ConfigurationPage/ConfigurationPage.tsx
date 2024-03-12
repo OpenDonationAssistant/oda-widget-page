@@ -38,7 +38,7 @@ const types = [
   { name: "player-control", description: "Music Player Remote Control" },
   { name: "donation-timer", description: "Donation Timer" },
   { name: "player-popup", description: "Video Popup" },
-  { name: "roulette", description: "Roulette" },
+  { name: "reel", description: "Roulette" },
 ];
 
 export default function ConfigurationPage({}: {}) {
@@ -76,8 +76,11 @@ export default function ConfigurationPage({}: {}) {
 
     widgets.forEach((it) => {
       const settings = defaultSettings[it.type];
+      if (!settings) {
+        return;
+      }
       log.debug(`default settings for ${it.type} are ${JSON.stringify(settings)}`);
-      const mergedSettings = settings.properties.map((prop) => {
+        const mergedSettings = settings.properties.map((prop) => {
 				const value = it.config?.properties?.find((sameprop) => sameprop.name === prop.name)?.value;
         const updatedProp = structuredClone(prop);
 				if (value != null){
