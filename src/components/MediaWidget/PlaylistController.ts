@@ -83,7 +83,7 @@ export class PlaylistController {
         type: "video/youtube",
         id: uuidv4(),
         originId: json.id,
-        owner: "Аноним",
+        owner: json.owner,
         title: json.title,
       };
       this.handleNewRequestedSongEvent(song);
