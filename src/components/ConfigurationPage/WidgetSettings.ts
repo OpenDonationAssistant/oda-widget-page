@@ -1,6 +1,48 @@
-const defaultSettings = {
-  "donaters-top-list": {
-    properties: [
+interface WidgetProperty {
+  name: string;
+  type: string;
+  value: any;
+  displayName: string;
+  tab?: string;
+}
+
+interface WidgetSettings {
+  get(key: string): WidgetProperty | undefined;
+}
+
+class AbstractWidgetSettings {
+  private _properties: WidgetProperty[];
+  private _defaultValues: WidgetProperty[];
+
+  constructor(properties: WidgetProperty[], defaultValues: WidgetProperty[]) {
+    this._properties = properties;
+    this._defaultValues = defaultValues;
+  }
+
+  get(key: string): WidgetProperty | undefined {
+    const setting = this.properties.find((prop) => key === prop.name);
+    if (setting) {
+      return setting.value;
+    }
+    return this._defaultValues.find((prop) => key === prop.name);
+  }
+
+  public get properties(): WidgetProperty[] {
+    return this._properties;
+  }
+
+  public set properties(value: WidgetProperty[]) {
+    this._properties = value;
+  }
+
+  public get defaultValues(): WidgetProperty[] {
+    return structuredClone(this._defaultValues);
+  }
+}
+
+class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "type",
         type: "custom",
@@ -91,10 +133,19 @@ const defaultSettings = {
         value: "vertical",
         displayName: "Компоновка",
       },
-    ],
-  },
-  "donation-timer": {
-    properties: [
+    ]);
+  }
+}
+
+class EmptyWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, []);
+  }
+}
+
+class DonationTimerWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "resetOnLoad",
         type: "boolean",
@@ -125,10 +176,13 @@ const defaultSettings = {
         value: "Без донатов уже <time>",
         displayName: "Текст",
       },
-    ],
-  },
-  media: {
-    properties: [
+    ]);
+  }
+}
+
+class MediaWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "playlistSongTitleFontSize",
         type: "string",
@@ -141,23 +195,26 @@ const defaultSettings = {
         value: "16",
         displayName: "Размер шрифта в имени заказчика в плейлисте",
       },
-    ],
-  },
-  "player-control": {
-    properties: [],
-  },
-  "player-popup": {
-    properties: [
+    ]);
+  }
+}
+
+class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "audioOnly",
         type: "boolean",
         value: false,
         displayName: "Воспроизводить только звук",
       },
-    ],
-  },
-  payments: {
-    properties: [
+    ]);
+  }
+}
+
+class PaymentsWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "nicknameFontSize",
         type: "string",
@@ -170,21 +227,28 @@ const defaultSettings = {
         value: "19",
         displayName: "Размер шрифта в сообщении",
       },
-    ],
-  },
-  "payment-alerts": {
-    properties: [
+    ]);
+  }
+}
+
+class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
+  alerts: any[];
+  constructor(properties: WidgetProperty[], alerts: any[]) {
+    super(properties, [
       {
         name: "useGreenscreen",
         type: "boolean",
         value: false,
         displayName: "Использовать greenscreen",
       },
-    ],
-    alerts: [],
-  },
-  "player-info": {
-    properties: [
+    ]);
+    this.alerts = alerts;
+  }
+}
+
+class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "font",
         type: "fontselect",
@@ -193,6 +257,7 @@ const defaultSettings = {
       },
       {
         name: "fontSize",
+        type: "number",
         value: "24",
         displayName: "Размер шрифта",
       },
@@ -202,10 +267,13 @@ const defaultSettings = {
         value: "#ffffff",
         displayName: "Цвет",
       },
-    ],
-  },
-  reel: {
-    properties: [
+    ]);
+  }
+}
+
+class ReelWidgetSettings extends AbstractWidgetSettings {
+  constructor(properties: WidgetProperty[]) {
+    super(properties, [
       {
         name: "font",
         type: "fontselect",
@@ -214,6 +282,7 @@ const defaultSettings = {
       },
       {
         name: "fontSize",
+        type: "number",
         value: "24",
         displayName: "Размер шрифта",
       },
@@ -221,7 +290,19 @@ const defaultSettings = {
         name: "color",
         type: "color",
         value: "#000000",
-        displayName: "Цвет",
+        displayName: "Цвет текста",
+      },
+      {
+        name: "borderColor",
+        type: "color",
+        value: "#FF0000",
+        displayName: "Цвет рамок",
+      },
+      {
+        name: "selectionColor",
+        type: "color",
+        value: "#00FF00",
+        displayName: "Фон выбора",
       },
       {
         name: "type",
@@ -238,42 +319,36 @@ const defaultSettings = {
       {
         name: "optionList",
         type: "custom",
-        value: [
-          "Ничего",
-          "Выигрыш"
-        ],
+        value: ["Ничего", "Выигрыш"],
         displayName: "Призы",
-      }
-    ],
-  },
+      },
+    ]);
+  }
+}
+
+const defaultSettings = {
+  "donaters-top-list": new DonatersTopListWidgetSettings([]),
+  "donation-timer": new DonationTimerWidgetSettings([]),
+  media: new MediaWidgetSettings([]),
+  "player-control": new EmptyWidgetSettings([]),
+  "player-popup": new PlayerPopupWidgetSettings([]),
+  payments: new PaymentsWidgetSettings([]),
+  "payment-alerts": new PaymentAlertsWidgetSettings([], []),
+  "player-info": new PlayerInfoWidgetSettings([]),
+  reel: new ReelWidgetSettings([]),
 };
 
-interface WidgetProperties {
-  name: string;
-  type: string;
-  value: string;
-  displayName: string;
-  tab?: string;
-}
-
-class WidgetSettings {
-  properties: WidgetProperties[];
-  type: string;
-
-  constructor(type: string, properties: WidgetProperties[]) {
-    this.properties = properties;
-    this.type = type;
-  }
-
-  findSetting(key: string) {
-    const setting = this.properties.find((prop) => key === prop.name);
-    if (setting) {
-      return setting.value;
-    }
-    return defaultSettings[this.type].properties.find(
-      (prop: WidgetProperties) => key === prop.name,
-    );
-  }
-}
-
-export { defaultSettings, WidgetSettings };
+export {
+  defaultSettings,
+  WidgetSettings,
+  WidgetProperty,
+  DonatersTopListWidgetSettings,
+  DonationTimerWidgetSettings,
+  MediaWidgetSettings,
+  EmptyWidgetSettings,
+  PlayerPopupWidgetSettings,
+  PaymentsWidgetSettings,
+  PaymentAlertsWidgetSettings,
+  PlayerInfoWidgetSettings,
+  ReelWidgetSettings,
+};

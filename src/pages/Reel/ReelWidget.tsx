@@ -40,7 +40,7 @@ export default function ReelWidget({}) {
 
     glide.current = new Glide(".glide", {
       type: "carousel",
-      perView: 5,
+      perView: options.length,
       rewind: true,
       animationDuration: 140,
       focusAt: "center",
@@ -55,8 +55,8 @@ export default function ReelWidget({}) {
     log.debug(`selecting ${active} for reel`);
     setupScroll(glide.current, 40, () => {
       const index = options.findIndex((option) => option === active);
-      glide.current.go(`=${index}`);
-      log.debug('highlight selection');
+      console.log(`highlight ${index} from ${JSON.stringify(options)}`);
+      glide.current.update({ startAt: index});
       setHighlight(true);
     });
   }, [active]);
@@ -91,7 +91,14 @@ export default function ReelWidget({}) {
     color: color,
   };
   const options = findSetting(settings, "optionList", []);
-  console.log(options);
+  const borderColor = findSetting(settings, "borderColor", "red");
+  const selectionColor = findSetting(settings, "selectionColor", "green");
+  const slideStyle = {
+    borderColor: borderColor
+  };
+  const selectionStyle ={
+    backgroundColor: selectionColor,
+  }
 
   return (
     <>
@@ -103,10 +110,11 @@ export default function ReelWidget({}) {
       <div style={textStyle}>
         <div className={`glide hidden`} ref={glideRef}>
           <div className="glide__track" data-glide-el="track">
-            <ul className="glide__slides">
+            <ul className="glide__slides" style={slideStyle}>
               {options.map((option) => (
                 <li
                   key={option}
+                  style={highlight && active === option ? selectionStyle : {}}
                   className={`glide__slide ${classes.reelitem} ${
                     highlight && active === option ? classes.active : ""
                   }`}

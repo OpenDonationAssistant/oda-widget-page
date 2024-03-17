@@ -80,7 +80,7 @@ export default function ConfigurationPage({}: {}) {
         return;
       }
       log.debug(`default settings for ${it.type} are ${JSON.stringify(settings)}`);
-        const mergedSettings = settings.properties.map((prop) => {
+        const mergedSettings = settings.defaultValues.map((prop) => {
 				const value = it.config?.properties?.find((sameprop) => sameprop.name === prop.name)?.value;
         const updatedProp = structuredClone(prop);
 				if (value != null){

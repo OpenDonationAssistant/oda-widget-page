@@ -3,6 +3,8 @@ import BaseSettings from "../../components/ConfigurationPage/settings/BaseSettin
 import { WidgetsContext } from "../../components/ConfigurationPage/WidgetsContext";
 import { log } from "../../logging";
 import classes from "./RouletteWidgetSettings.module.css";
+import { useLoaderData } from "react-router";
+import { publish } from "../../socket";
 
 export default function RouletteWidgetSettings({
   id,
@@ -13,6 +15,7 @@ export default function RouletteWidgetSettings({
 }) {
   const { config, setConfig } = useContext(WidgetsContext);
   const [optionList, setOptionList] = useState<string[]>([]);
+  const { conf } = useLoaderData();
 
   function update(key: string, value: string) {
     setConfig((oldConfig) => {
@@ -48,8 +51,27 @@ export default function RouletteWidgetSettings({
     update("optionList", updated);
   }
 
+  function getRndInteger(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  function runReel() {
+    const choosenIndex = getRndInteger(0, optionList.length - 1);
+    publish(conf.topic.reel, {
+      type: "trigger",
+      selection: optionList[choosenIndex],
+      widgetId: id,
+    });
+  }
+
   return (
     <>
+      <button
+        className={`widget-button ${classes.testbutton}`}
+        onClick={runReel}
+      >
+        Крутануть
+      </button>
       <BaseSettings id={id} onChange={onChange} />
       <div className="widget-settings-item">
         <label className="widget-settings-name">Призы</label>
@@ -65,9 +87,12 @@ export default function RouletteWidgetSettings({
                     style={{ width: "100%" }}
                     onChange={(e) => updateOption(number, e.target.value)}
                   />
-                  <button className="widget-button" onClick={() => {
-                    removeOption(number);
-                  }}>
+                  <button
+                    className="widget-button"
+                    onClick={() => {
+                      removeOption(number);
+                    }}
+                  >
                     <span className="material-symbols-sharp">delete</span>
                   </button>
                 </div>
