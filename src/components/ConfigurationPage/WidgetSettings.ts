@@ -326,7 +326,7 @@ class PaymentsWidgetSettings extends AbstractWidgetSettings {
 class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   public alerts: any[];
   constructor(properties: WidgetProperty[], alerts: any[]) {
-    log.debug({ alerts: alerts}, `creating payment-alerts settings`);
+    log.debug({ alerts: alerts }, `creating payment-alerts settings`);
     super(
       properties,
       [

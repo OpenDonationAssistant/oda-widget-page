@@ -559,7 +559,7 @@ export default function PaymentAlertSettings({
 
   return (
     <>
-      <BaseSettings id={id} onChange={onChange} />
+      <BaseSettings id={id}/>
       {previews()}
       {selected > -1 && (
         <div className="payment-alert-settings">

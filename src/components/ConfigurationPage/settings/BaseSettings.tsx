@@ -11,7 +11,6 @@ export default function BaseSettings({
   propertyFilter,
 }: {
   id: string;
-  onChange: Function;
   customHandler?: Function;
   propertyFilter?: (prop: WidgetProperty) => boolean;
 }) {
