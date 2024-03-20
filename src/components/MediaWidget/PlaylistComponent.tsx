@@ -6,16 +6,18 @@ import { useLoaderData } from "react-router";
 import AddMediaPopup from "./AddMediaPopup";
 import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
+import { WidgetData } from "../../types/WidgetData";
 
 export default function PlaylistComponent({
   playlist
 }: {
   playlist: Playlist
 }) {
-  const { recipientId, settings, widgetId } = useLoaderData();
+  const { settings, widgetId } = useLoaderData() as WidgetData;
   const activeRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState<number|null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
+  const [urlToCopy, setUrlToCopy] = useState<string>("");
 
   function onDragEnd(result) {
     if (!result.destination) {
@@ -107,9 +109,10 @@ export default function PlaylistComponent({
                           </button>
                           <button
                             className="btn btn-outline-light share"
-                            onClick={() =>
+                            onClick={() => {
                               navigator.clipboard.writeText(song.src)
-                            }
+                              setUrlToCopy(song.src);
+                            }}
                           >
                             <span className="material-symbols-sharp">
                               share

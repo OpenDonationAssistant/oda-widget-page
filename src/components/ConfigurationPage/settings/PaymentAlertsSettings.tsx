@@ -5,6 +5,8 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
+import { log } from "../../../logging";
+import { PaymentAlertsWidgetSettings } from "../WidgetSettings";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -346,6 +348,8 @@ export default function PaymentAlertSettings({
     });
     onChange.call({});
   }
+
+  // log.debug({ settings: setting}, 'creaing alerts preview');
 
   const previews = () => (
     <div className="payment-alerts-previews">

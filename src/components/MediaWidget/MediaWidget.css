@@ -80,6 +80,19 @@
   background-color: rgb(13, 110, 253);
 }
 
+.link-popup {
+  position: absolute;
+  width: 90%;
+  min-height: 30px;
+  background-color: white;
+}
+
+.link-popup input {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+}
+
 .item-buttons {
   display: none;
 }

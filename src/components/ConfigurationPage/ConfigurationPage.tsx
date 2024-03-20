@@ -124,7 +124,7 @@ export default function ConfigurationPage({}: {}) {
       case "payment-alerts": {
         return new PaymentAlertsWidgetSettings(
           savedSettings.config.properties,
-          savedSettings.config.alerts,
+          savedSettings.config.alerts ?? [],
         );
       }
       case "player-info": {
@@ -149,6 +149,8 @@ export default function ConfigurationPage({}: {}) {
     widgets.forEach((it) => {
       widgetSettings.set(it.id, createSettings(it).copy());
     });
+
+    log.debug({ settings: widgetSettings}, "loaded widget settings");
 
     setConfig(widgetSettings);
   }, [widgets]);

@@ -324,8 +324,9 @@ class PaymentsWidgetSettings extends AbstractWidgetSettings {
 }
 
 class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
-  alerts: any[];
+  public alerts: any[];
   constructor(properties: WidgetProperty[], alerts: any[]) {
+    log.debug({ alerts: alerts}, `creating payment-alerts settings`);
     super(
       properties,
       [
@@ -339,6 +340,12 @@ class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       new Map(),
     );
     this.alerts = alerts;
+  }
+  public copy() {
+    return new PaymentAlertsWidgetSettings(
+      this.properties,
+      this.alerts
+    );
   }
 }
 

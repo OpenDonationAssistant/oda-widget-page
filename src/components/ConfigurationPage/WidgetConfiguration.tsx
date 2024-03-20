@@ -13,6 +13,7 @@ import BaseSettings from "./settings/BaseSettings";
 import DonatersTopListSettings from "./settings/DonatersTopListSettings";
 import { socket } from "../../socket";
 import ReelWidgetSettings from "../../pages/Reel/ReelWidgetSettings";
+import { log } from "../../logging";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -83,10 +84,12 @@ export default function WidgetConfiguration({
 
   function saveSettings() {
     const settings = config.get(id);
+    log.debug({ id: id, settings: settings}, "saving settings");
     const request = {
       name: newName,
       config: {
         properties: settings?.properties,
+        alerts: settings?.alerts
       },
     };
     return axios.patch(
