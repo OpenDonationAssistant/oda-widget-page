@@ -1,0 +1,25 @@
+.settingstabs {
+  display:flex;
+}
+
+.setttingstabitem{
+  flex: 0 0 auto;
+  margin-right: 10px;
+  background-color: #111529;
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  color: #7885bd;
+  user-select: none;
+}
+
+.settingstabitem:hover {
+  cursor: pointer;
+}
+
+.settingstabitem .active {
+  background-color: #684aff;
+  color: white;
+}

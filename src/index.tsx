@@ -24,12 +24,13 @@ import PaymentPageConfigComponent from "./components/PaymentPageConfig/PaymentPa
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 import ReelWidget from "./pages/Reel/ReelWidget";
+import { WidgetData } from "./types/WidgetData";
 
 async function widgetSettingsLoader({
   params,
 }: {
   params: Params<"widgetId">;
-}) {
+}): Promise<WidgetData> {
   const recipientId = await auth();
   log.debug(`loading settings for ${recipientId}`);
   let settings = {};

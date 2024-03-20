@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import BaseSettings from "../../components/ConfigurationPage/settings/BaseSettings";
 import { WidgetsContext } from "../../components/ConfigurationPage/WidgetsContext";
 import { log } from "../../logging";
-import classes from "./RouletteWidgetSettings.module.css";
+import classes from "./ReelWidgetSettings.module.css";
 import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 
-export default function RouletteWidgetSettings({
+export default function ReelWidgetSettings({
   id,
   onChange,
 }: {

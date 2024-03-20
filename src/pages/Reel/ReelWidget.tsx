@@ -10,7 +10,7 @@ import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
 
 export default function ReelWidget({}) {
-  const { recipientId, settings, conf, widgetId } = useLoaderData();
+  const { settings, conf, widgetId } = useLoaderData();
   const navigate = useNavigate();
   const glideRef = useRef<HTMLDivElement | null>(null);
   const glide = useRef<Glide | null>(null);
@@ -26,7 +26,7 @@ export default function ReelWidget({}) {
         log.debug(`clear active and highlight`);
         setActive(null);
         setHighlight(false);
-        glideRef.current?.classList.add('hidden');
+        glideRef.current?.classList.add("hidden");
       }, 20000);
       message.ack();
     });
@@ -51,22 +51,32 @@ export default function ReelWidget({}) {
     if (!active) {
       return;
     }
-    glideRef.current?.classList.remove('hidden');
+    glideRef.current?.classList.remove("hidden");
     log.debug(`selecting ${active} for reel`);
-    setupScroll(glide.current, 40, () => {
-      const index = options.findIndex((option) => option === active);
-      console.log(`highlight ${index} from ${JSON.stringify(options)}`);
-      glide.current.update({ startAt: index});
-      setHighlight(true);
-    });
+    setupScroll(
+      glide.current,
+      40,
+      () => {
+        const index = options.findIndex((option) => option === active);
+        log.debug(`highlight ${index} from ${JSON.stringify(options)}`);
+        glide.current.update({ startAt: index });
+        setHighlight(true);
+      },
+      options.length,
+    );
   }, [active]);
 
-  function setupScroll(glide: any, iteration: number, result: Function) {
+  function setupScroll(
+    glide: any,
+    iteration: number,
+    result: Function,
+    itemsCount: number,
+  ) {
     if (iteration < 1) {
       result();
       return;
     }
-    const selected = getRndInteger(0, 3);
+    const selected = getRndInteger(0, itemsCount);
     const scroll = () => glide.go(`=${selected}`);
     console.log(`selected: ${selected}`);
     if (iteration === 1) {
@@ -74,7 +84,7 @@ export default function ReelWidget({}) {
     }
     setTimeout(() => {
       scroll();
-      setupScroll(glide, iteration - 1, result);
+      setupScroll(glide, iteration - 1, result, itemsCount);
     }, 140);
   }
 
@@ -94,11 +104,11 @@ export default function ReelWidget({}) {
   const borderColor = findSetting(settings, "borderColor", "red");
   const selectionColor = findSetting(settings, "selectionColor", "green");
   const slideStyle = {
-    borderColor: borderColor
+    borderColor: borderColor,
   };
-  const selectionStyle ={
+  const selectionStyle = {
     backgroundColor: selectionColor,
-  }
+  };
 
   return (
     <>

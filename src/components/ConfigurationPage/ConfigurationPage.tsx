@@ -4,8 +4,21 @@ import Toolbar, { Page } from "./Toolbar";
 import { WidgetsContext } from "./WidgetsContext";
 import axios from "axios";
 import { useLoaderData } from "react-router";
-import { defaultSettings } from "./WidgetSettings";
+import {
+  AbstractWidgetSettings,
+  DonatersTopListWidgetSettings,
+  DonationTimerWidgetSettings,
+  EmptyWidgetSettings,
+  MediaWidgetSettings,
+  PaymentAlertsWidgetSettings,
+  PaymentsWidgetSettings,
+  PlayerInfoWidgetSettings,
+  PlayerPopupWidgetSettings,
+  ReelWidgetSettings,
+} from "./WidgetSettings";
 import { log } from "../../logging";
+import { WidgetData } from "../../types/WidgetData";
+import { WidgetSettings } from "../../types/WidgetSettings";
 
 const backgroundColor = (
   <style
@@ -19,7 +32,9 @@ function loadSettings() {
   return axios
     .get(`${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets`)
     .then((data) => data.data)
-    .then((data) => data.sort((a, b) => a.sortOrder - b.sortOrder));
+    .then((data: WidgetSettings[]) =>
+      data.sort((a, b) => a.sortOrder - b.sortOrder)
+    );
 }
 
 function addWidget(type: string, total: number) {
@@ -42,26 +57,29 @@ const types = [
 ];
 
 export default function ConfigurationPage({}: {}) {
-  const [config, setConfig] = useState(new Map());
+  const [config, setConfig] = useState<Map<string, AbstractWidgetSettings>>(
+    new Map(),
+  );
+  const context = { config, setConfig, updateConfig };
+  const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
+  const [widgets, setWidgets] = useState<WidgetSettings[]>([]);
+  const { recipientId } = useLoaderData() as WidgetData;
 
   function updateConfig(id: string, key: string, value: any) {
     setConfig((oldConfig) => {
-      let updatedProperties = oldConfig.get(id)?.properties.map((it: any) => {
+      const widgetSettings = oldConfig.get(id) ?? new EmptyWidgetSettings([]);
+      let updatedProperties = widgetSettings?.properties.map((it) => {
         if (it.name === key) {
           it.value = value;
         }
         return it;
       });
-			console.log(updatedProperties);
-      return new Map(oldConfig).set(id, { properties: updatedProperties });
+      log.debug(`updated properties: ${JSON.stringify(updatedProperties)}`);
+      widgetSettings.properties = updatedProperties;
+      log.debug(`updated widget setting: ${JSON.stringify(widgetSettings)}`);
+      return new Map(oldConfig).set(id, widgetSettings);
     });
   }
-
-
-  const context = { config, setConfig, updateConfig };
-  const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
-  const [widgets, setWidgets] = useState([]);
-  const { recipientId, settings, conf } = useLoaderData();
 
   function load() {
     loadSettings().then((widgets) => setWidgets(widgets));
@@ -71,27 +89,65 @@ export default function ConfigurationPage({}: {}) {
     load();
   }, [recipientId]);
 
+  function createSettings(savedSettings: WidgetSettings) {
+    switch (savedSettings.type) {
+      case "donaters-top-list": {
+        return new DonatersTopListWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "donation-timer": {
+        return new DonationTimerWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "media": {
+        return new MediaWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "player-control": {
+        return new EmptyWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "player-popup": {
+        return new PlayerPopupWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "payments": {
+        return new PaymentsWidgetSettings(
+          savedSettings.config.properties,
+        );
+      }
+      case "payment-alerts": {
+        return new PaymentAlertsWidgetSettings(
+          savedSettings.config.properties,
+          savedSettings.config.alerts,
+        );
+      }
+      case "player-info": {
+        return new PlayerInfoWidgetSettings(
+          savedSettings.config.properties
+        );
+      }
+      case "reel": {
+        return new ReelWidgetSettings(
+          savedSettings.config.properties
+        );
+      }
+      default: {
+        return new EmptyWidgetSettings(savedSettings.config.properties);
+      }
+    }
+  }
+
   useEffect(() => {
     let widgetSettings = new Map();
 
     widgets.forEach((it) => {
-      const settings = defaultSettings[it.type];
-      if (!settings) {
-        return;
-      }
-      log.debug(`default settings for ${it.type} are ${JSON.stringify(settings)}`);
-        const mergedSettings = settings.defaultValues.map((prop) => {
-				const value = it.config?.properties?.find((sameprop) => sameprop.name === prop.name)?.value;
-        const updatedProp = structuredClone(prop);
-				if (value != null){
-				  updatedProp.value = value;
-				}
-				return updatedProp;
-      });
-      log.debug(`merged settings for ${it.type} are ${JSON.stringify(mergedSettings)}`);
-      it.config = it.config ?? {};
-      it.config.properties = mergedSettings;
-      widgetSettings.set(it.id, it.config);
+      widgetSettings.set(it.id, createSettings(it).copy());
     });
 
     setConfig(widgetSettings);
@@ -119,7 +175,7 @@ export default function ConfigurationPage({}: {}) {
   return (
     <div className="configuration-container">
       {backgroundColor}
-      <Toolbar page={Page.WIDGETS}/>
+      <Toolbar page={Page.WIDGETS} />
       <div className="widget-list">
         <WidgetsContext.Provider value={context}>
           {widgets.map((data) => (

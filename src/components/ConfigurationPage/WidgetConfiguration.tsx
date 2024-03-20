@@ -11,9 +11,8 @@ import PaymentAlertSettings from "./settings/PaymentAlertsSettings";
 import { WidgetsContext } from "./WidgetsContext";
 import BaseSettings from "./settings/BaseSettings";
 import DonatersTopListSettings from "./settings/DonatersTopListSettings";
-import DonationTimerSettings from "./settings/DonationTimerSettings";
 import { socket } from "../../socket";
-import RouletteWidgetSettings from "../../pages/Reel/RouletteWidgetSettings";
+import ReelWidgetSettings from "../../pages/Reel/ReelWidgetSettings";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -29,7 +28,7 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
     case "donaters-top-list":
       return <DonatersTopListSettings id={id} onChange={onChange} />;
     case "reel":
-      return <RouletteWidgetSettings id={id} onChange={onChange} />;
+      return <ReelWidgetSettings id={id} onChange={onChange} />;
     default:
       return <BaseSettings id={id} onChange={onChange} />;
   }
@@ -47,14 +46,24 @@ export default function WidgetConfiguration({
   type,
   reload,
 }: WidgetConfigurationProps) {
-  const { config } = useContext(WidgetsContext);
+  const { config, setConfig, updateConfig } = useContext(WidgetsContext);
   const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [showWidgetMenu, setShowWidgetMenu] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(name);
+  const context = {
+    config: config,
+    setConfig: setConfig,
+    updateConfig: update,
+  };
 
   const menuRef = useRef(null);
+
+  function update(id: string, key: string, value: any) {
+    updateConfig(id, key, value);
+    setHasChanges(true);
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -73,12 +82,16 @@ export default function WidgetConfiguration({
   }
 
   function saveSettings() {
+    const settings = config.get(id);
+    const request = {
+      name: newName,
+      config: {
+        properties: settings?.properties,
+      },
+    };
     return axios.patch(
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
-      {
-        name: newName,
-        config: config.get(id),
-      },
+      request,
     );
   }
 
@@ -146,7 +159,9 @@ export default function WidgetConfiguration({
             settingsHidden ? "visually-hidden" : ""
           }`}
         >
-          {getSettingsWidget(id, type, () => setHasChanges(true))}
+          <WidgetsContext.Provider value={context}>
+            {getSettingsWidget(id, type, () => setHasChanges(true))}
+          </WidgetsContext.Provider>
         </div>
         {showWidgetMenu && (
           <div className="widget-button-menu">
