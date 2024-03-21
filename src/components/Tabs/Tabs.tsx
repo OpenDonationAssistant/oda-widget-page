@@ -15,7 +15,7 @@ export default function Tabs({
 
   useEffect(() => {
     const settings = config.get(widgetId);
-    log.debug({settings: settings},"trying to find first tab");
+    log.debug({ settings: settings }, "trying to find first tab");
     if (!settings) {
       return;
     }
@@ -25,7 +25,7 @@ export default function Tabs({
       onChange(firstTab.value);
       setTab(firstTab.value);
     }
-  },[config]);
+  }, [config]);
 
   const tabs = () => {
     const settings = config.get(widgetId);

@@ -9,13 +9,13 @@ import { Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 
 export default function PlaylistComponent({
-  playlist
+  playlist,
 }: {
-  playlist: Playlist
+  playlist: Playlist;
 }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const activeRef = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useState<number|null>(null);
+  const [current, setCurrent] = useState<number | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [urlToCopy, setUrlToCopy] = useState<string>("");
 
@@ -36,13 +36,13 @@ export default function PlaylistComponent({
   useEffect(() => {
     playlist.addListener({
       id: `${widgetId}_playlist`,
-      trigger(playlist: Playlist){
+      trigger(playlist: Playlist) {
         setSongs(playlist.songs());
         setCurrent(playlist.index());
-      }
+      },
     });
     // todo cleanup function
-  },[playlist]);
+  }, [playlist]);
 
   useEffect(() => {
     if (activeRef.current) {
@@ -96,7 +96,7 @@ export default function PlaylistComponent({
                           <button
                             className="btn btn-outline-light play"
                             onClick={() => {
-                              const id = playlist.song()?.id
+                              const id = playlist.song()?.id;
                               if (id) {
                                 playlist.markListened(id);
                               }
@@ -110,7 +110,7 @@ export default function PlaylistComponent({
                           <button
                             className="btn btn-outline-light share"
                             onClick={() => {
-                              navigator.clipboard.writeText(song.src)
+                              navigator.clipboard.writeText(song.src);
                               setUrlToCopy(song.src);
                             }}
                           >
@@ -165,6 +165,15 @@ export default function PlaylistComponent({
                 }}
               >
                 <span className="material-symbols-sharp">add</span>
+              </button>
+            </div>
+            <div className={`link-popup ${urlToCopy ? "" : "hidden"}`}>
+              <input value={urlToCopy} />
+              <button
+                id="close-add-media-popup"
+                onClick={() => setUrlToCopy("")}
+              >
+                <span className="material-symbols-sharp">close</span>
               </button>
             </div>
             <AddMediaPopup playlist={playlist} />
