@@ -291,12 +291,10 @@ iframe {
 }
 
 .video-owner {
-  /* position: absolute; */
   top: 390px;
   color: white;
   z-index: 3000;
   background: rgba(0, 0, 0, 0.9);
-  /* width: 500px; */
   width: 100%;
   padding-left: 20px;
   padding-bottom: 21px;

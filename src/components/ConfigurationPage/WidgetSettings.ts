@@ -29,9 +29,10 @@ class AbstractWidgetSettings {
 
   private mergeProperties(value: WidgetProperty[]): WidgetProperty[] {
     const prepared = structuredClone(this._defaultValues);
-    const updated =  prepared.map((prop) => {
+    const updated = prepared.map((prop) => {
       const updated = structuredClone(prop);
-      updated.value = value.find((it) => it.name === prop.name)?.value ?? updated.value;
+      updated.value =
+        value.find((it) => it.name === prop.name)?.value ?? updated.value;
       return updated;
     });
     log.debug(
@@ -342,10 +343,7 @@ class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     this.alerts = alerts;
   }
   public copy() {
-    return new PaymentAlertsWidgetSettings(
-      this.properties,
-      this.alerts
-    );
+    return new PaymentAlertsWidgetSettings(this.properties, this.alerts);
   }
 }
 
@@ -380,6 +378,9 @@ class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
 
 class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor(properties: WidgetProperty[]) {
+    const tabs = new Map();
+    tabs.set("general", "Общие");
+    tabs.set("prizes", "Призы");
     super(
       properties,
       [
@@ -388,51 +389,73 @@ class ReelWidgetSettings extends AbstractWidgetSettings {
           type: "fontselect",
           value: "Roboto",
           displayName: "Шрифт",
+          tab: "general",
         },
         {
           name: "fontSize",
           type: "number",
           value: "24",
           displayName: "Размер шрифта",
+          tab: "general",
         },
         {
           name: "color",
           type: "color",
           value: "#000000",
           displayName: "Цвет текста",
+          tab: "general",
         },
         {
           name: "borderColor",
           type: "color",
           value: "#FF0000",
           displayName: "Цвет рамок",
+          tab: "general",
         },
         {
           name: "selectionColor",
           type: "color",
           value: "#00FF00",
           displayName: "Фон выбора",
+          tab: "general",
         },
         {
           name: "type",
           type: "custom",
           value: "eachpayment",
           displayName: "Условие",
+          tab: "general",
         },
         {
           name: "requiredAmount",
           type: "number",
           value: "100",
           displayName: "Требуемая сумма",
+          tab: "general",
         },
         {
           name: "optionList",
           type: "custom",
           value: ["Ничего", "Выигрыш"],
           displayName: "Призы",
+          tab: "prizes",
+        },
+        {
+          name: "backgroundImage",
+          type: "custom",
+          value: "",
+          displayName: "Фон карточек",
+          tab: "prizes",
+        },
+        {
+          name: "winnerBackgroundImage",
+          type: "custom",
+          value: "",
+          displayName: "Фон выигрыша",
+          tab: "prizes",
         },
       ],
-      new Map(),
+      tabs,
     );
   }
 }

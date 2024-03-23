@@ -17,17 +17,25 @@ export default function ReelWidget({}) {
   const [active, setActive] = useState<string | null>(null);
   const [highlight, setHighlight] = useState<boolean>(false);
 
-  useEffect(() => {
-    subscribe(widgetId, conf.topic.reel, (message) => {
-      log.info(`Received reel command: ${message.body}`);
-      let json = JSON.parse(message.body);
-      setActive(json.selection);
+  function handleSelection(selection: string){
+      if (!glideRef.current?.classList.contains("hidden")) {
+        setTimeout(() => handleSelection(selection), 40000);
+        return;
+      }
+      setActive(selection);
       setTimeout(() => {
         log.debug(`clear active and highlight`);
         setActive(null);
         setHighlight(false);
         glideRef.current?.classList.add("hidden");
       }, 20000);
+  }
+
+  useEffect(() => {
+    subscribe(widgetId, conf.topic.reel, (message) => {
+      log.info(`Received reel command: ${message.body}`);
+      let json = JSON.parse(message.body);
+      handleSelection(json.selection);
       message.ack();
     });
     setupCommandListener(widgetId, () => navigate(0));
@@ -77,7 +85,10 @@ export default function ReelWidget({}) {
       return;
     }
     const selected = getRndInteger(0, itemsCount);
-    const scroll = () => glide.go(`=${selected}`);
+    const scroll = () => {
+      glide.go(">");
+      glide.go(">");
+    }
     console.log(`selected: ${selected}`);
     if (iteration === 1) {
       console.log(`setActive to ${selected}`);
@@ -106,9 +117,19 @@ export default function ReelWidget({}) {
   const slideStyle = {
     borderColor: borderColor,
   };
-  const selectionStyle = {
-    backgroundColor: selectionColor,
-  };
+  const backgroundImage = findSetting(settings, "backgroundImage", "");
+
+  function calcItemStyle(option: string){
+    const style = {};
+    if (highlight && active === option){
+      style.backgroundColor = selectionColor;
+    } else {
+      style.backgroundSize = "cover";
+      style.backgroundImage = `url(${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage})`;
+    }
+    log.debug({style}, "calculated style for slide item");
+    return style;
+  }
 
   return (
     <>
@@ -122,15 +143,22 @@ export default function ReelWidget({}) {
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides" style={slideStyle}>
               {options.map((option) => (
-                <li
+                <div
                   key={option}
-                  style={highlight && active === option ? selectionStyle : {}}
-                  className={`glide__slide ${classes.reelitem} ${
-                    highlight && active === option ? classes.active : ""
-                  }`}
+                  style={{
+                    backgroundImage: `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage}`,
+                  }}
                 >
-                  {option}
-                </li>
+                  <li
+                    key={option}
+                    style={calcItemStyle(option)}
+                    className={`glide__slide ${classes.reelitem} ${
+                      highlight && active === option ? classes.active : ""
+                    }`}
+                  >
+                    {option}
+                  </li>
+                </div>
               ))}
             </ul>
           </div>
