@@ -124,8 +124,10 @@ export default function ReelWidget({}) {
     if (highlight && active === option){
       style.backgroundColor = selectionColor;
     } else {
-      style.backgroundSize = "cover";
-      style.backgroundImage = `url(${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage})`;
+      if (backgroundImage) {
+        style.backgroundSize = "cover";
+        style.backgroundImage = `url(${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage})`;
+      }
     }
     log.debug({style}, "calculated style for slide item");
     return style;
