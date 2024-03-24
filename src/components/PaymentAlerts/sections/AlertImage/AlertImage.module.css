@@ -1,8 +1,9 @@
 .alertimage {
-	flex-grow: 1;
+  flex-grow: 1;
   flex-shrink: 1;
-	display: flex;
-	border: none;
-	margin-left: auto;
-	margin-right: auto;
+  display: flex;
+  border: none;
+  margin-left: auto;
+  margin-right: auto;
+  height: 0px;
 }
