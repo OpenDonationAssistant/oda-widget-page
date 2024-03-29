@@ -34,7 +34,7 @@ export default function PlayerPopup({}) {
   function createPlayer(song: Song) {
     if (playerRef.current) {
       playerRef.current.dispose();
-      log.debug(`cancel player creation because of existing instance`);
+      playerRef.current = null;
     }
     log.debug("Creating player");
 
@@ -67,7 +67,9 @@ export default function PlayerPopup({}) {
         setSong(json.song);
       }
       if (json.command === "stop") {
+        log.debug(`disposing player by stop command`);
         playerRef.current?.dispose();
+        playerRef.current = null;
         setSong(null);
       }
       if (json.command === "pause") {

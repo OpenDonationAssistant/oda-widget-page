@@ -2,6 +2,7 @@
   text-align: right;
   width: 100%;
   margin-top: 10px;
+  height: 36px;
 }
 .checkboxwrapper input[type="checkbox"] {
   background-image:

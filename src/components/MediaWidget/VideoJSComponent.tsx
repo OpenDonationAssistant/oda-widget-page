@@ -127,6 +127,7 @@ export default function VideoJSComponent({
     log.debug(`sending song ${JSON.stringify(song)} to remote player`);
     publish(conf.topic.remoteplayer, { command: "play", song: song });
     setPlayerState(PLAYER_STATE.PLAYING);
+    sendAlert(song.title);
   }, [isRemote, song]);
 
   function sendAlert(title: string) {
@@ -217,6 +218,7 @@ export default function VideoJSComponent({
                     publish(conf.topic.remoteplayer, {
                       command: "resume",
                     });
+                    sendAlert(song?.title ?? "");
                     setPlayerState(PLAYER_STATE.PLAYING);
                   }
                   if (!isRemote) {
@@ -236,6 +238,7 @@ export default function VideoJSComponent({
                     publish(conf.topic.remoteplayer, {
                       command: "pause",
                     });
+                    sendAlert("");
                     setPlayerState(PLAYER_STATE.PAUSED);
                   }
                   if (!isRemote) {
