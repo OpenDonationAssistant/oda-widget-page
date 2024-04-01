@@ -33,7 +33,7 @@ export default function ReelWidgetSettings({
     log.debug(`running effect for updating option list`);
     setOptionList((oldList) => {
       const newList = getProperty("optionList");
-      log.debug(`updating option list to ${JSON.stringify(newList)}`);
+      log.debug({options: newList}, `updating option list`);
       return newList;
     });
   }, [config]);

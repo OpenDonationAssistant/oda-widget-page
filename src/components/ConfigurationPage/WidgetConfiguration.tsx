@@ -84,12 +84,19 @@ export default function WidgetConfiguration({
 
   function saveSettings() {
     const settings = config.get(id);
-    log.debug({ id: id, settings: settings}, "saving settings");
+    log.debug({ id: id, settings: settings }, "saving settings");
+    const props = settings?.properties.map((prop) => {
+      return {
+        name: prop.name,
+        value: prop.value,
+      };
+    });
+    log.debug({updated: props}, "sending props");
     const request = {
       name: newName,
       config: {
-        properties: settings?.properties,
-        alerts: settings?.alerts
+        properties: props,
+        alerts: settings?.alerts,
       },
     };
     return axios.patch(
@@ -162,9 +169,11 @@ export default function WidgetConfiguration({
             settingsHidden ? "visually-hidden" : ""
           }`}
         >
-          <WidgetsContext.Provider value={context}>
-            {getSettingsWidget(id, type, () => setHasChanges(true))}
-          </WidgetsContext.Provider>
+          {config.get(id) && (
+            <WidgetsContext.Provider value={context}>
+              {getSettingsWidget(id, type, () => setHasChanges(true))}
+            </WidgetsContext.Provider>
+          )}
         </div>
         {showWidgetMenu && (
           <div className="widget-button-menu">

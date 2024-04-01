@@ -32,7 +32,7 @@ export class AlertController {
       })
       .then(() => {
         subscribe(widgetId, this.conf.topic.alerts, (message) => {
-          log.info(`Received alert: ${message.body}`);
+          log.info({message}, `Received alert`);
           let json = JSON.parse(message.body);
           const alert = this.findAlert(json);
           if (alert) {

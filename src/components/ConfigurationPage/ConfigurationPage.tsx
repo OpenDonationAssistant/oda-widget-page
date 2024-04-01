@@ -4,21 +4,19 @@ import Toolbar, { Page } from "./Toolbar";
 import { WidgetsContext } from "./WidgetsContext";
 import axios from "axios";
 import { useLoaderData } from "react-router";
-import {
-  AbstractWidgetSettings,
-  DonatersTopListWidgetSettings,
-  DonationTimerWidgetSettings,
-  EmptyWidgetSettings,
-  MediaWidgetSettings,
-  PaymentAlertsWidgetSettings,
-  PaymentsWidgetSettings,
-  PlayerInfoWidgetSettings,
-  PlayerPopupWidgetSettings,
-  ReelWidgetSettings,
-} from "./WidgetSettings";
+import { EmptyWidgetSettings } from "./WidgetSettings";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import { WidgetSettings } from "../../types/WidgetSettings";
+import { PlayerPopupWidgetSettings } from "./widgetsettings/PlayerPopupWidgetSettings";
+import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
+import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
+import { DonationTimerWidgetSettings } from "./widgetsettings/DonationTimerWidgetSettings";
+import { MediaWidgetSettings } from "./widgetsettings/MediaWidgetSettings";
+import { PaymentsWidgetSettings } from "./widgetsettings/PaymentsWidgetSettings";
+import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidgetSettings";
+import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
+import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 
 const backgroundColor = (
   <style
@@ -32,9 +30,11 @@ function loadSettings() {
   return axios
     .get(`${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets`)
     .then((data) => data.data)
-    .then((data: WidgetSettings[]) =>
-      data.sort((a, b) => a.sortOrder - b.sortOrder)
-    );
+    .then((data: WidgetSettings[]) => {
+      const sorted = data.sort((a, b) => a.sortOrder - b.sortOrder);
+      log.debug({ settings: data }, "loaded widget settings");
+      return sorted;
+    });
 }
 
 function addWidget(type: string, total: number) {
@@ -93,64 +93,82 @@ export default function ConfigurationPage({}: {}) {
     switch (savedSettings.type) {
       case "donaters-top-list": {
         return new DonatersTopListWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "donation-timer": {
         return new DonationTimerWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "media": {
         return new MediaWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "player-control": {
         return new EmptyWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "player-popup": {
         return new PlayerPopupWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "payments": {
         return new PaymentsWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
         );
       }
       case "payment-alerts": {
         return new PaymentAlertsWidgetSettings(
+          savedSettings.id,
           savedSettings.config.properties,
           savedSettings.config.alerts ?? [],
         );
       }
       case "player-info": {
         return new PlayerInfoWidgetSettings(
-          savedSettings.config.properties
+          savedSettings.id,
+          savedSettings.config.properties,
         );
       }
       case "reel": {
         return new ReelWidgetSettings(
-          savedSettings.config.properties
+          savedSettings.id,
+          savedSettings.config.properties,
         );
       }
       default: {
-        return new EmptyWidgetSettings(savedSettings.config.properties);
+        return new EmptyWidgetSettings(
+          savedSettings.id,
+          savedSettings.config.properties,
+        );
       }
     }
   }
 
   useEffect(() => {
+    if (!widgets) {
+      return;
+    }
+    if (widgets.length === 0) {
+      return;
+    }
     let widgetSettings = new Map();
 
     widgets.forEach((it) => {
       widgetSettings.set(it.id, createSettings(it).copy());
     });
 
-    log.debug({ settings: widgetSettings}, "loaded widget settings");
+    log.debug({ settings: widgetSettings }, "merged widget settings");
 
     setConfig(widgetSettings);
   }, [widgets]);
