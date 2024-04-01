@@ -70,6 +70,7 @@ export default function PaymentAlertSettings({
     alerts.push({
       audio: null,
       image: null,
+      video: null,
       trigger: {
         amount: 10,
       },
@@ -273,13 +274,31 @@ export default function PaymentAlertSettings({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      console.log(file);
       uploadFile(file).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
           updatedAlerts.image = file.name;
+          alerts[selected] = updatedAlerts;
+          alertConfig.alerts = alerts;
+          const newConfig = new Map(oldConfig).set(id, alertConfig);
+          return newConfig;
+        });
+        onChange.call({});
+      });
+    }
+  };
+
+  const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      uploadFile(file).then((ignore) => {
+        setConfig((oldConfig) => {
+          const alertConfig = oldConfig.get(id);
+          const alerts = alertConfig?.alerts;
+          let updatedAlerts = alerts?.at(selected);
+          updatedAlerts.video = file.name;
           alerts[selected] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
@@ -349,8 +368,6 @@ export default function PaymentAlertSettings({
     onChange.call({});
   }
 
-  // log.debug({ settings: setting}, 'creaing alerts preview');
-
   const previews = () => (
     <div className="payment-alerts-previews">
       {config.get(id)?.alerts?.map((alert, number: number) => (
@@ -367,7 +384,20 @@ export default function PaymentAlertSettings({
               }}
             />
           )}
-          {!alert.image && (
+          {alert.video && (
+            <video
+              className={`payment-alert-image-preview ${
+                selected === number ? "selected" : ""
+              }`}
+              src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
+              muted={true}
+              onClick={() => {
+                setTab("trigger");
+                setSelected(selected === number ? -2 : number);
+              }}
+            />
+          )}
+          {!alert.image && !alert.video && (
             <div
               onClick={() => {
                 setTab("trigger");
@@ -530,6 +560,10 @@ export default function PaymentAlertSettings({
       )}
       {"image" === tab && (
         <div className="upload-button-container">
+          <label className="upload-button" style={{marginRight: "10px"}}>
+            <input type="file" onChange={handleVideoUpload} />
+            Загрузить видео
+          </label>
           <label className="upload-button">
             <input type="file" onChange={handleFileChange} />
             Загрузить изображение
