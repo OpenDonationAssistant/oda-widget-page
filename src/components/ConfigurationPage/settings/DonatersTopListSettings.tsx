@@ -16,7 +16,7 @@ export default function DonatersTopListSettings({ id }: { id: string }) {
         ?.properties?.filter((prop) => prop.tab === tab)
         .map((prop) => {
           if (prop.name === "type" || prop.name === "period") {
-            return prop.markup();
+            return prop.markup(updateConfig);
           }
           if (prop.name === "layout") {
             return (

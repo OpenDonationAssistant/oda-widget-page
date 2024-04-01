@@ -1,6 +1,5 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import ColorPicker from "../settings/ColorPicker";
-import { WidgetsContext } from "../WidgetsContext";
 
 export class ColorProperty {
   widgetId: string | null;
@@ -26,8 +25,7 @@ export class ColorProperty {
     this.tab = tab;
   }
 
-  markup(): ReactNode {
-    const { updateConfig } = useContext(WidgetsContext);
+  markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
         <label

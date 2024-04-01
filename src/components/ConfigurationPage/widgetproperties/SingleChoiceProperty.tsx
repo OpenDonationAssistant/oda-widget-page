@@ -1,5 +1,4 @@
-import { ReactNode, useContext } from "react";
-import { WidgetsContext } from "../WidgetsContext";
+import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 
 export class SingleChoiceProperty extends DefaultWidgetProperty {
@@ -18,16 +17,10 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
     this.options = options ?? [];
   }
 
-  markup(): ReactNode {
-    const { updateConfig } = useContext(WidgetsContext);
+  markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label
-          htmlFor={`${this.widgetId}_${this.name}`}
-          className="widget-settings-name"
-        >
-          {this.displayName}
-        </label>
+        <label className="widget-settings-name">{this.displayName}</label>
         <select
           value={this.value}
           className="widget-settings-value select"

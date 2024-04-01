@@ -1,6 +1,5 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import { log } from "../../../logging";
-import { WidgetsContext } from "../WidgetsContext";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 
 export class NumberProperty extends DefaultWidgetProperty {
@@ -27,8 +26,7 @@ export class NumberProperty extends DefaultWidgetProperty {
     );
   }
 
-  markup(): ReactNode {
-    const { updateConfig } = useContext(WidgetsContext);
+  markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
         <label

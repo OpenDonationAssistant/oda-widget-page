@@ -27,7 +27,7 @@ export default function BaseSettings({
         .get(id)
         ?.properties?.filter(filter)
         .map(
-          (prop) => (prop.type !== "custom" || customHandler) && prop.markup(),
+          (prop) => (prop.type !== "custom" || customHandler) && prop.markup(updateConfig),
         )}
     </>
   );

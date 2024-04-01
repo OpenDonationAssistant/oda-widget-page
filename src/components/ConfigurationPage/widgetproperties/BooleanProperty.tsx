@@ -1,6 +1,5 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
-import { WidgetsContext } from "../WidgetsContext";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 
 export class BooleanProperty extends DefaultWidgetProperty {
@@ -26,8 +25,7 @@ export class BooleanProperty extends DefaultWidgetProperty {
     );
   }
 
-  markup(): ReactNode {
-    const { updateConfig } = useContext(WidgetsContext);
+  markup(updateConfig: Function): ReactNode {
     return (
       <>
         <div key={this.name} className="widget-settings-item">

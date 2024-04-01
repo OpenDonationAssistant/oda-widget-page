@@ -8,7 +8,7 @@ export interface WidgetProperty {
   value: any;
   displayName: string;
   tab?: string;
-  markup: () => ReactNode;
+  markup: (updateConfig: Function) => ReactNode;
   copy: () => WidgetProperty;
 }
 
@@ -36,7 +36,7 @@ export class DefaultWidgetProperty {
     this._tab = tab;
   }
 
-  markup(): ReactNode {
+  markup(updateConfig: Function): ReactNode {
     return React.createElement("div");
   }
 
