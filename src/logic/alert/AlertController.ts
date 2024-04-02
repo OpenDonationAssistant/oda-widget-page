@@ -206,6 +206,7 @@ export class AlertController {
     this.messageRenderers.forEach((renderer) => renderer.setMessage(""));
     this.titleRenderers.forEach((renderer) => renderer.setTitle(""));
     this.alertImageRenderers.forEach((renderer) => renderer.setImage(null));
+    this.alertImageRenderers.forEach((renderer) => renderer.setVideo(null));
     this.showing = false;
   }
 
@@ -216,11 +217,23 @@ export class AlertController {
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
-      renderer.setImage(
-        `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
-      );
+      if (alert.image){
+        log.debug({image: alert.image}, "rendering image");
+        renderer.setImage(
+          `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
+        );
+      }
+      if (alert.video){
+        log.debug({video: alert.video}, "rendering video");
+        renderer.setVideo(
+          `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
+        );
+      }
       if (showTime) {
-        setTimeout(() => renderer.setImage(null), showTime * 1000);
+        setTimeout(() => {
+          renderer.setImage(null);
+          renderer.setVideo(null);
+        }, showTime * 1000);
       }
       renderer.setStyle(
         this.calculateImageStyle(

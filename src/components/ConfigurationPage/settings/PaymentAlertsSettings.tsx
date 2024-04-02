@@ -5,8 +5,6 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import { log } from "../../../logging";
-import { PaymentAlertsWidgetSettings } from "../WidgetSettings";
 
 interface PaymentAlertSettingsProps {
   id: string;
