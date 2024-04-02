@@ -19,13 +19,15 @@ export default function ImageCache({
 
   return (
     <>
-      {images.map((image) => (
-        <img
-          key={image}
-          style={{ display: "none" }}
-          src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`}
-        />
-      ))}
+      {images
+        .filter((image) => image)
+        .map((image) => (
+          <img
+            key={image}
+            style={{ display: "none" }}
+            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`}
+          />
+        ))}
     </>
   );
 }

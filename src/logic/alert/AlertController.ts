@@ -162,6 +162,14 @@ export class AlertController {
     this.renderImage(alert);
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
+    if (alert.video) {
+      setTimeout(() => this.playAudio(alert, data, ackFunction), 5000);
+    } else {
+      this.playAudio(alert, data, ackFunction);
+    }
+  }
+
+  playAudio(alert: any, data: any, ackFunction: Function){
     this.voiceController?.playAudio(alert, () => {
       this.voiceController?.pronounceTitle(
         alert,
