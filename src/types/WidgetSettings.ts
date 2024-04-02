@@ -1,4 +1,4 @@
-import { WidgetProperty } from "../components/ConfigurationPage/WidgetSettings";
+import { WidgetProperty } from "../components/ConfigurationPage/widgetproperties/WidgetProperty";
 
 interface WidgetConfigData {
   properties: WidgetProperty[];
