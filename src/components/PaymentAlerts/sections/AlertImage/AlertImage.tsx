@@ -25,7 +25,7 @@ export default function AlertImage({
   return (
     <>
       {video && (
-        <video src={video} style={style} className={classes.alertimage} />
+        <video autoPlay={true} src={video} style={style} className={classes.alertimage} />
       )}
       {image && (
         <img src={image} style={style} className={classes.alertimage} />
