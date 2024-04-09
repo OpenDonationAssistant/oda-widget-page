@@ -7,10 +7,6 @@ export class AbstractWidgetSettings {
   private _tabDescriptions: Map<string, string>;
   private _widgetId: string;
 
-  public get widgetId(): string {
-    return this._widgetId;
-  }
-
   constructor(
     widgetId: string,
     properties: WidgetProperty[],
@@ -72,6 +68,10 @@ export class AbstractWidgetSettings {
 
   public set tabDescriptions(value: Map<string, string>) {
     this._tabDescriptions = value;
+  }
+
+  public get widgetId(): string {
+    return this._widgetId;
   }
 
   public copy() {

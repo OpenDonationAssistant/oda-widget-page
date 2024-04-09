@@ -17,6 +17,7 @@ import { PaymentsWidgetSettings } from "./widgetsettings/PaymentsWidgetSettings"
 import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidgetSettings";
 import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
+import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
 
 const backgroundColor = (
   <style
@@ -54,6 +55,7 @@ const types = [
   { name: "donation-timer", description: "Donation Timer" },
   { name: "player-popup", description: "Video Popup" },
   { name: "reel", description: "Roulette" },
+  { name: "donationgoal", description: "Donation Goals" },
 ];
 
 export default function ConfigurationPage({}: {}) {
@@ -142,6 +144,12 @@ export default function ConfigurationPage({}: {}) {
       }
       case "reel": {
         return new ReelWidgetSettings(
+          savedSettings.id,
+          savedSettings.config.properties,
+        );
+      }
+      case "donationgoal": {
+        return new DonationGoalWidgetSettings(
           savedSettings.id,
           savedSettings.config.properties,
         );
