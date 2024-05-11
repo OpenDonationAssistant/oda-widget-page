@@ -25,8 +25,6 @@ let options: VideoJsPlayerOptions = {
   youtube: { ytControls: 0, rel: 0 },
 };
 
-let freezed = false;
-
 enum PLAYER_STATE {
   PLAYING,
   PAUSED,
@@ -60,16 +58,14 @@ export default function VideoJSComponent({
 
   function freeze() {
     log.debug(`freezing player`);
-    freezed = true;
-    pausedByCommand.current = true;
     if (player && !player.paused()) {
+      pausedByCommand.current = true;
       player.pause();
     }
   }
 
   function unfreeze() {
     log.debug(`unfreezing player`);
-    freezed = false;
     if (!player) {
       log.debug(`cancel unfreeze because of missing player`);
       return;
@@ -151,7 +147,6 @@ export default function VideoJSComponent({
     videoElement.classList.add("vjs-big-play-centered");
     videoRef.current?.appendChild(videoElement);
     options.sources = song;
-    options.autoplay = !freezed;
     log.debug({options: options}, "creating player with  options");
 
     const player = videojs(videoElement, options);
