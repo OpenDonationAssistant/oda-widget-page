@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { WidgetsContext } from "../WidgetsContext";
-import { WidgetProperty } from "../WidgetSettings";
 import { log } from "../../../logging";
+import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 
 export default function BaseSettings({
   id,
-  customHandler,
   propertyFilter,
 }: {
   id: string;
@@ -21,14 +20,5 @@ export default function BaseSettings({
 
   const filter = (prop) => (propertyFilter ? propertyFilter(prop) : true);
 
-  return (
-    <>
-      {config
-        .get(id)
-        ?.properties?.filter(filter)
-        .map(
-          (prop) => (prop.type !== "custom" || customHandler) && prop.markup(updateConfig),
-        )}
-    </>
-  );
+  return config.get(id)?.markup(updateConfig);
 }

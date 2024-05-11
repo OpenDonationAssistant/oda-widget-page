@@ -25,6 +25,7 @@ import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/P
 import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
+import DonationGoal from "./components/DonationGoal/DonationGoal";
 
 async function widgetSettingsLoader({
   params,
@@ -47,7 +48,7 @@ async function widgetSettingsLoader({
   const conf = await config(recipientId);
   setLoglevel(conf.loglevel);
   log.debug(`Configuration: ${JSON.stringify(conf)}`);
-  const widgetId = params.widgetId;
+  const widgetId = params.widgetId ?? "unknown";
 
   return { recipientId, settings, conf, widgetId };
 }
@@ -120,6 +121,11 @@ const router = createBrowserRouter([
   {
     path: "/donation-timer/:widgetId",
     element: <DonationTimer />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/donationgoal/:widgetId",
+    element: <DonationGoal />,
     loader: widgetSettingsLoader,
   },
   {

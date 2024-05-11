@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import BaseSettings from "./BaseSettings";
-import Tabs from "../../Tabs/Tabs";
 
 export default function DonatersTopListSettings({ id }: { id: string }) {
   const { config, updateConfig } = useContext(WidgetsContext);
@@ -9,12 +8,11 @@ export default function DonatersTopListSettings({ id }: { id: string }) {
 
   return (
     <>
-      <Tabs widgetId={id} onChange={(tab: string) => setTab(tab)} />
-      <BaseSettings id={id} propertyFilter={(prop) => prop.tab === tab} />
+      <BaseSettings id={id} propertyFilter={(prop) => true} />
       {config
         .get(id)
-        ?.properties?.filter((prop) => prop.tab === tab)
-        .map((prop) => {
+        ?.properties
+        ?.map((prop) => {
           if (prop.name === "type" || prop.name === "period") {
             return prop.markup(updateConfig);
           }

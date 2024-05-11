@@ -1,109 +1,51 @@
-import { ColorProperty } from "../widgetproperties/ColorProperty";
-import { FontProperty } from "../widgetproperties/FontProperty";
-import { NumberProperty } from "../widgetproperties/NumberProperty";
+import { ReactNode } from "react";
 import {
-  DefaultWidgetProperty,
-  WidgetProperty,
-} from "../widgetproperties/WidgetProperty";
+  DonationGoalProperty,
+  Goal,
+} from "../widgetproperties/DonationGoalProperty";
+import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
+import classes from "./DonationGoalWidgetSettings.module.css";
+import { log } from "../../../logging";
+import { uuidv7 } from "uuidv7";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
-
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
-    // tabs.set("general", "Общие");
-    // tabs.set("prizes", "Призы");
-    super(
-      widgetId,
-      properties,
-      [
-        new FontProperty(
-          widgetId,
-          "font",
-          "fontselect",
-          "Roboto",
-          "Шрифт",
-          "general",
-        ),
-        new NumberProperty(
-          widgetId,
-          "fontSize",
-          "number",
-          24,
-          "Размер шрифта",
-          "general",
-        ),
-        new ColorProperty(
-          widgetId,
-          "color",
-          "color",
-          "#000000",
-          "Цвет текста",
-          "general",
-        ),
-        new ColorProperty(
-          widgetId,
-          "borderColor",
-          "color",
-          "#FF0000",
-          "Цвет рамок",
-          "general",
-        ),
-        new ColorProperty(
-          widgetId,
-          "selectionColor",
-          "color",
-          "#00FF00",
-          "Фон выбора",
-          "general",
-        ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "type",
-          "custom",
-          "eachpayment",
-          "Условие",
-          "general",
-        ),
-        new NumberProperty(
-          widgetId,
-          "requiredAmount",
-          "number",
-          100,
-          "Требуемая сумма",
-          "general",
-        ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "optionList",
-          "custom",
-          ["Ничего", "Выигрыш"],
-          "Призы",
-          "prizes",
-        ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "backgroundImage",
-          "custom",
-          "",
-          "Фон карточек",
-          "prizes",
-        ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "winnerBackgroundImage",
-          "custom",
-          "",
-          "Фон выигрыша",
-          "prizes",
-        ),
-      ],
-      tabs,
-    );
+    super(widgetId, properties, [new DonationGoalProperty(widgetId)], tabs);
   }
 
-  copy(){
+  copy() {
     return new DonationGoalWidgetSettings(this.widgetId, this.properties);
   }
 
+  addGoal(updateConfig: Function) {
+    log.debug({ settings: this }, "adding goal to");
+    const goal = (
+      this.properties.find(it => it.name == "goal") ?? new DonationGoalProperty(this.widgetId)
+    );
+    log.debug({ goal: goal}, "updating goal");
+    (goal.value as Goal[]).push({
+      id: uuidv7(),
+      briefDescription: "Название",
+      fullDescription: "Полное описание",
+      requiredAmount: { major: 100, currency: "RUB" },
+    });
+    updateConfig(this.widgetId, "goal", goal.value);
+    log.debug({ settings: this }, "updated goal widget settings");
+  }
+
+  markup(updateConfig: Function): ReactNode {
+    return (
+      <>
+        <button
+          className={`widget-button ${classes.button}`}
+          onClick={() => this.addGoal(updateConfig)}
+        >
+          Добавить цель
+        </button>
+        {super.markup(updateConfig)}
+      </>
+    );
+  }
 }

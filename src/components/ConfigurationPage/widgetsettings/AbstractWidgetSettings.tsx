@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 
@@ -29,6 +30,17 @@ export class AbstractWidgetSettings {
     });
     log.debug({ settings: updated }, `merged properties`);
     return updated;
+  }
+
+  markup(updateConfig: Function): ReactNode {
+    log.debug("running markup in AbstractWidgetSettings");
+    return (
+      <>
+        {this._properties
+          ?.filter((prop) => prop.type !== "custom")
+          .map((prop) => prop.markup(updateConfig))}
+      </>
+    );
   }
 
   set(key: string, value: any) {

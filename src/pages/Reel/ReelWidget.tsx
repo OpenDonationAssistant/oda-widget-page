@@ -8,9 +8,10 @@ import { setupCommandListener, subscribe } from "../../socket";
 import classes from "./ReelWidget.module.css";
 import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
+import { WidgetData } from "../../types/WidgetData";
 
 export default function ReelWidget({}) {
-  const { settings, conf, widgetId } = useLoaderData();
+  const { settings, conf, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const glideRef = useRef<HTMLDivElement | null>(null);
   const glide = useRef<Glide | null>(null);
@@ -67,7 +68,7 @@ export default function ReelWidget({}) {
       () => {
         const index = options.findIndex((option) => option === active);
         log.debug(`highlight ${index} from ${JSON.stringify(options)}`);
-        glide.current.update({ startAt: index });
+        glide.current?.update({ startAt: index });
         setHighlight(true);
       },
       options.length,
@@ -121,6 +122,7 @@ export default function ReelWidget({}) {
 
   function calcItemStyle(option: string){
     const style = {};
+    style.borderColor = borderColor;
     if (highlight && active === option){
       style.backgroundColor = selectionColor;
     } else {

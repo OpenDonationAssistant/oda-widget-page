@@ -38,6 +38,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "content",
         ),
         new NumberProperty(
+          widgetId,
           "topsize",
           "number",
           "3",

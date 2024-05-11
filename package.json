@@ -35,6 +35,7 @@
     "talkify-tts": "^3.9.3",
     "typescript": "^5.2.2",
     "uuid": "^9.0.0",
+    "uuidv7": "^0.6.3",
     "video.js": "^8.3.0",
     "videojs-playlist": "^5.1.0",
     "videojs-youtube": "^3.0.1",
@@ -68,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "@types/glidejs__glide": "^3.6.5",
     "@types/react-beautiful-dnd": "^13.1.8"
   }
 }

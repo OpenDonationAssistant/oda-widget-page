@@ -1,5 +1,6 @@
 import axios from "axios";
 import { log } from "../../logging";
+import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 
 export class PaymentPageConfig {
   config: any = {};
@@ -10,6 +11,7 @@ export class PaymentPageConfig {
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
+  private _goals: Goal[] = [];
 
   constructor(recipientId: string) {
     log.debug("Loading PaymentPageConfig");
@@ -26,6 +28,7 @@ export class PaymentPageConfig {
         this.fio = json.value["fio"] ?? "";
         this.inn = json.value["inn"] ?? "";
         this.arbitraryText = json.value["arbitraryText"] ?? null;
+        this.goals = json.value["goals"] ?? [];
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -97,6 +100,13 @@ export class PaymentPageConfig {
       `${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/${this.config.id}`,
       config,
     );
+  }
+
+  public get goals(): Goal[] {
+      return this._goals;
+  }
+  public set goals(value: Goal[]) {
+      this._goals = value;
   }
 
   async reloadConfig(): Promise<void> {

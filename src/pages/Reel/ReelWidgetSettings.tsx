@@ -7,6 +7,7 @@ import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 import Tabs from "../../components/Tabs/Tabs";
 import axios from "axios";
+import { WidgetData } from "../../types/WidgetData";
 
 export default function ReelWidgetSettings({
   id,
@@ -17,7 +18,7 @@ export default function ReelWidgetSettings({
 }) {
   const { config, updateConfig } = useContext(WidgetsContext);
   const [optionList, setOptionList] = useState<string[]>([]);
-  const { conf } = useLoaderData();
+  const { conf } = useLoaderData() as WidgetData;
   const [tab, setTab] = useState<string>("");
   const [backgroundImage, setBackgroundImage] = useState<string>("");
 
@@ -90,13 +91,12 @@ export default function ReelWidgetSettings({
       >
         Крутануть
       </button>
-      <Tabs widgetId={id} onChange={(tab: string) => setTab(tab)} />
       <BaseSettings
         id={id}
         onChange={onChange}
-        propertyFilter={(prop) => prop.tab === tab}
+        propertyFilter={(prop) => true}
       />
-      {tab === "prizes" && (
+      {(
         <>
           <div className="widget-settings-item">
             <label className="widget-settings-name">Призы</label>
