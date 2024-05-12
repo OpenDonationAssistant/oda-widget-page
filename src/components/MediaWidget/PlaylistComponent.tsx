@@ -110,8 +110,7 @@ export default function PlaylistComponent({
                           <button
                             className="btn btn-outline-light share"
                             onClick={() => {
-                              navigator.clipboard.writeText(song.src);
-                              setUrlToCopy(song.src);
+                              window.open(song.src, undefined, "popup=true");
                             }}
                           >
                             <span className="material-symbols-sharp">
