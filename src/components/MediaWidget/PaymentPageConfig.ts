@@ -11,6 +11,7 @@ export class PaymentPageConfig {
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
+  private _minimalAmount: Number = 40;
   private _goals: Goal[] = [];
 
   constructor(recipientId: string) {
@@ -29,6 +30,7 @@ export class PaymentPageConfig {
         this.inn = json.value["inn"] ?? "";
         this.arbitraryText = json.value["arbitraryText"] ?? null;
         this.goals = json.value["goals"] ?? [];
+        this.minimalAmount = json.value["minimalAmount"] ?? 40;
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -108,6 +110,14 @@ export class PaymentPageConfig {
   public set goals(value: Goal[]) {
       this._goals = value;
   }
+  public get minimalAmount() {
+      return this._minimalAmount;
+  }
+  public set minimalAmount(value) {
+    this._minimalAmount = value;
+    this.config.value["minimalAmount"] = value;
+    this.sendEventPaymentPageUpdated();
+  }
 
   async reloadConfig(): Promise<void> {
     const data = await axios.get(
@@ -121,6 +131,7 @@ export class PaymentPageConfig {
     this.email = this.config.value["email"] ?? "";
     this.fio = this.config.value["fio"] ?? "";
     this.inn = this.config.value["inn"] ?? "";
+    this.minimalAmount = this.config.value["minimalAmount"] ?? 40;
     this.arbitraryText = this.config.value["arbitraryText"] ?? null;
     this.sendMediaRequestsEnabledState();
     this.sendEventPaymentPageUpdated();

@@ -4,6 +4,7 @@ import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
 import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
+import { WidgetData } from "../../types/WidgetData";
 
 const backgroundColor = (
   <style
@@ -26,11 +27,12 @@ function uploadFile(file, name: string) {
 }
 
 export default function PaymentPageConfigComponent({}: {}) {
-  const { recipientId } = useLoaderData();
+  const { recipientId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [isRequestsEnabled, setRequestsEnabled] = useState(false);
   const [requestCost, setRequestCost] = useState(100);
+  const [minimalAmount, setMinimalAmount] = useState<Number>(40);
   const [email, setEmail] = useState("");
   const [fio, setFio] = useState("");
   const [inn, setInn] = useState("");
@@ -38,6 +40,10 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [hasChanges, setHasChanges] = useState<boolean>(false);
 
   function listenPaymentPageConfigUpdated() {
+    if (!paymentPageConfig.current) {
+      return;
+    }
+    setMinimalAmount(paymentPageConfig.current.minimalAmount);
     setRequestCost(paymentPageConfig.current?.requestCost ?? 100);
     setRequestsEnabled(
       !paymentPageConfig.current?.requestsDisabledPermanently ?? false,
@@ -173,6 +179,24 @@ export default function PaymentPageConfigComponent({}: {}) {
             }}
             onChange={(e) => {
               paymentPageConfig.current?.setArbitraryText(e.target.value);
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>
+            Минимальная сумма доната
+          </div>
+          <input
+            type="number"
+            value={minimalAmount}
+            className={classes.widgetsettingsvalue}
+            onChange={(e) => {
+              if (paymentPageConfig.current) {
+                paymentPageConfig.current.minimalAmount = Number(e.target.value);
+              }
               if (!hasChanges) {
                 setHasChanges(true);
               }
