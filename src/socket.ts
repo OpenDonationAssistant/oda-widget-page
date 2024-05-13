@@ -47,6 +47,8 @@ function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
 function unsubscribe(id: string, topic: string){
   log.info(`Deleting subscription ${id} with topic ${topic}`);
   socket.unsubscribe(`${id}-${topic}`);
+  const existingListenerIndex = listeners.findIndex(listener => listener.id === id && listener.topic === topic);
+  listeners.splice(existingListenerIndex, 1);
 }
 
 function setupCommandListener(widgetId: string, reloadFn: Function) {
@@ -61,6 +63,12 @@ function setupCommandListener(widgetId: string, reloadFn: Function) {
     }
   });
 }
+
+function cleanupCommandListener(widgetId: string){
+  unsubscribe(widgetId, "/topic/commands");
+}
+
+
 function publish(topic: string, payload: any) {
   socket.publish({
     destination: topic,
@@ -68,4 +76,4 @@ function publish(topic: string, payload: any) {
   });
 }
 
-export { socket, subscribe, unsubscribe, setupCommandListener, publish };
+export { socket, subscribe, unsubscribe, setupCommandListener, cleanupCommandListener, publish };

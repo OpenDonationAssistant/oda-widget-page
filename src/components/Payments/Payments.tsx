@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import Menu from "../Menu/Menu";
 import { findSetting } from "../utils";
-import { publish, setupCommandListener, subscribe } from "../../socket";
+import { cleanupCommandListener, publish, setupCommandListener, subscribe, unsubscribe } from "../../socket";
 import { log } from "../../logging";
 import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
 import MenuEventButton from "../Menu/MenuEventButton";
@@ -55,6 +55,11 @@ function Payments({}: {}) {
       message.ack();
     });
     setupCommandListener(widgetId, () => navigate(0));
+    return () => {
+      unsubscribe(widgetId, conf.topic.alertStatus);
+      unsubscribe(widgetId, conf.topic.alerts);
+      cleanupCommandListener(widgetId);
+    };
   }, [recipientId]);
 
   function setDisplayedTimeForTodayPayments(todayPayments) {

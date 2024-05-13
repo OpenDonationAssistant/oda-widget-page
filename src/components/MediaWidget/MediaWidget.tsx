@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
 import { PlaylistController } from "./PlaylistController";
-import { publish, setupCommandListener } from "../../socket";
+import { cleanupCommandListener, publish, setupCommandListener } from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
@@ -65,6 +65,9 @@ export default function MediaWidget({}: {}) {
       },
       playlistController: playlistController.current,
     });
+    return () => {
+      cleanupCommandListener(widgetId);
+    };
   }, [recipientId, widgetId]);
 
   useEffect(() => {

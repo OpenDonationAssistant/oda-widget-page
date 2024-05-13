@@ -4,12 +4,13 @@ import axios from "axios";
 import "./DonationTimer.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { setupCommandListener, subscribe } from "../../socket";
+import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
 import FontImport from "../FontImport/FontImport";
 import { log } from "../../logging";
+import { WidgetData } from "../../types/WidgetData";
 
 export default function DonationTimer({}: {}) {
-  const { recipientId, settings, conf, widgetId } = useLoaderData();
+  const { recipientId, settings, conf, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
@@ -22,6 +23,10 @@ export default function DonationTimer({}: {}) {
       message.ack();
     });
     setupCommandListener(widgetId, () => navigate(0));
+    return () => {
+      unsubscribe(widgetId, conf.topic.alerts);
+      cleanupCommandListener(widgetId);
+    };
   }, [recipientId]);
 
   useEffect(() => {

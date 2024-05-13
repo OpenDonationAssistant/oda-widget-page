@@ -112,7 +112,7 @@ export default function VideoJSComponent({
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.playerCommands, (message) => {
-      log.debug(`message: ${JSON.stringify(message)}`);
+      log.debug({message: message}, "Received player command");
       if (commandHandler.current) {
         commandHandler.current(message);
       }

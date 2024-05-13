@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { setupCommandListener, subscribe } from "../../socket";
+import {
+  cleanupCommandListener,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import { log } from "../../logging";
 import classes from "./DonationGoal.module.css";
 import { findSetting } from "../utils";
@@ -23,6 +28,10 @@ export default function DonationGoal({}) {
       navigate(0);
     });
     setupCommandListener(widgetId, () => navigate(0));
+    return () => {
+      unsubscribe(widgetId, conf.topic.goal);
+      cleanupCommandListener(widgetId);
+    };
   }, [recipientId]);
 
   useEffect(() => {
@@ -63,9 +72,6 @@ export default function DonationGoal({}) {
   };
 
   const filledColor = findSetting(settings, "filledColor", "green");
-  const filledStyle = {
-    backgroundColor: filledColor,
-  };
   const filledTextColor = findSetting(settings, "filledTextColor", "white");
   const filledFontSize = findSetting(settings, "filledFontSize", "24");
   const filledFont = findSetting(settings, "font", "Russo One");
@@ -86,17 +92,16 @@ export default function DonationGoal({}) {
               {goal.briefDescription}
             </div>
             <div
-              style={{
-                backgroundColor: backgroundColor,
-              }}
+              style={ progressbarStyle }
               className={`${classes.goalprogressbar}`}
             ></div>
             <div
               style={{
                 width: `${
-                  goal.accumulatedAmount.major / goal.requiredAmount.major * 100
+                  (goal.accumulatedAmount.major / goal.requiredAmount.major) *
+                  100
                 }%`,
-                backgroundColor: filledColor
+                backgroundColor: filledColor,
               }}
               className={`${classes.goalfilled}`}
             ></div>

@@ -3,7 +3,7 @@ import classes from "./PaymentAlerts.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { log } from "../../logging";
-import { setupCommandListener, subscribe } from "../../socket";
+import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
 import { AlertController } from "../../logic/alert/AlertController";
 import MessageBody from "./sections/MessageBody";
 import MessageTitle from "./sections/MessageTitle";
@@ -41,6 +41,10 @@ function PaymentAlerts({}: {}) {
       message.ack();
     });
     setupCommandListener(widgetId, () => navigate(0));
+    return () => {
+      unsubscribe(widgetId, conf.topic.alertWidgetCommans);
+      cleanupCommandListener(widgetId);
+    }
   }, [widgetId]);
 
   return (

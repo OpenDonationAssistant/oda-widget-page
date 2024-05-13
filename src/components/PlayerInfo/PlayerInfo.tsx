@@ -4,7 +4,7 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { setupCommandListener, subscribe } from "../../socket";
+import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
 import { log } from "../../logging";
 import FontImport from "../FontImport/FontImport";
 
@@ -27,6 +27,10 @@ function PlayerInfo() {
       message.ack();
     });
 		setupCommandListener(widgetId, () => navigate(0));
+    return () => {
+      unsubscribe(widgetId, conf.topic.player);
+      cleanupCommandListener(widgetId);
+    };
   }, [widgetId]);
 
   const fontSize = findSetting(settings, "fontSize", "24px");

@@ -4,7 +4,7 @@ import axios from "axios";
 import "./DonatersTopList.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { setupCommandListener, subscribe } from "../../socket";
+import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
 import FontImport from "../FontImport/FontImport";
 
 const overflowHiddenForRootElement = (
@@ -73,6 +73,10 @@ export default function DonatersTopList({}: {}) {
     });
     setupCommandListener(widgetId, () => navigate(0));
     updateDonaters();
+    return () => {
+      unsubscribe(widgetId, conf.topic.alerts);
+      cleanupCommandListener(widgetId);
+    };
   }, [recipientId]);
 
   const type = findSetting(settings, "type", "All");
