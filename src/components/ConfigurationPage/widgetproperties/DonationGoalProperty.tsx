@@ -61,6 +61,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
       <>
         {this.value.map((goal: Goal, index: number) => (
           <div key={index} className={`${classes.goalcontainer}`}>
+            <div style={{ fontStyle: "italic", fontWeight: "900"}}>Цель:</div>
             <div className="widget-settings-item">
               <label
                 htmlFor={`${this.widgetId}_${index}`}
@@ -128,7 +129,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
                   this.deleteGoal(updateConfig, index);
                 }}
               >
-                Удалить цель
+                Удалить
               </button>
             </div>
           </div>

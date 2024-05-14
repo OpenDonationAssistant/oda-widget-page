@@ -56,9 +56,9 @@ export default function DonationGoal({}) {
       );
   }, [recipientId]);
 
-  const fontSize = findSetting(settings, "fontSize", "24");
-  const font = findSetting(settings, "font", "Alice");
-  const textColor = findSetting(settings, "textColor", "black");
+  const fontSize = findSetting(settings, "titleFontSize", "24");
+  const font = findSetting(settings, "titleFont", "Alice");
+  const textColor = findSetting(settings, "titleColor", "black");
   const textStyle = {
     fontSize: fontSize ? fontSize + "px" : "unset",
     fontFamily: font ? font : "unset",
@@ -74,7 +74,7 @@ export default function DonationGoal({}) {
   const filledColor = findSetting(settings, "filledColor", "green");
   const filledTextColor = findSetting(settings, "filledTextColor", "white");
   const filledFontSize = findSetting(settings, "filledFontSize", "24");
-  const filledFont = findSetting(settings, "font", "Russo One");
+  const filledFont = findSetting(settings, "filledFont", "Russo One");
   const filledTextStyle = {
     fontSize: filledFontSize ? filledFontSize + "px" : "unset",
     fontFamily: filledFont ? filledFont : "unset",
