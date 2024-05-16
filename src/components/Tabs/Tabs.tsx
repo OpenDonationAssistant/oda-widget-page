@@ -1,53 +1,52 @@
 import React, { useContext, useEffect, useState } from "react";
-import { WidgetsContext } from "../ConfigurationPage/WidgetsContext";
 import classes from "./Tabs.module.css";
 import { log } from "../../logging";
+import { WidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
+import { WidgetsContext } from "../ConfigurationPage/WidgetsContext";
 
 export default function Tabs({
-  widgetId,
-  onChange,
+  tabs,
+  properties,
 }: {
-  widgetId: string;
-  onChange: (tab: string) => void;
+  tabs: Map<string, string>;
+  properties: WidgetProperty[];
 }) {
-  const { config } = useContext(WidgetsContext);
+  const { updateConfig } = useContext(WidgetsContext);
   const [tab, setTab] = useState<string>("");
 
   useEffect(() => {
-    if (tab){
+    if (tab) {
       return;
     }
-    const settings = config.get(widgetId);
-    log.debug({ settings: settings }, "trying to find first tab");
-    if (!settings) {
-      return;
-    }
-    const firstTab = settings.tabDescriptions.keys().next();
+    const firstTab = tabs.keys().next();
     if (firstTab) {
       log.debug({ tab: firstTab.value }, "settings first tab");
-      onChange(firstTab.value);
       setTab(firstTab.value);
     }
-  }, [config]);
+    return () => setTab("");
+  }, [tabs]);
 
-  const tabs = () => {
-    const settings = config.get(widgetId);
-    if (!settings) {
-      return <></>;
-    }
-    return [...settings.tabDescriptions.keys()].map((key) => (
+  const tabsMarkup = () => {
+    return [...tabs.keys()].map((key) => (
       <div
         key={key}
         className={`settings-tab-item ${tab === key ? "active" : ""}`}
         onClick={() => {
           setTab(key);
-          onChange(key);
         }}
       >
-        {settings.tabDescriptions.get(key)}
+        {tabs.get(key)}
       </div>
     ));
   };
 
-  return <div className={`${classes.settingstabs}`}>{tabs()}</div>;
+  return (
+    <>
+      <div className={`${classes.settingstabs}`}>{tabsMarkup()}</div>
+      {properties
+        ?.filter((prop) => prop.type !== "custom")
+        ?.filter((prop) => prop.tab === tab)
+        .map((prop) => prop.markup(updateConfig))}
+    </>
+  );
 }

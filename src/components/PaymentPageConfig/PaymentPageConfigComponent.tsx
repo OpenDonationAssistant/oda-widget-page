@@ -57,7 +57,6 @@ export default function PaymentPageConfigComponent({}: {}) {
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      console.log(file);
       uploadFile(file, `back-${recipientId}.jpg`).then(() => navigate(0));
     }
   };
@@ -195,7 +194,9 @@ export default function PaymentPageConfigComponent({}: {}) {
             className={classes.widgetsettingsvalue}
             onChange={(e) => {
               if (paymentPageConfig.current) {
-                paymentPageConfig.current.minimalAmount = Number(e.target.value);
+                paymentPageConfig.current.minimalAmount = Number(
+                  e.target.value,
+                );
               }
               if (!hasChanges) {
                 setHasChanges(true);
@@ -208,10 +209,10 @@ export default function PaymentPageConfigComponent({}: {}) {
             Реквесты музыки/видео
           </div>
           <select
-            value={isRequestsEnabled ? "enabled" : "disabled"}
+            value={ isRequestsEnabled ? "enabled" : "disabled" }
             className="widget-settings-value select"
-            style={{ width: "120px" }}
-            onChange={handleTogglingRequests}
+            style={{ width: "120px", backgroundColor: "#0c122e" }}
+            onChange={ handleTogglingRequests }
           >
             <option key="enabled">enabled</option>
             <option key="disabled">disabled</option>

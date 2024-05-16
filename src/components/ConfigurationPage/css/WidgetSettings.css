@@ -1,9 +1,9 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Amatic+SC&family=Protest+Strike&display=swap"); */
 @import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap");
 
 .configuration-container {
   height: 100%;
   display: flex;
+  flex-direction: column;
 }
 
 .widget-settings {
@@ -12,7 +12,6 @@
   padding-left: 15px;
   padding-right: 15px;
   padding-bottom: 20px;
-  margin-bottom: 5px;
 }
 
 .widget-settings-item {

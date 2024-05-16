@@ -1,12 +1,10 @@
 import { ColorProperty } from "../widgetproperties/ColorProperty";
+import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
 import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
-import {
-  DefaultWidgetProperty,
-  WidgetProperty,
-} from "../widgetproperties/WidgetProperty";
+import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
@@ -22,7 +20,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         new SingleChoiceProperty(
           widgetId,
           "type",
-          "custom",
+          "predefined",
           "All",
           "Тип виджета",
           ["All", "Top", "Last"],
@@ -31,7 +29,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         new SingleChoiceProperty(
           widgetId,
           "period",
-          "custom",
+          "predefined",
           "month",
           "Период",
           ["month", "day"],
@@ -133,14 +131,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "Прозрачность списка",
           "list",
         ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "layout",
-          "custom",
-          "Компоновка",
-          "vertical",
-          "content",
-        ),
+        new DonatersTopListLayoutProperty(widgetId, "vertical"),
       ],
       tabs,
     );

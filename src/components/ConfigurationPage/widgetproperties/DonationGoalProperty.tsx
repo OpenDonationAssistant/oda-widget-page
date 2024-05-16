@@ -32,7 +32,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
         },
       ],
       "Цель",
-      undefined,
+      "goals",
     );
   }
 
@@ -52,6 +52,19 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
     updateConfig(this.widgetId, "goal", this.value);
   }
 
+  addGoal(updateConfig: Function) {
+    log.debug({ settings: this }, "adding goal to");
+    (this.value as Goal[]).push({
+      id: uuidv7(),
+      briefDescription: "Название",
+      fullDescription: "Полное описание",
+      requiredAmount: { major: 100, currency: "RUB" },
+      accumulatedAmount: { major: 0, currency: "RUB" },
+    });
+    updateConfig(this.widgetId, "goal", this.value);
+    log.debug({ settings: this }, "updated goals");
+  }
+
   copy(): DonationGoalProperty {
     return new DonationGoalProperty(this.widgetId, this.value);
   }
@@ -59,6 +72,12 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <>
+        <button
+          className={`widget-button ${classes.button}`}
+          onClick={() => this.addGoal(updateConfig)}
+        >
+          Добавить цель
+        </button>
         {this.value.map((goal: Goal, index: number) => (
           <div key={index} className={`${classes.goalcontainer}`}>
             <div style={{ fontStyle: "italic", fontWeight: "900"}}>Цель:</div>

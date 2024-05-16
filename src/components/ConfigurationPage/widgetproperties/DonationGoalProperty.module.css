@@ -3,3 +3,8 @@
   position: relative;
   padding: 10px;
 }
+
+.button {
+  width: unset!important;
+  margin-bottom: 10px;
+}

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
+import Tabs from "../../Tabs/Tabs";
 
 export class AbstractWidgetSettings {
   private _properties: WidgetProperty[];
@@ -32,13 +33,11 @@ export class AbstractWidgetSettings {
     return updated;
   }
 
-  markup(updateConfig: Function): ReactNode {
+  markup(): ReactNode {
     log.debug("running markup in AbstractWidgetSettings");
     return (
       <>
-        {this._properties
-          ?.filter((prop) => prop.type !== "custom")
-          .map((prop) => prop.markup(updateConfig))}
+        <Tabs tabs={this._tabDescriptions} properties={this._properties}/>
       </>
     );
   }

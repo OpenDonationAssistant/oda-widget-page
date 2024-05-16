@@ -1,6 +1,8 @@
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
+import { ReelItemBackgroundProperty } from "../widgetproperties/ReelItemBackgroundProperty";
+import { ReelItemListProperty } from "../widgetproperties/ReelItemListProperty";
 import {
   DefaultWidgetProperty,
   WidgetProperty,
@@ -73,29 +75,13 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "Требуемая сумма",
           "general",
         ),
-        new DefaultWidgetProperty(
+        new ReelItemListProperty(
           widgetId,
-          "optionList",
-          "custom",
-          ["Ничего", "Выигрыш"],
-          "Призы",
-          "prizes",
+          ["Ничего", "Выигрыш"]
         ),
-        new DefaultWidgetProperty(
+        new ReelItemBackgroundProperty(
           widgetId,
-          "backgroundImage",
-          "custom",
-          "",
-          "Фон карточек",
-          "prizes",
-        ),
-        new DefaultWidgetProperty(
-          widgetId,
-          "winnerBackgroundImage",
-          "custom",
-          "",
-          "Фон выигрыша",
-          "prizes",
+          ""
         ),
       ],
       tabs,

@@ -13,9 +13,11 @@ export class PaymentPageConfig {
   requestCost = 100;
   private _minimalAmount: Number = 40;
   private _goals: Goal[] = [];
+  private _recipientId: string = "";
 
   constructor(recipientId: string) {
     log.debug("Loading PaymentPageConfig");
+    this._recipientId = recipientId;
     axios
       .get(`${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${recipientId}`)
       .then((data) => data.data)
@@ -121,7 +123,7 @@ export class PaymentPageConfig {
 
   async reloadConfig(): Promise<void> {
     const data = await axios.get(
-      `${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage`,
+      `${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${this._recipientId}`,
     );
     this.config = data.data;
     this.requestsEnabled = this.config.value["media.requests.enabled"] ?? true;
