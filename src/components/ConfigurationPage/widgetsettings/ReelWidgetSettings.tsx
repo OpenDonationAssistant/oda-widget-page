@@ -51,6 +51,14 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "Цвет рамок",
           "general",
         ),
+        new NumberProperty(
+          widgetId,
+          "borderWidth",
+          "number",
+          1,
+          "Толщина рамок",
+          "general",
+        ),
         new ColorProperty(
           widgetId,
           "selectionColor",
@@ -83,6 +91,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "Время (мс) на один поворот",
           "general",
         ),
+        
         new NumberProperty(
           widgetId,
           "time",
