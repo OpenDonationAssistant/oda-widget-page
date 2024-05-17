@@ -5,17 +5,3 @@ export function findSetting(settings, key: string, defaultValue: any | null) {
   }
   return defaultValue;
 }
-//
-// export function hider(ref, hideFunction) {
-//   useEffect(() => {
-//     function handleClickOutside(event) {
-//       if (ref.current && !ref.current.contains(event.target)) {
-//         hideFunction.apply({});
-//       }
-//     }
-//     document.addEventListener("mousedown", handleClickOutside);
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, [ref]);
-// }

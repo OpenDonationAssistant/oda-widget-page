@@ -10,7 +10,6 @@ import "./css/WidgetSettings.css";
 import PaymentAlertSettings from "./settings/PaymentAlertsSettings";
 import { WidgetsContext } from "./WidgetsContext";
 import BaseSettings from "./settings/BaseSettings";
-import DonatersTopListSettings from "./settings/DonatersTopListSettings";
 import { socket } from "../../socket";
 import ReelWidgetSettings from "../../pages/Reel/ReelWidgetSettings";
 import { log } from "../../logging";
@@ -26,12 +25,10 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
   switch (type) {
     case "payment-alerts":
       return <PaymentAlertSettings id={id} onChange={onChange} />;
-    case "donaters-top-list":
-      return <DonatersTopListSettings id={id} onChange={onChange} />;
     case "reel":
-      return <ReelWidgetSettings id={id} onChange={onChange} />;
+      return <ReelWidgetSettings id={id}/>;
     default:
-      return <BaseSettings id={id} onChange={onChange} />;
+      return <BaseSettings id={id}/>;
   }
 }
 

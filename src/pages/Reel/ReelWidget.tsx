@@ -22,6 +22,7 @@ export default function ReelWidget({}) {
   const glide = useRef<Glide | null>(null);
   const [active, setActive] = useState<string | null>(null);
   const [highlight, setHighlight] = useState<boolean>(false);
+  const [options, setOptions] = useState<string[]>([]);
 
   function handleSelection(selection: string) {
     if (!glideRef.current?.classList.contains("hidden")) {
@@ -29,12 +30,13 @@ export default function ReelWidget({}) {
       return;
     }
     setActive(selection);
+    const time = findSetting(settings, "time", 10) * 1000;
     setTimeout(() => {
       log.debug(`clear active and highlight`);
       setActive(null);
       setHighlight(false);
       glideRef.current?.classList.add("hidden");
-    }, 20000);
+    }, time + 20000);
   }
 
   useEffect(() => {
@@ -52,18 +54,20 @@ export default function ReelWidget({}) {
   }, [widgetId]);
 
   useEffect(() => {
-    if (!glideRef) {
+    if (!glideRef || !options) {
       return;
     }
 
+    const perView = findSetting(settings, "perView", 5);
+    const speed = findSetting(settings, "speed", 250);
     glide.current = new Glide(".glide", {
       type: "carousel",
-      perView: options.length,
+      perView: perView,
       rewind: true,
-      animationDuration: 140,
+      animationDuration: speed,
       focusAt: "center",
     }).mount();
-  }, [glideRef]);
+  }, [glideRef, options]);
 
   useEffect(() => {
     if (!active) {
@@ -71,43 +75,34 @@ export default function ReelWidget({}) {
     }
     glideRef.current?.classList.remove("hidden");
     log.debug(`selecting ${active} for reel`);
-    setupScroll(
-      glide.current,
-      40,
-      () => {
-        const index = options.findIndex((option) => option === active);
-        log.debug(`highlight ${index} from ${JSON.stringify(options)}`);
-        glide.current?.update({ startAt: index });
-        setHighlight(true);
-      },
-      options.length,
-    );
+    const index = options.findIndex((option) => option === active);
+    log.debug({ options: options, index: index }, "highlight");
+    const speed = findSetting(settings, "speed", 250);
+    const time = findSetting(settings, "time", 10) * 1000;
+    glide.current?.update({autoplay: speed});
+    setTimeout(() => {
+      const index = options.findIndex((option) => option === active);
+      log.debug({ options: options, index: index }, "highlight");
+      glide.current?.update({ autoplay: false, startAt: index });
+      setHighlight(true);
+    }, time);
   }, [active]);
 
-  function setupScroll(
-    glide: any,
-    iteration: number,
-    result: Function,
-    itemsCount: number,
-  ) {
-    if (iteration < 1) {
-      result();
-      return;
+  useEffect(() => {
+    const shuffle = findSetting(settings, "shuffle", true);
+    let options = structuredClone(findSetting(settings, "optionList", []));
+    if (shuffle) {
+      let shuffled = [];
+      const count = options.length;
+      for (let i = 0; i < count; i++) {
+        const index = getRndInteger(0, options.length);
+        shuffled.push(options[index]);
+        options.splice(index, 1);
+      }
+      options = shuffled;
     }
-    const selected = getRndInteger(0, itemsCount);
-    const scroll = () => {
-      glide.go(">");
-      glide.go(">");
-    };
-    console.log(`selected: ${selected}`);
-    if (iteration === 1) {
-      console.log(`setActive to ${selected}`);
-    }
-    setTimeout(() => {
-      scroll();
-      setupScroll(glide, iteration - 1, result, itemsCount);
-    }, 140);
-  }
+    setOptions(options);
+  }, [widgetId]);
 
   function getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -121,8 +116,8 @@ export default function ReelWidget({}) {
     fontFamily: font ? font : "unset",
     color: color,
   };
-  const options = findSetting(settings, "optionList", []);
   const borderColor = findSetting(settings, "borderColor", "red");
+  const borderWidth = findSetting(settings, "borderWidth", 30);
   const selectionColor = findSetting(settings, "selectionColor", "green");
   const slideStyle = {
     borderColor: borderColor,
@@ -133,6 +128,7 @@ export default function ReelWidget({}) {
   function calcItemStyle(option: string) {
     const style = {};
     style.borderColor = borderColor;
+    style.borderWidth = `${borderWidth}px`;
     if (highlight && active === option) {
       style.backgroundColor = selectionColor;
     } else {
@@ -161,7 +157,7 @@ export default function ReelWidget({}) {
                   key={option}
                   style={calcItemStyle(option)}
                   className={`${classes.reelitemcontainer} ${
-                    highlight && active === option ? classes.active : ""
+                    highlight && active === option ? classes.active : classes.notactive
                   }`}
                 >
                   <li
