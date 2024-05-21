@@ -25,7 +25,7 @@ export default function DonationGoal({}) {
     subscribe(widgetId, conf.topic.goal, (message) => {
       log.debug({ goalCommand: message }, "received goals command");
       message.ack();
-      navigate(0);
+      setTimeout(() => navigate(0), 20000);
     });
     setupCommandListener(widgetId, () => navigate(0));
     return () => {
@@ -59,10 +59,12 @@ export default function DonationGoal({}) {
   const fontSize = findSetting(settings, "titleFontSize", "24");
   const font = findSetting(settings, "titleFont", "Alice");
   const textColor = findSetting(settings, "titleColor", "black");
+  const titleTextAlign = findSetting(settings, "titleTextAlign", "left");
   const textStyle = {
     fontSize: fontSize ? fontSize + "px" : "unset",
     fontFamily: font ? font : "unset",
     fontWeight: 600,
+    textAlign: titleTextAlign,
     color: textColor,
   };
 
@@ -75,10 +77,20 @@ export default function DonationGoal({}) {
   const filledTextColor = findSetting(settings, "filledTextColor", "white");
   const filledFontSize = findSetting(settings, "filledFontSize", "24");
   const filledFont = findSetting(settings, "filledFont", "Russo One");
+  let filledTextAlign = findSetting(settings, "filledTextAlign", "left");
+  switch(filledTextAlign){
+    case "left":
+      filledTextAlign = "flex-start";
+      break;
+    case "right":
+      filledTextAlign = "flex-end";
+      break;
+  }
   const filledTextStyle = {
     fontSize: filledFontSize ? filledFontSize + "px" : "unset",
     fontFamily: filledFont ? filledFont : "unset",
     color: filledTextColor,
+    justifyContent: filledTextAlign
   };
 
   return (

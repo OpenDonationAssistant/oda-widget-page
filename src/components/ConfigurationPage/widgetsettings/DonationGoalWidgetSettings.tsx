@@ -6,6 +6,7 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
+import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
@@ -38,6 +39,15 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "color",
           "#000000",
           "Цвет заголовка",
+          "header",
+        ),
+        new SingleChoiceProperty(
+          widgetId,
+          "titleTextAlign",
+          "predefined",
+          "left",
+          "Выравнивание заголовка",
+          ["left", "center", "right"],
           "header",
         ),
         new FontProperty(
@@ -78,6 +88,15 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "color",
           "#00aa00",
           "Цвет заполненной части",
+          "header",
+        ),
+        new SingleChoiceProperty(
+          widgetId,
+          "filledTextAlign",
+          "predefined",
+          "left",
+          "Выравнивание суммы",
+          ["left", "center", "right"],
           "header",
         ),
         new DonationGoalProperty(widgetId),
