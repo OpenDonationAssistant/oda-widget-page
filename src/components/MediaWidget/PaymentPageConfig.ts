@@ -14,12 +14,16 @@ export class PaymentPageConfig {
   private _minimalAmount: Number = 40;
   private _goals: Goal[] = [];
   private _recipientId: string = "";
+  private _payButtonText: string = "";
+  private _customCss: string = "";
 
   constructor(recipientId: string) {
     log.debug("Loading PaymentPageConfig");
     this._recipientId = recipientId;
     axios
-      .get(`${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${recipientId}`)
+      .get(
+        `${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${recipientId}`,
+      )
       .then((data) => data.data)
       .then((json) => {
         this.config = json;
@@ -32,7 +36,9 @@ export class PaymentPageConfig {
         this.inn = json.value["inn"] ?? "";
         this.arbitraryText = json.value["arbitraryText"] ?? null;
         this.goals = json.value["goals"] ?? [];
+        this._payButtonText = json.value["payButtonText"] ?? "";
         this.minimalAmount = json.value["minimalAmount"] ?? 40;
+        this._customCss = json.value["customCss"] ?? [];
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -107,18 +113,33 @@ export class PaymentPageConfig {
   }
 
   public get goals(): Goal[] {
-      return this._goals;
+    return this._goals;
   }
   public set goals(value: Goal[]) {
-      this._goals = value;
+    this._goals = value;
   }
   public get minimalAmount() {
-      return this._minimalAmount;
+    return this._minimalAmount;
   }
   public set minimalAmount(value) {
     this._minimalAmount = value;
     this.config.value["minimalAmount"] = value;
     this.sendEventPaymentPageUpdated();
+  }
+  public get payButtonText(): string {
+    return this._payButtonText;
+  }
+  public set payButtonText(value: string) {
+    this._payButtonText = value;
+    this.config.value["payButtonText"] = value;
+    this.sendEventPaymentPageUpdated();
+  }
+  public get customCss(): string {
+    return this._customCss;
+  }
+  public set customCss(value: string) {
+    this._customCss = value;
+    this.config.value["customCss"] = value;
   }
 
   async reloadConfig(): Promise<void> {

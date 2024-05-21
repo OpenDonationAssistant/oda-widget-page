@@ -38,6 +38,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [inn, setInn] = useState("");
   const [arbitraryText, setArbitraryText] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
+  const [payButtonText, setPayButtonText] = useState<string | null>(null);
 
   function listenPaymentPageConfigUpdated() {
     if (!paymentPageConfig.current) {
@@ -52,12 +53,24 @@ export default function PaymentPageConfigComponent({}: {}) {
     setFio(paymentPageConfig.current?.fio ?? "");
     setInn(paymentPageConfig.current?.inn ?? "");
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
+    setPayButtonText(paymentPageConfig.current?.payButtonText ?? null);
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       uploadFile(file, `back-${recipientId}.jpg`).then(() => navigate(0));
+    }
+  };
+
+  const handleCssUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (paymentPageConfig.current) {
+        paymentPageConfig.current.customCss = `${process.env.REACT_APP_CDN_ENDPOINT}/css-${recipientId}.css`
+        paymentPageConfig.current.save();
+      }
+      uploadFile(file, `css-${recipientId}.css`);
     }
   };
 
@@ -166,6 +179,13 @@ export default function PaymentPageConfigComponent({}: {}) {
           </label>
         </div>
         <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Custom css</div>
+          <label className="upload-button">
+            <input type="file" onChange={handleCssUpload} />
+            Загрузить
+          </label>
+        </div>
+        <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>Текст на странице</div>
           <textarea
             value={arbitraryText ?? ""}
@@ -230,6 +250,22 @@ export default function PaymentPageConfigComponent({}: {}) {
               paymentPageConfig.current?.setRequestsCost(
                 Number(e.target.value),
               );
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Текст кнопки "Задонатить"</div>
+          <input
+            value={payButtonText}
+            className={classes.widgetsettingsvalue}
+            style={{ width: "250px" }}
+            onChange={(e) => {
+              if (paymentPageConfig.current) {
+                paymentPageConfig.current.payButtonText = e.target.value;
+              }
               if (!hasChanges) {
                 setHasChanges(true);
               }
