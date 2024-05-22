@@ -257,9 +257,9 @@ export default function PaymentAlertSettings({
     setConfig(new Map(config).set(id, oldConfig));
   }
 
-  function uploadFile(file) {
+  function uploadFile(file: File, name: string) {
     return axios.put(
-      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${file.name}`,
+      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
       { file: file },
       {
         headers: {
@@ -272,12 +272,13 @@ export default function PaymentAlertSettings({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      uploadFile(file).then((ignore) => {
+      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
-          updatedAlerts.image = file.name;
+          updatedAlerts.image = name;
           alerts[selected] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
@@ -291,12 +292,13 @@ export default function PaymentAlertSettings({
   const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      uploadFile(file).then((ignore) => {
+      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
-          updatedAlerts.video = file.name;
+          updatedAlerts.video = name;
           alerts[selected] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
@@ -310,13 +312,13 @@ export default function PaymentAlertSettings({
   const handleAudioUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      console.log(file);
-      uploadFile(file).then((ignore) => {
+      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
           let updatedAlerts = alerts?.at(selected);
-          updatedAlerts.audio = file.name;
+          updatedAlerts.audio = name;
           alerts[selected] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);

@@ -15,9 +15,9 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty {
     );
   }
 
-  uploadFile(file: File) {
+  uploadFile(file: File, name: string) {
     return axios.put(
-      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${file.name}`,
+      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
       { file: file },
       {
         headers: {
@@ -33,8 +33,9 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty {
   ) {
     if (e.target.files) {
       const file = e.target.files[0];
-      this.uploadFile(file).then((ignore) => {
-        updateConfig(this.widgetId, "backgroundImage", file.name);
+      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      this.uploadFile(file, name).then((ignore) => {
+        updateConfig(this.widgetId, "backgroundImage", name);
       });
     }
   }
