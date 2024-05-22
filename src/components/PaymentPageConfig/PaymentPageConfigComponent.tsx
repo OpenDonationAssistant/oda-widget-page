@@ -74,6 +74,13 @@ export default function PaymentPageConfigComponent({}: {}) {
     }
   };
 
+  const deleteCustomCss = () => {
+    if (paymentPageConfig.current){
+      paymentPageConfig.current.customCss = "";
+      paymentPageConfig.current.save();
+    }
+  }
+
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
