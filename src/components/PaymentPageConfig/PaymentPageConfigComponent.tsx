@@ -56,7 +56,7 @@ export default function PaymentPageConfigComponent({}: {}) {
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
     setPayButtonText(paymentPageConfig.current?.payButtonText ?? null);
     if (paymentPageConfig.current?.customCss) {
-      setHasChanges(true);
+      setHasCustomCss(true);
     }
   }
 
