@@ -140,6 +140,7 @@ export class PaymentPageConfig {
   public set customCss(value: string) {
     this._customCss = value;
     this.config.value["customCss"] = value;
+    this.sendEventPaymentPageUpdated();
   }
 
   async reloadConfig(): Promise<void> {

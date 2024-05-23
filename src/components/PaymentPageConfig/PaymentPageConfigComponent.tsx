@@ -39,6 +39,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [arbitraryText, setArbitraryText] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [payButtonText, setPayButtonText] = useState<string | null>(null);
+  const [hasCustomCss, setHasCustomCss] = useState<boolean>(false);
 
   function listenPaymentPageConfigUpdated() {
     if (!paymentPageConfig.current) {
@@ -54,6 +55,9 @@ export default function PaymentPageConfigComponent({}: {}) {
     setInn(paymentPageConfig.current?.inn ?? "");
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
     setPayButtonText(paymentPageConfig.current?.payButtonText ?? null);
+    if (paymentPageConfig.current?.customCss) {
+      setHasChanges(true);
+    }
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +71,7 @@ export default function PaymentPageConfigComponent({}: {}) {
     if (e.target.files) {
       const file = e.target.files[0];
       if (paymentPageConfig.current) {
-        paymentPageConfig.current.customCss = `${process.env.REACT_APP_CDN_ENDPOINT}/css-${recipientId}.css`
+        paymentPageConfig.current.customCss = `${process.env.REACT_APP_CDN_ENDPOINT}/css-${recipientId}.css`;
         paymentPageConfig.current.save();
       }
       uploadFile(file, `css-${recipientId}.css`);
@@ -75,11 +79,11 @@ export default function PaymentPageConfigComponent({}: {}) {
   };
 
   const deleteCustomCss = () => {
-    if (paymentPageConfig.current){
+    if (paymentPageConfig.current) {
       paymentPageConfig.current.customCss = "";
       paymentPageConfig.current.save();
     }
-  }
+  };
 
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -185,12 +189,24 @@ export default function PaymentPageConfigComponent({}: {}) {
             />
           </label>
         </div>
-        <div className={classes.widgetsettingsitem}>
+        <div
+          style={{ alignItems: "baseline" }}
+          className={classes.widgetsettingsitem}
+        >
           <div className={classes.widgetsettingsname}>Custom css</div>
           <label className="upload-button">
             <input type="file" onChange={handleCssUpload} />
             Загрузить
           </label>
+          {hasCustomCss && (<button
+            style={{marginLeft: "10px"}}
+            className="oda-button"
+            onClick={() => {
+              deleteCustomCss();
+            }}
+          >
+            Удалить
+          </button>)}
         </div>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>Текст на странице</div>
@@ -236,10 +252,10 @@ export default function PaymentPageConfigComponent({}: {}) {
             Реквесты музыки/видео
           </div>
           <select
-            value={ isRequestsEnabled ? "enabled" : "disabled" }
+            value={isRequestsEnabled ? "enabled" : "disabled"}
             className="widget-settings-value select"
             style={{ width: "120px", backgroundColor: "#0c122e" }}
-            onChange={ handleTogglingRequests }
+            onChange={handleTogglingRequests}
           >
             <option key="enabled">enabled</option>
             <option key="disabled">disabled</option>
@@ -264,7 +280,9 @@ export default function PaymentPageConfigComponent({}: {}) {
           />
         </div>
         <div className={classes.widgetsettingsitem}>
-          <div className={classes.widgetsettingsname}>Текст кнопки "Задонатить"</div>
+          <div className={classes.widgetsettingsname}>
+            Текст кнопки "Задонатить"
+          </div>
           <input
             value={payButtonText}
             className={classes.widgetsettingsvalue}
