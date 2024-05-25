@@ -22,7 +22,7 @@ export class ReelItemListProperty extends DefaultWidgetProperty {
     updateConfig(this.widgetId, "optionList", updated);
   }
 
-  copy(){
+  copy() {
     return new ReelItemListProperty(this.widgetId, this.value);
   }
 

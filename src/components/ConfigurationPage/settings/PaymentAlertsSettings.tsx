@@ -5,6 +5,7 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
+import TestAlertButton from "./TestAlertButton";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -59,6 +60,7 @@ export default function PaymentAlertSettings({
   const [tab, setTab] = useState("trigger");
   const [selected, setSelected] = useState<number>(-2);
   const { config, setConfig } = useContext(WidgetsContext);
+  const [showTestAlert, setShowTestAlert] = useState<boolean>(false);
 
   function addDefaultAlert(): void {
     let alerts = config.get(id)?.alerts;
@@ -272,7 +274,7 @@ export default function PaymentAlertSettings({
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
       uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
@@ -292,7 +294,7 @@ export default function PaymentAlertSettings({
   const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
       uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
@@ -312,7 +314,7 @@ export default function PaymentAlertSettings({
   const handleAudioUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
+      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
       uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
@@ -560,7 +562,7 @@ export default function PaymentAlertSettings({
       )}
       {"image" === tab && (
         <div className="upload-button-container">
-          <label className="upload-button" style={{marginRight: "10px"}}>
+          <label className="upload-button" style={{ marginRight: "10px" }}>
             <input type="file" onChange={handleVideoUpload} />
             Загрузить видео
           </label>
@@ -593,7 +595,8 @@ export default function PaymentAlertSettings({
 
   return (
     <>
-      <BaseSettings id={id}/>
+      <TestAlertButton config={config}/>
+      <BaseSettings id={id} />
       {previews()}
       {selected > -1 && (
         <div className="payment-alert-settings">

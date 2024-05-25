@@ -143,7 +143,6 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             <div style={{ textAlign: "right" }}>
               <button
                 className="widget-button"
-                style={{ width: "unset" }}
                 onClick={(e) => {
                   this.deleteGoal(updateConfig, index);
                 }}

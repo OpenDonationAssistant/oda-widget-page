@@ -5,11 +5,12 @@ import { useLoaderData } from "react-router";
 import { log } from "../../logging";
 import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
+import { WidgetData } from "../../types/WidgetData";
 
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
-  const { recipientId } = useLoaderData();
+  const { recipientId } = useLoaderData() as WidgetData;
 
   useEffect(() => {
     function toggle() {
