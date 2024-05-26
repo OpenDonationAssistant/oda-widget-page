@@ -27,7 +27,6 @@ export class ReelItemListProperty extends DefaultWidgetProperty {
   }
 
   markup(updateConfig: Function): ReactNode {
-    console.log(this.value);
     return (
       <div className="widget-settings-item">
         <label className="widget-settings-name">Призы</label>

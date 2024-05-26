@@ -18,7 +18,7 @@ export default function BooleanPropertyInput({
         <input
           type="checkbox"
           checked={true === prop.value}
-          onChange={(e) => onChange()}
+          onChange={(e) => onChange(e)}
         />
       </div>
     </>

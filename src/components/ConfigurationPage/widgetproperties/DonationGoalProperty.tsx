@@ -3,6 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
+import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 
 export interface Amount {
   major: number;
@@ -13,6 +14,7 @@ export interface Goal {
   id: string;
   briefDescription: string;
   fullDescription: string;
+  default: boolean;
   requiredAmount: Amount;
   accumulatedAmount: Amount;
 }
@@ -28,6 +30,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
           id: uuidv7(),
           briefDescription: "test",
           fullDescription: "full",
+          default: false,
           requiredAmount: { major: 100, currency: "RUB" },
         },
       ],
@@ -47,9 +50,13 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
       { goals: this.value, updated: goal, index: index },
       "goals before update",
     );
-    (this.value as Goal[]).splice(index, 1, goal);
+    const updated = (this.value as Goal[]).map((it) => {
+      it.default = false;
+      return it;
+    });
+    updated.splice(index, 1, goal);
     log.debug({ goals: this.value }, "goals after update");
-    updateConfig(this.widgetId, "goal", this.value);
+    updateConfig(this.widgetId, "goal", updated);
   }
 
   addGoal(updateConfig: Function) {
@@ -58,6 +65,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
       id: uuidv7(),
       briefDescription: "Название",
       fullDescription: "Полное описание",
+      default: false,
       requiredAmount: { major: 100, currency: "RUB" },
       accumulatedAmount: { major: 0, currency: "RUB" },
     });
@@ -80,7 +88,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
         </button>
         {this.value.map((goal: Goal, index: number) => (
           <div key={index} className={`${classes.goalcontainer}`}>
-            <div style={{ fontStyle: "italic", fontWeight: "900"}}>Цель:</div>
+            <div style={{ fontStyle: "italic", fontWeight: "900" }}>Цель:</div>
             <div className="widget-settings-item">
               <label
                 htmlFor={`${this.widgetId}_${index}`}
@@ -134,8 +142,33 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
                   value={goal.requiredAmount.major}
                   onChange={(e) => {
                     const updated = structuredClone(goal);
-                    updated.requiredAmount.major = Number.parseInt(e.target.value);
+                    updated.requiredAmount.major = Number.parseInt(
+                      e.target.value,
+                    );
                     this.updateGoal(updateConfig, updated, index);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="widget-settings-item">
+              <label
+                htmlFor={`${this.widgetId}_${this.name}`}
+                className="widget-settings-name"
+              >
+                По-умолчанию
+              </label>
+              <div className="textarea-container">
+                <BooleanPropertyInput
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    const updated = structuredClone(goal);
+                    updated.default = !updated.default;
+                    this.updateGoal(updateConfig, updated, index);
+                  }}
+                  prop={{
+                    name: "test",
+                    type: "predefined",
+                    value: goal.default,
                   }}
                 />
               </div>
@@ -143,7 +176,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             <div style={{ textAlign: "right" }}>
               <button
                 className="widget-button"
-                onClick={(e) => {
+                onClick={() => {
                   this.deleteGoal(updateConfig, index);
                 }}
               >
