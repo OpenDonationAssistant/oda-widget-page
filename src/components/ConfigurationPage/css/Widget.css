@@ -135,6 +135,19 @@
   outline: none;
 }
 
+.audio-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sound-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .current-sound {
 	display: inline-block;
 	padding-top: 5px;
@@ -145,6 +158,12 @@
 
 .current-sound:hover {
 	cursor: pointer;
+}
+
+.audio-name {
+  vertical-align: top;
+  margin-right: 10px;
+  font-weight: 900;
 }
 
 .new-alert.payment-alerts-previews-item .payment-alert-image-preview {

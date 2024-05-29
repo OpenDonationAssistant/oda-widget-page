@@ -6,52 +6,12 @@ import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
 import TestAlertButton from "./TestAlertButton";
+import FontSelect from "./FontSelect";
 
 interface PaymentAlertSettingsProps {
   id: string;
   onChange: Function;
 }
-
-const fonts = [
-  "Roboto",
-  "Ruslan Display",
-  "Cuprum",
-  "Anonymous Pro",
-  "Pangolin",
-  "Ruda",
-  "Stalinist One",
-  "Montserrat",
-  "Ubuntu Mono",
-  "Jura",
-  "Scada",
-  "Prosto One",
-  "Arsenal",
-  "Tenor Sans",
-  "El Messiri",
-  "Yeseva One",
-  "Pattaya",
-  "Andika",
-  "Gabriela",
-  "Marmelad",
-  "Cormorant Unicase",
-  "Cormorant SC",
-  "Amatic SC",
-  "Rubik Mono One",
-  "PT Sans Caption",
-  "Spectral SC",
-  "Rubik",
-  "Exo 2",
-  "Exo",
-  "Oswald",
-  "Underdog",
-  "Kurale",
-  "Forum",
-  "Neucha",
-  "Didact Gothic",
-  "Philosopher",
-  "Russo One",
-  "Noto Serif",
-];
 
 export default function PaymentAlertSettings({
   id,
@@ -60,7 +20,6 @@ export default function PaymentAlertSettings({
   const [tab, setTab] = useState("trigger");
   const [selected, setSelected] = useState<number>(-2);
   const { config, setConfig } = useContext(WidgetsContext);
-  const [showTestAlert, setShowTestAlert] = useState<boolean>(false);
 
   function addDefaultAlert(): void {
     let alerts = config.get(id)?.alerts;
@@ -291,6 +250,21 @@ export default function PaymentAlertSettings({
     }
   };
 
+  function deleteImage() {
+    setConfig((oldConfig) => {
+      const alertConfig = oldConfig.get(id);
+      const alerts = alertConfig?.alerts;
+      let updatedAlerts = alerts?.at(selected);
+      updatedAlerts.image = null;
+      updatedAlerts.video = null;
+      alerts[selected] = updatedAlerts;
+      alertConfig.alerts = alerts;
+      const newConfig = new Map(oldConfig).set(id, alertConfig);
+      return newConfig;
+    });
+    onChange.call({});
+  }
+
   const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
@@ -330,6 +304,20 @@ export default function PaymentAlertSettings({
       });
     }
   };
+
+  function deleteAudio() {
+    setConfig((oldConfig) => {
+      const alertConfig = oldConfig.get(id);
+      const alerts = alertConfig?.alerts;
+      let updatedAlerts = alerts?.at(selected);
+      updatedAlerts.audio = null;
+      alerts[selected] = updatedAlerts;
+      alertConfig.alerts = alerts;
+      const newConfig = new Map(oldConfig).set(id, alertConfig);
+      return newConfig;
+    });
+    onChange.call({});
+  }
 
   function update(key: string, value: any) {
     setConfig((oldConfig) => {
@@ -510,15 +498,10 @@ export default function PaymentAlertSettings({
               />
             )}
             {prop.type === "fontselect" && (
-              <select
-                value={prop.value}
-                className="widget-settings-value select"
-                onChange={(e) => update(prop.name, e.target.value)}
-              >
-                {fonts.sort().map((font) => (
-                  <option key={font}>{font}</option>
-                ))}
-              </select>
+              <FontSelect
+                prop={prop}
+                onChange={(font: string) => update(prop.name, font)}
+              />
             )}
             {prop.type === "color" && (
               <div className="color-container">
@@ -562,32 +545,62 @@ export default function PaymentAlertSettings({
       )}
       {"image" === tab && (
         <div className="upload-button-container">
-          <label className="upload-button" style={{ marginRight: "10px" }}>
-            <input type="file" onChange={handleVideoUpload} />
-            Загрузить видео
-          </label>
-          <label className="upload-button">
-            <input type="file" onChange={handleFileChange} />
-            Загрузить изображение
-          </label>
+          {!config.get(id)?.alerts?.at(selected)?.video &&
+            !config.get(id)?.alerts?.at(selected)?.image && (
+              <>
+                <label
+                  className="upload-button"
+                  style={{ marginRight: "10px" }}
+                >
+                  <input type="file" onChange={handleVideoUpload} />
+                  Загрузить видео
+                </label>
+                <label className="upload-button">
+                  <input type="file" onChange={handleFileChange} />
+                  Загрузить изображение
+                </label>
+              </>
+            )}
+          {(config.get(id)?.alerts?.at(selected)?.video ||
+            config.get(id)?.alerts?.at(selected)?.image) && (
+              <button className="widget-button" onClick={deleteImage}>
+                Удалить
+              </button>
+            )}
         </div>
       )}
       {"sound" === tab && (
         <>
-          <div className="current-sound">
-            <span
-              onClick={() =>
-                playAudio(config.get(id)?.alerts?.at(selected).audio)
-              }
-              className="material-symbols-sharp"
-            >
-              play_circle
-            </span>
+          <div className="sound-container">
+            {config.get(id)?.alerts?.at(selected).audio && (
+              <div className="current-sound">
+                <span className="audio-name">
+                  {config.get(id)?.alerts?.at(selected).audio}
+                </span>
+                <span
+                  onClick={() =>
+                    playAudio(config.get(id)?.alerts?.at(selected).audio)
+                  }
+                  className="material-symbols-sharp"
+                >
+                  play_circle
+                </span>
+              </div>
+            )}
+            <div className="audio-button-container">
+              {!config.get(id)?.alerts?.at(selected).audio && (
+                <label className="upload-button">
+                  <input type="file" onChange={handleAudioUpload} />
+                  Загрузить аудио
+                </label>
+              )}
+              {config.get(id)?.alerts?.at(selected).audio && (
+                <button onClick={deleteAudio} className="widget-button">
+                  Удалить
+                </button>
+              )}
+            </div>
           </div>
-          <label className="upload-button">
-            <input type="file" onChange={handleAudioUpload} />
-            Загрузить аудио
-          </label>
         </>
       )}
     </>
@@ -595,7 +608,7 @@ export default function PaymentAlertSettings({
 
   return (
     <>
-      <TestAlertButton config={config}/>
+      <TestAlertButton config={config} />
       <BaseSettings id={id} />
       {previews()}
       {selected > -1 && (
