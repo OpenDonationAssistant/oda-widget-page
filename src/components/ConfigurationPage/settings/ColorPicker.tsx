@@ -17,7 +17,6 @@ export default function ColorPicker({ value, onChange }) {
               color={value}
               onChange={(newValue) => {
                 onChange(newValue);
-                toggle(!isOpen);
               }}
             />
             <input
