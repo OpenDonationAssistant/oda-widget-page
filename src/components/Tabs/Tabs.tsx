@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import classes from "./Tabs.module.css";
-import { log } from "../../logging";
+import React, { useContext } from "react";
 import { WidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
 import { WidgetsContext } from "../ConfigurationPage/WidgetsContext";
+import { Tabs as AntTabs } from "antd";
 
 export default function Tabs({
   tabs,
@@ -12,41 +11,25 @@ export default function Tabs({
   properties: WidgetProperty[];
 }) {
   const { updateConfig } = useContext(WidgetsContext);
-  const [tab, setTab] = useState<string>("");
 
-  useEffect(() => {
-    if (tab) {
-      return;
-    }
-    const firstTab = tabs.keys().next();
-    if (firstTab) {
-      log.debug({ tab: firstTab.value }, "settings first tab");
-      setTab(firstTab.value);
-    }
-    return () => setTab("");
-  }, [tabs]);
-
-  const tabsMarkup = () => {
-    return [...tabs.keys()].map((key) => (
-      <div
-        key={key}
-        className={`settings-tab-item ${tab === key ? "active" : ""}`}
-        onClick={() => {
-          setTab(key);
-        }}
-      >
-        {tabs.get(key)}
-      </div>
-    ));
+  const tabPaneGenerator = (key: string) => {
+    return {
+      label: tabs.get(key),
+      key: key,
+      children: properties
+        ?.filter((prop) => prop.type !== "custom")
+        ?.filter((prop) => prop.tab === key)
+        .map((prop) => prop.markup(updateConfig)),
+    };
   };
 
   return (
     <>
-      <div className={`${classes.settingstabs}`}>{tabsMarkup()}</div>
-      {properties
-        ?.filter((prop) => prop.type !== "custom")
-        ?.filter((prop) => prop.tab === tab)
-        .map((prop) => prop.markup(updateConfig))}
+      {(!tabs || tabs.size === 0) &&
+        properties.map((prop) => prop.markup(updateConfig))}
+      {tabs && tabs.size > 0 && (
+        <AntTabs type="card" items={[...tabs.keys()].map(tabPaneGenerator)} />
+      )}
     </>
   );
 }

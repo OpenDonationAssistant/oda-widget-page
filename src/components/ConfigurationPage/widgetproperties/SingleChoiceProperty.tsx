@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
+import {  Select } from 'antd';
 
 export class SingleChoiceProperty extends DefaultWidgetProperty {
   options: string[];
@@ -20,21 +21,17 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label className="widget-settings-name">{this.displayName}</label>
-        <select
+        <label >{this.displayName}</label>
+        <Select 
           value={this.value}
-          className="widget-settings-value select"
           onChange={(e) => {
             if (!this.widgetId) {
               return;
             }
             updateConfig(this.widgetId, this.name, e.target.value);
           }}
-        >
-          {this.options.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
+          options={this.options.map((option) => {return {value: option,  label:option}})}
+        />
       </div>
     );
   }

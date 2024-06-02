@@ -16,6 +16,8 @@
     "@types/react-toggle": "^4.0.5",
     "@types/uuid": "^9.0.7",
     "@types/video.js": "^7.3.56",
+    "ahooks": "^3.8.0",
+    "antd": "^5.17.4",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.1",
     "howler": "^2.2.3",

@@ -19,6 +19,7 @@ import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSetti
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
 import { DefaultWidgetProperty } from "./widgetproperties/WidgetProperty";
+import { ConfigProvider, theme } from "antd";
 
 const backgroundColor = (
   <style
@@ -202,6 +203,19 @@ export default function ConfigurationPage({}: {}) {
   );
 
   return (
+      <ConfigProvider
+    theme={{
+      token: {
+        // Seed Token
+        // colorPrimary: '#2b3566',
+        // colorPrimary: '#0c122e',
+          // colorPrimary: '#684aff',
+          // colorPrimary: '#9E339F',
+        borderRadius: 8,
+      },
+      algorithm: theme.darkAlgorithm,
+    }}
+  >
     <div className="configuration-container">
       {backgroundColor}
       <Toolbar page={Page.WIDGETS} />
@@ -247,5 +261,6 @@ export default function ConfigurationPage({}: {}) {
         )}
       </div>
     </div>
+    </ConfigProvider>
   );
 }

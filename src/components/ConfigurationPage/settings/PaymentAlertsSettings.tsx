@@ -18,7 +18,7 @@ export default function PaymentAlertSettings({
   onChange,
 }: PaymentAlertSettingsProps) {
   const [tab, setTab] = useState("trigger");
-  const [selected, setSelected] = useState<number>(-2);
+  const [selected, setSelected] = useState<number>(-1);
   const { config, setConfig } = useContext(WidgetsContext);
 
   function addDefaultAlert(): void {
@@ -360,6 +360,21 @@ export default function PaymentAlertSettings({
 
   const previews = () => (
     <div className="payment-alerts-previews">
+      <div className="default-alert payment-alerts-previews-item">
+        <div className={`payment-alert-image-preview ${
+                selected === -1 ? "selected" : ""
+}`}>
+          <div
+            style={{ textAlign: "center" }}
+            onClick={() => {
+              setTab("trigger");
+              setSelected(-1);
+            }}
+          >
+            По умолчанию
+          </div>
+        </div>
+      </div>
       {config.get(id)?.alerts?.map((alert, number: number) => (
         <div key={number} className="payment-alerts-previews-item">
           {alert.image && (
@@ -407,9 +422,7 @@ export default function PaymentAlertSettings({
       ))}
       <div className="new-alert payment-alerts-previews-item">
         <div
-          className={`payment-alert-image-preview ${
-            selected === -1 ? "selected" : ""
-          }`}
+          className={`payment-alert-image-preview`}
           style={{
             textAlign: "center",
             display: "flex",
@@ -563,10 +576,10 @@ export default function PaymentAlertSettings({
             )}
           {(config.get(id)?.alerts?.at(selected)?.video ||
             config.get(id)?.alerts?.at(selected)?.image) && (
-              <button className="widget-button" onClick={deleteImage}>
-                Удалить
-              </button>
-            )}
+            <button className="widget-button" onClick={deleteImage}>
+              Удалить
+            </button>
+          )}
         </div>
       )}
       {"sound" === tab && (
