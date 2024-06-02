@@ -34,17 +34,15 @@ export class ColorProperty {
         >
           {this.displayName}
         </label>
-        <div className="color-container">
-          <ColorPicker
-            value={this.value}
-            onChange={(value: string) => {
-              if (!this.widgetId) {
-                return;
-              }
-              updateConfig(this.widgetId, this.name, value);
-            }}
-          />
-        </div>
+        <ColorPicker
+          value={this.value}
+          onChange={(value: string) => {
+            if (!this.widgetId) {
+              return;
+            }
+            updateConfig(this.widgetId, this.name, value);
+          }}
+        />
       </div>
     );
   }

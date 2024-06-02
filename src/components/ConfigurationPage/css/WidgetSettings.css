@@ -7,7 +7,6 @@
 }
 
 .widget-settings {
-  margin-top: 10px;
   color: white;
   padding-left: 15px;
   padding-right: 15px;
@@ -20,9 +19,13 @@
   justify-content: space-between;
   margin-top: 10px;
   margin-bottom: 4px;
-  min-height: 30px;
+  min-height: 45px;
   flex-wrap: wrap;
-  border-bottom: 1px dashed #9b9b9b;
+  border-bottom: 1px dashed #0c122e;
+}
+
+.widget-settings .widget-settings-item:last-child{
+  border: none;
 }
 .widget-settings-item:hover .widget-settings-name {
   color: #11998e;
@@ -34,12 +37,13 @@
 
 .widget-settings-name {
   position: absolute;
+  color: white;
   display: block;
   transition: 0.2s;
   font-size: 1rem;
   cursor: text;
   top: 10px;
-  font-family: "Martian Mono", monospace;
+  font-family: "Play";
 }
 .payment-alert-settings .widget-settings-name {
   width: 50%;
@@ -63,6 +67,51 @@
 .widget-settings-item,
 .widget-settings-item label:hover {
   cursor: default;
+}
+
+.widget-settings .ant-color-picker-trigger {
+  background-color: #684aff;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.widget-settings .ant-tabs .ant-tabs-tab {
+  color: #7885bd;
+  font-family: 'Play';
+  font-weight: 900;
+}
+
+.widget-settings-item .ant-select {
+  position: absolute;
+    right: 0;
+  width: 25%;
+  color: white;
+}
+
+.widget-settings-item .ant-select .ant-select-arrow {
+  color: white;
+}
+
+.widget-settings-item .ant-select-outlined .ant-select-selector {
+  background-color: #684aff;
+  color: white!important;
+}
+
+.widget-settings .ant-input-number {
+  background-color: #684aff;
+  width: 25%;
+  position: absolute;
+  right: 0;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.widget-settings .ant-input-number .ant-input-number-handler {
+  display: none;
+}
+
+.widget-settings .ant-input-number .ant-input-number-handler-wrap {
+  display: none;
 }
 
 .widget-settings-value {
@@ -184,12 +233,6 @@ textarea.widget-settings-value {
 .settings-tab-item.active {
   background-color: #684aff;
   color: white;
-}
-
-.color-container {
-  width: 100%;
-  text-align: right;
-  margin-top: 10px;
 }
 
 .color-value {

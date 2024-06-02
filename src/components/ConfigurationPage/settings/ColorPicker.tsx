@@ -1,32 +1,19 @@
-import { useState } from "react";
-import { HexColorPicker } from "react-colorful";
+import
+{ ColorPicker as AntColorPicker }
+from
+"antd"
+;
+import classes from "./ColorPicker.module.css";
 
 export default function ColorPicker({ value, onChange }) {
-  const [isOpen, toggle] = useState(false);
   return (
     <>
-      <div
-        className="color-value"
-        style={{ backgroundColor: value }}
-        onClick={() => toggle(!isOpen)}
-      />
-      {isOpen && (
-        <>
-          <div className="color-picker-popup">
-            <HexColorPicker
-              color={value}
+      <div className={`${classes.container}`}>
+      <AntColorPicker value={value} showText
               onChange={(newValue) => {
                 onChange(newValue);
-              }}
-            />
-            <input
-              className="color-picker-value"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-            />
-          </div>
-        </>
-      )}
+              }}/>
+      </div>
     </>
   );
 }

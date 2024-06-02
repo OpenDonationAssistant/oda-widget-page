@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { DefaultWidgetProperty } from "./WidgetProperty";
+import { InputNumber } from 'antd';
 
 export class NumberProperty extends DefaultWidgetProperty {
   constructor(
@@ -35,15 +36,15 @@ export class NumberProperty extends DefaultWidgetProperty {
         >
           {this.displayName}
         </label>
-        <input
+        <InputNumber
           value={this.value}
-          type="number"
+          size="small"
           className="widget-settings-value"
           onChange={(e) => {
             if (!this.widgetId) {
               return;
             }
-            updateConfig(this.widgetId, this.name, e.target.value);
+            updateConfig(this.widgetId, this.name, e);
           }}
         />
       </div>

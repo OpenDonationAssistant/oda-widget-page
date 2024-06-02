@@ -14,7 +14,7 @@ export default function Tabs({
 
   const tabPaneGenerator = (key: string) => {
     return {
-      label: tabs.get(key),
+      label: tabs.get(key)?.toLowerCase(),
       key: key,
       children: properties
         ?.filter((prop) => prop.type !== "custom")

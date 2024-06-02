@@ -6,6 +6,24 @@
   position: relative;
 }
 
+.widget-settings .ant-tabs-top >.ant-tabs-nav::before {
+  border-bottom: 1px solid #674afd;
+}
+
+.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active{
+  background-color: #684aff;
+  border: 1px solid #684aff;
+
+}
+
+.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab {
+  border: 1px solid #684aff;
+}
+
+.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active .ant-tabs-tab-btn{
+  color: white;
+}
+
 .widget-header {
   display: flex;
   border-radius: 5px;

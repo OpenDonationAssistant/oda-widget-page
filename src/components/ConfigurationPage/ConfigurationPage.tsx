@@ -24,7 +24,18 @@ import { ConfigProvider, theme } from "antd";
 const backgroundColor = (
   <style
     dangerouslySetInnerHTML={{
-      __html: `html, body {background-color: #0c122e; height: 100%;}`,
+      __html: `
+body::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    background-color: #0c122e;
+    width: 100%;
+    height: 100%;
+`,
     }}
   />
 );

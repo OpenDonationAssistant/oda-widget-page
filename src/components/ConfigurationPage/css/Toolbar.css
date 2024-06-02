@@ -2,8 +2,6 @@
   position: fixed;
   height: 100%;
   width: 250px;
-  border-right: 1px solid #674afd;
-  background-color: #151a33;
 }
 
 .toolbar .material-symbols-sharp {
@@ -47,6 +45,7 @@
 
 .toolbar-button-title {
   margin-left: 10px;
+  font-family: 'Play';
 }
 
 .oda-logo {

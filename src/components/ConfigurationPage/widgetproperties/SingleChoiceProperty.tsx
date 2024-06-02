@@ -21,14 +21,14 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label >{this.displayName}</label>
+        <label className="widget-settings-name" >{this.displayName}</label>
         <Select 
           value={this.value}
           onChange={(e) => {
             if (!this.widgetId) {
               return;
             }
-            updateConfig(this.widgetId, this.name, e.target.value);
+            updateConfig(this.widgetId, this.name, e);
           }}
           options={this.options.map((option) => {return {value: option,  label:option}})}
         />

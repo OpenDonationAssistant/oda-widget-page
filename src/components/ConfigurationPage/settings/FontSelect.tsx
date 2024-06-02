@@ -1,3 +1,5 @@
+import { Select } from "antd";
+
 const fonts = [
   "Roboto",
   "Ruslan Display",
@@ -41,16 +43,13 @@ const fonts = [
 
 export default function FontSelect({ prop, onChange }) {
   return (
-    <>
-      <select
-        value={prop.value}
-        className="widget-settings-value select"
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {fonts.sort().map((font) => (
-          <option key={font}>{font}</option>
-        ))}
-      </select>
-    </>
+    <Select
+      showSearch
+      value={prop.value}
+      onChange={onChange}
+      options={fonts.sort().map((font) => {
+        return { value: font, label: font };
+      })}
+    />
   );
 }
