@@ -11,7 +11,7 @@ export default function ColorPicker({ value, onChange }) {
       <div className={`${classes.container}`}>
       <AntColorPicker value={value} showText
               onChange={(newValue) => {
-                onChange(newValue);
+                onChange(newValue.toRgbString());
               }}/>
       </div>
     </>

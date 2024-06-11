@@ -13,6 +13,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
     tabs.set("content", "Содержимое");
     tabs.set("header", "Заголовок");
     tabs.set("list", "Список");
+    tabs.set("layout", "Стиль");
     super(
       widgetId,
       properties,

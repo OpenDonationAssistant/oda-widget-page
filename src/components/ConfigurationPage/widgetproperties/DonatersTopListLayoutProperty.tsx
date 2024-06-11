@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
+import { Divider } from "antd";
+import classes from "./DonatersTopListLayoutProperty.module.css";
 
 export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
   constructor(widgetId: string, value: string) {
-    super(widgetId, "layout", "predefined", value, "Компоновка", "content");
+    super(widgetId, "layout", "predefined", value, "Компоновка", "layout");
   }
 
   copy(): DonatersTopListLayoutProperty {
@@ -14,44 +16,33 @@ export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
     return (
       <>
         <div key={this.name} className="widget-settings-item">
-          <label className="widget-settings-name">{this.displayName}</label>
           <div className="widget-settings-radiocontainer">
-            <label className="widget-settings-radiobutton">
-              <input
-                title="vertical"
-                type="radio"
-                value="vertical"
-                checked={this.value === "vertical"}
-                onChange={(e) =>
-                  updateConfig(this.widgetId, this.name, e.target.value)
-                }
-              />
-              <img
-                title="vertical"
-                src={`/icons/vertical.jpg`}
-                onClick={() =>
-                  updateConfig(this.widgetId, this.name, "vertical")
-                }
-              />
-            </label>
-            <label className="widget-settings-radiobutton">
-              <input
-                title="horizontal"
-                type="radio"
-                value="horizontal"
-                checked={this.value === "horizontal"}
-                onChange={(e) =>
-                  updateConfig(this.widgetId, this.name, e.target.value)
-                }
-              />
-              <img
-                title="horizontal"
-                src={`/icons/horizontal.jpg`}
-                onClick={() =>
-                  updateConfig(this.widgetId, this.name, "horizontal")
-                }
-              />
-            </label>
+            <div
+              className={`${classes.radiobutton} ${
+                this.value === "vertical" ? classes.selected : ""
+              }`}
+              onClick={() => {
+                updateConfig(this.widgetId, this.name, "vertical");
+              }}
+            >
+              <img title="vertical" src={`/icons/vertical.jpg`} />
+              <div className={`${classes.layoutdescription}`}>
+                Список ников будет располагаться вертикально
+              </div>
+            </div>
+            <div
+              className={`${classes.radiobutton} ${this.value === "horizontal" ? classes.selected : ""}`}
+              onClick={() => {
+                updateConfig(this.widgetId, this.name, "horizontal");
+              }}
+            >
+              <img title="horizontal" src={`/icons/horizontal.jpg`} />
+              <div
+                className={`${classes.layoutdescription}`}
+              >
+                Список ников будет располагаться в одну линию
+              </div>
+            </div>
           </div>
         </div>
       </>

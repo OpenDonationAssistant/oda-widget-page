@@ -1,5 +1,6 @@
 import React from "react";
 import classes from "./BooleanPropertyInput.module.css";
+import { Switch } from "antd";
 
 export default function BooleanPropertyInput({
   prop,
@@ -13,14 +14,8 @@ export default function BooleanPropertyInput({
   };
 }) {
   return (
-    <>
-      <div className={classes.checkboxwrapper}>
-        <input
-          type="checkbox"
-          checked={true === prop.value}
-          onChange={(e) => onChange(e)}
-        />
-      </div>
-    </>
+    <div className={classes.checkboxwrapper}>
+      <Switch checked={true === prop.value} onChange={(e) => onChange(e)} />
+    </div>
   );
 }

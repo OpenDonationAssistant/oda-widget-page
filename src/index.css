@@ -112,6 +112,6 @@ input[type="file"] {
   overflow-wrap: break-word;
 }
 
-.settings-tabs {
+.blured {
+  filter: blur(5px);
 }
-

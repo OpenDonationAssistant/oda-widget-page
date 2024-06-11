@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import BaseSettings from "../../components/ConfigurationPage/settings/BaseSettings";
 import { WidgetsContext } from "../../components/ConfigurationPage/WidgetsContext";
 import { log } from "../../logging";
-import classes from "./ReelWidgetSettings.module.css";
 import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 import { WidgetData } from "../../types/WidgetData";
@@ -40,12 +39,6 @@ export default function ReelWidgetSettings({ id }: { id: string }) {
 
   return (
     <>
-      <button
-        className={`widget-button ${classes.testbutton}`}
-        onClick={runReel}
-      >
-        Крутануть
-      </button>
       <BaseSettings id={id} />
     </>
   );

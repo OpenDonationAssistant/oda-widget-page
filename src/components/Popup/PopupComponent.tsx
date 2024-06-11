@@ -13,7 +13,7 @@ export default function PopupComponent({
   return (
     <>
       <button
-        className={`widget-button`}
+        className={`oda-btn-default`}
         onClick={() => setShowPopup(!showPopup)}
       >
         {buttonText}

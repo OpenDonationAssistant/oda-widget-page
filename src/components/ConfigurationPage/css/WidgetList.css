@@ -1,6 +1,6 @@
 .widget-list {
-  margin-left: 280px;
-  margin-right: 100px;
+  width: 900px;
+  margin-left: 220px;
   padding-top: 20px;
   padding-bottom: 50px;
   flex: 1 1 auto;

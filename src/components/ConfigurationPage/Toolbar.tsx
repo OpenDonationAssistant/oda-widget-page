@@ -32,13 +32,6 @@ export default function Toolbar({ page }: { page: Page }) {
         <span className="material-symbols-sharp">language</span>
         <span className="toolbar-button-title">Donation page</span>
       </button>
-      <button
-        className={`toolbar-button ${page === Page.GATEWAYS ? "active" : ""}`}
-        onClick={() => navigate(`/configuration/gateways`)}
-      >
-        <span className="material-symbols-sharp">credit_card</span>
-        <span className="toolbar-button-title">Payment Gateways</span>
-      </button>
     </div>
   );
 }

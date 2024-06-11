@@ -10,9 +10,13 @@ import "./css/WidgetSettings.css";
 import PaymentAlertSettings from "./settings/PaymentAlertsSettings";
 import { WidgetsContext } from "./WidgetsContext";
 import BaseSettings from "./settings/BaseSettings";
-import { socket } from "../../socket";
+import { publish, socket } from "../../socket";
 import ReelWidgetSettings from "../../pages/Reel/ReelWidgetSettings";
 import { log } from "../../logging";
+import { Button } from "antd";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
+import TextAlertButton from "./settings/TestAlertButton";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -26,9 +30,9 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
     case "payment-alerts":
       return <PaymentAlertSettings id={id} onChange={onChange} />;
     case "reel":
-      return <ReelWidgetSettings id={id}/>;
+      return <ReelWidgetSettings id={id} />;
     default:
-      return <BaseSettings id={id}/>;
+      return <BaseSettings id={id} />;
   }
 }
 
@@ -45,6 +49,7 @@ export default function WidgetConfiguration({
   reload,
 }: WidgetConfigurationProps) {
   const { config, setConfig, updateConfig } = useContext(WidgetsContext);
+  const { conf } = useLoaderData() as WidgetData;
   const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [showWidgetMenu, setShowWidgetMenu] = useState(false);
@@ -88,7 +93,7 @@ export default function WidgetConfiguration({
         value: prop.value,
       };
     });
-    log.debug({updated: props}, "sending props");
+    log.debug({ updated: props }, "sending props");
     const request = {
       name: newName,
       config: {
@@ -100,6 +105,24 @@ export default function WidgetConfiguration({
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
       request,
     );
+  }
+
+  function getProperty(name: string): any {
+    return config.get(id)?.properties.find((prop) => prop.name === name)?.value;
+  }
+
+  function getRndInteger(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  function runReel() {
+    const optionList = getProperty("optionList");
+    const choosenIndex = getRndInteger(0, optionList.length - 1);
+    publish(conf.topic.reel, {
+      type: "trigger",
+      selection: optionList[choosenIndex],
+      widgetId: id,
+    });
   }
 
   return (
@@ -116,49 +139,51 @@ export default function WidgetConfiguration({
             />
           )}
         </div>
-        <div className="widget-button-list">
-          {hasChanges && (
-            <>
-              <button
-                className="widget-button widget-button-accept"
-                onClick={() => {
-                  setHasChanges(false);
-                  setRenaming(false);
-                  saveSettings().then((ignore) => reload.apply({}));
-                  socket.publish({
-                    destination: "/topic/commands",
-                    body: JSON.stringify({
-                      id: id,
-                      command: "reload",
-                    }),
-                  });
-                }}
-              >
-                <span className="material-symbols-sharp">check</span>
-              </button>
-              <button
-                className="widget-button widget-button-decline"
-                onClick={() => {
-                  setHasChanges(false);
-                  setRenaming(false);
-                  reload.apply({});
-                }}
-              >
-                <span className="material-symbols-sharp">close</span>
-              </button>
-            </>
-          )}
-          {!hasChanges && (
-            <>
+        {!hasChanges && type === "reel" && <Button onClick={runReel} className="oda-btn-default">Крутить</Button>}
+        {!hasChanges && type === "payment-alerts" && <TextAlertButton config={config}/>}
+        {hasChanges && (
+          <>
+            <button
+              className="widget-button widget-button-accept"
+              onClick={() => {
+                setHasChanges(false);
+                setRenaming(false);
+                saveSettings().then((ignore) => reload.apply({}));
+                socket.publish({
+                  destination: "/topic/commands",
+                  body: JSON.stringify({
+                    id: id,
+                    command: "reload",
+                  }),
+                });
+              }}
+            >
+              <div className="blinker">Сохранить</div>
+            </button>
+            <button
+              className="widget-button widget-button-decline"
+              onClick={() => {
+                setHasChanges(false);
+                setRenaming(false);
+                reload.apply({});
+              }}
+            >
+              <div className="blinker">Отменить</div>
+            </button>
+          </>
+        )}
+        {!hasChanges && (
+          <>
+            <div className="widget-button-list">
               <button
                 onClick={() => setShowWidgetMenu(!showWidgetMenu)}
                 className="widget-button widget-button-more"
               >
-                <span className="material-symbols-sharp">menu</span>
+                <span className="material-symbols-sharp">more_vert</span>
               </button>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
       <div ref={menuRef}>
         <div

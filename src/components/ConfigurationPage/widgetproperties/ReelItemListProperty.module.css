@@ -43,6 +43,7 @@
   width: 60%;
   display: flex;
   align-items: center;
+  margin-top: 5px;
 }
 
 .option .widget-settings-value {

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
+import TextPropertyModal from "./TextPropertyModal";
 
 export class TextProperty extends DefaultWidgetProperty {
   constructor(
@@ -33,16 +34,17 @@ export class TextProperty extends DefaultWidgetProperty {
         >
           {this.displayName}
         </label>
-        <div className="textarea-container">
-          <textarea
-            style={{ width: "50%" }}
-            className="widget-settings-value"
-            value={this.value}
-            onChange={(e) =>
-              updateConfig(this.widgetId, this.name, e.target.value)
-            }
-          />
-        </div>
+        <TextPropertyModal title={this.displayName}>
+          <div className="textarea-container">
+            <textarea
+              className="widget-settings-value"
+              value={this.value}
+              onChange={(e) =>
+                updateConfig(this.widgetId, this.name, e.target.value)
+              }
+            />
+          </div>
+        </TextPropertyModal>
       </div>
     );
   }

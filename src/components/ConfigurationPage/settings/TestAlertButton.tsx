@@ -27,7 +27,7 @@ export default function TestAlertButton({ config }: { config: Config }) {
   }
   return (
     <>
-      <PopupComponent buttonText="Тестовый алерт">
+      <PopupComponent buttonText="Тест">
         <div>
           <div className="test-alert-field-container">
             <div className="test-alert-field-label">Nickname</div>

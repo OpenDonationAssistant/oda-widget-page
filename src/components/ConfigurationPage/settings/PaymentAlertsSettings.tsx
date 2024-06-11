@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useContext } from "react";
-import { useState } from "react";
 import { WidgetsContext } from "../WidgetsContext";
 import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import TestAlertButton from "./TestAlertButton";
 import FontSelect from "./FontSelect";
+import { Tabs as AntTabs, Input, InputNumber } from "antd";
+import TextPropertyModal from "../widgetproperties/TextPropertyModal";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -17,8 +17,6 @@ export default function PaymentAlertSettings({
   id,
   onChange,
 }: PaymentAlertSettingsProps) {
-  const [tab, setTab] = useState("trigger");
-  const [selected, setSelected] = useState<number>(-1);
   const { config, setConfig } = useContext(WidgetsContext);
 
   function addDefaultAlert(): void {
@@ -142,13 +140,6 @@ export default function PaymentAlertSettings({
         },
         {
           tab: "voice",
-          name: "enableVoiceWhenMessageIsEmpty",
-          type: "boolean",
-          value: true,
-          displayName: "Озвучивать заголовок если сообщение отсутствует",
-        },
-        {
-          tab: "voice",
           name: "voiceEmptyTextTemplates",
           type: "text",
           value: `Пользователь <username> оставил сообщение
@@ -188,6 +179,13 @@ export default function PaymentAlertSettings({
 Очень рады <username> и <amount> рублям`,
           displayName: "Фразы для озвучивания заголовка если нет сообщения",
         },
+        {
+          tab: "voice",
+          name: "enableVoiceWhenMessageIsEmpty",
+          type: "boolean",
+          value: true,
+          displayName: "Озвучивать заголовок если сообщение отсутствует",
+        },
       ],
     });
 
@@ -196,8 +194,6 @@ export default function PaymentAlertSettings({
       alertConfig.alerts = alerts;
       return new Map(config).set(id, alertConfig);
     });
-
-    setSelected(alerts.length - 1);
   }
 
   function playAudio(url: string) {
@@ -210,10 +206,10 @@ export default function PaymentAlertSettings({
     audio.play();
   }
 
-  function deleteAlert() {
+  function deleteAlert(index: number) {
     const oldConfig = config.get(id) ?? {};
     const alerts = oldConfig?.alerts ?? [];
-    alerts.splice(selected, 1);
+    alerts.splice(index, 1);
     oldConfig.alerts = alerts;
     setConfig(new Map(config).set(id, oldConfig));
   }
@@ -230,17 +226,20 @@ export default function PaymentAlertSettings({
     );
   }
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
+      const name = file.name.replace(/[^0-9a-z\.]/gi, "_");
       uploadFile(file, name).then((ignore) => {
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
-          let updatedAlerts = alerts?.at(selected);
+          let updatedAlerts = alerts?.at(index);
           updatedAlerts.image = name;
-          alerts[selected] = updatedAlerts;
+          alerts[index] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
@@ -250,14 +249,14 @@ export default function PaymentAlertSettings({
     }
   };
 
-  function deleteImage() {
+  function deleteImage(index: number) {
     setConfig((oldConfig) => {
       const alertConfig = oldConfig.get(id);
       const alerts = alertConfig?.alerts;
-      let updatedAlerts = alerts?.at(selected);
+      let updatedAlerts = alerts?.at(index);
       updatedAlerts.image = null;
       updatedAlerts.video = null;
-      alerts[selected] = updatedAlerts;
+      alerts[index] = updatedAlerts;
       alertConfig.alerts = alerts;
       const newConfig = new Map(oldConfig).set(id, alertConfig);
       return newConfig;
@@ -265,7 +264,10 @@ export default function PaymentAlertSettings({
     onChange.call({});
   }
 
-  const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     if (e.target.files) {
       const file = e.target.files[0];
       const name = file.name.replace(/[^0-9a-z\.]/gi, "");
@@ -273,9 +275,9 @@ export default function PaymentAlertSettings({
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
-          let updatedAlerts = alerts?.at(selected);
+          let updatedAlerts = alerts?.at(index);
           updatedAlerts.video = name;
-          alerts[selected] = updatedAlerts;
+          alerts[index] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
@@ -285,7 +287,10 @@ export default function PaymentAlertSettings({
     }
   };
 
-  const handleAudioUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAudioUpload = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     if (e.target.files) {
       const file = e.target.files[0];
       const name = file.name.replace(/[^0-9a-z\.]/gi, "");
@@ -293,9 +298,9 @@ export default function PaymentAlertSettings({
         setConfig((oldConfig) => {
           const alertConfig = oldConfig.get(id);
           const alerts = alertConfig?.alerts;
-          let updatedAlerts = alerts?.at(selected);
+          let updatedAlerts = alerts?.at(index);
           updatedAlerts.audio = name;
-          alerts[selected] = updatedAlerts;
+          alerts[index] = updatedAlerts;
           alertConfig.alerts = alerts;
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
@@ -305,13 +310,13 @@ export default function PaymentAlertSettings({
     }
   };
 
-  function deleteAudio() {
+  function deleteAudio(index: number) {
     setConfig((oldConfig) => {
       const alertConfig = oldConfig.get(id);
       const alerts = alertConfig?.alerts;
-      let updatedAlerts = alerts?.at(selected);
+      let updatedAlerts = alerts?.at(index);
       updatedAlerts.audio = null;
-      alerts[selected] = updatedAlerts;
+      alerts[index] = updatedAlerts;
       alertConfig.alerts = alerts;
       const newConfig = new Map(oldConfig).set(id, alertConfig);
       return newConfig;
@@ -319,11 +324,11 @@ export default function PaymentAlertSettings({
     onChange.call({});
   }
 
-  function update(key: string, value: any) {
+  function update(key: string, value: any, index: number) {
     setConfig((oldConfig) => {
       const widgetConfig = oldConfig.get(id) ?? {};
       let updatedProperties = widgetConfig?.alerts
-        ?.at(selected)
+        ?.at(index)
         ?.properties.map((it) => {
           if (it.name === key) {
             it.value = value;
@@ -333,7 +338,7 @@ export default function PaymentAlertSettings({
       let updatedAlerts = oldConfig
         .get(id)
         ?.alerts?.map((it, number: number) => {
-          if (number === selected && updatedProperties) {
+          if (number === index && updatedProperties) {
             it.properties = updatedProperties;
           }
           return it;
@@ -344,292 +349,281 @@ export default function PaymentAlertSettings({
     onChange.call({});
   }
 
-  function updateTrigger(value: string) {
+  function updateTrigger(value: string, index: number) {
+    console.log("updating trigger to " + value + " for index: " + index);
     const amount = parseInt(value);
     setConfig((oldConfig) => {
       const alerts = oldConfig.get(id)?.alerts;
       if (alerts) {
-        const updatedAlert = alerts.at(selected);
+        const updatedAlert = alerts.at(index);
         updatedAlert.trigger.amount = amount;
-        alerts[selected] = updatedAlert;
+        alerts[index] = updatedAlert;
       }
       return new Map(oldConfig);
     });
     onChange.call({});
   }
 
-  const previews = () => (
-    <div className="payment-alerts-previews">
-      <div className="default-alert payment-alerts-previews-item">
-        <div className={`payment-alert-image-preview ${
-                selected === -1 ? "selected" : ""
-}`}>
-          <div
-            style={{ textAlign: "center" }}
-            onClick={() => {
-              setTab("trigger");
-              setSelected(-1);
-            }}
-          >
-            По умолчанию
-          </div>
-        </div>
+  const alertCard = (alert: any, index?: number) => (
+    <div key={index} className="payment-alerts-previews-item">
+      <div className="image-preview-container">
+        {alert.image && (
+          <img
+            className={`payment-alert-image-preview`}
+            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`}
+          />
+        )}
       </div>
-      {config.get(id)?.alerts?.map((alert, number: number) => (
-        <div key={number} className="payment-alerts-previews-item">
-          {alert.image && (
-            <img
-              className={`payment-alert-image-preview ${
-                selected === number ? "selected" : ""
-              }`}
-              src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`}
-              onClick={() => {
-                setTab("trigger");
-                setSelected(selected === number ? -2 : number);
-              }}
-            />
-          )}
-          {alert.video && (
-            <video
-              className={`payment-alert-image-preview ${
-                selected === number ? "selected" : ""
-              }`}
-              src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
-              muted={true}
-              onClick={() => {
-                setTab("trigger");
-                setSelected(selected === number ? -2 : number);
-              }}
-            />
-          )}
-          {!alert.image && !alert.video && (
-            <div
-              onClick={() => {
-                setTab("trigger");
-                setSelected(selected === number ? -2 : number);
-              }}
-              className={`payment-alert-image-preview ${
-                selected === number ? "selected" : ""
-              }`}
-            ></div>
-          )}
-          {selected === number && (
-            <div onClick={() => deleteAlert()} className="alert-delete-button">
-              <span className="material-symbols-sharp">delete</span>
-            </div>
-          )}
-        </div>
-      ))}
-      <div className="new-alert payment-alerts-previews-item">
-        <div
+      {alert.video && (
+        <video
           className={`payment-alert-image-preview`}
-          style={{
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            userSelect: "none",
-          }}
-          onClick={() => addDefaultAlert()}
-        >
-          <span className="material-symbols-sharp">add_box</span>
+          src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
+          muted={true}
+        />
+      )}
+      {!alert.image && !alert.video && (
+        <div className={`payment-alert-image-preview`}>
+          <img
+            className="alert-no-image"
+            src={`/icons/picture.png`}
+          />
         </div>
-      </div>
+      )}
+      <AntTabs type="card" items={tabs(alert, index)} />
+      {index !== null && index !== undefined && (
+        <div onClick={() => deleteAlert(index)} className="alert-delete-button">
+          <span className="material-symbols-sharp">delete</span>
+        </div>
+      )}
     </div>
   );
 
-  const tabs = () => (
-    <div className="payment-alert-settings-tabs">
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-image ${
-          tab === "trigger" ? "active" : ""
-        }`}
-        onClick={() => setTab("trigger")}
-      >
-        условие
-      </div>
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-image ${
-          tab === "image" ? "active" : ""
-        }`}
-        onClick={() => setTab("image")}
-      >
-        изображение
-      </div>
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-voice ${
-          tab === "sound" ? "active" : ""
-        }`}
-        onClick={() => setTab("sound")}
-      >
-        аудио
-      </div>
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-voice ${
-          tab === "voice" ? "active" : ""
-        }`}
-        onClick={() => setTab("voice")}
-      >
-        голос
-      </div>
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-voice ${
-          tab === "header" ? "active" : ""
-        }`}
-        onClick={() => setTab("header")}
-      >
-        заголовок
-      </div>
-      <div
-        className={`settings-tab-item payment-alert-settings-tab-voice ${
-          tab === "message" ? "active" : ""
-        }`}
-        onClick={() => setTab("message")}
-      >
-        сообщение
-      </div>
-    </div>
-  );
-
-  const tabContent = () => (
+  const previews = () => (
     <>
-      {config
-        .get(id)
-        ?.alerts?.at(selected)
-        ?.properties.filter((it) => it.tab === tab)
-        .map((prop) => (
-          <div
-            key={`${selected}_${prop.name}`}
-            className="widget-settings-item"
-          >
-            <div className="widget-settings-name">{prop.displayName}</div>
-            {(!prop.type || prop.type == "string") && (
-              <input
-                value={prop.value}
-                className="widget-settings-value"
-                onChange={(e) => update(prop.name, e.target.value)}
-              />
-            )}
-            {prop.type === "fontselect" && (
-              <FontSelect
-                prop={prop}
-                onChange={(font: string) => update(prop.name, font)}
-              />
-            )}
-            {prop.type === "color" && (
-              <div className="color-container">
-                <ColorPicker
-                  value={prop.value}
-                  onChange={(value) => update(prop.name, value)}
-                />
-              </div>
-            )}
-            {prop.type === "text" && (
-              <>
-                <div className="textarea-container">
-                  <textarea
-                    style={{ width: "50%" }}
-                    className="widget-settings-value"
-                    value={prop.value}
-                    onChange={(e) => update(prop.name, e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            {prop.type === "boolean" && (
-              <BooleanPropertyInput
-                prop={prop}
-                onChange={() => update(prop.name, !prop.value)}
-              />
-            )}
-          </div>
-        ))}
-      {"trigger" === tab && (
-        <>
-          <div key={`${selected}_trigger`} className="widget-settings-item">
-            <div className="widget-settings-name">Сумма</div>
-            <input
-              value={config.get(id)?.alerts?.at(selected)?.trigger.amount}
-              className="widget-settings-value"
-              onChange={(e) => updateTrigger(e.target.value)}
-            />
-          </div>
-        </>
-      )}
-      {"image" === tab && (
-        <div className="upload-button-container">
-          {!config.get(id)?.alerts?.at(selected)?.video &&
-            !config.get(id)?.alerts?.at(selected)?.image && (
-              <>
-                <label
-                  className="upload-button"
-                  style={{ marginRight: "10px" }}
-                >
-                  <input type="file" onChange={handleVideoUpload} />
-                  Загрузить видео
-                </label>
-                <label className="upload-button">
-                  <input type="file" onChange={handleFileChange} />
-                  Загрузить изображение
-                </label>
-              </>
-            )}
-          {(config.get(id)?.alerts?.at(selected)?.video ||
-            config.get(id)?.alerts?.at(selected)?.image) && (
-            <button className="widget-button" onClick={deleteImage}>
-              Удалить
-            </button>
-          )}
-        </div>
-      )}
-      {"sound" === tab && (
-        <>
-          <div className="sound-container">
-            {config.get(id)?.alerts?.at(selected).audio && (
-              <div className="current-sound">
-                <span className="audio-name">
-                  {config.get(id)?.alerts?.at(selected).audio}
-                </span>
-                <span
-                  onClick={() =>
-                    playAudio(config.get(id)?.alerts?.at(selected).audio)
-                  }
-                  className="material-symbols-sharp"
-                >
-                  play_circle
-                </span>
-              </div>
-            )}
-            <div className="audio-button-container">
-              {!config.get(id)?.alerts?.at(selected).audio && (
-                <label className="upload-button">
-                  <input type="file" onChange={handleAudioUpload} />
-                  Загрузить аудио
-                </label>
-              )}
-              {config.get(id)?.alerts?.at(selected).audio && (
-                <button onClick={deleteAudio} className="widget-button">
-                  Удалить
-                </button>
-              )}
-            </div>
-          </div>
-        </>
-      )}
+      <div style={{ marginBottom: "10px", textAlign: "center" }}>
+        <button className="oda-btn-default" onClick={() => addDefaultAlert()}>
+          Добавить алерт
+        </button>
+      </div>
+      <div className="payment-alerts-previews">
+        {config.get(id)?.alerts?.map(alertCard)}
+      </div>
     </>
   );
 
+  const tabContent = (alert, selectedTab: string, index: number) =>
+    alert?.properties
+      .filter((it) => it.tab === selectedTab)
+      .map((prop) => (
+        <div key={`${prop.name}`} className="widget-settings-item">
+          <div className="widget-settings-name">{prop.displayName}</div>
+          {(!prop.type || prop.type == "string") && (
+            <Input
+              value={prop.value}
+              size="small"
+              className="widget-settings-value"
+              onChange={(e) => {
+                update(prop.name, e.target.value, index);
+              }}
+            />
+          )}
+          {prop.type === "fontselect" && (
+            <FontSelect
+              prop={prop}
+              onChange={(font: string) => update(prop.name, font, index)}
+            />
+          )}
+          {prop.type === "color" && (
+            <div className="color-container">
+              <ColorPicker
+                value={prop.value}
+                onChange={(value) => update(prop.name, value, index)}
+              />
+            </div>
+          )}
+          {prop.type === "text" && (
+            <>
+              <TextPropertyModal
+                title={prop.displayName}
+                className="textarea-popup-container"
+              >
+                <div className="textarea-container">
+                  <textarea
+                    style={{ height: "700px" }}
+                    className="widget-settings-value"
+                    value={prop.value}
+                    onChange={(e) => update(prop.name, e.target.value, index)}
+                  />
+                </div>
+              </TextPropertyModal>
+            </>
+          )}
+          {prop.type === "boolean" && (
+            <BooleanPropertyInput
+              prop={prop}
+              onChange={() => update(prop.name, !prop.value, index)}
+            />
+          )}
+        </div>
+      ));
+
+  const tabs = (alert, index) => [
+    {
+      key: "trigger",
+      label: "Условие",
+      children: [
+        <>
+          {[
+            ...tabContent(alert, "trigger", index),
+            <div key={`${index}_trigger`} className="widget-settings-item">
+              <div className="widget-settings-name">Сумма</div>
+              <Input
+                size="small"
+                className="widget-settings-value"
+                value={alert.trigger.amount}
+                onChange={(e) => updateTrigger(e.target.value, index)}
+              />
+            </div>,
+          ]}
+        </>,
+      ],
+    },
+    {
+      key: "image",
+      label: "Изображение",
+      children: [
+        <>
+          {[
+            ...tabContent(alert, "image", index),
+            <div className="upload-button-container">
+              {!alert.video && !alert.image && (
+                <>
+                  <div style={{ marginBottom: "10px", marginTop: "10px" }}>
+                    <label
+                      className="oda-btn-default"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <input
+                        type="file"
+                        onChange={(e) => handleVideoUpload(e, index)}
+                      />
+                      Загрузить видео
+                    </label>
+                    <label className="oda-btn-default">
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileChange(e, index)}
+                      />
+                      Загрузить изображение
+                    </label>
+                  </div>
+                </>
+              )}
+              {(alert.video || alert.image) && (
+                <div
+                  style={{
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    marginRight: "40px",
+                  }}
+                >
+                  <button
+                    className="oda-btn-default"
+                    onClick={() => deleteImage(index)}
+                  >
+                    Удалить
+                  </button>
+                </div>
+              )}
+            </div>,
+          ]}
+        </>,
+      ],
+    },
+    {
+      key: "sound",
+      label: "Аудио",
+      children: [
+        <>
+          {[
+            ...tabContent(alert, "sound", index),
+            <div className="sound-container">
+              {alert.audio && (
+                <div className="current-sound">
+                  <span className="audio-name">{alert.audio}</span>
+                  <span
+                    onClick={() => playAudio(alert.audio)}
+                    className="material-symbols-sharp"
+                  >
+                    play_circle
+                  </span>
+                </div>
+              )}
+              <div className="audio-button-container">
+                {!alert.audio && (
+                  <div style={{ textAlign: "center", width: "100%" }}>
+                    <label className="oda-btn-default">
+                      <input
+                        type="file"
+                        onChange={(e) => handleAudioUpload(e, index)}
+                      />
+                      Загрузить аудио
+                    </label>
+                  </div>
+                )}
+                {alert.audio && (
+                  <button
+                    onClick={() => deleteAudio(index)}
+                    className="oda-btn-default"
+                  >
+                    Удалить
+                  </button>
+                )}
+              </div>
+            </div>,
+          ]}
+        </>,
+      ],
+    },
+    {
+      key: "voice",
+      label: "Озвучка",
+      children: [<>{tabContent(alert, "voice", index)}</>],
+    },
+    {
+      key: "header",
+      label: "Заголовок",
+      children: [<>{tabContent(alert, "header", index)}</>],
+    },
+    {
+      key: "message",
+      label: "Сообщение",
+      children: [<>{tabContent(alert, "message", index)}</>],
+    },
+  ];
+
+  // {alertCard(config.get(id)?.defaultAlert)}
   return (
     <>
-      <TestAlertButton config={config} />
-      <BaseSettings id={id} />
-      {previews()}
-      {selected > -1 && (
-        <div className="payment-alert-settings">
-          {tabs()}
-          {tabContent()}
-        </div>
-      )}
+      <AntTabs
+        type="card"
+        items={[
+          {
+            key: "1",
+            label: "Алерты",
+            children: previews(),
+          },
+          {
+            key: "2",
+            label: "По умолчанию",
+            children: (
+              <>
+                <BaseSettings id={id} />
+              </>
+            ),
+          },
+        ]}
+      />
     </>
   );
 }

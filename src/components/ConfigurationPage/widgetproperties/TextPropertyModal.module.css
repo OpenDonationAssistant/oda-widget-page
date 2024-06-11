@@ -1,0 +1,19 @@
+.modalopenbutton {
+  position: absolute;
+  border-radius: 20px;
+  font-weight: 900;
+  right: 0;
+  border: 1px solid #684aff;
+  color: white;
+  width: 25%;
+  background-color: #151a33;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  padding: 4px 5px;
+}
+
+.modalopenbutton:hover {
+  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
+  transform: translateY(-2px);
+  color: #3c89e8;
+  border-color: #3c89e8;
+}

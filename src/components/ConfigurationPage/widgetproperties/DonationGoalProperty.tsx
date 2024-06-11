@@ -4,6 +4,8 @@ import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
+import { Collapse, Divider, InputNumber } from "antd";
+import TextPropertyModal from "./TextPropertyModal";
 
 export interface Amount {
   major: number;
@@ -77,114 +79,126 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
     return new DonationGoalProperty(this.widgetId, this.value);
   }
 
+  item(goal: Goal, index: number, updateConfig: Function) {
+    return (
+      <div key={index} className={`${classes.goalcontainer}`}>
+        <div className="widget-settings-item">
+          <label
+            htmlFor={`${this.widgetId}_${index}`}
+            className="widget-settings-name"
+          >
+            Название
+          </label>
+          <TextPropertyModal title="Название">
+            <textarea
+              className="widget-settings-value"
+              value={goal.briefDescription}
+              onChange={(e) => {
+                const updated = structuredClone(goal);
+                updated.briefDescription = e.target.value;
+                this.updateGoal(updateConfig, updated, index);
+              }}
+            />
+          </TextPropertyModal>
+        </div>
+        <div className="widget-settings-item">
+          <label
+            htmlFor={`${this.widgetId}_${this.name}`}
+            className="widget-settings-name"
+          >
+            Описание
+          </label>
+          <TextPropertyModal title="Описание">
+            <textarea
+              className="widget-settings-value"
+              value={goal.fullDescription}
+              onChange={(e) => {
+                const updated = structuredClone(goal);
+                updated.fullDescription = e.target.value;
+                this.updateGoal(updateConfig, updated, index);
+              }}
+            />
+          </TextPropertyModal>
+        </div>
+        <div className="widget-settings-item">
+          <label
+            htmlFor={`${this.widgetId}_${this.name}`}
+            className="widget-settings-name"
+          >
+            Сумма
+          </label>
+          <InputNumber
+            value={goal.requiredAmount.major}
+            size="small"
+            className="widget-settings-value"
+            onChange={(e) => {
+              if (!this.widgetId) {
+                return;
+              }
+              updateConfig(this.widgetId, this.name, e);
+            }}
+          />
+        </div>
+        <div
+          // style={{ borderBottom: "1px solid #674afd" }}
+          className="widget-settings-item"
+        >
+          <label
+            htmlFor={`${this.widgetId}_${this.name}`}
+            className="widget-settings-name"
+          >
+            По-умолчанию
+          </label>
+          <div className="textarea-container">
+            <BooleanPropertyInput
+              onChange={() => {
+                const updated = structuredClone(goal);
+                updated.default = !updated.default;
+                this.updateGoal(updateConfig, updated, index);
+              }}
+              prop={{
+                name: "test",
+                type: "predefined",
+                value: goal.default,
+              }}
+            />
+          </div>
+        </div>
+        <div style={{ textAlign: "right", marginBottom: "20px;" }}>
+          <button
+            className={`${classes.deletebutton}`}
+            onClick={() => {
+              this.deleteGoal(updateConfig, index);
+            }}
+          >
+            Удалить
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   markup(updateConfig: Function): ReactNode {
     return (
       <>
-        <button
-          className={`widget-button ${classes.button}`}
-          onClick={() => this.addGoal(updateConfig)}
-        >
-          Добавить цель
-        </button>
-        {this.value.map((goal: Goal, index: number) => (
-          <div key={index} className={`${classes.goalcontainer}`}>
-            <div style={{ fontStyle: "italic", fontWeight: "900" }}>Цель:</div>
-            <div className="widget-settings-item">
-              <label
-                htmlFor={`${this.widgetId}_${index}`}
-                className="widget-settings-name"
-              >
-                Название
-              </label>
-              <div className="textarea-container">
-                <textarea
-                  style={{ width: "50%" }}
-                  className="widget-settings-value"
-                  value={goal.briefDescription}
-                  onChange={(e) => {
-                    const updated = structuredClone(goal);
-                    updated.briefDescription = e.target.value;
-                    this.updateGoal(updateConfig, updated, index);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="widget-settings-item">
-              <label
-                htmlFor={`${this.widgetId}_${this.name}`}
-                className="widget-settings-name"
-              >
-                Описание
-              </label>
-              <div className="textarea-container">
-                <textarea
-                  style={{ width: "50%" }}
-                  className="widget-settings-value"
-                  value={goal.fullDescription}
-                  onChange={(e) => {
-                    const updated = structuredClone(goal);
-                    updated.fullDescription = e.target.value;
-                    this.updateGoal(updateConfig, updated, index);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="widget-settings-item">
-              <label
-                htmlFor={`${this.widgetId}_${this.name}`}
-                className="widget-settings-name"
-              >
-                Сумма
-              </label>
-              <div className="textarea-container">
-                <input
-                  className="widget-settings-value"
-                  value={goal.requiredAmount.major}
-                  onChange={(e) => {
-                    const updated = structuredClone(goal);
-                    updated.requiredAmount.major = Number.parseInt(
-                      e.target.value,
-                    );
-                    this.updateGoal(updateConfig, updated, index);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="widget-settings-item">
-              <label
-                htmlFor={`${this.widgetId}_${this.name}`}
-                className="widget-settings-name"
-              >
-                По-умолчанию
-              </label>
-              <div className="textarea-container">
-                <BooleanPropertyInput
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    const updated = structuredClone(goal);
-                    updated.default = !updated.default;
-                    this.updateGoal(updateConfig, updated, index);
-                  }}
-                  prop={{
-                    name: "test",
-                    type: "predefined",
-                    value: goal.default,
-                  }}
-                />
-              </div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <button
-                className="widget-button"
-                onClick={() => {
-                  this.deleteGoal(updateConfig, index);
-                }}
-              >
-                Удалить
-              </button>
-            </div>
-          </div>
-        ))}
+        <div style={{ marginTop: "10px",textAlign: "right" }}>
+          <button
+            className={`${classes.button}`}
+            onClick={() => this.addGoal(updateConfig)}
+          >
+            Добавить цель
+          </button>
+        </div>
+        <Collapse
+          defaultActiveKey={["1"]}
+          items={this.value.map((goal: Goal, index: number) => {
+            return {
+              key: index,
+              label: goal.briefDescription,
+              children: this.item(goal, index, updateConfig),
+            };
+          })}
+        />
       </>
     );
   }

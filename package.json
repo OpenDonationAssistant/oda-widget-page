@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^5.3.7",
     "@glidejs/glide": "^3.6.0",
     "@google-cloud/text-to-speech": "^5.0.0",
     "@stomp/stompjs": "^7.0.0",

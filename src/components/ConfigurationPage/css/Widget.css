@@ -1,4 +1,5 @@
 .widget {
+  max-width: 900px;
   background-color: #2b3566;
   border-radius: 5px;
   margin-top: 10px;
@@ -6,29 +7,33 @@
   position: relative;
 }
 
-.widget-settings .ant-tabs-top >.ant-tabs-nav::before {
+.widget-settings .ant-tabs-top > .ant-tabs-nav::before {
   border-bottom: 1px solid #674afd;
 }
 
-.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active{
+.widget-settings .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
   background-color: #684aff;
   border: 1px solid #684aff;
-
 }
 
-.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab {
+.widget-settings .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
   border: 1px solid #684aff;
 }
 
-.widget-settings .ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active .ant-tabs-tab-btn{
+.widget-settings
+  .ant-tabs-card
+  > .ant-tabs-nav
+  .ant-tabs-tab-active
+  .ant-tabs-tab-btn {
   color: white;
 }
 
 .widget-header {
   display: flex;
   border-radius: 5px;
-  background-image: linear-gradient(180deg, #0c122e, #2b3566);
+  /* background-image: linear-gradient(180deg, #0c122e, #2b3566); */
   justify-content: space-between;
+  align-items: baseline;
   padding-left: 15px;
   padding-right: 15px;
   user-select: none;
@@ -145,8 +150,8 @@
   /* background-color: #684aff; */
   background-color: #2b3566;
   margin-left: 10px;
-	color: #45d3c2;
-	border-bottom: 2px solid #684aff;
+  color: #45d3c2;
+  border-bottom: 2px solid #684aff;
 }
 
 .new-name-input:focus {
@@ -154,9 +159,10 @@
 }
 
 .audio-button-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .sound-container {
@@ -167,15 +173,15 @@
 }
 
 .current-sound {
-	display: inline-block;
-	padding-top: 5px;
-	vertical-align: middle;
-	margin-right: 20px;
-	margin-left: 10px;
+  display: inline-block;
+  padding-top: 5px;
+  vertical-align: middle;
+  margin-right: 20px;
+  margin-left: 10px;
 }
 
 .current-sound:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .audio-name {
@@ -185,9 +191,9 @@
 }
 
 .new-alert.payment-alerts-previews-item .payment-alert-image-preview {
-	border: none;
-	background-color: #2b3566;
-	color: #684aff;
+  border: none;
+  background-color: #2b3566;
+  color: #684aff;
 }
 
 .new-alert.payment-alerts-previews-item .payment-alert-image-preview:hover {
@@ -195,20 +201,23 @@
 }
 
 .new-alert.payment-alerts-previews-item .material-symbols-sharp {
-	font-size: 60px;
+  font-size: 60px;
 }
 
 .alert-delete-button {
-	position: absolute;
-	top: 12px;
-	right: 12px;
-	padding-bottom: 1px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding-bottom: 1px;
 }
+
 .alert-delete-button .material-symbols-sharp {
-	vertical-align:middle;
+  vertical-align: middle;
 }
 
 .alert-delete-button:hover {
-	background-color: #684aff;
-	cursor: pointer;
+  cursor: pointer;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
+  transform: translateY(-2px);
 }
