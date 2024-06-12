@@ -214,64 +214,62 @@ export default function ConfigurationPage({}: {}) {
   );
 
   return (
-      <ConfigProvider
-    theme={{
-      token: {
-        // Seed Token
-        // colorPrimary: '#2b3566',
-        // colorPrimary: '#0c122e',
-          // colorPrimary: '#684aff',
-          // colorPrimary: '#9E339F',
-        borderRadius: 8,
-      },
-      algorithm: theme.darkAlgorithm,
-    }}
-  >
-    <div className="configuration-container">
-      {backgroundColor}
-      <Toolbar page={Page.WIDGETS} />
-      <div className="widget-list">
-        <WidgetsContext.Provider value={context}>
-          {widgets.map((data) => (
-            <WidgetConfiguration
-              id={data.id}
-              key={data.id}
-              name={data.name}
-              type={data.type}
-              reload={() => {
-                load();
-              }}
-            />
-          ))}
-          {!showAddWidgetPopup && newWidgetMock}
-        </WidgetsContext.Provider>
-        {showAddWidgetPopup && (
-          <div className="new-widget-popup">
-            {types.map((type) => (
+    <ConfigProvider
+      theme={{
+        token: {
+          borderRadius: 8,
+        },
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
+      <div className="configuration-container">
+        {backgroundColor}
+        <Toolbar page={Page.WIDGETS} />
+        <div className="widget-list">
+          <WidgetsContext.Provider value={context}>
+            {widgets.map((data) => (
+              <WidgetConfiguration
+                id={data.id}
+                key={data.id}
+                name={data.name}
+                type={data.type}
+                reload={() => {
+                  load();
+                }}
+              />
+            ))}
+            {!showAddWidgetPopup && newWidgetMock}
+          </WidgetsContext.Provider>
+          {showAddWidgetPopup && (
+            <div className="new-widget-popup">
+              {types.map((type) => (
+                <div
+                  className="new-widget-type-button"
+                  onClick={() => {
+                    addWidget(type.name, widgets.length)
+                      .then(() => loadSettings())
+                      .then((updatedSettings) => setWidgets(updatedSettings));
+                    setShowAddWidgetPopup(false);
+                  }}
+                >
+                  <img
+                    className="widget-icon"
+                    src={`/icons/${type.name}.png`}
+                  />
+                  <div>{type.description}</div>
+                </div>
+              ))}
               <div
                 className="new-widget-type-button"
-                onClick={() => {
-                  addWidget(type.name, widgets.length)
-                    .then(() => loadSettings())
-                    .then((updatedSettings) => setWidgets(updatedSettings));
-                  setShowAddWidgetPopup(false);
-                }}
+                onClick={() => setShowAddWidgetPopup(false)}
+                style={{ border: "none", paddingTop: "33px" }}
               >
-                <img className="widget-icon" src={`/icons/${type.name}.png`} />
-                <div>{type.description}</div>
+                <img className="widget-icon" src={`/icons/close.png`} />
               </div>
-            ))}
-            <div
-              className="new-widget-type-button"
-              onClick={() => setShowAddWidgetPopup(false)}
-              style={{ border: "none", paddingTop: "33px" }}
-            >
-              <img className="widget-icon" src={`/icons/close.png`} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
     </ConfigProvider>
   );
 }

@@ -7,6 +7,7 @@ enum Page {
   WIDGETS,
   GATEWAYS,
   PAYMENTPAGE,
+  HISTORY
 }
 
 export default function Toolbar({ page }: { page: Page }) {
@@ -22,6 +23,15 @@ export default function Toolbar({ page }: { page: Page }) {
       >
         <span className="material-symbols-sharp">widgets</span>
         <span className="toolbar-button-title">Widgets</span>
+      </button>
+      <button
+        className={`toolbar-button ${
+          page === Page.HISTORY ? "active" : ""
+        }`}
+        onClick={() => navigate(`/configuration/history-page`)}
+      >
+        <span className="material-symbols-sharp">history</span>
+        <span className="toolbar-button-title">History</span>
       </button>
       <button
         className={`toolbar-button ${
