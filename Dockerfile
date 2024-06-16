@@ -12,7 +12,7 @@ COPY public/ public
 COPY src/ src
 
 RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}" > ~/.npmrc
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 RUN npm run build
 
 FROM httpd:2.4-alpine

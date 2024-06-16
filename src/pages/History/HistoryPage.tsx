@@ -69,7 +69,7 @@ async function getHistory(params: {
 }): Promise<{ total: number; list: HistoryItemData[] }> {
   const history = await HistoryService(
     undefined,
-    process.env.REACT_APP_WIDGET_API_ENDPOINT,
+    process.env.REACT_APP_HISTORY_API_ENDPOINT,
   ).getHistory(
     {
       recipientId: "testuser",
