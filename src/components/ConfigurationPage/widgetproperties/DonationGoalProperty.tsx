@@ -135,12 +135,13 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
               if (!this.widgetId) {
                 return;
               }
-              updateConfig(this.widgetId, this.name, e);
+              const updated = structuredClone(goal);
+              updated.requiredAmount.major = e ?? 0;
+              this.updateGoal(updateConfig, updated, index);
             }}
           />
         </div>
         <div
-          // style={{ borderBottom: "1px solid #674afd" }}
           className="widget-settings-item"
         >
           <label

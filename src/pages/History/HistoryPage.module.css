@@ -1,0 +1,25 @@
+.pagecontainer {
+  margin-left: 250px;
+  margin-right: 50px;
+  margin-top: 50px;
+}
+
+.little {
+  font-size:16px;
+  color: rgb(120, 133, 189);
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.timestamp{
+  justify-self: flex-end;
+  text-align: right;
+  flex: 1 0 auto;
+  color: rgb(120, 133, 189);
+}
+
+.title{
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+}

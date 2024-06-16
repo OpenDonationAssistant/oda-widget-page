@@ -26,6 +26,8 @@ import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import DonationGoal from "./components/DonationGoal/DonationGoal";
+import HistoryPage from "./pages/History/HistoryPage";
+import { ConfigProvider, theme } from "antd";
 
 async function widgetSettingsLoader({
   params,
@@ -75,7 +77,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/configuration/payment-page",
-    element: <PaymentPageConfigComponent/>,
+    element: <PaymentPageConfigComponent />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/configuration/history-page",
+    element: <HistoryPage />,
     loader: widgetSettingsLoader,
   },
   {
@@ -137,5 +144,16 @@ const router = createBrowserRouter([
 const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
-  root.render(<RouterProvider router={router} />);
+  root.render(
+    <ConfigProvider
+      theme={{
+        token: {
+          borderRadius: 8,
+        },
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
+      <RouterProvider router={router} />
+    </ConfigProvider>,
+  );
 }

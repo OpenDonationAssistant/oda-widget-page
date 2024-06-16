@@ -3,7 +3,10 @@
 :root {
   --oda-main-border: 1px solid #674afd;
   --oda-main-text-color: white;
+  --oda-secondary-text-color: rgba(220, 220, 220, 0.9);
   --oda-main-font-family: Play;
+  --oda-label-background-color: #151a33;
+  --oda-btn-background-color: #151a33;
 }
 
 .oda-btn-default {
@@ -210,7 +213,7 @@
 }
 
 .textarea-popup-container {
-  width:700px!important;
+  width: 700px !important;
 }
 .textarea-container {
   width: 100%;
@@ -329,10 +332,6 @@ div.payment-alert-image-preview {
   padding-left: 8px;
 }
 
-.payment-alert-image-preview.selected {
-  /* border: 8px solid red; */
-}
-
 .payment-alert-image-preview:hover {
   cursor: pointer;
 }
@@ -440,4 +439,99 @@ div.payment-alert-image-preview {
   font-family: Play;
   font-weight: 900;
   color: white;
+}
+
+.configuration-container .ant-table {
+  border: var(--oda-main-border);
+}
+
+.configuration-container .ant-pagination .ant-pagination-item-active {
+  border: var(--oda-main-border);
+  background-color: #684aff;
+  color: white !important;
+  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
+  border-radius: 3px;
+}
+
+.configuration-container .ant-pagination .ant-pagination-item {
+  color: white;
+}
+
+.configuration-container .ant-pagination .ant-pagination-item-link {
+  color: white;
+}
+
+.configuration-container .ant-pagination .ant-pagination-item-link:hover {
+  color: white;
+}
+
+.configuration-container
+  .ant-descriptions
+  .ant-descriptions-item-container
+  .ant-descriptions-item-label {
+  /* background-color: var(--oda-label-background-color); */
+  margin-right: 10px;
+  color: black;
+  font-weight: 900;
+}
+
+.configuration-container
+  .ant-descriptions
+  .ant-descriptions-item-container
+  .ant-descriptions-item-label::after {
+  display: none;
+}
+
+.configuration-container .ant-list-split .ant-list-item {
+  background-color: #151a33;
+  padding: 4px 15px;
+  border-radius: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
+}
+
+/* .configuration-container .ant-list-split .ant-list-item:hover { */
+/*   box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.6); */
+/*   cursor: pointer; */
+/* } */
+
+.configuration-container .ant-list .ant-list-item .ant-list-item-meta-title {
+  color: white;
+  font-size: 24px;
+}
+
+.configuration-container .ant-list .ant-list-item .material-symbols-sharp {
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.9);
+  color: #684aff;
+}
+
+.configuration-container
+  .ant-list
+  .ant-list-item
+  .ant-list-item-meta-title
+  span.material-symbols-sharp {
+  color: var(--oda-secondary-text-color);
+}
+
+.configuration-container
+  .ant-list
+  .ant-list-item
+  .ant-list-item-meta-title
+  .material-symbols-sharp {
+  vertical-align: middle;
+  margin-right: 10px;
+  color: black;
+}
+
+.configuration-container .ant-descriptions-item-content {
+  color: white;
+}
+
+.configuration-container
+  .ant-pagination-options
+  .ant-select
+  .ant-select-selector {
+  border: var(--oda-main-border);
+  background-color: var(--oda-btn-background-color);
 }

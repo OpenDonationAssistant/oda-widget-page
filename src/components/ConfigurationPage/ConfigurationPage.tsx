@@ -18,7 +18,6 @@ import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidge
 import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
-import { DefaultWidgetProperty } from "./widgetproperties/WidgetProperty";
 import { ConfigProvider, theme } from "antd";
 
 const backgroundColor = (
