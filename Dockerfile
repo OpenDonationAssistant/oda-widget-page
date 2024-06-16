@@ -9,6 +9,7 @@ COPY .env.production .env.production
 COPY public/ public
 COPY src/ src
 
+RUN npm install @opendonationassistant/oda-history-service-client@0.1.0
 RUN npm ci --legacy-peer-deps
 RUN npm run build
 
