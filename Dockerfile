@@ -1,6 +1,5 @@
 FROM node:latest AS build
 WORKDIR /build
-ARG gpr_token
 
 COPY package.json package.json
 COPY package-lock.json package-lock.json
@@ -10,7 +9,6 @@ COPY .env.production .env.production
 COPY public/ public
 COPY src/ src
 
-RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}"  > ~/.npmrc &&  cat ~/.npmrc
 RUN npm ci --legacy-peer-deps
 RUN npm run build
 
