@@ -113,7 +113,7 @@ function list(data: HistoryItemData[], pagination: any) {
 export default function HistoryPage({}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { data, loading, pagination } = usePagination(getHistory, {
-    defaultPageSize: 5,
+    defaultPageSize: 10,
   });
 
   async function getHistory(params: {
