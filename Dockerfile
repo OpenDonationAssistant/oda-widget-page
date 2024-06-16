@@ -5,6 +5,7 @@ COPY package.json package.json
 COPY tsconfig.json tsconfig.json
 COPY .env .env
 COPY .env.production .env.production
+COPY .npmrc .npmrc
 COPY public/ public
 COPY src/ src
 
