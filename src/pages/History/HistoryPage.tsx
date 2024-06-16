@@ -8,6 +8,8 @@ import {
 } from "@opendonationassistant/oda-history-service-client";
 import { usePagination } from "ahooks";
 import { PaginationResult } from "ahooks/lib/usePagination/types";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
@@ -63,22 +65,6 @@ function description(item: HistoryItemData) {
   return desc;
 }
 
-async function getHistory(params: {
-  current: number;
-  pageSize: number;
-}): Promise<{ total: number; list: HistoryItemData[] }> {
-  const history = await HistoryService(
-    undefined,
-    process.env.REACT_APP_HISTORY_API_ENDPOINT,
-  ).getHistory(
-    {
-      recipientId: "testuser",
-    },
-    { params: { size: params.pageSize, page: params.current - 1 } },
-  );
-  return { total: history.data.totalSize, list: history.data?.content };
-}
-
 function list(data: HistoryItemData[], pagination: any) {
   return (
     <List
@@ -90,7 +76,7 @@ function list(data: HistoryItemData[], pagination: any) {
         onChange: pagination.onChange,
         onShowSizeChange: pagination.onChange,
         showSizeChanger: true,
-        pageSizeOptions: [5,10,15,20,25],
+        pageSizeOptions: [5, 10, 15, 20, 25],
         align: "center",
         position: "bottom",
       }}
@@ -125,7 +111,26 @@ function list(data: HistoryItemData[], pagination: any) {
 }
 
 export default function HistoryPage({}) {
-  const { data, loading, pagination } = usePagination(getHistory, {defaultPageSize: 5});
+  const { recipientId } = useLoaderData() as WidgetData;
+  const { data, loading, pagination } = usePagination(getHistory, {
+    defaultPageSize: 5,
+  });
+
+  async function getHistory(params: {
+    current: number;
+    pageSize: number;
+  }): Promise<{ total: number; list: HistoryItemData[] }> {
+    const history = await HistoryService(
+      undefined,
+      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    ).getHistory(
+      {
+        recipientId: recipientId,
+      },
+      { params: { size: params.pageSize, page: params.current - 1 } },
+    );
+    return { total: history.data.totalSize, list: history.data?.content };
+  }
 
   return (
     <>
