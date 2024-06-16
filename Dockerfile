@@ -1,7 +1,9 @@
 FROM node:latest AS build
 WORKDIR /build
+ARG gpr_token
 
 COPY package.json package.json
+COPY package-lock.json package-lock.json
 COPY tsconfig.json tsconfig.json
 COPY .env .env
 COPY .env.production .env.production
@@ -9,6 +11,7 @@ COPY .npmrc .npmrc
 COPY public/ public
 COPY src/ src
 
+RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}" > ~/.npmrc
 RUN npm install --legacy-peer-deps
 RUN npm run build
 
