@@ -8,7 +8,7 @@ COPY .env.production .env.production
 COPY public/ public
 COPY src/ src
 
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 RUN npm run build
 
 FROM httpd:2.4-alpine
