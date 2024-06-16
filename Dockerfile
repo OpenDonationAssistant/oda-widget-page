@@ -10,7 +10,7 @@ COPY .env.production .env.production
 COPY public/ public
 COPY src/ src
 
-RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}"  > ~/.npmrc
+RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}"  > ~/.npmrc &&  cat ~/.npmrc
 RUN npm ci --legacy-peer-deps
 RUN npm run build
 
