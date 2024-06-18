@@ -55,7 +55,6 @@ async function widgetSettingsLoader({
 
   return { recipientId, settings, conf, widgetId };
 }
-import { i18n } from "i18next";
 
 const router = createBrowserRouter([
   {
