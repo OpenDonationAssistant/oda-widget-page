@@ -6,6 +6,7 @@ import { uuidv7 } from "uuidv7";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { Collapse, Divider, InputNumber } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
+import { Trans } from "react-i18next";
 
 export interface Amount {
   major: number;
@@ -87,7 +88,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${index}`}
             className="widget-settings-name"
           >
-            Название
+            <Trans i18nKey="widget-goal-title"/>
           </label>
           <TextPropertyModal title="Название">
             <textarea
@@ -106,7 +107,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            Описание
+            <Trans i18nKey="widget-goal-description"/>
           </label>
           <TextPropertyModal title="Описание">
             <textarea
@@ -125,7 +126,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            Сумма
+            <Trans i18nKey="widget-goal-amount"/>
           </label>
           <InputNumber
             value={goal.requiredAmount.major}
@@ -141,14 +142,12 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             }}
           />
         </div>
-        <div
-          className="widget-settings-item"
-        >
+        <div className="widget-settings-item">
           <label
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            По-умолчанию
+            <Trans i18nKey="widget-goal-default"/>
           </label>
           <div className="textarea-container">
             <BooleanPropertyInput
@@ -172,7 +171,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
               this.deleteGoal(updateConfig, index);
             }}
           >
-            Удалить
+            <Trans i18nKey="button-delete"/>
           </button>
         </div>
       </div>
@@ -182,12 +181,12 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <>
-        <div style={{ marginTop: "10px",textAlign: "right" }}>
+        <div style={{ marginTop: "10px", textAlign: "center" }}>
           <button
-            className={`${classes.button}`}
+            className={`${classes.button} oda-btn-default`}
             onClick={() => this.addGoal(updateConfig)}
           >
-            Добавить цель
+            <Trans i18nKey="button-add-goal" />
           </button>
         </div>
         <Collapse

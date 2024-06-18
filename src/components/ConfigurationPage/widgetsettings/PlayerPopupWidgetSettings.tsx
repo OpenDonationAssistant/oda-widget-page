@@ -14,7 +14,7 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
           "audioOnly",
           "boolean",
           false,
-          "Воспроизводить только звук",
+          "widget-player-popup-sound-only",
         ),
       ],
       new Map(),

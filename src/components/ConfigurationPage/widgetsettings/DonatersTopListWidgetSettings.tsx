@@ -10,10 +10,10 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
-    tabs.set("content", "Содержимое");
-    tabs.set("header", "Заголовок");
-    tabs.set("list", "Список");
-    tabs.set("layout", "Стиль");
+    tabs.set("content", "tab-donaters-list-content");
+    tabs.set("header", "tab-donaters-list-title");
+    tabs.set("list", "tab-donaters-list-list");
+    tabs.set("layout", "tab-donaters-list-style");
     super(
       widgetId,
       properties,
@@ -23,7 +23,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "type",
           "predefined",
           "All",
-          "Тип виджета",
+          "widget-donaterslist-widget-type",
           ["All", "Top", "Last"],
           "content",
         ),
@@ -32,7 +32,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "period",
           "predefined",
           "month",
-          "Период",
+          "widget-donaterslist-period",
           ["month", "day"],
           "content",
         ),
@@ -41,7 +41,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "topsize",
           "number",
           "3",
-          "Кол-во донатеров",
+          "widget-donaterslist-donaters-amount",
           "content",
         ),
         new TextProperty(
@@ -49,7 +49,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "title",
           "text",
           "Донатеры",
-          "Заголовок",
+          "widget-donaterslist-title",
           "header",
         ),
         new FontProperty(
@@ -57,7 +57,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "titleFont",
           "fontselect",
           "Roboto",
-          "Шрифт заголовка",
+          "widget-donaterslist-title-font-family",
           "header",
         ),
         new FontProperty(
@@ -65,7 +65,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "font",
           "fontselect",
           "Roboto",
-          "Шрифт списка",
+          "widget-donaterslist-list-font-family",
           "list",
         ),
         new NumberProperty(
@@ -73,7 +73,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "titleFontSize",
           "number",
           "24",
-          "Размер шрифта заголовка",
+          "widget-donaterslist-title-font-size",
           "header",
         ),
         new NumberProperty(
@@ -81,7 +81,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "fontSize",
           "number",
           "24",
-          "Размер шрифта списка",
+          "widget-donaterslist-list-font-size",
           "list",
         ),
         new ColorProperty(
@@ -89,7 +89,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "titleColor",
           "color",
           "#ffffff",
-          "Цвет заголовка",
+          "widget-donaterslist-title-color",
           "header",
         ),
         new ColorProperty(
@@ -97,7 +97,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "titleBackgroundColor",
           "color",
           "#000000",
-          "Цвет фона заголовка",
+          "widget-donaterslist-title-background-color",
           "header",
         ),
         new ColorProperty(
@@ -105,7 +105,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "color",
           "color",
           "#ffffff",
-          "Цвет списка",
+          "widget-donaterslist-list-color",
           "list",
         ),
         new ColorProperty(
@@ -113,7 +113,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "backgroundColor",
           "color",
           "#000000",
-          "Цвет фона списка",
+          "widget-donaterslist-list-background-color",
           "list",
         ),
         new NumberProperty(
@@ -121,7 +121,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "titleAlphaChannel",
           "number",
           "1.0",
-          "Прозрачность заголовка",
+          "widget-donaterslist-title-transparency",
           "header",
         ),
         new NumberProperty(
@@ -129,7 +129,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "alphaChannel",
           "number",
           "1.0",
-          "Прозрачность списка",
+          "widget-donaterslist-list-transparency",
           "list",
         ),
         new DonatersTopListLayoutProperty(widgetId, "vertical"),

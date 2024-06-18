@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import TextPropertyModal from "./TextPropertyModal";
+import { Trans } from "react-i18next";
 
 export class TextProperty extends DefaultWidgetProperty {
   constructor(
@@ -32,7 +33,7 @@ export class TextProperty extends DefaultWidgetProperty {
           htmlFor={`${this.widgetId}_${this.name}`}
           className="widget-settings-name"
         >
-          {this.displayName}
+          <Trans i18nKey={this.displayName}/>
         </label>
         <TextPropertyModal title={this.displayName}>
           <div className="textarea-container">

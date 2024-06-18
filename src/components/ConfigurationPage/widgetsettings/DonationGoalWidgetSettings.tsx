@@ -11,8 +11,8 @@ import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
-    tabs.set("header", "Вид виджета");
-    tabs.set("goals", "Цели");
+    tabs.set("header", "tab-donationgoal-appearance");
+    tabs.set("goals", "tab-donationgoal-goals");
     super(
       widgetId,
       properties,
@@ -22,7 +22,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "titleFont",
           "fontselect",
           "Alice",
-          "Шрифт заголовка",
+          "widget-donationgoal-title-font-family",
           "header",
         ),
         new NumberProperty(
@@ -30,7 +30,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "titleFontSize",
           "number",
           "24",
-          "Размер шрифта заголовка",
+          "widget-donationgoal-title-font-size",
           "header",
         ),
         new ColorProperty(
@@ -38,7 +38,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "titleColor",
           "color",
           "#000000",
-          "Цвет заголовка",
+          "widget-donationgoal-title-color",
           "header",
         ),
         new SingleChoiceProperty(
@@ -46,7 +46,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "titleTextAlign",
           "predefined",
           "left",
-          "Выравнивание заголовка",
+          "widget-donationgoal-title-alignment",
           ["left", "center", "right"],
           "header",
         ),
@@ -55,7 +55,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "filledFont",
           "fontselect",
           "Russo One",
-          "Шрифт суммы",
+          "widget-donationgoal-amount-font-family",
           "header",
         ),
         new NumberProperty(
@@ -63,7 +63,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "filledFontSize",
           "number",
           "24",
-          "Размер шрифта суммы",
+          "widget-donationgoal-amount-font-size",
           "header",
         ),
         new ColorProperty(
@@ -71,7 +71,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "filledTextColor",
           "color",
           "#ffffff",
-          "Цвет суммы",
+          "widget-donationgoal-amount-color",
           "header",
         ),
         new ColorProperty(
@@ -79,7 +79,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "backgroundColor",
           "color",
           "#818181",
-          "Цвет фона полоски",
+          "widget-donationgoal-background",
           "header",
         ),
         new ColorProperty(
@@ -87,7 +87,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "filledColor",
           "color",
           "#00aa00",
-          "Цвет заполненной части",
+          "widget-donationgoal-filled-color",
           "header",
         ),
         new SingleChoiceProperty(
@@ -95,7 +95,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "filledTextAlign",
           "predefined",
           "left",
-          "Выравнивание суммы",
+          "widget-donationgoal-amount-alignment",
           ["left", "center", "right"],
           "header",
         ),

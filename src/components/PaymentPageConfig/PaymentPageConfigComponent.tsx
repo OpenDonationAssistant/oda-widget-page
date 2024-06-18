@@ -5,6 +5,10 @@ import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
 import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { WidgetData } from "../../types/WidgetData";
+import { File } from "buffer";
+import Layout, { Content, Header as AntHeader } from "antd/es/layout/layout";
+import Header from "../ConfigurationPage/Header";
+import Sider from "antd/es/layout/Sider";
 
 const backgroundColor = (
   <style
@@ -14,7 +18,7 @@ const backgroundColor = (
   />
 );
 
-function uploadFile(file, name: string) {
+function uploadFile(file: File, name: string) {
   return axios.put(
     `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}?public=true`,
     { file: file },
@@ -121,7 +125,15 @@ export default function PaymentPageConfigComponent({}: {}) {
   return (
     <div className={classes.paymentpage}>
       {backgroundColor}
-      <Toolbar page={Page.PAYMENTPAGE} />
+      <Layout>
+        <AntHeader>
+          <Header />
+        </AntHeader>
+        <Layout>
+          <Sider>
+            <Toolbar page={Page.PAYMENTPAGE} />
+          </Sider>
+          <Content>
       <div className={classes.paymentpageconfig}>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>ФИО</div>
@@ -284,7 +296,7 @@ export default function PaymentPageConfigComponent({}: {}) {
             Текст кнопки "Задонатить"
           </div>
           <input
-            value={payButtonText}
+            value={payButtonText ?? ""}
             className={classes.widgetsettingsvalue}
             style={{ width: "250px" }}
             onChange={(e) => {
@@ -320,6 +332,9 @@ export default function PaymentPageConfigComponent({}: {}) {
           </div>
         )}
       </div>
+      </Content>
+      </Layout>
+      </Layout>
     </div>
   );
 }

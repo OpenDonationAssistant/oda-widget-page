@@ -188,7 +188,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
           "useGreenscreen",
           "boolean",
           false,
-          "Использовать greenscreen",
+          "widget-alert-use-greenscreen",
         ),
       ],
       new Map(),

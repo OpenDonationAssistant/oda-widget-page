@@ -1,10 +1,10 @@
 .widget {
-  max-width: 900px;
   background-color: #2b3566;
-  border-radius: 5px;
+  border-radius: 3px;
   margin-top: 10px;
   border: 1px solid #674afd;
   position: relative;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
 }
 
 .widget-settings .ant-tabs-top > .ant-tabs-nav::before {

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { log } from "../../../logging";
 import FontSelect from "../settings/FontSelect";
+import { Trans } from "react-i18next";
 
 export class FontProperty {
   widgetId: string | null;
@@ -45,7 +46,7 @@ export class FontProperty {
           htmlFor={`${this.widgetId}_${this.name}`}
           className="widget-settings-name"
         >
-          {this.displayName}
+          <Trans i18nKey={this.displayName}/>
         </label>
         <FontSelect
           prop={this}

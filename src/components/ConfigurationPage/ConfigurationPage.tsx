@@ -18,7 +18,11 @@ import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidge
 import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, Layout, theme } from "antd";
+import { Content, Header as AntHeader } from "antd/es/layout/layout";
+import Sider from "antd/es/layout/Sider";
+import Header from "./Header";
+import { useTranslation } from "react-i18next";
 
 const backgroundColor = (
   <style
@@ -78,10 +82,11 @@ export default function ConfigurationPage({}: {}) {
   const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
   const [widgets, setWidgets] = useState<WidgetSettings[]>([]);
   const { recipientId } = useLoaderData() as WidgetData;
+  const { t } = useTranslation();
 
   function updateConfig(id: string, key: string, value: any) {
     setConfig((oldConfig) => {
-      const widgetSettings = oldConfig.get(id) ?? new EmptyWidgetSettings([]);
+      const widgetSettings = oldConfig.get(id) ?? new EmptyWidgetSettings(id, []);
       let updatedProperties = widgetSettings?.properties.map((it) => {
         if (it.name === key) {
           it.value = value;
@@ -195,20 +200,16 @@ export default function ConfigurationPage({}: {}) {
 
   const newWidgetMock = (
     <div
-      className="widget new-widget-mock"
+      className="oda-btn-default"
       onClick={() => setShowAddWidgetPopup(!showAddWidgetPopup)}
       style={{
-        marginTop: "60px",
-        display: "block",
-        textAlign: "center",
-        border: "none",
-        paddingTop: "15px",
-        paddingBottom: "15px",
+        marginTop: "20px",
+        width: "fit-content",
+        marginLeft: "auto",
+        marginRight: "auto",
       }}
     >
-      <div className="widget-title">
-        <span className="material-symbols-sharp">add</span>
-      </div>
+      {t("button-addwidget")}
     </div>
   );
 
@@ -221,54 +222,66 @@ export default function ConfigurationPage({}: {}) {
         algorithm: theme.darkAlgorithm,
       }}
     >
-      <div className="configuration-container">
-        {backgroundColor}
-        <Toolbar page={Page.WIDGETS} />
-        <div className="widget-list">
-          <WidgetsContext.Provider value={context}>
-            {widgets.map((data) => (
-              <WidgetConfiguration
-                id={data.id}
-                key={data.id}
-                name={data.name}
-                type={data.type}
-                reload={() => {
-                  load();
-                }}
-              />
-            ))}
-            {!showAddWidgetPopup && newWidgetMock}
-          </WidgetsContext.Provider>
-          {showAddWidgetPopup && (
-            <div className="new-widget-popup">
-              {types.map((type) => (
-                <div
-                  className="new-widget-type-button"
-                  onClick={() => {
-                    addWidget(type.name, widgets.length)
-                      .then(() => loadSettings())
-                      .then((updatedSettings) => setWidgets(updatedSettings));
-                    setShowAddWidgetPopup(false);
-                  }}
-                >
-                  <img
-                    className="widget-icon"
-                    src={`/icons/${type.name}.png`}
+      {backgroundColor}
+      <Layout>
+        <AntHeader>
+          <Header/>
+        </AntHeader>
+        <Layout>
+          <Sider>
+            <Toolbar page={Page.WIDGETS} />
+          </Sider>
+          <Content style={{ overflow:"initial" }}>
+            <div className="widget-list">
+              <WidgetsContext.Provider value={context}>
+                {widgets.map((data) => (
+                  <WidgetConfiguration
+                    id={data.id}
+                    key={data.id}
+                    name={data.name}
+                    type={data.type}
+                    reload={() => {
+                      load();
+                    }}
                   />
-                  <div>{type.description}</div>
+                ))}
+                {!showAddWidgetPopup && newWidgetMock}
+              </WidgetsContext.Provider>
+              {showAddWidgetPopup && (
+                <div className="new-widget-popup">
+                  {types.map((type) => (
+                    <div
+                      className="new-widget-type-button"
+                      onClick={() => {
+                        addWidget(type.name, widgets.length)
+                          .then(() => loadSettings())
+                          .then((updatedSettings) =>
+                            setWidgets(updatedSettings),
+                          );
+                        setShowAddWidgetPopup(false);
+                      }}
+                    >
+                      <img
+                        className="widget-icon"
+                        src={`/icons/${type.name}.png`}
+                      />
+                      <div>{t(type.description)}</div>
+                    </div>
+                  ))}
+                  <div
+                    className="new-widget-type-button"
+                    onClick={() => setShowAddWidgetPopup(false)}
+                    style={{ border: "none", paddingTop: "33px" }}
+                  >
+                    <img className="widget-icon" src={`/icons/close.png`} />
+                  </div>
                 </div>
-              ))}
-              <div
-                className="new-widget-type-button"
-                onClick={() => setShowAddWidgetPopup(false)}
-                style={{ border: "none", paddingTop: "33px" }}
-              >
-                <img className="widget-icon" src={`/icons/close.png`} />
-              </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </Content>
+        </Layout>
+      </Layout>
+      <div className="configuration-container"></div>
     </ConfigProvider>
   );
 }

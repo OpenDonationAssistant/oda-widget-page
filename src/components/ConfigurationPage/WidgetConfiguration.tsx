@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import axios from "axios";
 
@@ -17,6 +17,8 @@ import { Button } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import TextAlertButton from "./settings/TestAlertButton";
+import { useTranslation } from "react-i18next";
+import Dropdown from "antd/es/dropdown/dropdown";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -52,7 +54,6 @@ export default function WidgetConfiguration({
   const { conf } = useLoaderData() as WidgetData;
   const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
-  const [showWidgetMenu, setShowWidgetMenu] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(name);
   const context = {
@@ -61,24 +62,12 @@ export default function WidgetConfiguration({
     updateConfig: update,
   };
 
-  const menuRef = useRef(null);
+  const { t } = useTranslation();
 
   function update(id: string, key: string, value: any) {
     updateConfig(id, key, value);
     setHasChanges(true);
   }
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowWidgetMenu(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [menuRef]);
 
   function toggleSettings() {
     setSettingsHidden(!settingsHidden);
@@ -139,8 +128,14 @@ export default function WidgetConfiguration({
             />
           )}
         </div>
-        {!hasChanges && type === "reel" && <Button onClick={runReel} className="oda-btn-default">Крутить</Button>}
-        {!hasChanges && type === "payment-alerts" && <TextAlertButton config={config}/>}
+        {!hasChanges && type === "reel" && (
+          <Button onClick={runReel} className="oda-btn-default">
+            {t("button-spin")}
+          </Button>
+        )}
+        {!hasChanges && type === "payment-alerts" && (
+          <TextAlertButton config={config} />
+        )}
         {hasChanges && (
           <>
             <button
@@ -158,7 +153,7 @@ export default function WidgetConfiguration({
                 });
               }}
             >
-              <div className="blinker">Сохранить</div>
+              <div className="blinker">{t("button-save")}</div>
             </button>
             <button
               className="widget-button widget-button-decline"
@@ -168,68 +163,59 @@ export default function WidgetConfiguration({
                 reload.apply({});
               }}
             >
-              <div className="blinker">Отменить</div>
+              <div className="blinker">{t("button-cancel")}</div>
             </button>
           </>
         )}
         {!hasChanges && (
           <>
-            <div className="widget-button-list">
+            <Dropdown
+              trigger={["click"]}
+              menu={{
+                items: [
+                  {
+                    key: "copy-url",
+                    label: t("button-copy-url"),
+                    onClick: () =>
+                      navigator.clipboard.writeText(
+                        `${process.env.REACT_APP_ENDPOINT}/${type}/${id}`,
+                      ),
+                  },
+                  {
+                    key: "rename",
+                    label: t("button-rename"),
+                    onClick: () => {
+                      setRenaming(true);
+                      setHasChanges(true);
+                    },
+                  },
+                  {
+                    key: "delete",
+                    label: t("button-delete"),
+                    onClick: () => {
+                      deleteWidget(id).then(() => reload.apply({}));
+                    },
+                  },
+                ],
+              }}
+            >
               <button
-                onClick={() => setShowWidgetMenu(!showWidgetMenu)}
-                className="widget-button widget-button-more"
+                onClick={(e) => e.preventDefault()}
+                className="menu-button"
               >
                 <span className="material-symbols-sharp">more_vert</span>
               </button>
-            </div>
+            </Dropdown>
           </>
         )}
       </div>
-      <div ref={menuRef}>
-        <div
-          className={`widget-settings ${
-            settingsHidden ? "visually-hidden" : ""
-          }`}
-        >
-          {config.get(id) && (
-            <WidgetsContext.Provider value={context}>
-              {getSettingsWidget(id, type, () => setHasChanges(true))}
-            </WidgetsContext.Provider>
-          )}
-        </div>
-        {showWidgetMenu && (
-          <div className="widget-button-menu">
-            <div
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `${process.env.REACT_APP_ENDPOINT}/${type}/${id}`,
-                );
-                setShowWidgetMenu(false);
-              }}
-              className="widget-menu-item"
-            >
-              Copy URL
-            </div>
-            <div
-              onClick={() => {
-                setRenaming(true);
-                setHasChanges(true);
-                setShowWidgetMenu(false);
-              }}
-              className="widget-menu-item"
-            >
-              Rename
-            </div>
-            <div
-              onClick={() => {
-                deleteWidget(id).then(() => reload.apply({}));
-                setShowWidgetMenu(false);
-              }}
-              className="widget-menu-item"
-            >
-              Delete
-            </div>
-          </div>
+      <div
+        className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
+      >
+        {config.get(id) && (
+          <WidgetsContext.Provider value={context}>
+            {getSettingsWidget(id, type, () => setHasChanges(true))}
+          </WidgetsContext.Provider>
         )}
       </div>
     </div>

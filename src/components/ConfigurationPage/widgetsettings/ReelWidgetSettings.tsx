@@ -13,8 +13,8 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
 
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
-    tabs.set("general", "Общие");
-    tabs.set("prizes", "Призы");
+    tabs.set("general", "tab-reel-general");
+    tabs.set("prizes", "tab-reel-prizes");
     super(
       widgetId,
       properties,
@@ -24,7 +24,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "font",
           "fontselect",
           "Roboto",
-          "Шрифт",
+          "widget-reel-font-family",
           "general",
         ),
         new NumberProperty(
@@ -32,7 +32,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "fontSize",
           "number",
           24,
-          "Размер шрифта",
+          "widget-reel-font-size",
           "general",
         ),
         new ColorProperty(
@@ -40,7 +40,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "color",
           "color",
           "#000000",
-          "Цвет текста",
+          "widget-reel-color",
           "general",
         ),
         new ColorProperty(
@@ -48,7 +48,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "borderColor",
           "color",
           "#FF0000",
-          "Цвет рамок",
+          "widget-reel-border-color",
           "general",
         ),
         new NumberProperty(
@@ -56,7 +56,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "borderWidth",
           "number",
           1,
-          "Толщина рамок",
+          "widget-reel-border-width",
           "general",
         ),
         new ColorProperty(
@@ -64,7 +64,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "selectionColor",
           "color",
           "#00FF00",
-          "Фон выбора",
+          "widget-reel-background-color",
           "general",
         ),
         new DefaultWidgetProperty(
@@ -80,7 +80,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "perView",
           "number",
           5,
-          "Отображаемое кол-во карточек",
+          "widget-reel-displayed-amount",
           "general",
         ),
         new NumberProperty(
@@ -88,7 +88,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "speed",
           "number",
           250,
-          "Время (мс) на один поворот",
+          "widget-reel-turning-time",
           "general",
         ),
         
@@ -97,7 +97,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "time",
           "number",
           10,
-          "Время (сек), сколько крутить до выпадения результата",
+          "widget-reel-waiting-time",
           "general",
         ),
         new NumberProperty(
@@ -105,7 +105,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "requiredAmount",
           "number",
           100,
-          "Требуемая сумма",
+          "widget-reel-required-amount",
           "general",
         ),
         new ReelItemListProperty(

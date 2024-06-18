@@ -1,6 +1,7 @@
 import { Modal } from "antd";
 import React, { ReactNode, useState } from "react";
 import classes from "./TextPropertyModal.module.css";
+import { useTranslation } from "react-i18next";
 
 export default function TextPropertyModal({
   title,
@@ -12,6 +13,7 @@ export default function TextPropertyModal({
   className?: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   function toggleModal() {
     const classList = document.getElementById("root")?.classList;
@@ -35,12 +37,12 @@ export default function TextPropertyModal({
 
   return (
     <>
-      <button className={`${classes.modalopenbutton}`} onClick={toggleModal}>
-        Редактировать
+      <button className={`${classes.modalopenbutton} oda-btn-default`} onClick={toggleModal}>
+        {t("button-edit")}
       </button>
       <Modal
         className={className}
-        title={title}
+        title={t(title)}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

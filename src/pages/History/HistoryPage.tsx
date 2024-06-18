@@ -1,5 +1,6 @@
-import { Descriptions, List, Spin, Table, theme } from "antd";
-import React from "react";
+import { Descriptions, Layout, List, Modal, Spin, Table, theme } from "antd";
+import { Content, Header as AntHeader } from "antd/es/layout/layout";
+import React, { useState } from "react";
 import Toolbar, { Page } from "../../components/ConfigurationPage/Toolbar";
 import classes from "./HistoryPage.module.css";
 import {
@@ -7,9 +8,10 @@ import {
   DefaultApiFactory as HistoryService,
 } from "@opendonationassistant/oda-history-service-client";
 import { usePagination } from "ahooks";
-import { PaginationResult } from "ahooks/lib/usePagination/types";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import Sider from "antd/es/layout/Sider";
+import Header from "../../components/ConfigurationPage/Header";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
@@ -115,6 +117,7 @@ export default function HistoryPage({}) {
   const { data, loading, pagination } = usePagination(getHistory, {
     defaultPageSize: 10,
   });
+  const [showModal, setShowModal] = useState<boolean>();
 
   async function getHistory(params: {
     current: number;
@@ -134,13 +137,45 @@ export default function HistoryPage({}) {
 
   return (
     <>
-      <div className="configuration-container">
-        {backgroundColor}
-        <Toolbar page={Page.HISTORY} />
-        <div className={classes.pagecontainer}>
-          {loading ? <Spin /> : list(data?.list ?? [], pagination)}
-        </div>
-      </div>
+      {backgroundColor}
+      <Layout>
+        <AntHeader>
+          <Header />
+        </AntHeader>
+        <Layout>
+          <Sider>
+            <Toolbar page={Page.HISTORY} />
+          </Sider>
+          <Content>
+            <div className="configuration-container">
+              <div className={classes.pagecontainer}>
+                <div className={classes.buttons}>
+                  <button
+                    className="oda-btn-default"
+                    style={{ display: "none" }}
+                    onClick={() => setShowModal((old) => !old)}
+                  >
+                    Add
+                  </button>
+                </div>
+                {loading ? <Spin /> : list(data?.list ?? [], pagination)}
+              </div>
+              <Modal
+                title="Add Donation"
+                open={showModal}
+                onClose={() => setShowModal(false)}
+                onCancel={() => setShowModal(false)}
+                onOk={() => setShowModal(false)}
+              >
+                <div>Nickname:</div>
+                <input className={classes.adddonationinput} />
+                <div>Amount:</div>
+                <input className={classes.adddonationinput} />
+              </Modal>
+            </div>
+          </Content>
+        </Layout>
+      </Layout>
     </>
   );
 }

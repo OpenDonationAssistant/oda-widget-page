@@ -1,25 +1,41 @@
 .pagecontainer {
-  margin-left: 250px;
-  margin-right: 50px;
-  margin-top: 50px;
+  width:  90%;
+  margin-left: 20px;
+  margin-top: 20px;
 }
 
 .little {
-  font-size:16px;
+  font-size: 16px;
   color: rgb(120, 133, 189);
   margin-left: 3px;
   margin-right: 3px;
 }
 
-.timestamp{
+.timestamp {
   justify-self: flex-end;
   text-align: right;
   flex: 1 0 auto;
   color: rgb(120, 133, 189);
 }
 
-.title{
+.title {
   width: 100%;
   display: flex;
   align-items: baseline;
+}
+
+.adddonationinput {
+  width: 100%;
+  text-align: left;
+  width: 100%;
+  padding: 10px;
+  resize: none;
+  background-color: #684aff;
+  box-shadow: inset 0 0 10px 0px rgba(0, 0, 0, 0.9);
+  border: none;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
 }

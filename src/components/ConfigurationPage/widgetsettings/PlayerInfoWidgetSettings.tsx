@@ -11,9 +11,9 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
-        new FontProperty(widgetId, "font", "fontselect", "Roboto", "Шрифт"),
-        new NumberProperty(widgetId, "fontSize", "number", 24, "Размер шрифта"),
-        new ColorProperty(widgetId, "color", "color", "#ffffff", "Цвет"),
+        new FontProperty(widgetId, "font", "fontselect", "Roboto", "widget-player-info-font-family"),
+        new NumberProperty(widgetId, "fontSize", "number", 24, "widget-player-info-font-size"),
+        new ColorProperty(widgetId, "color", "color", "#ffffff", "widget-player-info-color"),
       ],
       new Map(),
     );

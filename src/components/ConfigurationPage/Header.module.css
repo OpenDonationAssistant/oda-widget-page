@@ -1,0 +1,29 @@
+.headercontainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-shadow: 0 0 1px #674afd;
+}
+
+@media (max-width: 1500px) {
+  .headercontainer {
+    width: 100%;
+  }
+}
+@media (min-width: 1501px) {
+  .headercontainer {
+    min-width: 1200px;
+    max-width: 1250px !important;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.account {
+  justify-self: flex-end;
+  margin-left: 10px;
+}
+
+.buttons {
+  display: flex;
+}

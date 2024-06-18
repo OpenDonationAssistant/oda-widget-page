@@ -1,9 +1,8 @@
 .toolbar {
-  position: fixed;
   height: 100%;
-  width: 200px;
-  border-right: 1px solid #674afd;
-  box-shadow: inset -5px 0 5px 0px rgba(0, 0, 0, 0.5);
+  padding-top: 10px;
+  /* border-right: 1px solid #674afd; */
+  /* box-shadow: inset -5px 0 5px 0px rgba(0, 0, 0, 0.5); */
 }
 
 .toolbar .material-symbols-sharp {
@@ -23,18 +22,20 @@
   padding-bottom: 10px;
   width: 100%;
   text-align: left;
+  border-radius: 3px;
 }
 
-.toolbar-button:hover {
-	background: #111529;
+.toolbar-button:not(.active):hover {
+	/* background: #111529; */
   color: white;
-  box-shadow: inset 0 0 10px 2px rgba(104, 74, 255, 0.5);
+  /* box-shadow: inset 0 0 10px 2px rgba(104, 74, 255, 0.5); */
 }
 
 .toolbar-button.active {
-  background: #684aff;
+  /* background: #684aff; */
   color: white;
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid #674afd;
 }
 
 .toolbar-title {
@@ -55,3 +56,4 @@
 	width: 200px;
 	height: 200px;
 }
+

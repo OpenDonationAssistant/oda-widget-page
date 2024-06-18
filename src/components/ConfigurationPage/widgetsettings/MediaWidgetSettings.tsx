@@ -14,14 +14,14 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
           "playlistSongTitleFontSize",
           "number",
           "16",
-          "Размер шрифта в названии песни в плейлисте",
+          "widget-media-title-font-size"
         ),
         new NumberProperty(
           widgetId,
           "playlistNicknameFontSize",
           "number",
           "16",
-          "Размер шрифта в имени заказчика в плейлисте",
+          "widget-media-customer-font-size"
         ),
       ],
       new Map(),

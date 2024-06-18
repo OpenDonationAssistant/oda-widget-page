@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import {  Select } from 'antd';
+import { Select } from "antd";
+import { Trans } from "react-i18next";
 
 export class SingleChoiceProperty extends DefaultWidgetProperty {
   options: string[];
@@ -21,8 +22,10 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label className="widget-settings-name" >{this.displayName}</label>
-        <Select 
+        <label className="widget-settings-name">
+          <Trans i18nKey={this.displayName}/>
+        </label>
+        <Select
           value={this.value}
           onChange={(e) => {
             if (!this.widgetId) {
@@ -30,7 +33,9 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
             }
             updateConfig(this.widgetId, this.name, e);
           }}
-          options={this.options.map((option) => {return {value: option,  label:option}})}
+          options={this.options.map((option) => {
+            return { value: option, label: <><Trans i18nKey={option}/></> };
+          })}
         />
       </div>
     );

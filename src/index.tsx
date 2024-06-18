@@ -28,6 +28,7 @@ import { WidgetData } from "./types/WidgetData";
 import DonationGoal from "./components/DonationGoal/DonationGoal";
 import HistoryPage from "./pages/History/HistoryPage";
 import { ConfigProvider, theme } from "antd";
+import "./i18n";
 
 async function widgetSettingsLoader({
   params,
@@ -54,6 +55,7 @@ async function widgetSettingsLoader({
 
   return { recipientId, settings, conf, widgetId };
 }
+import { i18n } from "i18next";
 
 const router = createBrowserRouter([
   {

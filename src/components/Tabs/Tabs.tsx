@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { WidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
 import { WidgetsContext } from "../ConfigurationPage/WidgetsContext";
 import { Tabs as AntTabs } from "antd";
+import { useTranslation } from "react-i18next";
 
 export default function Tabs({
   tabs,
@@ -11,10 +12,11 @@ export default function Tabs({
   properties: WidgetProperty[];
 }) {
   const { updateConfig } = useContext(WidgetsContext);
+  const { t } = useTranslation();
 
   const tabPaneGenerator = (key: string) => {
     return {
-      label: tabs.get(key)?.toLowerCase(),
+      label: t(tabs.get(key) ?? ""),
       key: key,
       children: properties
         ?.filter((prop) => prop.type !== "custom")

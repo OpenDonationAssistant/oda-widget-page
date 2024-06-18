@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { InputNumber } from 'antd';
+import { Trans } from "react-i18next";
 
 export class NumberProperty extends DefaultWidgetProperty {
   constructor(
@@ -34,7 +35,7 @@ export class NumberProperty extends DefaultWidgetProperty {
           htmlFor={`${this.widgetId}_${this.name}`}
           className="widget-settings-name"
         >
-          {this.displayName}
+          <Trans i18nKey={this.displayName}/>
         </label>
         <InputNumber
           value={this.value}

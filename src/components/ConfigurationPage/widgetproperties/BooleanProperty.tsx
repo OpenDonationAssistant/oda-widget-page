@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { DefaultWidgetProperty } from "./WidgetProperty";
+import { Trans } from "react-i18next";
 
 export class BooleanProperty extends DefaultWidgetProperty {
   constructor(
@@ -33,7 +34,7 @@ export class BooleanProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            {this.displayName}
+            <Trans i18nKey={this.displayName}/>
           </label>
           <BooleanPropertyInput
             prop={this}

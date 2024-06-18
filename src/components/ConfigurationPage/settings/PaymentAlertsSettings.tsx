@@ -5,8 +5,9 @@ import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
 import FontSelect from "./FontSelect";
-import { Tabs as AntTabs, Input, InputNumber } from "antd";
+import { Tabs as AntTabs, Input } from "antd";
 import TextPropertyModal from "../widgetproperties/TextPropertyModal";
+import { useTranslation } from "react-i18next";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -18,6 +19,7 @@ export default function PaymentAlertSettings({
   onChange,
 }: PaymentAlertSettingsProps) {
   const { config, setConfig } = useContext(WidgetsContext);
+  const { t } = useTranslation();
 
   function addDefaultAlert(): void {
     let alerts = config.get(id)?.alerts;
@@ -36,66 +38,66 @@ export default function PaymentAlertSettings({
           tab: "image",
           name: "imageWidth",
           value: null,
-          displayName: "Ширина изображения в пикселях",
+          displayName: "widget-alert-image-width",
         },
         {
           tab: "image",
           name: "imageHeight",
           value: null,
-          displayName: "Высота изображения в пикселях",
+          displayName: "widget-alert-image-height",
         },
         {
           tab: "image",
           name: "imageShowTime",
           value: null,
-          displayName: "Сколько времени показывать изображение (сек)",
+          displayName: "widget-alert-image-show-time",
         },
         {
           tab: "header",
           name: "nicknameFont",
           type: "fontselect",
           value: "Roboto",
-          displayName: "Шрифт в заголовке",
+          displayName: "widget-alert-title-font-family",
         },
         {
           tab: "header",
           name: "nicknameFontSize",
           value: "60",
-          displayName: "Размер шрифта в заголовке",
+          displayName: "widget-alert-title-font-size",
         },
         {
           tab: "header",
           name: "headerColor",
           type: "color",
           value: "#fb8c2b",
-          displayName: "Цвет заголовка",
+          displayName: "widget-alert-title-color",
         },
         {
           tab: "header",
           name: "nicknameTextTemplate",
           type: "text",
           value: "<username> - <amount>",
-          displayName: "Шаблон заголовка",
+          displayName: "widget-alert-title-template",
         },
         {
           tab: "message",
           name: "messageFont",
           type: "fontselect",
           value: "Roboto",
-          displayName: "Шрифт в сообщении",
+          displayName: "widget-alert-message-font-family",
         },
         {
           tab: "message",
           name: "messageFontSize",
           value: "25",
-          displayName: "Размер шрифта в сообщении",
+          displayName: "widget-alert-message-font-size",
         },
         {
           tab: "message",
           name: "messageColor",
           type: "color",
           value: "#ffffff",
-          displayName: "Цвет сообщения",
+          displayName: "widget-alert-message-color",
         },
         {
           tab: "voice",
@@ -136,7 +138,7 @@ export default function PaymentAlertSettings({
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-          displayName: "Фразы для озвучивания заголовка с сообщением",
+          displayName: "widget-alert-voice-title-phrase",
         },
         {
           tab: "voice",
@@ -177,14 +179,14 @@ export default function PaymentAlertSettings({
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-          displayName: "Фразы для озвучивания заголовка если нет сообщения",
+          displayName: "widget-alert-voice-empty-alert-phrase",
         },
         {
           tab: "voice",
           name: "enableVoiceWhenMessageIsEmpty",
           type: "boolean",
           value: true,
-          displayName: "Озвучивать заголовок если сообщение отсутствует",
+          displayName: "widget-alert-voice-if-empty",
         },
       ],
     });
@@ -402,7 +404,7 @@ export default function PaymentAlertSettings({
     <>
       <div style={{ marginBottom: "10px", textAlign: "center" }}>
         <button className="oda-btn-default" onClick={() => addDefaultAlert()}>
-          Добавить алерт
+          {t("button-add-alert")}
         </button>
       </div>
       <div className="payment-alerts-previews">
@@ -416,7 +418,7 @@ export default function PaymentAlertSettings({
       .filter((it) => it.tab === selectedTab)
       .map((prop) => (
         <div key={`${prop.name}`} className="widget-settings-item">
-          <div className="widget-settings-name">{prop.displayName}</div>
+          <div className="widget-settings-name">{t(prop.displayName)}</div>
           {(!prop.type || prop.type == "string") && (
             <Input
               value={prop.value}
@@ -470,13 +472,13 @@ export default function PaymentAlertSettings({
   const tabs = (alert, index) => [
     {
       key: "trigger",
-      label: "Условие",
+      label: t("tab-alert-trigger"),
       children: [
         <>
           {[
             ...tabContent(alert, "trigger", index),
             <div key={`${index}_trigger`} className="widget-settings-item">
-              <div className="widget-settings-name">Сумма</div>
+              <div className="widget-settings-name">{t("widget-alert-amount")}</div>
               <Input
                 size="small"
                 className="widget-settings-value"
@@ -490,7 +492,7 @@ export default function PaymentAlertSettings({
     },
     {
       key: "image",
-      label: "Изображение",
+      label: t("tab-alert-image"),
       children: [
         <>
           {[
@@ -507,14 +509,14 @@ export default function PaymentAlertSettings({
                         type="file"
                         onChange={(e) => handleVideoUpload(e, index)}
                       />
-                      Загрузить видео
+                      {t("button-upload-video")}
                     </label>
                     <label className="oda-btn-default">
                       <input
                         type="file"
                         onChange={(e) => handleFileChange(e, index)}
                       />
-                      Загрузить изображение
+                      {t("button-upload-image")}
                     </label>
                   </div>
                 </>
@@ -531,7 +533,7 @@ export default function PaymentAlertSettings({
                     className="oda-btn-default"
                     onClick={() => deleteImage(index)}
                   >
-                    Удалить
+                    {t("button-delete")}
                   </button>
                 </div>
               )}
@@ -542,7 +544,7 @@ export default function PaymentAlertSettings({
     },
     {
       key: "sound",
-      label: "Аудио",
+      label: t("tab-alert-audio"),
       children: [
         <>
           {[
@@ -567,7 +569,7 @@ export default function PaymentAlertSettings({
                         type="file"
                         onChange={(e) => handleAudioUpload(e, index)}
                       />
-                      Загрузить аудио
+                      {t("button-upload-audio")}
                     </label>
                   </div>
                 )}
@@ -576,7 +578,7 @@ export default function PaymentAlertSettings({
                     onClick={() => deleteAudio(index)}
                     className="oda-btn-default"
                   >
-                    Удалить
+                    {t("button-delete")}
                   </button>
                 )}
               </div>
@@ -587,17 +589,17 @@ export default function PaymentAlertSettings({
     },
     {
       key: "voice",
-      label: "Озвучка",
+      label: t("tab-alert-voice"),
       children: [<>{tabContent(alert, "voice", index)}</>],
     },
     {
       key: "header",
-      label: "Заголовок",
+      label: t("tab-alert-title"),
       children: [<>{tabContent(alert, "header", index)}</>],
     },
     {
       key: "message",
-      label: "Сообщение",
+      label: t("tab-alert-message"),
       children: [<>{tabContent(alert, "message", index)}</>],
     },
   ];
@@ -610,12 +612,12 @@ export default function PaymentAlertSettings({
         items={[
           {
             key: "1",
-            label: "Алерты",
+            label: t("tab-alert-alerts"),
             children: previews(),
           },
           {
             key: "2",
-            label: "По умолчанию",
+            label: t("tab-alert-default"),
             children: (
               <>
                 <BaseSettings id={id} />

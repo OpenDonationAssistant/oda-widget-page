@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Divider } from "antd";
 import classes from "./DonatersTopListLayoutProperty.module.css";
+import { Trans } from "react-i18next";
 
 export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
   constructor(widgetId: string, value: string) {
@@ -27,20 +28,20 @@ export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
             >
               <img title="vertical" src={`/icons/vertical.jpg`} />
               <div className={`${classes.layoutdescription}`}>
-                Список ников будет располагаться вертикально
+                <Trans i18nKey="widget-donaterslist-list-vertical-layout" />
               </div>
             </div>
             <div
-              className={`${classes.radiobutton} ${this.value === "horizontal" ? classes.selected : ""}`}
+              className={`${classes.radiobutton} ${
+                this.value === "horizontal" ? classes.selected : ""
+              }`}
               onClick={() => {
                 updateConfig(this.widgetId, this.name, "horizontal");
               }}
             >
               <img title="horizontal" src={`/icons/horizontal.jpg`} />
-              <div
-                className={`${classes.layoutdescription}`}
-              >
-                Список ников будет располагаться в одну линию
+              <div className={`${classes.layoutdescription}`}>
+                <Trans i18nKey="widget-donaterslist-list-horizontal-layout" />
               </div>
             </div>
           </div>
