@@ -60,6 +60,11 @@ export default function DonationGoal({}) {
   const font = findSetting(settings, "titleFont", "Alice");
   const textColor = findSetting(settings, "titleColor", "black");
   const titleTextAlign = findSetting(settings, "titleTextAlign", "left");
+  const labelTemplate = findSetting(
+    settings,
+    "labelTemplate",
+    "<collected> / <required> <currency>",
+  );
   const textStyle = {
     fontSize: fontSize ? fontSize + "px" : "unset",
     fontFamily: font ? font : "unset",
@@ -78,7 +83,7 @@ export default function DonationGoal({}) {
   const filledFontSize = findSetting(settings, "filledFontSize", "24");
   const filledFont = findSetting(settings, "filledFont", "Russo One");
   let filledTextAlign = findSetting(settings, "filledTextAlign", "left");
-  switch(filledTextAlign){
+  switch (filledTextAlign) {
     case "left":
       filledTextAlign = "flex-start";
       break;
@@ -90,7 +95,7 @@ export default function DonationGoal({}) {
     fontSize: filledFontSize ? filledFontSize + "px" : "unset",
     fontFamily: filledFont ? filledFont : "unset",
     color: filledTextColor,
-    justifyContent: filledTextAlign
+    justifyContent: filledTextAlign,
   };
 
   return (
@@ -104,7 +109,7 @@ export default function DonationGoal({}) {
               {goal.briefDescription}
             </div>
             <div
-              style={ progressbarStyle }
+              style={progressbarStyle}
               className={`${classes.goalprogressbar}`}
             ></div>
             <div
@@ -118,7 +123,15 @@ export default function DonationGoal({}) {
               className={`${classes.goalfilled}`}
             ></div>
             <div style={filledTextStyle} className={`${classes.goalamount}`}>
-              {goal.accumulatedAmount.major} / {goal.requiredAmount.major} RUB
+              {labelTemplate
+                .replaceAll("<collected>", goal.accumulatedAmount.major)
+                .replaceAll("<required>", goal.requiredAmount.major)
+                .replaceAll("<currency>", "RUB")
+                .replaceAll(
+                  "<proportion>",
+                  (goal.accumulatedAmount.major / goal.requiredAmount.major) *
+                    100,
+                )}
             </div>
           </div>
         </>

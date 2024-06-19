@@ -7,6 +7,7 @@ import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
+import { TextProperty } from "../widgetproperties/TextProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
@@ -98,6 +99,14 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "widget-donationgoal-amount-alignment",
           ["left", "center", "right"],
           "header",
+        ),
+        new TextProperty(
+          widgetId,
+          "labelTemplate",
+          "predefined",
+          "<collected> / <required> <currency>",
+          "widget-donationgoal-label-template",
+          "header"
         ),
         new DonationGoalProperty(widgetId),
       ],
