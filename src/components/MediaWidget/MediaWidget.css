@@ -250,10 +250,6 @@
   margin-top: 10px;
 }
 
-.add-button-container button {
-  border-color: rgb(170, 170, 170);
-}
-
 iframe {
   /* width: 500px !important; */
   height: 300px !important;

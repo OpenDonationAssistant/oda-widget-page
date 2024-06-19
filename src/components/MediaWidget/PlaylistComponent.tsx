@@ -7,6 +7,7 @@ import AddMediaPopup from "./AddMediaPopup";
 import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
+import { useTranslation } from "react-i18next";
 
 export default function PlaylistComponent({
   playlist,
@@ -18,6 +19,7 @@ export default function PlaylistComponent({
   const [current, setCurrent] = useState<number | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [urlToCopy, setUrlToCopy] = useState<string>("");
+  const { t } =  useTranslation();
 
   function onDragEnd(result) {
     if (!result.destination) {
@@ -156,14 +158,14 @@ export default function PlaylistComponent({
             </ul>
             <div className="add-button-container">
               <button
-                className="btn btn-outline-light add"
+                className="oda-btn-default"
                 onClick={() => {
                   document.dispatchEvent(
                     new CustomEvent("toggleAddMediaPopup"),
                   );
                 }}
               >
-                <span className="material-symbols-sharp">add</span>
+                {t("widget-player-add-video")}
               </button>
             </div>
             <div className={`link-popup ${urlToCopy ? "" : "hidden"}`}>

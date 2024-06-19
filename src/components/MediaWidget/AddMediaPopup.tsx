@@ -7,6 +7,8 @@ import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 
+const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
+
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
@@ -22,6 +24,30 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
     document.addEventListener("toggleAddMediaPopup", toggle);
     return () => document.removeEventListener("toggleAddMediaPopup", toggle);
   }, [showNewMediaPopup]);
+
+  function addVideo(videoId: string) {
+    return axios
+      .get(
+        `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/available?videoId=${videoId}`,
+      )
+      .then((data) => data.data)
+      .then((list) => {
+        const songs = list.map((video) => {
+          let id = uuidv4();
+          let song = {
+            src: `https://www.youtube.com/watch?v=${videoId}`,
+            type: "video/youtube",
+            id: id,
+            originId: videoId, // todo remove originId?
+            owner: recipientId,
+            title: video.snippet.title,
+          };
+          return song;
+        });
+        songs.forEach((song: Song) => playlist.addSong(song));
+        return list.title;
+      });
+  }
 
   function addPlaylistItems(playlistId: string) {
     return axios
@@ -42,7 +68,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
           };
           return song;
         });
-        songs.forEach((song:Song) => playlist.addSong(song));
+        songs.forEach((song: Song) => playlist.addSong(song));
         return list.title;
       });
   }
@@ -74,16 +100,8 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         localStorage.setItem("playlists", JSON.stringify(filteredPlaylists));
       });
     } else {
-      let id = uuidv4();
-      let song = {
-        src: url,
-        type: "video/youtube",
-        id: id,
-        owner: recipientId,
-        title: "Manually added video",
-        originId: null
-      };
-      playlist.addSong(song);
+      const videoId = youtube_url_regexp.exec(url)?.at(6);
+      videoId && addVideo(videoId);
     }
     document.getElementById("new-media-input").value = "";
     setShowNewMediaPopup(false);
