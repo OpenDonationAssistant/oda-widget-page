@@ -129,8 +129,10 @@ export default function DonationGoal({}) {
                 .replaceAll("<currency>", "RUB")
                 .replaceAll(
                   "<proportion>",
-                  (goal.accumulatedAmount.major / goal.requiredAmount.major) *
+                  Math.trunc(
+                    (goal.accumulatedAmount.major / goal.requiredAmount.major) *
                     100,
+                  ),
                 )}
             </div>
           </div>
