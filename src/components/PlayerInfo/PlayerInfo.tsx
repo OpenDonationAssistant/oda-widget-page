@@ -4,15 +4,23 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
+import {
+  cleanupCommandListener,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import { log } from "../../logging";
 import FontImport from "../FontImport/FontImport";
+import { WidgetData } from "../../types/WidgetData";
+import "animate.css";
+import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 function PlayerInfo() {
   const navigate = useNavigate();
   const [left, setLeft] = useState(0);
-  const { settings, conf, widgetId } = useLoaderData();
-  const [title, setTitle] = useState<string|null>(null);
+  const { settings, conf, widgetId } = useLoaderData() as WidgetData;
+  const [title, setTitle] = useState<string | null>(null);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.player, (message) => {
@@ -26,29 +34,30 @@ function PlayerInfo() {
       }
       message.ack();
     });
-		setupCommandListener(widgetId, () => navigate(0));
+    setupCommandListener(widgetId, () => navigate(0));
     return () => {
       unsubscribe(widgetId, conf.topic.player);
       cleanupCommandListener(widgetId);
     };
   }, [widgetId]);
 
-  const fontSize = findSetting(settings, "fontSize", "24px");
-  const font = findSetting(settings, "font", "Roboto");
-  const color = findSetting(settings, "color", "white");
-  const textStyle = {
-    fontSize: fontSize ? fontSize + "px" : "unset",
-    fontFamily: font ? font : "unset",
-    color: color,
-  };
+  const titleFontProperty = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "titleFont",
+    value: findSetting(settings, "titleFont", null),
+  });
 
   return (
     <>
-      <FontImport font={font} />
-      <div className="player-info-container" data-vjs-player>
+      {titleFontProperty.createFontImport()}
+      <div
+        className={`player-info-container ${titleFontProperty.calcClassName()}`}
+        style={titleFontProperty.calcStyle()}
+        data-vjs-player
+      >
         <div className="player-info"></div>
-        <span className="player-info-text" style={textStyle}>
-          {title && (left > 1) && `Треков в очереди: ${left}, играет ${title}`}
+        <span className={`player-info-text`}>
+          {title && left > 1 && `Треков в очереди: ${left}, играет ${title}`}
           {title && !(left > 1) && `Играет: ${title}`}
         </span>
       </div>

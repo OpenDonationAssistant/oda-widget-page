@@ -385,10 +385,7 @@ export default function PaymentAlertSettings({
       )}
       {!alert.image && !alert.video && (
         <div className={`payment-alert-image-preview`}>
-          <img
-            className="alert-no-image"
-            src={`/icons/picture.png`}
-          />
+          <img className="alert-no-image" src={`/icons/picture.png`} />
         </div>
       )}
       <AntTabs type="card" items={tabs(alert, index)} />
@@ -436,12 +433,10 @@ export default function PaymentAlertSettings({
             />
           )}
           {prop.type === "color" && (
-            <div className="color-container">
-              <ColorPicker
-                value={prop.value}
-                onChange={(value) => update(prop.name, value, index)}
-              />
-            </div>
+            <ColorPicker
+              value={prop.value}
+              onChange={(value) => update(prop.name, value, index)}
+            />
           )}
           {prop.type === "text" && (
             <>
@@ -478,7 +473,9 @@ export default function PaymentAlertSettings({
           {[
             ...tabContent(alert, "trigger", index),
             <div key={`${index}_trigger`} className="widget-settings-item">
-              <div className="widget-settings-name">{t("widget-alert-amount")}</div>
+              <div className="widget-settings-name">
+                {t("widget-alert-amount")}
+              </div>
               <Input
                 size="small"
                 className="widget-settings-value"

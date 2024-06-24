@@ -29,6 +29,7 @@ import DonationGoal from "./components/DonationGoal/DonationGoal";
 import HistoryPage from "./pages/History/HistoryPage";
 import { ConfigProvider, theme } from "antd";
 import "./i18n";
+import 'animate.css';
 
 async function widgetSettingsLoader({
   params,

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import ColorPicker from "../settings/ColorPicker";
 import { Trans } from "react-i18next";
+import classes from "./ColorProperty.module.css";
 
 export class ColorProperty {
   widgetId: string | null;
@@ -29,10 +30,7 @@ export class ColorProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label
-          htmlFor={`${this.widgetId}_${this.name}`}
-          className="widget-settings-name"
-        >
+        <label className={`${classes.label}`} >
           <Trans i18nKey={this.displayName}/>
         </label>
         <ColorPicker

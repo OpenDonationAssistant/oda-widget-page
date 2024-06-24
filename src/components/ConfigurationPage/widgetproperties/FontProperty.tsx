@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import { log } from "../../../logging";
 import FontSelect from "../settings/FontSelect";
 import { Trans } from "react-i18next";
+import classes from "./FontProperty.module.css";
 
 export class FontProperty {
   widgetId: string | null;
@@ -25,7 +25,6 @@ export class FontProperty {
     this.displayName = displayName;
     this.value = value;
     this.tab = tab;
-    log.debug({ property: this }, "Created SingleChoiceProperty");
   }
 
   copy() {
@@ -42,10 +41,7 @@ export class FontProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <div key={this.name} className="widget-settings-item">
-        <label
-          htmlFor={`${this.widgetId}_${this.name}`}
-          className="widget-settings-name"
-        >
+        <label className={`${classes.label}`}>
           <Trans i18nKey={this.displayName}/>
         </label>
         <FontSelect

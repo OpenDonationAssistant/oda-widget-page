@@ -3,15 +3,18 @@
 :root {
   --oda-main-border: 1px solid #674afd;
   --oda-main-text-color: white;
-  --oda-secondary-text-color: rgba(220, 220, 220, 0.9);
   --oda-main-font-family: Play;
+  --oda-control-background-color: #684aff;
+  --oda-secondary-text-color: rgba(220, 220, 220, 0.9);
+  --oda-label-font: 1rem var(--oda-main-font-family);
+  --oda-label-color: #FFFFFFDA;
   --oda-label-background-color: #151a33;
   --oda-btn-background-color: #151a33;
 }
 
 .oda-btn-default {
   color: var(--oda-main-text-color);
-  background-color: #151a33;
+  background-color: var(--oda-btn-background-color);
   border: var(--oda-main-border);
   font-family: var(--oda-main-font-family);
   font-size: 14px;
@@ -43,8 +46,9 @@
 
 .widget-settings-item {
   display: flex;
-  position: relative;
   justify-content: space-between;
+  align-items: center;
+  position: relative;
   margin-top: 10px;
   min-height: 45px;
   flex-wrap: wrap;
@@ -56,7 +60,6 @@
 }
 
 .widget-settings-name {
-  position: absolute;
   color: white;
   display: block;
   transition: 0.2s;
@@ -101,7 +104,7 @@
   top: 1px;
 }
 
-.widget-settings .ant-color-picker-trigger {
+.ant-color-picker-trigger {
   background-color: #684aff;
   width: 100%;
   justify-content: flex-start;
@@ -117,7 +120,7 @@
   border-radius: 2px;
 }
 
-.widget-settings .ant-tabs .ant-tabs-tab {
+.ant-tabs .ant-tabs-tab {
   color: #7885bd;
   font-family: "Play";
   font-weight: 900;
@@ -142,22 +145,11 @@
   border-radius: 3px;
 }
 
-.widget-settings .ant-input-number {
-  background-color: #684aff;
-  width: 25%;
-  position: absolute;
-  right: 0;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
-  border-radius: 3px;
-}
-
-.widget-settings .ant-input-number .ant-input-number-handler {
+.ant-input-number .ant-input-number-handler {
   display: none;
 }
 
-.widget-settings .ant-input-number .ant-input-number-handler-wrap {
+.ant-input-number .ant-input-number-handler-wrap {
   display: none;
 }
 
@@ -199,7 +191,7 @@
 
 .widget-settings-value {
   font-family: inherit;
-  width: 100%;
+  width: 25%;
   outline: 0;
   font-size: 1rem;
   font-family: "Martian Mono", monospace;
@@ -286,17 +278,17 @@ textarea.widget-settings-value {
   margin-bottom: 10px;
 }
 
-.payment-alerts-previews-item .ant-tabs {
+.ant-tabs {
   margin-top: 5px;
   flex: 1 1 auto;
   margin-bottom: 10px;
 }
 
-.payment-alerts-previews-item .ant-tabs .ant-tabs-nav {
+.ant-tabs .ant-tabs-nav {
   padding-left: 5px;
 }
 
-.payment-alerts-previews-item .ant-tabs .ant-tabs-content-holder {
+.ant-tabs .ant-tabs-content-holder {
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -424,21 +416,31 @@ div.payment-alert-image-preview {
   width: 100%;
 }
 
-.widget-settings .ant-collapse {
+.ant-collapse {
   background-color: #151a33;
   font-family: Play;
   border: 1px solid #674afd;
   margin-bottom: 20px;
 }
 
-.widget-settings .ant-collapse .ant-collapse-content {
+.ant-collapse .ant-collapse-content {
   background-color: #2b3566;
 }
 
-.widget-settings .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+/* .ant-collapse .ant-collapse-item { */
+/*   background-color: var(--oda-label-background-color); */
+/*   border-radius: 10px; */
+/* } */
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
   font-family: Play;
   font-weight: 900;
   color: white;
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header:first {
+  border-bottom-right-radius:0;
+  border-bottom-left-radius:0;
 }
 
 .configuration-container .ant-table {

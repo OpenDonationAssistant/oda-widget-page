@@ -1,0 +1,4 @@
+.label {
+  font: var(--oda-label-font);
+  color: var(--oda-label-color);
+}

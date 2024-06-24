@@ -4,9 +4,10 @@ import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
-import { Collapse, Divider, InputNumber } from "antd";
+import { Collapse } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
+import { NumberProperty } from "./NumberProperty";
 
 export interface Amount {
   major: number;
@@ -31,8 +32,8 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
       value ?? [
         {
           id: uuidv7(),
-          briefDescription: "test",
-          fullDescription: "full",
+          briefDescription: "",
+          fullDescription: "",
           default: false,
           requiredAmount: { major: 100, currency: "RUB" },
         },
@@ -88,7 +89,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${index}`}
             className="widget-settings-name"
           >
-            <Trans i18nKey="widget-goal-title"/>
+            <Trans i18nKey="widget-goal-title" />
           </label>
           <TextPropertyModal title="Название">
             <textarea
@@ -107,7 +108,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            <Trans i18nKey="widget-goal-description"/>
+            <Trans i18nKey="widget-goal-description" />
           </label>
           <TextPropertyModal title="Описание">
             <textarea
@@ -121,48 +122,39 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             />
           </TextPropertyModal>
         </div>
+        {new NumberProperty(
+          this.widgetId,
+          "goal-amount",
+          "number",
+          goal.requiredAmount.major,
+          "widget-goal-amount",
+        ).markup((p1, p2, value) => {
+          if (!this.widgetId) {
+            return;
+          }
+          const updated = structuredClone(goal);
+          updated.requiredAmount.major = value ?? 0;
+          this.updateGoal(updateConfig, updated, index);
+        })}
         <div className="widget-settings-item">
           <label
             htmlFor={`${this.widgetId}_${this.name}`}
             className="widget-settings-name"
           >
-            <Trans i18nKey="widget-goal-amount"/>
+            <Trans i18nKey="widget-goal-default" />
           </label>
-          <InputNumber
-            value={goal.requiredAmount.major}
-            size="small"
-            className="widget-settings-value"
-            onChange={(e) => {
-              if (!this.widgetId) {
-                return;
-              }
+          <BooleanPropertyInput
+            onChange={() => {
               const updated = structuredClone(goal);
-              updated.requiredAmount.major = e ?? 0;
+              updated.default = !updated.default;
               this.updateGoal(updateConfig, updated, index);
             }}
+            prop={{
+              name: "test",
+              type: "predefined",
+              value: goal.default,
+            }}
           />
-        </div>
-        <div className="widget-settings-item">
-          <label
-            htmlFor={`${this.widgetId}_${this.name}`}
-            className="widget-settings-name"
-          >
-            <Trans i18nKey="widget-goal-default"/>
-          </label>
-          <div className="textarea-container">
-            <BooleanPropertyInput
-              onChange={() => {
-                const updated = structuredClone(goal);
-                updated.default = !updated.default;
-                this.updateGoal(updateConfig, updated, index);
-              }}
-              prop={{
-                name: "test",
-                type: "predefined",
-                value: goal.default,
-              }}
-            />
-          </div>
         </div>
         <div style={{ textAlign: "right", marginBottom: "20px;" }}>
           <button
@@ -171,7 +163,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
               this.deleteGoal(updateConfig, index);
             }}
           >
-            <Trans i18nKey="button-delete"/>
+            <Trans i18nKey="button-delete" />
           </button>
         </div>
       </div>
