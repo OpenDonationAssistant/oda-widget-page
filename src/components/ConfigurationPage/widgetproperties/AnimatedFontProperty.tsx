@@ -31,11 +31,14 @@ const animations = [
 ];
 
 export class AnimatedFontProperty extends DefaultWidgetProperty {
+  private _label: string;
+
   constructor(params: {
     widgetId: string;
     name: string;
     value?: any;
-    tab?: string | undefined;
+    tab?: string;
+    label?: string;
   }) {
     super(
       params.widgetId,
@@ -58,6 +61,8 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       "",
       params.tab,
     );
+    this._label = params.label ??  "widget-font-label";
+    console.log(this._label);
   }
 
   copy() {
@@ -66,6 +71,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       name: this.name,
       value: this.value,
       tab: this.tab,
+      label: this._label
     });
   }
 
@@ -115,7 +121,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
         {this.createFontImport()}
         <div className="widget-settings-item">
           <label className="widget-settings-name">
-            {t("widget-font-label")}
+            {t(this._label)}
           </label>
           <button
             className={`${classes.button} oda-btn-default`}

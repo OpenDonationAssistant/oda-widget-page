@@ -1,13 +1,10 @@
-import {
-  DonationGoalProperty,
-} from "../widgetproperties/DonationGoalProperty";
+import { DonationGoalProperty } from "../widgetproperties/DonationGoalProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
-import { FontProperty } from "../widgetproperties/FontProperty";
-import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
+import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
@@ -18,30 +15,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
-        new FontProperty(
-          widgetId,
-          "titleFont",
-          "fontselect",
-          "Alice",
-          "widget-donationgoal-title-font-family",
-          "header",
-        ),
-        new NumberProperty(
-          widgetId,
-          "titleFontSize",
-          "number",
-          "24",
-          "widget-donationgoal-title-font-size",
-          "header",
-        ),
-        new ColorProperty(
-          widgetId,
-          "titleColor",
-          "color",
-          "#000000",
-          "widget-donationgoal-title-color",
-          "header",
-        ),
+        new AnimatedFontProperty({
+          widgetId: widgetId,
+          name: "descriptionFont",
+          tab: "header",
+          label: "widget-donationgoal-title-font-family"
+        }),
         new SingleChoiceProperty(
           widgetId,
           "titleTextAlign",
@@ -51,30 +30,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           ["left", "center", "right"],
           "header",
         ),
-        new FontProperty(
-          widgetId,
-          "filledFont",
-          "fontselect",
-          "Russo One",
-          "widget-donationgoal-amount-font-family",
-          "header",
-        ),
-        new NumberProperty(
-          widgetId,
-          "filledFontSize",
-          "number",
-          "24",
-          "widget-donationgoal-amount-font-size",
-          "header",
-        ),
-        new ColorProperty(
-          widgetId,
-          "filledTextColor",
-          "color",
-          "#ffffff",
-          "widget-donationgoal-amount-color",
-          "header",
-        ),
+        new AnimatedFontProperty({
+          widgetId: widgetId,
+          name: "amountFont",
+          tab: "header",
+          label: "widget-donationgoal-amount-font-family"
+        }),
         new ColorProperty(
           widgetId,
           "backgroundColor",
@@ -106,7 +67,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "predefined",
           "<collected> / <required> <currency>",
           "widget-donationgoal-label-template",
-          "header"
+          "header",
         ),
         new DonationGoalProperty(widgetId),
       ],
@@ -117,5 +78,4 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   copy() {
     return new DonationGoalWidgetSettings(this.widgetId, this.properties);
   }
-
 }

@@ -13,6 +13,8 @@ import { findSetting } from "../utils";
 import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import FontImport from "../FontImport/FontImport";
+import { produce } from "immer";
+import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 export default function DonationGoal({}) {
   const { recipientId, settings, conf, widgetId } =
@@ -56,22 +58,25 @@ export default function DonationGoal({}) {
       );
   }, [recipientId]);
 
-  const fontSize = findSetting(settings, "titleFontSize", "24");
-  const font = findSetting(settings, "titleFont", "Alice");
-  const textColor = findSetting(settings, "titleColor", "black");
+  const titleFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "descriptionFont",
+    value: findSetting(settings, "descriptionFont", null)
+  });
+  const amountFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "amountFont",
+    value: findSetting(settings, "amountFont", null)
+  });
   const titleTextAlign = findSetting(settings, "titleTextAlign", "left");
   const labelTemplate = findSetting(
     settings,
     "labelTemplate",
     "<collected> / <required> <currency>",
   );
-  const textStyle = {
-    fontSize: fontSize ? fontSize + "px" : "unset",
-    fontFamily: font ? font : "unset",
-    fontWeight: 600,
-    textAlign: titleTextAlign,
-    color: textColor,
-  };
+  const textStyle = produce(titleFont.calcStyle(),(draft) => {
+    draft.textAlign = titleTextAlign;
+  });
 
   const backgroundColor = findSetting(settings, "backgroundColor", "lightgray");
   const progressbarStyle = {
@@ -79,9 +84,6 @@ export default function DonationGoal({}) {
   };
 
   const filledColor = findSetting(settings, "filledColor", "green");
-  const filledTextColor = findSetting(settings, "filledTextColor", "white");
-  const filledFontSize = findSetting(settings, "filledFontSize", "24");
-  const filledFont = findSetting(settings, "filledFont", "Russo One");
   let filledTextAlign = findSetting(settings, "filledTextAlign", "left");
   switch (filledTextAlign) {
     case "left":
@@ -91,21 +93,18 @@ export default function DonationGoal({}) {
       filledTextAlign = "flex-end";
       break;
   }
-  const filledTextStyle = {
-    fontSize: filledFontSize ? filledFontSize + "px" : "unset",
-    fontFamily: filledFont ? filledFont : "unset",
-    color: filledTextColor,
-    justifyContent: filledTextAlign,
-  };
+  const filledTextStyle = produce(amountFont.calcStyle(),(draft) => {
+    draft.justifyContent = filledTextAlign;
+  });
 
   return (
     <>
-      <FontImport font={font} />
-      <FontImport font={filledFont} />
+      {amountFont.createFontImport()}
+      {titleFont.createFontImport()}
       {goals.map((goal) => (
         <>
           <div className={`${classes.goalitem}`}>
-            <div style={textStyle} className={`${classes.goaldescription}`}>
+            <div style={textStyle} className={`${classes.goaldescription} ${titleFont.calcClassName()}`}>
               {goal.briefDescription}
             </div>
             <div
@@ -122,7 +121,7 @@ export default function DonationGoal({}) {
               }}
               className={`${classes.goalfilled}`}
             ></div>
-            <div style={filledTextStyle} className={`${classes.goalamount}`}>
+            <div style={filledTextStyle} className={`${classes.goalamount} ${amountFont.calcClassName()}`}>
               {labelTemplate
                 .replaceAll("<collected>", goal.accumulatedAmount.major)
                 .replaceAll("<required>", goal.requiredAmount.major)
