@@ -12,7 +12,6 @@
 }
 
 .demo{
-  margin-bottom: 10px;
   text-align: center;
   padding: 2px;
   border-radius: 4px;
@@ -28,6 +27,7 @@
   position: absolute;
   top: 0px;
   z-index: 1;
+  filter:blur(1px);
 }
 
 .democontainer {
