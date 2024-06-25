@@ -1,16 +1,22 @@
 import React from "react";
 import { useRef, useEffect, useState } from "react";
 import axios from "axios";
-import "./DonationTimer.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
-import FontImport from "../FontImport/FontImport";
+import {
+  cleanupCommandListener,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
+import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import classes from "./DonationTimer.module.css";
 
 export default function DonationTimer({}: {}) {
-  const { recipientId, settings, conf, widgetId } = useLoaderData() as WidgetData;
+  const { recipientId, settings, conf, widgetId } =
+    useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
@@ -59,9 +65,7 @@ export default function DonationTimer({}: {}) {
       return;
     }
     axios
-      .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/payments`,
-      )
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
       .then((response) => response.data)
       .then((data) => {
         if (data.length > 0) {
@@ -71,20 +75,17 @@ export default function DonationTimer({}: {}) {
       });
   }
 
-  const fontSize = findSetting(settings, "fontSize", "24px");
-  const font = findSetting(settings, "font", "Roboto");
+  const titleFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "titleFont",
+    value: findSetting(settings, "titleFont", null),
+  });
   const text = findSetting(settings, "text", "Без донатов уже <time>");
-  const color = findSetting(settings, "color", "white");
-  const textStyle = {
-    fontSize: fontSize ? fontSize + "px" : "unset",
-    fontFamily: font ? font : "unset",
-    color: color,
-  };
 
   return (
     <>
-      <FontImport font={font} />
-      <div className="donation-timer" style={textStyle}>
+      {titleFont.createFontImport}
+      <div className={`${classes.timer} ${titleFont.calcClassName()}`} style={titleFont.calcStyle()}>
         {text ? text.replace("<time>", time) : "Без донатов уже " + time}
       </div>
     </>

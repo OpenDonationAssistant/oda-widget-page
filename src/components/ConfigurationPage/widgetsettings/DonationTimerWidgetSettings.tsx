@@ -1,7 +1,5 @@
+import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
-import { ColorProperty } from "../widgetproperties/ColorProperty";
-import { FontProperty } from "../widgetproperties/FontProperty";
-import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
@@ -19,15 +17,10 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           true,
           "widget-donation-timer-refresh",
         ),
-        new FontProperty(widgetId, "font", "fontselect", "Andika", "widget-donation-timer-font-family"),
-        new NumberProperty(
-          widgetId,
-          "fontSize",
-          "string",
-          "24",
-          "widget-donation-timer-font-size",
-        ),
-        new ColorProperty(widgetId, "color", "color", "#ffffff", "widget-donation-timer-color"),
+        new AnimatedFontProperty({
+          widgetId:widgetId,
+          name:"titleFont"
+        }),
         new TextProperty(
           widgetId,
           "text",
