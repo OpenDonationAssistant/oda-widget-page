@@ -1,6 +1,7 @@
 import { Select } from "antd";
 
 const fonts = [
+  "Alice",
   "Roboto",
   "Ruslan Display",
   "Cuprum",
