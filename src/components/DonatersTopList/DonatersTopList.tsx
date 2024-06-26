@@ -101,7 +101,7 @@ export default function DonatersTopList({}: {}) {
   textStyle.marginLeft = layout === "vertical" ? "0px" : "20px";
 
   const donatersTopStyle = headerFont.calcStyle();
-  if (layout === "vertical") {
+  if (layout !== "vertical") {
     donatersTopStyle.display = "inline";
   }
   donatersTopStyle.backgroundColor = titleBackgroundColor;
