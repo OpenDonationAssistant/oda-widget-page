@@ -4,8 +4,14 @@ import axios from "axios";
 import "./DonatersTopList.css";
 import { useLoaderData, useNavigate } from "react-router";
 import { findSetting } from "../utils";
-import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
+import {
+  cleanupCommandListener,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import FontImport from "../FontImport/FontImport";
+import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 const overflowHiddenForRootElement = (
   <style
@@ -22,15 +28,6 @@ const fullHeight = (
     }}
   />
 );
-
-function hexToRgb(hex: string) {
-  var bigint = parseInt(hex.substring(1), 16);
-  var r = (bigint >> 16) & 255;
-  var g = (bigint >> 8) & 255;
-  var b = bigint & 255;
-
-  return { r, g, b };
-}
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
@@ -82,59 +79,54 @@ export default function DonatersTopList({}: {}) {
   const type = findSetting(settings, "type", "All");
 
   const title = findSetting(settings, "title", "Донатеры");
-  const titleColor = findSetting(settings, "titleColor", "black");
-  const titleBackgroundColor = hexToRgb(
-    findSetting(settings, "titleBackgroundColor", "white"),
+  const titleBackgroundColor = findSetting(
+    settings,
+    "titleBackgroundColor",
+    "white",
   );
-  const titleAlphaChannel = findSetting(settings, "titleAlphaChannel", "1.0");
-  const titleFont = findSetting(settings, "titleFont", "Roboto");
-  const titleFontSize = findSetting(settings, "titleFontSize", "24px");
+  const backgroundColor = findSetting(settings, "backgroundColor", "white");
+  const headerFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "headerFont",
+    value: findSetting(settings, "headerFont", null),
+  });
+  const messageFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "messageFont",
+    value: findSetting(settings, "messageFont", null),
+  });
 
-  const color = findSetting(settings, "color", "black");
-  const backgroundColor = hexToRgb(
-    findSetting(settings, "backgroundColor", "white"),
-  );
-  const alphaChannel = findSetting(settings, "alphaChannel", "1.0");
-  const font = findSetting(settings, "font", "Roboto");
-  const fontSize = findSetting(settings, "fontSize", "24px");
-
-  console.log(`color: ${JSON.stringify(backgroundColor)}`);
-  console.log(`title color: ${JSON.stringify(titleBackgroundColor)}`);
-
-  // todo rename to listStyle - it's not only text style
-  const textStyle = {
-    fontSize: fontSize ? fontSize + "px" : "unset",
-    lineHeight: fontSize ? fontSize + "px" : "unset",
-    fontFamily: font ? font : "unset",
-    color: color,
-  };
+  const textStyle = messageFont.calcStyle();
   textStyle.display = layout === "vertical" ? "block" : "inline";
   textStyle.marginLeft = layout === "vertical" ? "0px" : "20px";
 
-  const donatersTopStyle = layout === "vertical" ? {} : { display: "inline" };
-  donatersTopStyle.fontSize = titleFontSize + "px";
-  donatersTopStyle.fontFamily = titleFont;
-  donatersTopStyle.color = titleColor;
-  donatersTopStyle.backgroundColor = `rgba(${titleBackgroundColor.r}, ${titleBackgroundColor.g}, ${titleBackgroundColor.b}, ${titleAlphaChannel})`;
+  const donatersTopStyle = headerFont.calcStyle();
+  if (layout === "vertical") {
+    donatersTopStyle.display = "inline";
+  }
+  donatersTopStyle.backgroundColor = titleBackgroundColor;
 
   return (
     <>
-      <FontImport font={font} />
-      <FontImport font={titleFont} />
+      {headerFont.createFontImport()}
+      {messageFont.createFontImport()}
       {overflowHiddenForRootElement}
       {fullHeight}
       <style
         dangerouslySetInnerHTML={{
-          __html: `#root { background-color: rgba(${backgroundColor.r}, ${backgroundColor.g}, ${backgroundColor.b}, ${alphaChannel}); }`,
+          __html: `#root { background-color: ${backgroundColor}; }`,
         }}
       />
-
       {"All" === type && (
-        <div className="donaters-list" style={textStyle}>
+        <div className={`donaters-list`} style={textStyle}>
           {donaters &&
             donaters.size > 0 &&
             Array.from(donaters.keys()).map((donater) => (
-              <span key={donater} style={textStyle} className="donater">
+              <span
+                key={donater}
+                style={textStyle}
+                className={`donater ${messageFont.calcClassName()}`}
+              >
                 {donater} - {donaters.get(donater).major}{" "}
                 {donaters.get(donater).currency}{" "}
               </span>
@@ -143,7 +135,10 @@ export default function DonatersTopList({}: {}) {
       )}
       {"Top" === type && (
         <>
-          <div style={donatersTopStyle} className="donaters-title">
+          <div
+            style={donatersTopStyle}
+            className={`donaters-title ${headerFont.calcClassName()}`}
+          >
             {title}
           </div>
           <div className="donaters-top">
@@ -152,7 +147,11 @@ export default function DonatersTopList({}: {}) {
               Array.from(donaters.keys())
                 .slice(0, topsize)
                 .map((donater) => (
-                  <div key={donater} style={textStyle} className="donater">
+                  <div
+                    key={donater}
+                    style={textStyle}
+                    className={`donater ${messageFont.calcClassName()}`}
+                  >
                     {donater} - {donaters.get(donater).major}{" "}
                     {donaters.get(donater).currency}{" "}
                   </div>
@@ -162,7 +161,10 @@ export default function DonatersTopList({}: {}) {
       )}
       {"Last" === type && (
         <>
-          <div style={donatersTopStyle} className="donaters-title">
+          <div
+            style={donatersTopStyle}
+            className={`donaters-title ${headerFont.calcClassName()}`}
+          >
             {title}
           </div>
           <div className="donaters-top">
@@ -171,7 +173,11 @@ export default function DonatersTopList({}: {}) {
               Array.from(donaters.keys())
                 .slice(0, topsize)
                 .map((donater) => (
-                  <div key={donater} style={textStyle} className="donater">
+                  <div
+                    key={donater}
+                    style={textStyle}
+                    className={`donater ${messageFont.calcClassName()}`}
+                  >
                     {donater} - {donaters.get(donater).major}{" "}
                     {donaters.get(donater).currency}{" "}
                   </div>

@@ -1,3 +1,4 @@
+import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
 import { FontProperty } from "../widgetproperties/FontProperty";
@@ -52,46 +53,16 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "widget-donaterslist-title",
           "header",
         ),
-        new FontProperty(
-          widgetId,
-          "titleFont",
-          "fontselect",
-          "Roboto",
-          "widget-donaterslist-title-font-family",
-          "header",
-        ),
-        new FontProperty(
-          widgetId,
-          "font",
-          "fontselect",
-          "Roboto",
-          "widget-donaterslist-list-font-family",
-          "list",
-        ),
-        new NumberProperty(
-          widgetId,
-          "titleFontSize",
-          "number",
-          "24",
-          "widget-donaterslist-title-font-size",
-          "header",
-        ),
-        new NumberProperty(
-          widgetId,
-          "fontSize",
-          "number",
-          "24",
-          "widget-donaterslist-list-font-size",
-          "list",
-        ),
-        new ColorProperty(
-          widgetId,
-          "titleColor",
-          "color",
-          "#ffffff",
-          "widget-donaterslist-title-color",
-          "header",
-        ),
+        new AnimatedFontProperty({
+          widgetId: widgetId,
+          name: "headerFont",
+          tab: "header"
+        }),
+        new AnimatedFontProperty({
+          widgetId: widgetId,
+          name: "messageFont",
+          tab: "list"
+        }),
         new ColorProperty(
           widgetId,
           "titleBackgroundColor",
@@ -102,34 +73,10 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         ),
         new ColorProperty(
           widgetId,
-          "color",
-          "color",
-          "#ffffff",
-          "widget-donaterslist-list-color",
-          "list",
-        ),
-        new ColorProperty(
-          widgetId,
           "backgroundColor",
           "color",
           "#000000",
           "widget-donaterslist-list-background-color",
-          "list",
-        ),
-        new NumberProperty(
-          widgetId,
-          "titleAlphaChannel",
-          "number",
-          "1.0",
-          "widget-donaterslist-title-transparency",
-          "header",
-        ),
-        new NumberProperty(
-          widgetId,
-          "alphaChannel",
-          "number",
-          "1.0",
-          "widget-donaterslist-list-transparency",
           "list",
         ),
         new DonatersTopListLayoutProperty(widgetId, "vertical"),
