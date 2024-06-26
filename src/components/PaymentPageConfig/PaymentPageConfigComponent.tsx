@@ -44,6 +44,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [payButtonText, setPayButtonText] = useState<string | null>(null);
   const [hasCustomCss, setHasCustomCss] = useState<boolean>(false);
+  const [tooltip, setTooltip] = useState<string>("");
 
   function listenPaymentPageConfigUpdated() {
     if (!paymentPageConfig.current) {
@@ -62,6 +63,7 @@ export default function PaymentPageConfigComponent({}: {}) {
     if (paymentPageConfig.current?.customCss) {
       setHasCustomCss(true);
     }
+    setTooltip(paymentPageConfig.current?.tooltip ?? "");
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -285,6 +287,27 @@ export default function PaymentPageConfigComponent({}: {}) {
               paymentPageConfig.current?.setRequestsCost(
                 Number(e.target.value),
               );
+              if (!hasChanges) {
+                setHasChanges(true);
+              }
+            }}
+          />
+        </div>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Текст подсказки для заказа видео</div>
+          <textarea
+            value={tooltip ?? ""}
+            className={classes.widgetsettingsvalue}
+            style={{
+              margin: "5px",
+              width: "100%",
+              textAlign: "left",
+              minHeight: "250px",
+            }}
+            onChange={(e) => {
+              if (paymentPageConfig.current){
+                paymentPageConfig.current.tooltip = e.target.value;
+              }
               if (!hasChanges) {
                 setHasChanges(true);
               }

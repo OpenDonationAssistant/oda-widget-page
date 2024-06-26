@@ -16,6 +16,7 @@ export class PaymentPageConfig {
   private _recipientId: string = "";
   private _payButtonText: string = "";
   private _customCss: string = "";
+  private _tooltip: string = "";
 
   constructor(recipientId: string) {
     log.debug("Loading PaymentPageConfig");
@@ -39,6 +40,7 @@ export class PaymentPageConfig {
         this._payButtonText = json.value["payButtonText"] ?? "";
         this.minimalAmount = json.value["minimalAmount"] ?? 40;
         this._customCss = json.value["customCss"] ?? [];
+        this._tooltip = json.value["tooltip"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
       });
@@ -142,6 +144,14 @@ export class PaymentPageConfig {
     this.config.value["customCss"] = value;
     this.sendEventPaymentPageUpdated();
   }
+  public set tooltip(value: string) {
+    this._tooltip = value;
+    this.config.value["tooltip"] = value;
+    this.sendEventPaymentPageUpdated();
+  }
+  public get tooltip(): string {
+    return this._tooltip;
+  }
 
   async reloadConfig(): Promise<void> {
     const data = await axios.get(
@@ -157,6 +167,7 @@ export class PaymentPageConfig {
     this.inn = this.config.value["inn"] ?? "";
     this.minimalAmount = this.config.value["minimalAmount"] ?? 40;
     this.arbitraryText = this.config.value["arbitraryText"] ?? null;
+    this.tooltip = this.config.value["tooltip"] ?? "";
     this.sendMediaRequestsEnabledState();
     this.sendEventPaymentPageUpdated();
   }
