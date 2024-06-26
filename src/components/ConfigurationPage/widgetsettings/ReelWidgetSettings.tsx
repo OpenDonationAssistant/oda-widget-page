@@ -1,3 +1,4 @@
+import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
@@ -19,30 +20,11 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
-        new FontProperty(
-          widgetId,
-          "font",
-          "fontselect",
-          "Roboto",
-          "widget-reel-font-family",
-          "general",
-        ),
-        new NumberProperty(
-          widgetId,
-          "fontSize",
-          "number",
-          24,
-          "widget-reel-font-size",
-          "general",
-        ),
-        new ColorProperty(
-          widgetId,
-          "color",
-          "color",
-          "#000000",
-          "widget-reel-color",
-          "general",
-        ),
+        new AnimatedFontProperty({
+          widgetId: widgetId,
+          name: "titleFont",
+          tab: "general"
+        }),
         new ColorProperty(
           widgetId,
           "borderColor",
@@ -91,7 +73,6 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "widget-reel-turning-time",
           "general",
         ),
-        
         new NumberProperty(
           widgetId,
           "time",

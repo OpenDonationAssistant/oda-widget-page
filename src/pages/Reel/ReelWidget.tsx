@@ -14,6 +14,7 @@ import classes from "./ReelWidget.module.css";
 import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -44,7 +45,7 @@ export default function ReelWidget({}) {
       log.info({ message: message }, "Received reel command");
       let json = JSON.parse(message.body);
       // if (json.widgetId === widgetId ) {
-        handleSelection(json.selection);
+      handleSelection(json.selection);
       // }
       message.ack();
     });
@@ -81,7 +82,7 @@ export default function ReelWidget({}) {
     log.debug({ options: options, index: index }, "highlight");
     const speed = findSetting(settings, "speed", 250);
     const time = findSetting(settings, "time", 10) * 1000;
-    glide.current?.update({autoplay: speed});
+    glide.current?.update({ autoplay: speed });
     setTimeout(() => {
       const index = options.findIndex((option) => option === active);
       log.debug({ options: options, index: index }, "highlight");
@@ -110,14 +111,11 @@ export default function ReelWidget({}) {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  const fontSize = findSetting(settings, "fontSize", "24px");
-  const font = findSetting(settings, "font", "Roboto");
-  const color = findSetting(settings, "color", "white");
-  const textStyle = {
-    fontSize: fontSize ? fontSize + "px" : "unset",
-    fontFamily: font ? font : "unset",
-    color: color,
-  };
+  const titleFont = new AnimatedFontProperty({
+    widgetId: widgetId,
+    name: "titleFont",
+    value: findSetting(settings, "titleFont", null),
+  });
   const borderColor = findSetting(settings, "borderColor", "red");
   const borderWidth = findSetting(settings, "borderWidth", 30);
   const selectionColor = findSetting(settings, "selectionColor", "green");
@@ -150,7 +148,8 @@ export default function ReelWidget({}) {
           __html: `html, body {height: 100%; background-color: "rgba(0,0,0,0)";}`,
         }}
       />
-      <div style={textStyle}>
+      {titleFont.createFontImport()}
+      <div className={titleFont.calcClassName()} style={titleFont.calcStyle()}>
         <div className={`glide hidden`} ref={glideRef}>
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides" style={slideStyle}>
@@ -159,7 +158,9 @@ export default function ReelWidget({}) {
                   key={option}
                   style={calcItemStyle(option)}
                   className={`${classes.reelitemcontainer} ${
-                    highlight && active === option ? classes.active : classes.notactive
+                    highlight && active === option
+                      ? classes.active
+                      : classes.notactive
                   }`}
                 >
                   <li
