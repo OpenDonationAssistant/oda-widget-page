@@ -1,3 +1,4 @@
+import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/settings/PaymentAlertsSettings";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { IFontLoader } from "../../components/FontLoader/IFontLoader";
 import { log } from "../../logging";
@@ -219,6 +220,12 @@ export class AlertController {
     this.showing = false;
   }
 
+  
+  private getRndInteger(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+
   private renderImage(alert: any) {
     log.debug(
       `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
@@ -239,8 +246,12 @@ export class AlertController {
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
         );
       }
-      if (appearance && appearance !== "none"){
+      if (appearance && appearance !== "none" && appearance  !== "random"){
         renderer.setClassName(`animate__animated animate__slow animate__${appearance}`);
+      }
+      if (appearance  === "random"){
+        const choice = APPEARANCE_ANIMATIONS[this.getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)];
+        renderer.setClassName(`animate__animated animate__slow animate__${choice}`);
       }
       if (showTime) {
         setTimeout(() => {
