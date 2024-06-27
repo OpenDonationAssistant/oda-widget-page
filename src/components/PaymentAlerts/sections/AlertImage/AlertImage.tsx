@@ -11,10 +11,12 @@ export default function AlertImage({
   const [image, setImage] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
   const [style, setStyle] = useState<any>({});
+  const [className, setClassName] = useState<string>("");
   const videoRef = useRef<HTMLVideoElement|null>(null);
 
   useEffect(() => {
     alertController.addAlertImageRenderer({
+      setClassName: setClassName,
       setVideo: setVideo,
       setImage: setImage,
       setStyle: setStyle,
@@ -36,7 +38,7 @@ export default function AlertImage({
         <video ref={videoRef} autoPlay={true} src={video} style={style} className={classes.alertimage} />
       )}
       {image && (
-        <img src={image} style={style} className={classes.alertimage} />
+        <img src={image} style={style} className={`${classes.alertimage} ${className}`} />
       )}
       {!image && !video && (
         <div style={{ height: "40%", flex: "0 1 auto"}}></div>

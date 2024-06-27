@@ -9,9 +9,11 @@ export default function MessageTitle({
 }) {
   const [style, setStyle] = useState<any>({});
   const [title, setTitle] = useState<string>("");
+  const [className, setClassName] = useState<string>("");
 
   useEffect(() => {
     alertController.addTitleRenderer({
+      setClassName: setClassName,
       setStyle: setStyle,
       setTitle: setTitle,
     });
@@ -19,7 +21,7 @@ export default function MessageTitle({
 
   return (
     <>
-      <div style={style} className={classes.messageheader}>
+      <div style={style} className={`${classes.messageheader} ${className}`}>
         {title}
       </div>
     </>

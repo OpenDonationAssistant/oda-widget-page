@@ -9,17 +9,22 @@ export default function MessageBody({
 }) {
   const [message, setMessage] = useState<string>("");
   const [messageStyle, setMessageStyle] = useState<any>({});
+  const [className, setClassName] = useState<string>("");
 
   useEffect(() => {
     alertController.addMessageRenderer({
       setMessage: setMessage,
+      setClassName: setClassName,
       setStyle: setMessageStyle,
     });
   }, [alertController]);
 
   return (
     <>
-      <div style={messageStyle} className={classes.messagebody}>
+      <div
+        style={messageStyle}
+        className={`${classes.messagebody} ${className}`}
+      >
         {message != undefined && message != null ? message : null}
       </div>
     </>

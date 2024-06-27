@@ -1,3 +1,4 @@
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { IFontLoader } from "../../components/FontLoader/IFontLoader";
 import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";
@@ -32,7 +33,7 @@ export class AlertController {
       })
       .then(() => {
         subscribe(widgetId, this.conf.topic.alerts, (message) => {
-          log.info({message}, `Received alert`);
+          log.info({ message }, `Received alert`);
           let json = JSON.parse(message.body);
           const alert = this.findAlert(json);
           if (alert) {
@@ -169,7 +170,7 @@ export class AlertController {
     }
   }
 
-  playAudio(alert: any, data: any, ackFunction: Function){
+  playAudio(alert: any, data: any, ackFunction: Function) {
     this.voiceController?.playAudio(alert, () => {
       this.voiceController?.pronounceTitle(
         alert,
@@ -223,19 +224,23 @@ export class AlertController {
       `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
     );
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
+    const appearance = this.findSetting(alert.properties, "appearance", "none");
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
-      if (alert.image){
-        log.debug({image: alert.image}, "rendering image");
+      if (alert.image) {
+        log.debug({ image: alert.image }, "rendering image");
         renderer.setImage(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
         );
       }
-      if (alert.video){
-        log.debug({video: alert.video}, "rendering video");
+      if (alert.video) {
+        log.debug({ video: alert.video }, "rendering video");
         renderer.setVideo(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
         );
+      }
+      if (appearance && appearance !== "none"){
+        renderer.setClassName(`animate__animated animate__slow animate__${appearance}`);
       }
       if (showTime) {
         setTimeout(() => {
@@ -253,13 +258,6 @@ export class AlertController {
   }
 
   private renderTitle(alert: any, data: any) {
-    const headerFont = this.findSetting(
-      alert.properties,
-      "nicknameFont",
-      "Roboto",
-    );
-    this.fontLoaders.forEach((loader) => loader.addFont(headerFont));
-
     const nicknameTextTemplate = this.findSetting(
       alert.properties,
       "nicknameTextTemplate",
@@ -269,51 +267,32 @@ export class AlertController {
       .replace("<username>", data.nickname ? data.nickname : "Аноним")
       .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
 
-    const headerFontSize = this.findSetting(
-      alert.properties,
-      "nicknameFontSize",
-      "24px",
-    );
-    const headerColor = this.findSetting(
-      alert.properties,
-      "headerColor",
-      "#fb8c2b",
+    const headerFont = new AnimatedFontProperty({
+      widgetId: "widgetId",
+      name: "headerFont",
+      value: this.findSetting(alert.properties, "headerFont", null),
+    });
+    this.fontLoaders.forEach((loader) =>
+      loader.addFont(headerFont.value.family),
     );
     this.titleRenderers.forEach((renderer) => {
-      renderer.setStyle({
-        fontSize: headerFontSize ? headerFontSize + "px" : "unset",
-        fontFamily: headerFont ? headerFont : "unset",
-        color: headerColor,
-      });
+      renderer.setClassName(headerFont.calcClassName() ?? "");
+      renderer.setStyle(headerFont.calcStyle());
       renderer.setTitle(title);
     });
   }
 
   private renderMessage(alert: any, data: any) {
-    const messageFont = this.findSetting(
-      alert.properties,
-      "messageFont",
-      "Roboto",
-    );
-    this.fontLoaders.forEach((loader) => loader.addFont(messageFont));
-
-    const messageFontSize = this.findSetting(
-      alert.properties,
-      "messageFontSize",
-      "24px",
-    );
-    const messageColor = this.findSetting(
-      alert.properties,
-      "messageColor",
-      "#fb8c2b",
-    );
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
+    const messageFont = new AnimatedFontProperty({
+      widgetId: "widgetId",
+      name: "font",
+      value: this.findSetting(alert.properties, "font", null),
+    });
+    this.fontLoaders.forEach((loader) => loader.addFont(messageFont.value.family));
     this.messageRenderers.forEach((renderer) => {
-      renderer.setStyle({
-        fontSize: messageFontSize ? messageFontSize + "px" : "unset",
-        fontFamily: messageFont ? messageFont : "unset",
-        color: messageColor,
-      });
+      renderer.setStyle(messageFont.calcStyle());
+      renderer.setClassName(messageFont.calcClassName() ?? "");
       if (showTime) {
         setTimeout(() => renderer.setMessage(data.message), showTime * 1000);
       } else {

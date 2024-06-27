@@ -4,10 +4,12 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import FontSelect from "./FontSelect";
 import { Tabs as AntTabs, Input } from "antd";
 import TextPropertyModal from "../widgetproperties/TextPropertyModal";
 import { useTranslation } from "react-i18next";
+import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
+import AnimatedFontComponent from "../widgetproperties/AnimatedFontComponent";
+import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -53,24 +55,17 @@ export default function PaymentAlertSettings({
           displayName: "widget-alert-image-show-time",
         },
         {
+          tab: "image",
+          name: "appearance",
+          type: "custom",
+          value: "none",
+        },
+        {
           tab: "header",
-          name: "nicknameFont",
+          name: "headerFont",
           type: "fontselect",
-          value: "Roboto",
+          value: null,
           displayName: "widget-alert-title-font-family",
-        },
-        {
-          tab: "header",
-          name: "nicknameFontSize",
-          value: "60",
-          displayName: "widget-alert-title-font-size",
-        },
-        {
-          tab: "header",
-          name: "headerColor",
-          type: "color",
-          value: "#fb8c2b",
-          displayName: "widget-alert-title-color",
         },
         {
           tab: "header",
@@ -81,23 +76,10 @@ export default function PaymentAlertSettings({
         },
         {
           tab: "message",
-          name: "messageFont",
+          name: "font",
           type: "fontselect",
-          value: "Roboto",
+          value: null,
           displayName: "widget-alert-message-font-family",
-        },
-        {
-          tab: "message",
-          name: "messageFontSize",
-          value: "25",
-          displayName: "widget-alert-message-font-size",
-        },
-        {
-          tab: "message",
-          name: "messageColor",
-          type: "color",
-          value: "#ffffff",
-          displayName: "widget-alert-message-color",
         },
         {
           tab: "voice",
@@ -413,6 +395,8 @@ export default function PaymentAlertSettings({
   const tabContent = (alert, selectedTab: string, index: number) =>
     alert?.properties
       .filter((it) => it.tab === selectedTab)
+      .filter((it) => it.type !== "fontselect")
+      .filter((it) => it.type !== "custom")
       .map((prop) => (
         <div key={`${prop.name}`} className="widget-settings-item">
           <div className="widget-settings-name">{t(prop.displayName)}</div>
@@ -424,12 +408,6 @@ export default function PaymentAlertSettings({
               onChange={(e) => {
                 update(prop.name, e.target.value, index);
               }}
-            />
-          )}
-          {prop.type === "fontselect" && (
-            <FontSelect
-              prop={prop}
-              onChange={(font: string) => update(prop.name, font, index)}
             />
           )}
           {prop.type === "color" && (
@@ -494,6 +472,74 @@ export default function PaymentAlertSettings({
         <>
           {[
             ...tabContent(alert, "image", index),
+            new SingleChoiceProperty(
+              "widgetId",
+              "appearance",
+              "choice",
+              alert.properties.find((prop) => prop.name === "appearance")
+                ?.value,
+              "appearance",
+              [
+                "bounce",
+                "flash",
+                "pulse",
+                "rubberBand",
+                "shakeY",
+                "shakeX",
+                "headShake",
+                "swing",
+                "wobble",
+                "jello",
+                "heartBeat",
+                "backInDown",
+                "backInLeft",
+                "backInRight",
+                "backInUp",
+                "bounceIn",
+                "bounceInDown",
+                "bounceInLeft",
+                "bounceInRight",
+                "bounceInUp",
+                "fadeIn",
+                "fadeInDown",
+                "fadeInDownBig",
+                "fadeInLeft",
+                "fadeInLeftBig",
+                "fadeInRight",
+                "fadeInRightBig",
+                "fadeInUp",
+                "fadeInUpBig",
+                "fadeInTopLeft",
+                "fadeInTopRight",
+                "fadeInBottomLeft",
+                "fadeInBottomRight",
+                "flip",
+                "flinInX",
+                "flipInY",
+                "lightSpeedInRight",
+                "lightSpeedInLeft",
+                "rotateIn",
+                "rotateInDownLeft",
+                "rotateInDownRight",
+                "rotateInUpLeft",
+                "rotateInUpRight",
+                "hinge",
+                "jackInTheBox",
+                "rollIn",
+                "zoomIn",
+                "zoomInDown",
+                "zoomInLeft",
+                "zoomInRight",
+                "zoomInUp",
+                "slideInDown",
+                "slideInLeft",
+                "slideInRight",
+                "slideInUp",
+                "none",
+              ],
+            ).markup((widgetId, name, value) =>
+              update("appearance", value, index),
+            ),
             <div className="upload-button-container">
               {!alert.video && !alert.image && (
                 <>
@@ -592,16 +638,68 @@ export default function PaymentAlertSettings({
     {
       key: "header",
       label: t("tab-alert-title"),
-      children: [<>{tabContent(alert, "header", index)}</>],
+      children: [
+        <>
+          {[
+            ...tabContent(alert, "header", index),
+            <WidgetsContext.Provider
+              value={{
+                config: config,
+                setConfig: setConfig,
+                updateConfig: (widgetId, name, value) =>
+                  update("headerFont", value, index),
+              }}
+            >
+              <AnimatedFontComponent
+                property={
+                  new AnimatedFontProperty({
+                    widgetId: "widgetId",
+                    name: "headerFont",
+                    value: alert.properties.find(
+                      (prop) => prop.name === "headerFont",
+                    )?.value,
+                    label: "widget-alert-title-font-family",
+                  })
+                }
+              />
+            </WidgetsContext.Provider>,
+          ]}
+        </>,
+      ],
     },
     {
       key: "message",
       label: t("tab-alert-message"),
-      children: [<>{tabContent(alert, "message", index)}</>],
+      children: [
+        <>
+          {[
+            ...tabContent(alert, "message", index),
+            <WidgetsContext.Provider
+              value={{
+                config: config,
+                setConfig: setConfig,
+                updateConfig: (widgetId, name, value) =>
+                  update("font", value, index),
+              }}
+            >
+              <AnimatedFontComponent
+                property={
+                  new AnimatedFontProperty({
+                    widgetId: "widgetId",
+                    name: "font",
+                    value: alert.properties.find((prop) => prop.name === "font")
+                      ?.value,
+                    label: "widget-alert-message-font-family",
+                  })
+                }
+              />
+            </WidgetsContext.Provider>,
+          ]}
+        </>,
+      ],
     },
   ];
 
-  // {alertCard(config.get(id)?.defaultAlert)}
   return (
     <>
       <AntTabs
