@@ -25,6 +25,7 @@ export const APPEARANCE_ANIMATIONS =               [
                 "shakeX",
                 "headShake",
                 "swing",
+                "tada",
                 "wobble",
                 "jello",
                 "heartBeat",
@@ -536,7 +537,7 @@ export default function PaymentAlertSettings({
               "choice",
               alert.properties.find((prop) => prop.name === "appearance")
                 ?.value,
-              "appearance",
+              "alert-appearance-label",
               [...APPEARANCE_ANIMATIONS,"random","none"]
             ).markup((widgetId, name, value) =>
               update("appearance", value, index),
@@ -674,7 +675,6 @@ export default function PaymentAlertSettings({
       children: [
         <>
           {[
-            ...tabContent(alert, "message", index),
             <WidgetsContext.Provider
               value={{
                 config: config,
@@ -695,6 +695,17 @@ export default function PaymentAlertSettings({
                 }
               />
             </WidgetsContext.Provider>,
+            new SingleChoiceProperty(
+              "widgetId",
+              "message-appearance",
+              "choice",
+              alert.properties.find((prop) => prop.name === "appearance")
+                ?.value,
+              "alert-message-appearance-label",
+              [...APPEARANCE_ANIMATIONS,"random","none"]
+            ).markup((widgetId, name, value) =>
+              update("message-appearance", value, index),
+            ),
           ]}
         </>,
       ],
