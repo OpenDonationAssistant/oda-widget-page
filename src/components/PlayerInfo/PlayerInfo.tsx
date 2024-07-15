@@ -11,7 +11,6 @@ import {
   unsubscribe,
 } from "../../socket";
 import { log } from "../../logging";
-import FontImport from "../FontImport/FontImport";
 import { WidgetData } from "../../types/WidgetData";
 import "animate.css";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
@@ -21,6 +20,7 @@ function PlayerInfo() {
   const [left, setLeft] = useState(0);
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
   const [title, setTitle] = useState<string | null>(null);
+  const [owner, setOwner] = useState<string | null>(null);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.player, (message) => {
@@ -28,6 +28,7 @@ function PlayerInfo() {
       let json = JSON.parse(message.body);
       if (json.title !== null) {
         setTitle(json.title);
+        setOwner(json.owner);
       }
       if (json.count != null && json.number != null) {
         setLeft(json.count - json.number);
@@ -46,6 +47,8 @@ function PlayerInfo() {
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
+  const titleTemplate = findSetting(settings, "titleTemplate", null);
+  const backgroundColor = findSetting(settings, "backgroundColor", "#FFFFFF");
 
   return (
     <>

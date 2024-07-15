@@ -1,4 +1,6 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
+import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
+import { TextProperty } from "../widgetproperties/TextProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
@@ -12,6 +14,13 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
           widgetId: widgetId,
           name: "titleFont",
         }),
+        // new  TextProperty(
+        //   widgetId,
+        //   "titleTemplate",
+        //   "choice",
+        //   "играет <title>",
+        //   "Шаблон названия",
+        // ),
       ],
       new Map(),
     );

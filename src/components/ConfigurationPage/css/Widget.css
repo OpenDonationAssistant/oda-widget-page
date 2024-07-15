@@ -167,21 +167,32 @@
 
 .sound-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .current-sound {
-  display: inline-block;
+  display: flex;
   padding-top: 5px;
   vertical-align: middle;
-  margin-right: 20px;
-  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
 .current-sound:hover {
   cursor: pointer;
+}
+
+.sound-container .ant-slider {
+  max-width: 250px;
+  width: 100%;
+}
+
+.ant-slider .ant-slider-track {
+  background-color: var(--oda-control-background-color);
+}
+.ant-slider .ant-slider-handle::after {
+  background-color: white;
 }
 
 .audio-name {

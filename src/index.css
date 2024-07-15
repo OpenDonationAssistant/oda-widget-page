@@ -115,3 +115,7 @@ input[type="file"] {
 .blured {
   filter: blur(5px);
 }
+
+.full-width {
+  width: 100%;
+}

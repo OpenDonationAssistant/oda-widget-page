@@ -1,23 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Login.css";
 import axios from "axios";
 import { log } from "../../logging";
 import { useSearchParams } from "react-router-dom";
 
-async function loader({ params }) {
-  log.debug(`auth for page settings for ${params.page}`);
-  const page = params.page;
-
-  return { page };
-}
-
 function tokenRequest(login: string, password: string): Promise<String> {
   return axios
     .post(
-      "https://auth.oda.digital/realms/ODA/protocol/openid-connect/token",
+      `${process.env.REACT_APP_AUTH_API_ENDPOINT}/realms/ODA/protocol/openid-connect/token`,
       {
         client_id: "oda-console",
         client_secret: "TYaqCopUUsx2Jmakif55qBquZSUXOGhL",
+        // client_secret: "wlm5js28Tnp99BCuo7EcWdsXHG4bYm35",
         grant_type: "password",
         username: login,
         password: password,

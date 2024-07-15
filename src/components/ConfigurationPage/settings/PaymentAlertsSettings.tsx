@@ -4,7 +4,7 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import { Tabs as AntTabs, Input } from "antd";
+import { Tabs as AntTabs, Flex, Input, Slider } from "antd";
 import TextPropertyModal from "../widgetproperties/TextPropertyModal";
 import { useTranslation } from "react-i18next";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
@@ -16,64 +16,64 @@ interface PaymentAlertSettingsProps {
   onChange: Function;
 }
 
-export const APPEARANCE_ANIMATIONS =               [
-                "bounce",
-                "flash",
-                "pulse",
-                "rubberBand",
-                "shakeY",
-                "shakeX",
-                "headShake",
-                "swing",
-                "tada",
-                "wobble",
-                "jello",
-                "heartBeat",
-                "backInDown",
-                "backInLeft",
-                "backInRight",
-                "backInUp",
-                "bounceIn",
-                "bounceInDown",
-                "bounceInLeft",
-                "bounceInRight",
-                "bounceInUp",
-                "fadeIn",
-                "fadeInDown",
-                "fadeInDownBig",
-                "fadeInLeft",
-                "fadeInLeftBig",
-                "fadeInRight",
-                "fadeInRightBig",
-                "fadeInUp",
-                "fadeInUpBig",
-                "fadeInTopLeft",
-                "fadeInTopRight",
-                "fadeInBottomLeft",
-                "fadeInBottomRight",
-                "flip",
-                "flinInX",
-                "flipInY",
-                "lightSpeedInRight",
-                "lightSpeedInLeft",
-                "rotateIn",
-                "rotateInDownLeft",
-                "rotateInDownRight",
-                "rotateInUpLeft",
-                "rotateInUpRight",
-                "hinge",
-                "jackInTheBox",
-                "rollIn",
-                "zoomIn",
-                "zoomInDown",
-                "zoomInLeft",
-                "zoomInRight",
-                "zoomInUp",
-                "slideInDown",
-                "slideInLeft",
-                "slideInRight",
-                "slideInUp",
-              ];
+export const APPEARANCE_ANIMATIONS = [
+  "bounce",
+  "flash",
+  "pulse",
+  "rubberBand",
+  "shakeY",
+  "shakeX",
+  "headShake",
+  "swing",
+  "tada",
+  "wobble",
+  "jello",
+  "heartBeat",
+  "backInDown",
+  "backInLeft",
+  "backInRight",
+  "backInUp",
+  "bounceIn",
+  "bounceInDown",
+  "bounceInLeft",
+  "bounceInRight",
+  "bounceInUp",
+  "fadeIn",
+  "fadeInDown",
+  "fadeInDownBig",
+  "fadeInLeft",
+  "fadeInLeftBig",
+  "fadeInRight",
+  "fadeInRightBig",
+  "fadeInUp",
+  "fadeInUpBig",
+  "fadeInTopLeft",
+  "fadeInTopRight",
+  "fadeInBottomLeft",
+  "fadeInBottomRight",
+  "flip",
+  "flinInX",
+  "flipInY",
+  "lightSpeedInRight",
+  "lightSpeedInLeft",
+  "rotateIn",
+  "rotateInDownLeft",
+  "rotateInDownRight",
+  "rotateInUpLeft",
+  "rotateInUpRight",
+  "hinge",
+  "jackInTheBox",
+  "rollIn",
+  "zoomIn",
+  "zoomInDown",
+  "zoomInLeft",
+  "zoomInRight",
+  "zoomInUp",
+  "slideInDown",
+  "slideInLeft",
+  "slideInRight",
+  "slideInUp",
+];
 
 export default function PaymentAlertSettings({
   id,
@@ -118,6 +118,12 @@ export default function PaymentAlertSettings({
           name: "appearance",
           type: "custom",
           value: "none",
+        },
+        {
+          tab: "sound",
+          name: "audio-volume",
+          type: "custom",
+          value: 50,
         },
         {
           tab: "header",
@@ -538,7 +544,7 @@ export default function PaymentAlertSettings({
               alert.properties.find((prop) => prop.name === "appearance")
                 ?.value,
               "alert-appearance-label",
-              [...APPEARANCE_ANIMATIONS,"random","none"]
+              [...APPEARANCE_ANIMATIONS, "random", "none"],
             ).markup((widgetId, name, value) =>
               update("appearance", value, index),
             ),
@@ -593,18 +599,51 @@ export default function PaymentAlertSettings({
       children: [
         <>
           {[
-            ...tabContent(alert, "sound", index),
             <div className="sound-container">
               {alert.audio && (
-                <div className="current-sound">
-                  <span className="audio-name">{alert.audio}</span>
-                  <span
-                    onClick={() => playAudio(alert.audio)}
-                    className="material-symbols-sharp"
+                <>
+                  <Flex
+                    className="full-width"
+                    justify="space-between"
+                    align="center"
                   >
-                    play_circle
-                  </span>
-                </div>
+                    <span>Файл</span>
+                    <div className="current-sound">
+                      <span className="audio-name">{alert.audio}</span>
+                      <span
+                        onClick={() => playAudio(alert.audio)}
+                        className="material-symbols-sharp"
+                      >
+                        play_circle
+                      </span>
+                      <span
+                        onClick={() => deleteAudio(index)}
+                        className="material-symbols-sharp"
+                      >
+                        delete
+                      </span>
+                    </div>
+                  </Flex>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span>Громкость</span>
+                    <Slider
+                      min={1}
+                      max={100}
+                      value={
+                        alert.properties.find((prop) => prop.name === "audio-volume")
+                          ?.value
+                      }
+                      onChange={(value) => update("audio-volume",value, index)}
+                    />
+                  </div>
+                </>
               )}
               <div className="audio-button-container">
                 {!alert.audio && (
@@ -617,14 +656,6 @@ export default function PaymentAlertSettings({
                       {t("button-upload-audio")}
                     </label>
                   </div>
-                )}
-                {alert.audio && (
-                  <button
-                    onClick={() => deleteAudio(index)}
-                    className="oda-btn-default"
-                  >
-                    {t("button-delete")}
-                  </button>
                 )}
               </div>
             </div>,
@@ -702,7 +733,7 @@ export default function PaymentAlertSettings({
               alert.properties.find((prop) => prop.name === "appearance")
                 ?.value,
               "alert-message-appearance-label",
-              [...APPEARANCE_ANIMATIONS,"random","none"]
+              [...APPEARANCE_ANIMATIONS, "random", "none"],
             ).markup((widgetId, name, value) =>
               update("message-appearance", value, index),
             ),

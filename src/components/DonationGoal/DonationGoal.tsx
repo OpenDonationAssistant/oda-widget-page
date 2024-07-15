@@ -12,7 +12,6 @@ import classes from "./DonationGoal.module.css";
 import { findSetting } from "../utils";
 import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
-import FontImport from "../FontImport/FontImport";
 import { produce } from "immer";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 

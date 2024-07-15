@@ -12,6 +12,7 @@ import { PlaylistController } from "./PlaylistController";
 import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { WidgetData } from "../../types/WidgetData";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -39,7 +40,7 @@ export default function VideoJSComponent({
   playlistController: PlaylistController;
   isRemote: boolean;
 }) {
-  const { conf, widgetId } = useLoaderData();
+  const { conf, widgetId } = useLoaderData() as  WidgetData;
   const videoRef = useRef<HTMLDivElement>(null);
   const [hideVideo, setHideVideo] = useState(true);
   const [playerState, setPlayerState] = useState<PLAYER_STATE>(
@@ -127,12 +128,13 @@ export default function VideoJSComponent({
     log.debug(`sending song ${JSON.stringify(song)} to remote player`);
     publish(conf.topic.remoteplayer, { command: "play", song: song });
     setPlayerState(PLAYER_STATE.PLAYING);
-    sendAlert(song.title);
+    sendAlert(song);
   }, [isRemote, song]);
 
-  function sendAlert(title: string) {
+  function sendAlert(song?: Song) {
     publish(conf.topic.player, {
-      title: title,
+      title: song?.title  ?? "",
+      owner: song?.owner ?? "",
     });
   }
 
@@ -156,23 +158,23 @@ export default function VideoJSComponent({
       log.debug("start playing");
       setPlayerState(PLAYER_STATE.PLAYING);
       if (song) {
-        sendAlert(song.title);
+        sendAlert(song);
       }
     });
     player.on("pause", () => {
       log.debug("pause player");
       setPlayerState(PLAYER_STATE.PAUSED);
-      sendAlert("");
+      sendAlert();
     });
     player.on("ended", () => {
       log.debug("song ended");
       playlistController.finishSong();
-      sendAlert("");
+      sendAlert();
     });
     player.on("error", function () {
       log.error(player.error());
       playlistController.finishSong();
-      sendAlert("");
+      sendAlert();
     });
     setPlayer(player);
     return () => {
@@ -219,7 +221,7 @@ export default function VideoJSComponent({
                     publish(conf.topic.remoteplayer, {
                       command: "resume",
                     });
-                    sendAlert(song?.title ?? "");
+                    sendAlert(song ?? undefined);
                     setPlayerState(PLAYER_STATE.PLAYING);
                   }
                   if (!isRemote) {
@@ -239,7 +241,7 @@ export default function VideoJSComponent({
                     publish(conf.topic.remoteplayer, {
                       command: "pause",
                     });
-                    sendAlert("");
+                    sendAlert();
                     setPlayerState(PLAYER_STATE.PAUSED);
                   }
                   if (!isRemote) {
