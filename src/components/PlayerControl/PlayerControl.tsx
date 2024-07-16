@@ -5,6 +5,9 @@ import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 import { v4 as uuidv4 } from "uuid";
 
+const youtube_url_regexp =
+  /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
+
 export default function PlayerControl({}: {}) {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<string | null>(null);
@@ -21,7 +24,7 @@ export default function PlayerControl({}: {}) {
       const id = url.substring(index + 5);
       axios
         .get(
-          `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlists/${id}`,
+          `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/available?playlistId=${id}`,
         )
         .then((data) => data.data)
         .then((videos) => {
@@ -38,16 +41,24 @@ export default function PlayerControl({}: {}) {
         });
     } else {
       let id = uuidv4();
-      axios
-        .post(`${process.env.REACT_APP_API_ENDPOINT}/media?url=${url}`)
-        .then((json) => {
-          publish(conf.topic.media, {
-            id: id,
-            url: url,
-            recipientId: recipientId,
-            title: json.data.title,
+      const videoId = youtube_url_regexp.exec(url)?.at(6);
+      if (videoId) {
+        axios
+          .get(
+            `${process.env.REACT_APP_API_ENDPOINT}/media/available?videoId=${videoId}`,
+          )
+          .then((json) => json.data)
+          .then((list) => {
+            list.forEach((item) =>
+              publish(conf.topic.media, {
+                id: id,
+                url: url,
+                recipientId: recipientId,
+                title: item.snippet.title,
+              }),
+            );
           });
-        });
+      }
     }
   }
 
