@@ -25,8 +25,21 @@ export default function DonationGoal({}) {
   useEffect(() => {
     subscribe(widgetId, conf.topic.goal, (message) => {
       log.debug({ goalCommand: message }, "received goals command");
+      const updatedGoal = JSON.parse(message.body) as any;
+      setGoals((actualGoals) => {
+        const  updatedGoals =  actualGoals.map((goal) => {
+          if (goal.id === updatedGoal.goalId) {
+            const update = produce(goal, (draft) => {
+              draft.accumulatedAmount.major =
+                updatedGoal.accumulatedAmount.major;
+            });
+            return update;
+          }
+          return goal;
+        });
+        return updatedGoals;
+      });
       message.ack();
-      setTimeout(() => navigate(0), 20000);
     });
     setupCommandListener(widgetId, () => navigate(0));
     return () => {
@@ -60,12 +73,12 @@ export default function DonationGoal({}) {
   const titleFont = new AnimatedFontProperty({
     widgetId: widgetId,
     name: "descriptionFont",
-    value: findSetting(settings, "descriptionFont", null)
+    value: findSetting(settings, "descriptionFont", null),
   });
   const amountFont = new AnimatedFontProperty({
     widgetId: widgetId,
     name: "amountFont",
-    value: findSetting(settings, "amountFont", null)
+    value: findSetting(settings, "amountFont", null),
   });
   const titleTextAlign = findSetting(settings, "titleTextAlign", "left");
   const labelTemplate = findSetting(
@@ -73,7 +86,7 @@ export default function DonationGoal({}) {
     "labelTemplate",
     "<collected> / <required> <currency>",
   );
-  const textStyle = produce(titleFont.calcStyle(),(draft) => {
+  const textStyle = produce(titleFont.calcStyle(), (draft) => {
     draft.textAlign = titleTextAlign;
   });
 
@@ -92,7 +105,7 @@ export default function DonationGoal({}) {
       filledTextAlign = "flex-end";
       break;
   }
-  const filledTextStyle = produce(amountFont.calcStyle(),(draft) => {
+  const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
     draft.justifyContent = filledTextAlign;
   });
 
@@ -103,7 +116,12 @@ export default function DonationGoal({}) {
       {goals.map((goal) => (
         <>
           <div className={`${classes.goalitem}`}>
-            <div style={textStyle} className={`${classes.goaldescription} ${titleFont.calcClassName()}`}>
+            <div
+              style={textStyle}
+              className={`${
+                classes.goaldescription
+              } ${titleFont.calcClassName()}`}
+            >
               {goal.briefDescription}
             </div>
             <div
@@ -120,7 +138,10 @@ export default function DonationGoal({}) {
               }}
               className={`${classes.goalfilled}`}
             ></div>
-            <div style={filledTextStyle} className={`${classes.goalamount} ${amountFont.calcClassName()}`}>
+            <div
+              style={filledTextStyle}
+              className={`${classes.goalamount} ${amountFont.calcClassName()}`}
+            >
               {labelTemplate
                 .replaceAll("<collected>", goal.accumulatedAmount.major)
                 .replaceAll("<required>", goal.requiredAmount.major)
@@ -129,7 +150,7 @@ export default function DonationGoal({}) {
                   "<proportion>",
                   Math.trunc(
                     (goal.accumulatedAmount.major / goal.requiredAmount.major) *
-                    100,
+                      100,
                   ),
                 )}
             </div>
