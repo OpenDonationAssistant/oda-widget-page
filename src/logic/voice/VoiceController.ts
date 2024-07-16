@@ -24,8 +24,11 @@ export class VoiceController {
   }
 
   playAudio(alert: any, onEndHandler: any) {
+    const volume =
+      alert.properties.find((prop) => prop.name === "audio-volume")?.value ??
+      100;
     try {
-        this.pronounce(structuredClone(alert.buffer), onEndHandler);
+      this.pronounce(structuredClone(alert.buffer), volume, onEndHandler);
     } catch (error) {
       console.log(error);
       if (onEndHandler) {
@@ -69,9 +72,9 @@ export class VoiceController {
       .replace("<minoramount>", data.amount.major * 100)
       .replace("<streamer>", this.recipientId);
     try {
-      if (resultText.length > 0){
+      if (resultText.length > 0) {
         this.voiceByGoogle(resultText).then((audio) =>
-          this.pronounce(audio, onEndHandler),
+          this.pronounce(audio, 100, onEndHandler),
         );
       } else {
         onEndHandler();
@@ -94,7 +97,7 @@ export class VoiceController {
         return;
       }
       this.voiceByMCS(data.message).then((audio) =>
-        this.pronounce(audio, onEndHandler),
+        this.pronounce(audio, 100, onEndHandler),
       );
     } catch (error) {
       console.log(error);
@@ -104,19 +107,23 @@ export class VoiceController {
     }
   }
 
-  private pronounce(buffer: ArrayBuffer, onEndHandler: any) {
+  private pronounce(buffer: ArrayBuffer, volume: number, onEndHandler: any) {
     console.log(buffer);
     this.audioCtx
       .decodeAudioData(
         buffer,
         (buf) => {
+          const gainNode = this.audioCtx.createGain();
+          gainNode.gain.value = volume / 100; // setting it to 10%
+          gainNode.connect(this.audioCtx.destination);
+
           let source = this.audioCtx.createBufferSource();
           if (onEndHandler) {
             this.onEndHandler = onEndHandler;
             source.addEventListener("ended", onEndHandler);
           }
           this.playingSource = source;
-          source.connect(this.audioCtx.destination);
+          source.connect(gainNode);
           source.buffer = buf;
           source.loop = false;
           source.start(0);
@@ -128,7 +135,7 @@ export class VoiceController {
       .catch((error) => {
         console.log(error);
         if (onEndHandler) {
-          console.log('calling onEndHandler');
+          console.log("calling onEndHandler");
           onEndHandler();
         }
       });
@@ -144,7 +151,7 @@ export class VoiceController {
   private async voiceByGoogle(message: string): Promise<ArrayBuffer> {
     let body = {
       input: {
-        ssml: '<speak>' + message + ".</speak>",
+        ssml: "<speak>" + message + ".</speak>",
       },
       voice: {
         languageCode: "ru-RU",

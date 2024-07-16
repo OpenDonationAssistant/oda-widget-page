@@ -636,6 +636,7 @@ export default function PaymentAlertSettings({
                     <Slider
                       min={1}
                       max={100}
+                      defaultValue={100}
                       value={
                         alert.properties.find((prop) => prop.name === "audio-volume")
                           ?.value
