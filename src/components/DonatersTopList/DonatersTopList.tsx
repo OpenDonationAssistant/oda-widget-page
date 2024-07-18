@@ -10,7 +10,6 @@ import {
   subscribe,
   unsubscribe,
 } from "../../socket";
-import FontImport from "../FontImport/FontImport";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 const overflowHiddenForRootElement = (
@@ -117,74 +116,28 @@ export default function DonatersTopList({}: {}) {
           __html: `#root { background-color: ${backgroundColor}; }`,
         }}
       />
-      {"All" === type && (
-        <div className={`donaters-list`} style={textStyle}>
-          {donaters &&
-            donaters.size > 0 &&
-            Array.from(donaters.keys()).map((donater) => (
-              <span
+      <div
+        style={donatersTopStyle}
+        className={`donaters-title ${headerFont.calcClassName()}`}
+      >
+        {title}
+      </div>
+      <div className="donaters-top">
+        {donaters &&
+          donaters.size > 0 &&
+          Array.from(donaters.keys())
+            .slice(0, topsize)
+            .map((donater) => (
+              <div
                 key={donater}
                 style={textStyle}
                 className={`donater ${messageFont.calcClassName()}`}
               >
                 {donater} - {donaters.get(donater).major}{" "}
                 {donaters.get(donater).currency}{" "}
-              </span>
+              </div>
             ))}
-        </div>
-      )}
-      {"Top" === type && (
-        <>
-          <div
-            style={donatersTopStyle}
-            className={`donaters-title ${headerFont.calcClassName()}`}
-          >
-            {title}
-          </div>
-          <div className="donaters-top">
-            {donaters &&
-              donaters.size > 0 &&
-              Array.from(donaters.keys())
-                .slice(0, topsize)
-                .map((donater) => (
-                  <div
-                    key={donater}
-                    style={textStyle}
-                    className={`donater ${messageFont.calcClassName()}`}
-                  >
-                    {donater} - {donaters.get(donater).major}{" "}
-                    {donaters.get(donater).currency}{" "}
-                  </div>
-                ))}
-          </div>
-        </>
-      )}
-      {"Last" === type && (
-        <>
-          <div
-            style={donatersTopStyle}
-            className={`donaters-title ${headerFont.calcClassName()}`}
-          >
-            {title}
-          </div>
-          <div className="donaters-top">
-            {donaters &&
-              donaters.size > 0 &&
-              Array.from(donaters.keys())
-                .slice(0, topsize)
-                .map((donater) => (
-                  <div
-                    key={donater}
-                    style={textStyle}
-                    className={`donater ${messageFont.calcClassName()}`}
-                  >
-                    {donater} - {donaters.get(donater).major}{" "}
-                    {donaters.get(donater).currency}{" "}
-                  </div>
-                ))}
-          </div>
-        </>
-      )}
+      </div>
     </>
   );
 }

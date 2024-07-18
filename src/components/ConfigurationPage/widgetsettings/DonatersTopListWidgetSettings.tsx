@@ -25,7 +25,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "predefined",
           "All",
           "widget-donaterslist-widget-type",
-          ["All", "Top", "Last"],
+          ["Top", "Last"],
           "content",
         ),
         new SingleChoiceProperty(

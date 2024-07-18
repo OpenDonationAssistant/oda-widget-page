@@ -144,7 +144,7 @@ export default function HistoryPage({}) {
   const paymentPageConfig = useRef<PaymentPageConfig | null>(
     new PaymentPageConfig(recipientId),
   );
-  const [goalId, setGoalId] = useState<string|null>(null);
+  const [goalId, setGoalId] = useState<string | null>(null);
 
   async function addItem() {
     await HistoryService(
@@ -160,12 +160,17 @@ export default function HistoryPage({}) {
       nickname: nickname,
       triggerAlert: showAlert,
       triggerReel: triggerReel,
-      goals: goalId ? [
-        {
-          goalId: goalId,
-          goalTitle: paymentPageConfig.current?.goals.find(goal => goal.id === goalId)?.briefDescription ?? ""
-        },
-      ] : [],
+      goals: goalId
+        ? [
+            {
+              goalId: goalId,
+              goalTitle:
+                paymentPageConfig.current?.goals.find(
+                  (goal) => goal.id === goalId,
+                )?.briefDescription ?? "",
+            },
+          ]
+        : [],
       addToTop: countInTop,
       addToGoal: countInGoal,
       id: uuidv7(),
@@ -241,7 +246,7 @@ export default function HistoryPage({}) {
                   <Select
                     className="full-width"
                     value={goalId}
-                    onChange={selected => setGoalId(selected)}
+                    onChange={(selected) => setGoalId(selected)}
                     options={paymentPageConfig.current?.goals.map((goal) => {
                       return { value: goal.id, label: goal.briefDescription };
                     })}
