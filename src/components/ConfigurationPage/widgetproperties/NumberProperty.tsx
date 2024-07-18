@@ -25,7 +25,6 @@ export class NumberProperty extends DefaultWidgetProperty {
         </label>
         <InputNumber
           value={this.value}
-          size="small"
           className={`${classes.value}`}
           onChange={(e) => {
             if (!this.widgetId) {

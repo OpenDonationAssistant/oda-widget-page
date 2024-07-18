@@ -4,6 +4,7 @@ import axios from "axios";
 import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 import { v4 as uuidv4 } from "uuid";
+import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
 
 const youtube_url_regexp =
   /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
@@ -36,6 +37,7 @@ export default function PlayerControl({}: {}) {
               url: `https://www.youtube.com/watch?v=${video.id}`,
               recipientId: recipientId,
               title: video.snippet.title,
+              playlist: PLAYLIST_TYPE.PERSONAL.toString()
             });
           });
         });

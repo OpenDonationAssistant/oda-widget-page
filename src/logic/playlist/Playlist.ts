@@ -9,6 +9,15 @@ enum PLAYLIST_TYPE {
   PERSONAL,
 }
 
+namespace PLAYLIST_TYPE {
+  export function toString(type: PLAYLIST_TYPE): string{
+    return PLAYLIST_TYPE[type];
+  }
+  // export function parse(type: string): PLAYLIST_TYPE{
+  //   return PLAYLIST_TYPE.;
+  // }
+}
+
 function nameOf(type: PLAYLIST_TYPE) {
   return type === PLAYLIST_TYPE.PERSONAL ? "personal" : "requested";
 }

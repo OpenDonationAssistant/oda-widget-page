@@ -1,0 +1,19 @@
+.name {
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  margin-top: 10px;
+  border-bottom: 1px dashed #0c122e;
+}
+
+.child {
+  display: flex;
+  justify-content: flex-end;
+  width: 25%;
+  min-width: 200px;
+  margin-bottom: 10px;
+}

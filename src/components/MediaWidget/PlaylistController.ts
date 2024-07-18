@@ -86,6 +86,7 @@ export class PlaylistController {
         owner: json.owner,
         title: json.title,
       };
+      const playlist = json.playlist;
       this.handleNewRequestedSongEvent(song);
       message.ack();
     });

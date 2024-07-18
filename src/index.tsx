@@ -13,6 +13,7 @@ import PlayerControl from "./components/PlayerControl/PlayerControl";
 import DonatersTopList from "./components/DonatersTopList/DonatersTopList";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
+import "./ant-override.css";
 import { config } from "./config";
 import { log, setLoglevel } from "./logging";
 import auth from "./auth";

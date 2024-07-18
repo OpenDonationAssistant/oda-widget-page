@@ -1,6 +1,16 @@
-import { Descriptions, Layout, List, Modal, Spin, Table, theme } from "antd";
+import {
+  Descriptions,
+  Input,
+  InputNumber,
+  Layout,
+  List,
+  Modal,
+  Select,
+  Spin,
+  Switch,
+} from "antd";
 import { Content, Header as AntHeader } from "antd/es/layout/layout";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Toolbar, { Page } from "../../components/ConfigurationPage/Toolbar";
 import classes from "./HistoryPage.module.css";
 import {
@@ -8,10 +18,14 @@ import {
   DefaultApiFactory as HistoryService,
 } from "@opendonationassistant/oda-history-service-client";
 import { usePagination } from "ahooks";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import Sider from "antd/es/layout/Sider";
 import Header from "../../components/ConfigurationPage/Header";
+import { useTranslation } from "react-i18next";
+import { uuidv7 } from "uuidv7";
+import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
+import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
@@ -35,6 +49,7 @@ body::before {
     background-color: #0c122e;
     width: 100%;
     height: 100%;
+}
 `,
     }}
   />
@@ -118,6 +133,46 @@ export default function HistoryPage({}) {
     defaultPageSize: 10,
   });
   const [showModal, setShowModal] = useState<boolean>();
+  const { t } = useTranslation();
+  const [nickname, setNickname] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [countInTop, setCountInTop] = useState<boolean>(false);
+  const [countInGoal, setCountInGoal] = useState<boolean>(false);
+  const [triggerReel, setTriggerReel] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const paymentPageConfig = useRef<PaymentPageConfig | null>(
+    new PaymentPageConfig(recipientId),
+  );
+  const [goalId, setGoalId] = useState<string|null>(null);
+
+  async function addItem() {
+    await HistoryService(
+      undefined,
+      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    ).addHistoryItem({
+      recipientId: recipientId,
+      amount: {
+        minor: 0,
+        major: amount,
+        currency: "RUB",
+      },
+      nickname: nickname,
+      triggerAlert: showAlert,
+      triggerReel: triggerReel,
+      goals: goalId ? [
+        {
+          goalId: goalId,
+          goalTitle: paymentPageConfig.current?.goals.find(goal => goal.id === goalId)?.briefDescription ?? ""
+        },
+      ] : [],
+      addToTop: countInTop,
+      addToGoal: countInGoal,
+      id: uuidv7(),
+      paymentId: uuidv7(),
+    });
+    navigate(0);
+  }
 
   async function getHistory(params: {
     current: number;
@@ -152,25 +207,64 @@ export default function HistoryPage({}) {
                 <div className={classes.buttons}>
                   <button
                     className="oda-btn-default"
-                    style={{ display: "none" }}
                     onClick={() => setShowModal((old) => !old)}
                   >
-                    Add
+                    {t("button-add-historyitem")}
                   </button>
                 </div>
                 {loading ? <Spin /> : list(data?.list ?? [], pagination)}
               </div>
               <Modal
-                title="Add Donation"
+                title={t("dialog-add-donation-title")}
                 open={showModal}
                 onClose={() => setShowModal(false)}
                 onCancel={() => setShowModal(false)}
-                onOk={() => setShowModal(false)}
+                onOk={() => {
+                  addItem();
+                  setShowModal(false);
+                }}
               >
-                <div>Nickname:</div>
-                <input className={classes.adddonationinput} />
-                <div>Amount:</div>
-                <input className={classes.adddonationinput} />
+                <LabeledContainer displayName="dialog-add-donation-nickname">
+                  <Input
+                    value={nickname}
+                    onChange={(value) => setNickname(value.target.value)}
+                  />
+                </LabeledContainer>
+                <LabeledContainer displayName="dialog-add-donation-amount">
+                  <InputNumber
+                    className={`full-width`}
+                    value={amount}
+                    onChange={(value) => setAmount(value ?? 0)}
+                  />
+                </LabeledContainer>
+                <LabeledContainer displayName="dialog-add-donation-count-in-goal">
+                  <Select
+                    className="full-width"
+                    value={goalId}
+                    onChange={selected => setGoalId(selected)}
+                    options={paymentPageConfig.current?.goals.map((goal) => {
+                      return { value: goal.id, label: goal.briefDescription };
+                    })}
+                  />
+                </LabeledContainer>
+                <LabeledContainer displayName="dialog-add-donation-show-alert">
+                  <Switch
+                    value={showAlert}
+                    onChange={() => setShowAlert((old) => !old)}
+                  />
+                </LabeledContainer>
+                <LabeledContainer displayName="dialog-add-donation-count-in-top">
+                  <Switch
+                    value={countInTop}
+                    onChange={() => setCountInTop((old) => !old)}
+                  />
+                </LabeledContainer>
+                <LabeledContainer displayName="dialog-add-donation-trigger-reel">
+                  <Switch
+                    value={triggerReel}
+                    onChange={() => setTriggerReel((old) => !old)}
+                  />
+                </LabeledContainer>
               </Modal>
             </div>
           </Content>

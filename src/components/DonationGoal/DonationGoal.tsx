@@ -27,7 +27,7 @@ export default function DonationGoal({}) {
       log.debug({ goalCommand: message }, "received goals command");
       const updatedGoal = JSON.parse(message.body) as any;
       setGoals((actualGoals) => {
-        const  updatedGoals =  actualGoals.map((goal) => {
+        const updatedGoals = actualGoals.map((goal) => {
           if (goal.id === updatedGoal.goalId) {
             const update = produce(goal, (draft) => {
               draft.accumulatedAmount.major =
