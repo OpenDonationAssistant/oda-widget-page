@@ -10,12 +10,24 @@ enum PLAYLIST_TYPE {
 }
 
 namespace PLAYLIST_TYPE {
-  export function toString(type: PLAYLIST_TYPE): string{
-    return PLAYLIST_TYPE[type];
+  export function toString(type: PLAYLIST_TYPE): string {
+    switch (type) {
+      case PLAYLIST_TYPE.REQUESTED:
+        return "requested";
+      case PLAYLIST_TYPE.PERSONAL:
+        return "personal";
+    }
   }
-  // export function parse(type: string): PLAYLIST_TYPE{
-  //   return PLAYLIST_TYPE.;
-  // }
+  export function parse(type: string): PLAYLIST_TYPE | null {
+    switch (type) {
+      case "requested":
+        return PLAYLIST_TYPE.REQUESTED;
+      case "personal":
+        return PLAYLIST_TYPE.PERSONAL;
+      default:
+        return null;
+    }
+  }
 }
 
 function nameOf(type: PLAYLIST_TYPE) {

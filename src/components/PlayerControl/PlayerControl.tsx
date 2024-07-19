@@ -5,6 +5,7 @@ import { useLoaderData } from "react-router";
 import { publish } from "../../socket";
 import { v4 as uuidv4 } from "uuid";
 import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
+import { WidgetData } from "../../types/WidgetData";
 
 const youtube_url_regexp =
   /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
@@ -13,7 +14,7 @@ export default function PlayerControl({}: {}) {
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [volume, setVolume] = useState<string>("0.5");
-  const { recipientId, conf } = useLoaderData();
+  const { recipientId, conf } = useLoaderData() as WidgetData;
 
   function reload() {
     publish(conf.topic.mediaWidgetCommands, { command: "reload" });
@@ -37,7 +38,7 @@ export default function PlayerControl({}: {}) {
               url: `https://www.youtube.com/watch?v=${video.id}`,
               recipientId: recipientId,
               title: video.snippet.title,
-              playlist: PLAYLIST_TYPE.PERSONAL.toString()
+              playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL)
             });
           });
         });
@@ -57,6 +58,7 @@ export default function PlayerControl({}: {}) {
                 url: url,
                 recipientId: recipientId,
                 title: item.snippet.title,
+                playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL)
               }),
             );
           });
@@ -117,13 +119,6 @@ export default function PlayerControl({}: {}) {
           style={{ marginRight: "10px" }}
         >
           Add
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={() => check()}
-          style={{ marginRight: "10px" }}
-        >
-          Check
         </button>
         <button
           className="btn btn-primary"

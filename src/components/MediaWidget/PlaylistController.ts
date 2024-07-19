@@ -78,6 +78,7 @@ export class PlaylistController {
 
     subscribe(widgetId, conf.topic.media, (message) => {
       let json = JSON.parse(message.body);
+      log.debug({ media: json}, "Received new media");
       let song = {
         src: json.url,
         type: "video/youtube",
@@ -86,8 +87,9 @@ export class PlaylistController {
         owner: json.owner,
         title: json.title,
       };
-      const playlist = json.playlist;
-      this.handleNewRequestedSongEvent(song);
+      const playlist =
+        PLAYLIST_TYPE.parse(json.playlist) ?? PLAYLIST_TYPE.REQUESTED;
+      this.handleNewRequestedSongEvent(playlist, song);
       message.ack();
     });
     subscribe(
@@ -103,9 +105,13 @@ export class PlaylistController {
     );
   }
 
-  handleNewRequestedSongEvent(song: Song) {
-    this.playlists.get(PLAYLIST_TYPE.REQUESTED)?.addSong(song);
-    if (this.current.type() == PLAYLIST_TYPE.PERSONAL) {
+  handleNewRequestedSongEvent(playlist: PLAYLIST_TYPE, song: Song) {
+    log.debug({song: song, playlist: playlist},"Adding song to playlist");
+    this.playlists.get(playlist)?.addSong(song);
+    if (
+      this.current.type() == PLAYLIST_TYPE.PERSONAL &&
+      playlist === PLAYLIST_TYPE.REQUESTED
+    ) {
       this.switchTo(PLAYLIST_TYPE.REQUESTED);
     }
   }
@@ -132,11 +138,7 @@ export class PlaylistController {
   }
 
   switchTo(type: PLAYLIST_TYPE) {
-    log.debug(
-      `switching to ${
-        type == PLAYLIST_TYPE.PERSONAL ? "personal" : "requested"
-      }`,
-    );
+    log.debug(`switching to ${PLAYLIST_TYPE.toString(type)}`);
     const playlist = this.playlists.get(type);
     if (playlist) {
       this.playlistRenderers.forEach((renderer) => {
