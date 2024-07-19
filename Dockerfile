@@ -1,4 +1,4 @@
-FROM node:latest AS build
+FROM node:20 AS build
 WORKDIR /build
 ARG gpr_token
 
