@@ -11,6 +11,7 @@ import {
   unsubscribe,
 } from "../../socket";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { WidgetData } from "../../types/WidgetData";
 
 const overflowHiddenForRootElement = (
   <style
@@ -30,7 +31,7 @@ const fullHeight = (
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
-  const { recipientId, settings, conf, widgetId } = useLoaderData();
+  const { recipientId, settings, conf, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
 
   const period = findSetting(settings, "period", "month");
@@ -104,6 +105,20 @@ export default function DonatersTopList({}: {}) {
     donatersTopStyle.display = "inline";
   }
   donatersTopStyle.backgroundColor = titleBackgroundColor;
+
+  const hideEmpty = findSetting(settings, "hideEmpty", false);
+
+  if (hideEmpty && (!donaters || donaters.size == 0)) {
+    return <>
+      {overflowHiddenForRootElement}
+      {fullHeight}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `#root { background-color: ${backgroundColor}; }`,
+        }}
+      />
+    </>;
+  }
 
   return (
     <>

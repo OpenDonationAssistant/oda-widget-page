@@ -1,7 +1,7 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
+import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
-import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
@@ -43,6 +43,14 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "number",
           "3",
           "widget-donaterslist-donaters-amount",
+          "content",
+        ),
+        new BooleanProperty(
+          widgetId,
+          "hideEmpty",
+          "boolean",
+          false,
+          "widget-donaterslist-hide-empty",
           "content",
         ),
         new TextProperty(
