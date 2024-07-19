@@ -78,7 +78,7 @@ export class PlaylistController {
 
     subscribe(widgetId, conf.topic.media, (message) => {
       let json = JSON.parse(message.body);
-      log.debug({ media: json}, "Received new media");
+      log.debug({ media: json }, "Received new media");
       let song = {
         src: json.url,
         type: "video/youtube",
@@ -106,7 +106,7 @@ export class PlaylistController {
   }
 
   handleNewRequestedSongEvent(playlist: PLAYLIST_TYPE, song: Song) {
-    log.debug({song: song, playlist: playlist},"Adding song to playlist");
+    log.debug({ song: song, playlist: playlist }, "Adding song to playlist");
     this.playlists.get(playlist)?.addSong(song);
     if (
       this.current.type() == PLAYLIST_TYPE.PERSONAL &&
