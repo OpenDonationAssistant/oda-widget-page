@@ -11,7 +11,7 @@ export class DonatersTopListCarouselProperty extends DefaultWidgetProperty {
       widgetId,
       "carousel",
       "predefined",
-      value ?? { enabled: false, amount: 1 },
+      value ?? { enabled: false, amount: 1, delay: 3, speed: 0.5 },
       "",
       "layout",
     );
@@ -41,23 +41,61 @@ export class DonatersTopListCarouselProperty extends DefaultWidgetProperty {
             }}
           />
         </LabeledContainer>
-        {this.value.enabled && (<LabeledContainer displayName="widget-donaterslist-list-carousel-item-amount">
-          <InputNumber
-            value={this.value.amount}
-            onChange={(e) => {
-              if (!this.widgetId) {
-                return;
-              }
-              updateConfig(
-                this.widgetId,
-                this.name,
-                produce(this.value, (draft) => {
-                  draft.amount = e;
-                }),
-              );
-            }}
-          />
-        </LabeledContainer>)}
+        {this.value.enabled && (
+          <>
+            <LabeledContainer displayName="widget-donaterslist-list-carousel-item-amount">
+              <InputNumber
+                value={this.value.amount}
+                onChange={(e) => {
+                  if (!this.widgetId) {
+                    return;
+                  }
+                  updateConfig(
+                    this.widgetId,
+                    this.name,
+                    produce(this.value, (draft) => {
+                      draft.amount = e;
+                    }),
+                  );
+                }}
+              />
+            </LabeledContainer>
+            <LabeledContainer displayName="widget-donaterslist-carousel-delay">
+              <InputNumber
+                value={this.value.delay}
+                onChange={(e) => {
+                  if (!this.widgetId) {
+                    return;
+                  }
+                  updateConfig(
+                    this.widgetId,
+                    this.name,
+                    produce(this.value, (draft) => {
+                      draft.delay = e;
+                    }),
+                  );
+                }}
+              />
+            </LabeledContainer>
+            <LabeledContainer displayName="widget-donaterslist-carousel-animation-speed">
+              <InputNumber
+                value={this.value.speed}
+                onChange={(e) => {
+                  if (!this.widgetId) {
+                    return;
+                  }
+                  updateConfig(
+                    this.widgetId,
+                    this.name,
+                    produce(this.value, (draft) => {
+                      draft.speed = e;
+                    }),
+                  );
+                }}
+              />
+            </LabeledContainer>
+          </>
+        )}
       </>
     );
   };

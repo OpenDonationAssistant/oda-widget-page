@@ -37,7 +37,7 @@ export default function DonatersTopList({}: {}) {
   const navigate = useNavigate();
 
   const period = findSetting(settings, "period", "month");
-  const topsize = findSetting(settings, "topsize", 3);
+  const topsize = Number.parseInt(findSetting(settings, "topsize", 3));
   const layout = findSetting(settings, "layout", "vertical");
 
   function updateDonaters() {
@@ -98,8 +98,43 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(settings, "messageFont", null),
   });
 
+  let listAlignment = findSetting(settings, "listAlignment", "center");
+  let listJustifyContent = "space-around";
+  let listAlignItems = "center";
+  if (layout === "horizontal") {
+    switch (listAlignment) {
+      case "Center":
+        listJustifyContent = "space-around";
+        break;
+      case "Left":
+        listJustifyContent = "flex-start";
+        break;
+      case "Right":
+        listJustifyContent = "flex-end";
+        break;
+      default:
+        listJustifyContent = "space-around";
+        break;
+    }
+  }
+  if (layout === "vertical") {
+    switch (listAlignment) {
+      case "Center":
+        listAlignItems = "center";
+        break;
+      case "Left":
+        listAlignItems = "flex-start";
+        break;
+      case "Right":
+        listAlignItems = "flex-end";
+        break;
+      default:
+        listAlignItems = "center";
+        break;
+    }
+  }
+  console.log(listAlignment);
   const textStyle = messageFont.calcStyle();
-  textStyle.textAlign = "center";
   textStyle.maxWidth = "100vw";
   textStyle.width = "50vw";
   textStyle.flex = "1 0 auto";
@@ -123,16 +158,24 @@ export default function DonatersTopList({}: {}) {
     );
   }
 
-  const carouselSettings = findSetting(settings, "carousel", { enabled: false });
+  const carouselSettings = findSetting(settings, "carousel", {
+    enabled: false,
+    delay: 3,
+    speed: 0.5
+  });
+  console.log(carouselSettings);
   const packSize = carouselSettings.enabled ? carouselSettings.amount : topsize;
+  console.log(packSize);
 
   function portion(): ReactNode[] {
     if (!donaters) {
       return [];
     }
+    console.log("Calculate portion");
     let packs = [];
     let origin = Array.from(donaters.keys());
     for (let start = 0; start < topsize; ) {
+      console.log({topsize: topsize, start: start},"Calculate pack");
       let end = start + packSize;
       if (end > topsize) {
         end = topsize;
@@ -167,10 +210,23 @@ export default function DonatersTopList({}: {}) {
         >
           {title}
         </div>
-        <Carousel adaptiveHeight={true} style={textStyle} autoplay dots={false}>
+        <Carousel
+          style={textStyle}
+          speed={carouselSettings.speed * 1000}
+          autoplaySpeed={carouselSettings.delay * 1000}
+          autoplay
+          dots={false}
+        >
           {portion().map((pack) => (
             <div>
-              <Flex vertical = {layout === "vertical"} justify="space-around">{pack}</Flex>
+              <Flex
+                vertical={layout === "vertical"}
+                align={listAlignItems}
+                justify={listJustifyContent}
+                gap={10}
+              >
+                {pack}
+              </Flex>
             </div>
           ))}
         </Carousel>
