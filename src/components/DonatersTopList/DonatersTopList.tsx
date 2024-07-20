@@ -170,7 +170,7 @@ export default function DonatersTopList({}: {}) {
         <Carousel adaptiveHeight={true} style={textStyle} autoplay dots={false}>
           {portion().map((pack) => (
             <div>
-              <Flex justify="space-around">{pack}</Flex>
+              <Flex vertical = {layout === "vertical"} justify="space-around">{pack}</Flex>
             </div>
           ))}
         </Carousel>
