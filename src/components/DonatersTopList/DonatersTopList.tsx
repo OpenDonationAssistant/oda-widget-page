@@ -132,7 +132,7 @@ export default function DonatersTopList({}: {}) {
     }
     let packs = [];
     let origin = Array.from(donaters.keys());
-    for (let start = 0; start < donaters.size; ) {
+    for (let start = 0; start < topsize; ) {
       let end = start + packSize;
       if (end > topsize) {
         end = topsize;
