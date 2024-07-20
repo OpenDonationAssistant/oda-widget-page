@@ -65,7 +65,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
     return <FontImport font={this.value.family} />;
   }
 
-  calcStyle() {
+  calcStyle(): React.CSSProperties {
     return {
       color: this.value.color,
       fontSize: this.value.size,

@@ -8,8 +8,6 @@ export default function BooleanPropertyInput({
 }: {
   onChange: Function;
   prop: {
-    type: string;
-    name: string;
     value: any;
   };
 }) {

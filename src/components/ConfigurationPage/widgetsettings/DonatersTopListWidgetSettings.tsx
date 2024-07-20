@@ -1,6 +1,7 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
+import { DonatersTopListCarouselProperty } from "../widgetproperties/DonatersTopListCarouselProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
@@ -23,7 +24,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           widgetId,
           "type",
           "predefined",
-          "All",
+          "Top",
           "widget-donaterslist-widget-type",
           ["Top", "Last"],
           "content",
@@ -64,12 +65,12 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "headerFont",
-          tab: "header"
+          tab: "header",
         }),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "messageFont",
-          tab: "list"
+          tab: "list",
         }),
         new ColorProperty(
           widgetId,
@@ -87,6 +88,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "widget-donaterslist-list-background-color",
           "list",
         ),
+        new DonatersTopListCarouselProperty(widgetId),
         new DonatersTopListLayoutProperty(widgetId, "vertical"),
       ],
       tabs,

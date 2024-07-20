@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import "./DonatersTopList.css";
@@ -12,6 +12,7 @@ import {
 } from "../../socket";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { WidgetData } from "../../types/WidgetData";
+import { Carousel, Flex } from "antd";
 
 const overflowHiddenForRootElement = (
   <style
@@ -31,7 +32,8 @@ const fullHeight = (
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
-  const { recipientId, settings, conf, widgetId } = useLoaderData() as WidgetData;
+  const { recipientId, settings, conf, widgetId } =
+    useLoaderData() as WidgetData;
   const navigate = useNavigate();
 
   const period = findSetting(settings, "period", "month");
@@ -97,27 +99,54 @@ export default function DonatersTopList({}: {}) {
   });
 
   const textStyle = messageFont.calcStyle();
-  textStyle.display = layout === "vertical" ? "block" : "inline";
-  textStyle.marginLeft = layout === "vertical" ? "0px" : "20px";
+  textStyle.textAlign = "center";
+  textStyle.maxWidth = "100vw";
+  textStyle.width = "50vw";
+  textStyle.flex = "1 0 auto";
 
   const donatersTopStyle = headerFont.calcStyle();
-  if (layout !== "vertical") {
-    donatersTopStyle.display = "inline";
-  }
   donatersTopStyle.backgroundColor = titleBackgroundColor;
 
   const hideEmpty = findSetting(settings, "hideEmpty", false);
 
   if (hideEmpty && (!donaters || donaters.size == 0)) {
-    return <>
-      {overflowHiddenForRootElement}
-      {fullHeight}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `#root { background-color: ${backgroundColor}; }`,
-        }}
-      />
-    </>;
+    return (
+      <>
+        {overflowHiddenForRootElement}
+        {fullHeight}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `#root { background-color: ${backgroundColor}; }`,
+          }}
+        />
+      </>
+    );
+  }
+
+  const carouselSettings = findSetting(settings, "carousel", { enabled: false });
+  const packSize = carouselSettings.enabled ? carouselSettings.amount : topsize;
+
+  function portion(): ReactNode[] {
+    if (!donaters) {
+      return [];
+    }
+    let packs = [];
+    let origin = Array.from(donaters.keys());
+    for (let start = 0; start < donaters.size; ) {
+      let end = start + packSize;
+      if (end > topsize) {
+        end = topsize;
+      }
+      const label = origin.slice(start, end).map((donater) => (
+        <div key={start} className={`${messageFont.calcClassName()}`}>
+          {donater} - {donaters.get(donater).major}{" "}
+          {donaters.get(donater).currency}
+        </div>
+      ));
+      packs[packs.length] = label;
+      start = start + packSize;
+    }
+    return packs;
   }
 
   return (
@@ -131,28 +160,21 @@ export default function DonatersTopList({}: {}) {
           __html: `#root { background-color: ${backgroundColor}; }`,
         }}
       />
-      <div
-        style={donatersTopStyle}
-        className={`donaters-title ${headerFont.calcClassName()}`}
-      >
-        {title}
-      </div>
-      <div className="donaters-top">
-        {donaters &&
-          donaters.size > 0 &&
-          Array.from(donaters.keys())
-            .slice(0, topsize)
-            .map((donater) => (
-              <div
-                key={donater}
-                style={textStyle}
-                className={`donater ${messageFont.calcClassName()}`}
-              >
-                {donater} - {donaters.get(donater).major}{" "}
-                {donaters.get(donater).currency}{" "}
-              </div>
-            ))}
-      </div>
+      <Flex vertical={layout === "vertical"}>
+        <div
+          style={donatersTopStyle}
+          className={`donaters-title ${headerFont.calcClassName()}`}
+        >
+          {title}
+        </div>
+        <Carousel adaptiveHeight={true} style={textStyle} autoplay dots={false}>
+          {portion().map((pack) => (
+            <div>
+              <Flex justify="space-around">{pack}</Flex>
+            </div>
+          ))}
+        </Carousel>
+      </Flex>
     </>
   );
 }

@@ -170,3 +170,8 @@ div.ant-layout-has-sider.ant-layout {
     }
   }
 }
+
+.ant-carousel {
+  flex: 1 0 auto;
+  display: flex;
+}

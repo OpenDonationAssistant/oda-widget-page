@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import { Divider } from "antd";
 import classes from "./DonatersTopListLayoutProperty.module.css";
 import { Trans } from "react-i18next";
 
