@@ -98,7 +98,7 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(settings, "messageFont", null),
   });
 
-  let listAlignment = findSetting(settings, "listAlignment", "center");
+  let listAlignment = findSetting(settings, "listAlignment", "Center");
   let listJustifyContent = "space-around";
   let listAlignItems = "center";
   if (layout === "horizontal") {
@@ -133,7 +133,7 @@ export default function DonatersTopList({}: {}) {
         break;
     }
   }
-  console.log(listAlignment);
+
   const textStyle = messageFont.calcStyle();
   textStyle.maxWidth = "100vw";
   textStyle.width = "50vw";
@@ -141,6 +141,8 @@ export default function DonatersTopList({}: {}) {
 
   const donatersTopStyle = headerFont.calcStyle();
   donatersTopStyle.backgroundColor = titleBackgroundColor;
+  let headerAlignment = findSetting(settings, "headerAlignment", "Center");
+  donatersTopStyle.textAlign = headerAlignment;
 
   const hideEmpty = findSetting(settings, "hideEmpty", false);
 
@@ -163,19 +165,15 @@ export default function DonatersTopList({}: {}) {
     delay: 3,
     speed: 0.5
   });
-  console.log(carouselSettings);
   const packSize = carouselSettings.enabled ? carouselSettings.amount : topsize;
-  console.log(packSize);
 
   function portion(): ReactNode[] {
     if (!donaters) {
       return [];
     }
-    console.log("Calculate portion");
     let packs = [];
     let origin = Array.from(donaters.keys());
     for (let start = 0; start < topsize; ) {
-      console.log({topsize: topsize, start: start},"Calculate pack");
       let end = start + packSize;
       if (end > topsize) {
         end = topsize;

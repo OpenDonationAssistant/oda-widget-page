@@ -67,6 +67,15 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           name: "headerFont",
           tab: "header",
         }),
+        new SingleChoiceProperty(
+          widgetId,
+          "headerAlignment",
+          "predefined",
+          "Center",
+          "widget-donaterslist-list-alignment",
+          ["Left", "Center", "Right"],
+          "header",
+        ),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "messageFont",
