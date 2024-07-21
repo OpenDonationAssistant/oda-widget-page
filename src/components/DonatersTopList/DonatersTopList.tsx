@@ -115,7 +115,7 @@ export default function DonatersTopList({}: {}) {
   donatersTopStyle.backgroundColor = titleBackgroundColor;
   let headerAlignment = findSetting(settings, "headerAlignment", "Center");
   donatersTopStyle.textAlign = headerAlignment;
-  textStyle.flex = "2 0 auto";
+  donatersTopStyle.flex = "2 0 auto";
 
   const hideEmpty = findSetting(settings, "hideEmpty", false);
 
