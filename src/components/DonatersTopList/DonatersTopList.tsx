@@ -109,13 +109,13 @@ export default function DonatersTopList({}: {}) {
   const textStyle = messageFont.calcStyle();
   textStyle.maxWidth = "100vw";
   textStyle.width = "50vw";
-  textStyle.flex = "1 0 auto";
+  textStyle.flex = "1 1 auto";
 
   const donatersTopStyle = headerFont.calcStyle();
   donatersTopStyle.backgroundColor = titleBackgroundColor;
   let headerAlignment = findSetting(settings, "headerAlignment", "Center");
   donatersTopStyle.textAlign = headerAlignment;
-  donatersTopStyle.flex = "2 0 auto";
+  donatersTopStyle.flex = "0 0 auto";
 
   const hideEmpty = findSetting(settings, "hideEmpty", false);
 
@@ -132,6 +132,7 @@ export default function DonatersTopList({}: {}) {
     speed: 0.5,
   });
   const packSize = carouselSettings.enabled ? carouselSettings.amount : topsize;
+  const gap = findSetting(settings, "gap", 1);
 
   function portion(): ReactNode[] {
     if (!donaters) {
@@ -163,7 +164,7 @@ export default function DonatersTopList({}: {}) {
       <Flex style={{
         backgroundColor: backgroundColor,
         height: "100%"
-      }} vertical={layout === "vertical"}>
+      }} gap={gap} vertical={layout === "vertical"}>
         <div
           style={donatersTopStyle}
           className={`donaters-title ${headerFont.calcClassName()}`}
