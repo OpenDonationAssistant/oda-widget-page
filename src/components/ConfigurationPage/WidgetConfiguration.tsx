@@ -240,7 +240,6 @@ export default function WidgetConfiguration({
               }}
               axis="both"
               minConstraints={[650, 100]}
-              maxConstraints={[1000, 1000]}
             >
               {config.get(id) && (
                 <WidgetSettingsContext.Provider
