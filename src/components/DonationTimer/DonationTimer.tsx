@@ -1,37 +1,32 @@
-import React from "react";
-import { useRef, useEffect, useState } from "react";
+import React, { useContext } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { findSetting } from "../utils";
-import {
-  cleanupCommandListener,
-  setupCommandListener,
-  subscribe,
-  unsubscribe,
-} from "../../socket";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import classes from "./DonationTimer.module.css";
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 
 export default function DonationTimer({}: {}) {
-  const { recipientId, settings, conf, widgetId } =
+  const { recipientId, conf } =
     useLoaderData() as WidgetData;
-  const navigate = useNavigate();
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
+  const { widgetId, settings, subscribe, unsubscribe } = useContext(
+    WidgetSettingsContext,
+  );
 
   useEffect(() => {
     updateDonationTime();
 
-    subscribe(widgetId, conf.topic.alerts, (message) => {
+    subscribe(conf.topic.alerts, (message) => {
       updateDonationTime();
       message.ack();
     });
-    setupCommandListener(widgetId, () => navigate(0));
     return () => {
-      unsubscribe(widgetId, conf.topic.alerts);
-      cleanupCommandListener(widgetId);
+      unsubscribe(conf.topic.alerts);
     };
   }, [recipientId]);
 

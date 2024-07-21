@@ -201,7 +201,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/donation-timer/:widgetId",
-    element: <DonationTimer />,
+    element: (
+      <WidgetWrapper>
+        <DonationTimer />
+      </WidgetWrapper>
+    ),
     loader: widgetSettingsLoader,
   },
   {

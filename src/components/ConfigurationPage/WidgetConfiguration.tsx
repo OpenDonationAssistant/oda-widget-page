@@ -25,6 +25,7 @@ import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings"
 import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
 import DonationGoal from "../DonationGoal/DonationGoal";
+import DonationTimer from "../DonationTimer/DonationTimer";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -39,6 +40,8 @@ function getWidget(type: string) {
       return <DonatersTopList />;
     case "donationgoal":
       return <DonationGoal />;
+    case "donation-timer":
+      return <DonationTimer />;
     default:
       return <div></div>;
   }
@@ -227,7 +230,9 @@ export default function WidgetConfiguration({
       <div
         className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
       >
-        {(type === "donaters-top-list" || type === "donationgoal") && (
+        {(type === "donaters-top-list" ||
+          type === "donationgoal" ||
+          type === "donation-timer") && (
           <Flex justify="space-around">
             <ResizableBox
               width={800}
