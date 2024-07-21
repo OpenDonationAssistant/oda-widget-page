@@ -1,27 +1,27 @@
-import React, { useEffect } from "react";
+import { Slider } from "antd";
+import React, { useEffect, useState } from "react";
 import { VideoJsPlayer } from "video.js";
 
 export default function ProgressBar({ player }: { player: VideoJsPlayer }) {
+  const [position, setPosition] = useState<number>(0);
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (!player) {
         return;
       }
-      let bar = document.getElementById("progressBar");
-      if (!bar) {
-        return;
-      }
-      let progress = ((player.currentTime() / player.duration()) * 100).toFixed(
-        2,
-      );
-      bar.style["width"] = `${progress}%`;
+      let progress = (player.currentTime() / player.duration()) * 100;
+      setPosition(progress);
     }, 250);
     return () => clearInterval(intervalId);
   }, [player]);
 
   return (
-    <div className="progress">
-      <div id="progressBar" className="progress-bar"></div>
-    </div>
+    <Slider
+      value={position}
+      onChange={(value: number) => {
+        setPosition(value);
+        player.currentTime(value/100*player.duration());
+      }}
+    />
   );
 }

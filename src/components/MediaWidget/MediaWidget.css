@@ -377,3 +377,7 @@ iframe {
   height: 30px;
   border: 1x solid rgb(110, 110, 110);
 }
+
+.video-container .ant-slider .ant-slider-track {
+  background-color:rgb(13, 110, 253);
+}
