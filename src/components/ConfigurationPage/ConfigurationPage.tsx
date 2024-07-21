@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import WidgetConfiguration from "./WidgetConfiguration";
-import Toolbar, { Page } from "./Toolbar";
 import { WidgetsContext } from "./WidgetsContext";
 import axios from "axios";
 import { useLoaderData } from "react-router";
@@ -18,30 +17,8 @@ import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidge
 import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
-import { ConfigProvider, Layout, theme } from "antd";
-import { Content, Header as AntHeader } from "antd/es/layout/layout";
-import Sider from "antd/es/layout/Sider";
-import Header from "./Header";
+import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
-
-const backgroundColor = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `
-body::before {
-    content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    display: block;
-    background-color: #0c122e;
-    width: 100%;
-    height: 100%;
-`,
-    }}
-  />
-);
 
 function loadSettings() {
   return axios
@@ -86,7 +63,8 @@ export default function ConfigurationPage({}: {}) {
 
   function updateConfig(id: string, key: string, value: any) {
     setConfig((oldConfig) => {
-      const widgetSettings = oldConfig.get(id) ?? new EmptyWidgetSettings(id, []);
+      const widgetSettings =
+        oldConfig.get(id) ?? new EmptyWidgetSettings(id, []);
       let updatedProperties = widgetSettings?.properties.map((it) => {
         if (it.name === key) {
           it.value = value;
@@ -214,74 +192,48 @@ export default function ConfigurationPage({}: {}) {
   );
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          borderRadius: 8,
-        },
-        algorithm: theme.darkAlgorithm,
-      }}
-    >
-      {backgroundColor}
-      <Layout>
-        <AntHeader>
-          <Header/>
-        </AntHeader>
-        <Layout>
-          <Sider>
-            <Toolbar page={Page.WIDGETS} />
-          </Sider>
-          <Content style={{ overflow:"initial" }}>
-            <div className="widget-list">
-              <WidgetsContext.Provider value={context}>
-                {widgets.map((data) => (
-                  <WidgetConfiguration
-                    id={data.id}
-                    key={data.id}
-                    name={data.name}
-                    type={data.type}
-                    reload={() => {
-                      load();
-                    }}
-                  />
-                ))}
-                {!showAddWidgetPopup && newWidgetMock}
-              </WidgetsContext.Provider>
-              {showAddWidgetPopup && (
-                <div className="new-widget-popup">
-                  {types.map((type) => (
-                    <div
-                      className="new-widget-type-button"
-                      onClick={() => {
-                        addWidget(type.name, widgets.length)
-                          .then(() => loadSettings())
-                          .then((updatedSettings) =>
-                            setWidgets(updatedSettings),
-                          );
-                        setShowAddWidgetPopup(false);
-                      }}
-                    >
-                      <img
-                        className="widget-icon"
-                        src={`/icons/${type.name}.png`}
-                      />
-                      <div>{t(type.description)}</div>
-                    </div>
-                  ))}
-                  <div
-                    className="new-widget-type-button"
-                    onClick={() => setShowAddWidgetPopup(false)}
-                    style={{ border: "none", paddingTop: "33px" }}
-                  >
-                    <img className="widget-icon" src={`/icons/close.png`} />
-                  </div>
-                </div>
-              )}
+    <Content style={{ overflow: "initial" }}>
+      <div className="widget-list">
+        <WidgetsContext.Provider value={context}>
+          {widgets.map((data) => (
+            <WidgetConfiguration
+              id={data.id}
+              key={data.id}
+              name={data.name}
+              type={data.type}
+              reload={() => {
+                load();
+              }}
+            />
+          ))}
+          {!showAddWidgetPopup && newWidgetMock}
+        </WidgetsContext.Provider>
+        {showAddWidgetPopup && (
+          <div className="new-widget-popup">
+            {types.map((type) => (
+              <div
+                className="new-widget-type-button"
+                onClick={() => {
+                  addWidget(type.name, widgets.length)
+                    .then(() => loadSettings())
+                    .then((updatedSettings) => setWidgets(updatedSettings));
+                  setShowAddWidgetPopup(false);
+                }}
+              >
+                <img className="widget-icon" src={`/icons/${type.name}.png`} />
+                <div>{t(type.description)}</div>
+              </div>
+            ))}
+            <div
+              className="new-widget-type-button"
+              onClick={() => setShowAddWidgetPopup(false)}
+              style={{ border: "none", paddingTop: "33px" }}
+            >
+              <img className="widget-icon" src={`/icons/close.png`} />
             </div>
-          </Content>
-        </Layout>
-      </Layout>
-      <div className="configuration-container"></div>
-    </ConfigProvider>
+          </div>
+        )}
+      </div>
+    </Content>
   );
 }

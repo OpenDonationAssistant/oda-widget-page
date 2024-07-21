@@ -11,14 +11,19 @@ import PaymentAlertSettings from "./settings/PaymentAlertsSettings";
 import { WidgetsContext } from "./WidgetsContext";
 import BaseSettings from "./settings/BaseSettings";
 import { publish, socket } from "../../socket";
-import ReelWidgetSettings from "../../pages/Reel/ReelWidgetSettings";
 import { log } from "../../logging";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import TextAlertButton from "./settings/TestAlertButton";
 import { useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import { ApiContext } from "../../contexts/ApiContext";
+import { messageCallbackType } from "@stomp/stompjs";
+import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
+import DonatersTopList from "../DonatersTopList/DonatersTopList";
+import { ResizableBox } from "react-resizable";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -27,12 +32,19 @@ interface WidgetConfigurationProps {
   reload: Function;
 }
 
+function getWidget(type: string) {
+  switch (type) {
+    case "donaters-top-list":
+      return <DonatersTopList />;
+    default:
+      return <div></div>;
+  }
+}
+
 function getSettingsWidget(id: string, type: string, onChange: Function) {
   switch (type) {
     case "payment-alerts":
       return <PaymentAlertSettings id={id} onChange={onChange} />;
-    case "reel":
-      return <ReelWidgetSettings id={id} />;
     default:
       return <BaseSettings id={id} />;
   }
@@ -51,7 +63,7 @@ export default function WidgetConfiguration({
   reload,
 }: WidgetConfigurationProps) {
   const { config, setConfig, updateConfig } = useContext(WidgetsContext);
-  const { conf } = useLoaderData() as WidgetData;
+  const { recipientId, conf } = useLoaderData() as WidgetData;
   const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [renaming, setRenaming] = useState(false);
@@ -212,6 +224,54 @@ export default function WidgetConfiguration({
       <div
         className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
       >
+        {type === "donaters-top-list" && (
+          <Flex justify="space-around">
+            <ResizableBox
+              width={800}
+              height={250}
+              style={{
+                border: "1px solid black",
+                boxShadow: "0px 0px 4px 4px #111111",
+                marginBottom: "10px",
+                background: `url(${process.env.PUBLIC_URL}/opacity.png)`,
+              }}
+              axis="both"
+              minConstraints={[650, 100]}
+              maxConstraints={[1000, 1000]}
+            >
+              {config.get(id) && (
+                <WidgetSettingsContext.Provider
+                  value={{
+                    widgetId: id,
+                    settings: {
+                      config:
+                        config.get(id) ??
+                        new AbstractWidgetSettings(id, [], [], new Map()),
+                    },
+                    subscribe: (
+                      topic: string,
+                      onMessage: messageCallbackType,
+                    ) => {},
+                    unsubscribe: (topic: string) => {},
+                  }}
+                >
+                  <ApiContext.Provider
+                    value={{
+                      listDonaters: (period: string) =>
+                        axios
+                          .get(
+                            `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
+                          )
+                          .then((response) => response.data),
+                    }}
+                  >
+                    {getWidget(type)}
+                  </ApiContext.Provider>
+                </WidgetSettingsContext.Provider>
+              )}
+            </ResizableBox>
+          </Flex>
+        )}
         {config.get(id) && (
           <WidgetsContext.Provider value={context}>
             {getSettingsWidget(id, type, () => setHasChanges(true))}

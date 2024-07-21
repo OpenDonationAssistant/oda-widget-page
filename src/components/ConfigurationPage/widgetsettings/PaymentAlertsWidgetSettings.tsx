@@ -176,7 +176,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     widgetId: string,
     properties: WidgetProperty[],
     alerts: any[],
-    defaultAlert: any,
+    defaultAlert?: any,
   ) {
     log.debug({ alerts: alerts }, `creating payment-alerts settings`);
     super(

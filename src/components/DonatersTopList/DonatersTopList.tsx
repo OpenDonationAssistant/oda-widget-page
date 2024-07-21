@@ -1,80 +1,52 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, useContext, useEffect } from "react";
 import { useState } from "react";
-import axios from "axios";
 import "./DonatersTopList.css";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { findSetting } from "../utils";
-import {
-  cleanupCommandListener,
-  setupCommandListener,
-  subscribe,
-  unsubscribe,
-} from "../../socket";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { WidgetData } from "../../types/WidgetData";
 import { Carousel, Flex } from "antd";
-
-const overflowHiddenForRootElement = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `#root {overflow: hidden;}`,
-    }}
-  />
-);
-
-const fullHeight = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `html, body { height: 100%; }`,
-    }}
-  />
-);
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import { ApiContext } from "../../contexts/ApiContext";
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
-  const { recipientId, settings, conf, widgetId } =
-    useLoaderData() as WidgetData;
-  const navigate = useNavigate();
+  const { recipientId, conf } = useLoaderData() as WidgetData;
+  const { widgetId, settings, subscribe, unsubscribe } = useContext(
+    WidgetSettingsContext,
+  );
+  const { listDonaters } = useContext(ApiContext);
 
   const period = findSetting(settings, "period", "month");
   const topsize = Number.parseInt(findSetting(settings, "topsize", 3));
   const layout = findSetting(settings, "layout", "vertical");
 
   function updateDonaters() {
-    axios
-      .get(
-        `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
-      )
-      .then((response) => response.data)
-      .then((data) => {
-        const map = new Map();
-        Object.keys(data)
-          .filter((key) => key)
-          .forEach((key) => {
-            map.set(key, data[key]);
-          });
-        const sortedMap =
-          type === "Last"
-            ? map
-            : new Map(
-                [...map.entries()].sort((a, b) => b[1].major - a[1].major),
-              );
-        setDonaters(sortedMap);
-      });
+    listDonaters(period).then((data) => {
+      const map = new Map();
+      Object.keys(data)
+        .filter((key) => key)
+        .forEach((key) => {
+          map.set(key, data[key]);
+        });
+      const sortedMap =
+        type === "Last"
+          ? map
+          : new Map([...map.entries()].sort((a, b) => b[1].major - a[1].major));
+      setDonaters(sortedMap);
+    });
   }
 
   useEffect(() => {
-    subscribe(widgetId, conf.topic.alerts, (message) => {
+    subscribe(conf.topic.alerts, (message) => {
       setTimeout(() => {
         updateDonaters();
         message.ack();
       }, 3000);
     });
-    setupCommandListener(widgetId, () => navigate(0));
     updateDonaters();
     return () => {
-      unsubscribe(widgetId, conf.topic.alerts);
-      cleanupCommandListener(widgetId);
+      unsubscribe(conf.topic.alerts);
     };
   }, [recipientId]);
 
@@ -86,7 +58,7 @@ export default function DonatersTopList({}: {}) {
     "titleBackgroundColor",
     "white",
   );
-  const backgroundColor = findSetting(settings, "backgroundColor", "white");
+  const backgroundColor = findSetting(settings, "backgroundColor", "red");
   const headerFont = new AnimatedFontProperty({
     widgetId: widgetId,
     name: "headerFont",
@@ -149,13 +121,6 @@ export default function DonatersTopList({}: {}) {
   if (hideEmpty && (!donaters || donaters.size == 0)) {
     return (
       <>
-        {overflowHiddenForRootElement}
-        {fullHeight}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `#root { background-color: ${backgroundColor}; }`,
-          }}
-        />
       </>
     );
   }
@@ -163,7 +128,7 @@ export default function DonatersTopList({}: {}) {
   const carouselSettings = findSetting(settings, "carousel", {
     enabled: false,
     delay: 3,
-    speed: 0.5
+    speed: 0.5,
   });
   const packSize = carouselSettings.enabled ? carouselSettings.amount : topsize;
 
@@ -194,14 +159,10 @@ export default function DonatersTopList({}: {}) {
     <>
       {headerFont.createFontImport()}
       {messageFont.createFontImport()}
-      {overflowHiddenForRootElement}
-      {fullHeight}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `#root { background-color: ${backgroundColor}; }`,
-        }}
-      />
-      <Flex vertical={layout === "vertical"}>
+      <Flex style={{
+        backgroundColor: backgroundColor,
+        height: "100%"
+      }} vertical={layout === "vertical"}>
         <div
           style={donatersTopStyle}
           className={`donaters-title ${headerFont.calcClassName()}`}

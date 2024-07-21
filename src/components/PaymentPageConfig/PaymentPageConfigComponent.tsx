@@ -1,22 +1,11 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import Toolbar, { Page } from "../ConfigurationPage/Toolbar";
 import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
 import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { WidgetData } from "../../types/WidgetData";
 import { File } from "buffer";
-import Layout, { Content, Header as AntHeader } from "antd/es/layout/layout";
-import Header from "../ConfigurationPage/Header";
-import Sider from "antd/es/layout/Sider";
-
-const backgroundColor = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `html, body {background-color: #0c122e; height: 100%;}`,
-    }}
-  />
-);
+import { Content } from "antd/es/layout/layout";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -125,17 +114,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   }, [recipientId]);
 
   return (
-    <div className={classes.paymentpage}>
-      {backgroundColor}
-      <Layout>
-        <AntHeader>
-          <Header />
-        </AntHeader>
-        <Layout>
-          <Sider>
-            <Toolbar page={Page.PAYMENTPAGE} />
-          </Sider>
-          <Content>
+    <Content>
       <div className={classes.paymentpageconfig}>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>ФИО</div>
@@ -212,15 +191,17 @@ export default function PaymentPageConfigComponent({}: {}) {
             <input type="file" onChange={handleCssUpload} />
             Загрузить
           </label>
-          {hasCustomCss && (<button
-            style={{marginLeft: "10px"}}
-            className="oda-button"
-            onClick={() => {
-              deleteCustomCss();
-            }}
-          >
-            Удалить
-          </button>)}
+          {hasCustomCss && (
+            <button
+              style={{ marginLeft: "10px" }}
+              className="oda-button"
+              onClick={() => {
+                deleteCustomCss();
+              }}
+            >
+              Удалить
+            </button>
+          )}
         </div>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>Текст на странице</div>
@@ -294,7 +275,9 @@ export default function PaymentPageConfigComponent({}: {}) {
           />
         </div>
         <div className={classes.widgetsettingsitem}>
-          <div className={classes.widgetsettingsname}>Текст подсказки для заказа видео</div>
+          <div className={classes.widgetsettingsname}>
+            Текст подсказки для заказа видео
+          </div>
           <textarea
             value={tooltip ?? ""}
             className={classes.widgetsettingsvalue}
@@ -305,7 +288,7 @@ export default function PaymentPageConfigComponent({}: {}) {
               minHeight: "250px",
             }}
             onChange={(e) => {
-              if (paymentPageConfig.current){
+              if (paymentPageConfig.current) {
                 paymentPageConfig.current.tooltip = e.target.value;
               }
               if (!hasChanges) {
@@ -355,9 +338,6 @@ export default function PaymentPageConfigComponent({}: {}) {
           </div>
         )}
       </div>
-      </Content>
-      </Layout>
-      </Layout>
-    </div>
+    </Content>
   );
 }

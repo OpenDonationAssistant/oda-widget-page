@@ -7,8 +7,11 @@ import MediaWidget from "./components/MediaWidget/MediaWidget";
 import {
   createBrowserRouter,
   Navigate,
+  Outlet,
   RouterProvider,
+  useLocation,
 } from "react-router-dom";
+import { Header as AntHeader } from "antd/es/layout/layout";
 import PlayerControl from "./components/PlayerControl/PlayerControl";
 import DonatersTopList from "./components/DonatersTopList/DonatersTopList";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
@@ -28,9 +31,13 @@ import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import DonationGoal from "./components/DonationGoal/DonationGoal";
 import HistoryPage from "./pages/History/HistoryPage";
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, Layout, theme } from "antd";
 import "./i18n";
-import 'animate.css';
+import "animate.css";
+import WidgetWrapper from "./WidgetWrapper";
+import Header from "./components/ConfigurationPage/Header";
+import Sider from "antd/es/layout/Sider";
+import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 
 async function widgetSettingsLoader({
   params,
@@ -58,10 +65,85 @@ async function widgetSettingsLoader({
   return { recipientId, settings, conf, widgetId };
 }
 
+const backgroundColor = (
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `
+body::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    background-color: #0c122e;
+    width: 100%;
+    height: 100%;
+`,
+    }}
+  />
+);
+
+function detectPage(path: string): Page{
+  if (path.endsWith("widgets")){
+    return Page.WIDGETS;
+  }
+  if (path.endsWith("payment-page")){
+    return Page.PAYMENTPAGE;
+  }
+  if (path.endsWith("history-page")){
+    return Page.HISTORY;
+  }
+  return Page.WIDGETS;
+}
+
+function ConfigurationPageTemplate() {
+  const location = useLocation();
+  const page = detectPage(location.pathname);
+  return (
+    <>
+      {backgroundColor}
+      <Layout>
+        <AntHeader>
+          <Header />
+        </AntHeader>
+        <Layout>
+          <Sider>
+            <Toolbar page={page} />
+          </Sider>
+          <Outlet />
+        </Layout>
+      </Layout>
+    </>
+  );
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Navigate to="/configuration/widgets" />,
+  },
+  {
+    path: "/configuration",
+    element: <ConfigurationPageTemplate/>,
+    loader: widgetSettingsLoader,
+    children: [
+      {
+        path: "widgets",
+        element: <ConfigurationPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "payment-page",
+        element: <PaymentPageConfigComponent />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "history-page",
+        element: <HistoryPage />,
+        loader: widgetSettingsLoader,
+      },
+    ],
   },
   {
     path: "/configuration/news",
@@ -69,23 +151,8 @@ const router = createBrowserRouter([
     loader: widgetSettingsLoader,
   },
   {
-    path: "/configuration/widgets",
-    element: <ConfigurationPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
     path: "/configuration/gateways",
     element: <PaymentGatewaysConfiguration />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/configuration/payment-page",
-    element: <PaymentPageConfigComponent />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/configuration/history-page",
-    element: <HistoryPage />,
     loader: widgetSettingsLoader,
   },
   {
@@ -120,7 +187,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/donaters-top-list/:widgetId",
-    element: <DonatersTopList />,
+    element: (
+      <WidgetWrapper>
+        <DonatersTopList />
+      </WidgetWrapper>
+    ),
     loader: widgetSettingsLoader,
   },
   {

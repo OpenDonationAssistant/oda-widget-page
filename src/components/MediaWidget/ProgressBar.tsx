@@ -4,13 +4,14 @@ import { VideoJsPlayer } from "video.js";
 
 export default function ProgressBar({ player }: { player: VideoJsPlayer }) {
   const [position, setPosition] = useState<number>(0);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (!player) {
         return;
       }
       let progress = (player.currentTime() / player.duration()) * 100;
-      setPosition(progress);
+      setPosition(progress < 99 ? progress : 99);
     }, 250);
     return () => clearInterval(intervalId);
   }, [player]);

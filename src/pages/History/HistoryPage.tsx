@@ -2,16 +2,14 @@ import {
   Descriptions,
   Input,
   InputNumber,
-  Layout,
   List,
   Modal,
   Select,
   Spin,
   Switch,
 } from "antd";
-import { Content, Header as AntHeader } from "antd/es/layout/layout";
+import { Content } from "antd/es/layout/layout";
 import React, { useRef, useState } from "react";
-import Toolbar, { Page } from "../../components/ConfigurationPage/Toolbar";
 import classes from "./HistoryPage.module.css";
 import {
   HistoryItemData,
@@ -20,8 +18,6 @@ import {
 import { usePagination } from "ahooks";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import Sider from "antd/es/layout/Sider";
-import Header from "../../components/ConfigurationPage/Header";
 import { useTranslation } from "react-i18next";
 import { uuidv7 } from "uuidv7";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
@@ -34,26 +30,6 @@ const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   hour: "numeric",
   minute: "numeric",
 });
-
-const backgroundColor = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `
-body::before {
-    content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    display: block;
-    background-color: #0c122e;
-    width: 100%;
-    height: 100%;
-}
-`,
-    }}
-  />
-);
 
 function description(item: HistoryItemData) {
   const desc = [];
@@ -196,85 +172,72 @@ export default function HistoryPage({}) {
   }
 
   return (
-    <>
-      {backgroundColor}
-      <Layout>
-        <AntHeader>
-          <Header />
-        </AntHeader>
-        <Layout>
-          <Sider>
-            <Toolbar page={Page.HISTORY} />
-          </Sider>
-          <Content>
-            <div className="configuration-container">
-              <div className={classes.pagecontainer}>
-                <div className={classes.buttons}>
-                  <button
-                    className="oda-btn-default"
-                    onClick={() => setShowModal((old) => !old)}
-                  >
-                    {t("button-add-historyitem")}
-                  </button>
-                </div>
-                {loading ? <Spin /> : list(data?.list ?? [], pagination)}
-              </div>
-              <Modal
-                title={t("dialog-add-donation-title")}
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                onCancel={() => setShowModal(false)}
-                onOk={() => {
-                  addItem();
-                  setShowModal(false);
-                }}
-              >
-                <LabeledContainer displayName="dialog-add-donation-nickname">
-                  <Input
-                    value={nickname}
-                    onChange={(value) => setNickname(value.target.value)}
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="dialog-add-donation-amount">
-                  <InputNumber
-                    className={`full-width`}
-                    value={amount}
-                    onChange={(value) => setAmount(value ?? 0)}
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="dialog-add-donation-count-in-goal">
-                  <Select
-                    className="full-width"
-                    value={goalId}
-                    onChange={(selected) => setGoalId(selected)}
-                    options={paymentPageConfig.current?.goals.map((goal) => {
-                      return { value: goal.id, label: goal.briefDescription };
-                    })}
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="dialog-add-donation-show-alert">
-                  <Switch
-                    value={showAlert}
-                    onChange={() => setShowAlert((old) => !old)}
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="dialog-add-donation-count-in-top">
-                  <Switch
-                    value={countInTop}
-                    onChange={() => setCountInTop((old) => !old)}
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="dialog-add-donation-trigger-reel">
-                  <Switch
-                    value={triggerReel}
-                    onChange={() => setTriggerReel((old) => !old)}
-                  />
-                </LabeledContainer>
-              </Modal>
-            </div>
-          </Content>
-        </Layout>
-      </Layout>
-    </>
+    <Content>
+      <div className="configuration-container">
+        <div className={classes.pagecontainer}>
+          <div className={classes.buttons}>
+            <button
+              className="oda-btn-default"
+              onClick={() => setShowModal((old) => !old)}
+            >
+              {t("button-add-historyitem")}
+            </button>
+          </div>
+          {loading ? <Spin /> : list(data?.list ?? [], pagination)}
+        </div>
+        <Modal
+          title={t("dialog-add-donation-title")}
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          onCancel={() => setShowModal(false)}
+          onOk={() => {
+            addItem();
+            setShowModal(false);
+          }}
+        >
+          <LabeledContainer displayName="dialog-add-donation-nickname">
+            <Input
+              value={nickname}
+              onChange={(value) => setNickname(value.target.value)}
+            />
+          </LabeledContainer>
+          <LabeledContainer displayName="dialog-add-donation-amount">
+            <InputNumber
+              className={`full-width`}
+              value={amount}
+              onChange={(value) => setAmount(value ?? 0)}
+            />
+          </LabeledContainer>
+          <LabeledContainer displayName="dialog-add-donation-count-in-goal">
+            <Select
+              className="full-width"
+              value={goalId}
+              onChange={(selected) => setGoalId(selected)}
+              options={paymentPageConfig.current?.goals.map((goal) => {
+                return { value: goal.id, label: goal.briefDescription };
+              })}
+            />
+          </LabeledContainer>
+          <LabeledContainer displayName="dialog-add-donation-show-alert">
+            <Switch
+              value={showAlert}
+              onChange={() => setShowAlert((old) => !old)}
+            />
+          </LabeledContainer>
+          <LabeledContainer displayName="dialog-add-donation-count-in-top">
+            <Switch
+              value={countInTop}
+              onChange={() => setCountInTop((old) => !old)}
+            />
+          </LabeledContainer>
+          <LabeledContainer displayName="dialog-add-donation-trigger-reel">
+            <Switch
+              value={triggerReel}
+              onChange={() => setTriggerReel((old) => !old)}
+            />
+          </LabeledContainer>
+        </Modal>
+      </div>
+    </Content>
   );
 }

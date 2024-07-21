@@ -35,7 +35,6 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       params.tab,
     );
     this._label = params.label ??  "widget-font-label";
-    console.log(this._label);
   }
 
   copy() {
