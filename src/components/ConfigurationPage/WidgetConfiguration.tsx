@@ -24,6 +24,7 @@ import { messageCallbackType } from "@stomp/stompjs";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
+import DonationGoal from "../DonationGoal/DonationGoal";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -36,6 +37,8 @@ function getWidget(type: string) {
   switch (type) {
     case "donaters-top-list":
       return <DonatersTopList />;
+    case "donationgoal":
+      return <DonationGoal />;
     default:
       return <div></div>;
   }
@@ -224,7 +227,7 @@ export default function WidgetConfiguration({
       <div
         className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
       >
-        {type === "donaters-top-list" && (
+        {(type === "donaters-top-list" || type === "donationgoal") && (
           <Flex justify="space-around">
             <ResizableBox
               width={800}

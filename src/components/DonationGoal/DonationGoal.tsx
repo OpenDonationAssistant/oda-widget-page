@@ -1,12 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import {
-  cleanupCommandListener,
-  setupCommandListener,
-  subscribe,
-  unsubscribe,
-} from "../../socket";
 import { log } from "../../logging";
 import classes from "./DonationGoal.module.css";
 import { findSetting } from "../utils";
@@ -14,16 +8,19 @@ import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 
 export default function DonationGoal({}) {
-  const { recipientId, settings, conf, widgetId } =
+  const { recipientId, conf } =
     useLoaderData() as WidgetData;
-  const navigate = useNavigate();
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const { widgetId, settings, subscribe, unsubscribe } = useContext(
+    WidgetSettingsContext,
+  );
 
   useEffect(() => {
-    subscribe(widgetId, conf.topic.goal, (message) => {
+    subscribe(conf.topic.goal, (message) => {
       log.debug({ goalCommand: message }, "received goals command");
       const updatedGoal = JSON.parse(message.body) as any;
       setGoals((actualGoals) => {
@@ -41,10 +38,8 @@ export default function DonationGoal({}) {
       });
       message.ack();
     });
-    setupCommandListener(widgetId, () => navigate(0));
     return () => {
-      unsubscribe(widgetId, conf.topic.goal);
-      cleanupCommandListener(widgetId);
+      unsubscribe(conf.topic.goal);
     };
   }, [recipientId]);
 

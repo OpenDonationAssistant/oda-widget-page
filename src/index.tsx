@@ -84,14 +84,14 @@ body::before {
   />
 );
 
-function detectPage(path: string): Page{
-  if (path.endsWith("widgets")){
+function detectPage(path: string): Page {
+  if (path.endsWith("widgets")) {
     return Page.WIDGETS;
   }
-  if (path.endsWith("payment-page")){
+  if (path.endsWith("payment-page")) {
     return Page.PAYMENTPAGE;
   }
-  if (path.endsWith("history-page")){
+  if (path.endsWith("history-page")) {
     return Page.HISTORY;
   }
   return Page.WIDGETS;
@@ -125,7 +125,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/configuration",
-    element: <ConfigurationPageTemplate/>,
+    element: <ConfigurationPageTemplate />,
     loader: widgetSettingsLoader,
     children: [
       {
@@ -206,7 +206,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/donationgoal/:widgetId",
-    element: <DonationGoal />,
+    element: (
+      <WidgetWrapper>
+        <DonationGoal />
+      </WidgetWrapper>
+    ),
     loader: widgetSettingsLoader,
   },
   {
