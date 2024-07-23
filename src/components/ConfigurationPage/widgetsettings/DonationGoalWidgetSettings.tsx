@@ -6,6 +6,7 @@ import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { DonationGoalLabelProperty } from "../widgetproperties/DonationGoalLabelProperty";
+import { BorderProperty } from "../widgetproperties/BorderProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
@@ -20,7 +21,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           widgetId: widgetId,
           name: "descriptionFont",
           tab: "header",
-          label: "widget-donationgoal-title-font-family"
+          label: "widget-donationgoal-title-font-family",
         }),
         new SingleChoiceProperty(
           widgetId,
@@ -35,7 +36,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           widgetId: widgetId,
           name: "amountFont",
           tab: "header",
-          label: "widget-donationgoal-amount-font-family"
+          label: "widget-donationgoal-amount-font-family",
         }),
         new ColorProperty(
           widgetId,
@@ -63,6 +64,8 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "header",
         ),
         new DonationGoalLabelProperty(widgetId),
+        new BorderProperty({ widgetId: widgetId, name: "outerBorder", tab:"header" }),
+        new BorderProperty({ widgetId: widgetId, name: "innerBorder", tab:"header" }),
         new DonationGoalProperty(widgetId),
       ],
       tabs,

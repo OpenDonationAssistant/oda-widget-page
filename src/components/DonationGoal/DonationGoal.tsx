@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  CSSProperties,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { log } from "../../logging";
@@ -9,10 +15,13 @@ import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty
 import { produce } from "immer";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import {
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
+} from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 export default function DonationGoal({}) {
-  const { recipientId, conf } =
-    useLoaderData() as WidgetData;
+  const { recipientId, conf } = useLoaderData() as WidgetData;
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
   const { widgetId, settings, subscribe, unsubscribe } = useContext(
@@ -86,8 +95,16 @@ export default function DonationGoal({}) {
   });
 
   const backgroundColor = findSetting(settings, "backgroundColor", "lightgray");
+  const progressBarBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "outerBorder",
+    value: findSetting(settings, "outerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
   const progressbarStyle = {
-    backgroundColor: backgroundColor,
+    ...{
+      backgroundColor: backgroundColor,
+    },
+    ...progressBarBorderStyle,
   };
 
   const filledColor = findSetting(settings, "filledColor", "green");
@@ -103,6 +120,23 @@ export default function DonationGoal({}) {
   const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
     draft.justifyContent = filledTextAlign;
   });
+
+  const filledBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "innerBorder",
+    value: findSetting(settings, "innerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  function calcBarStyle(goal: Goal) {
+    const style: CSSProperties = {
+      width: `${
+        (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100
+      }%`,
+      backgroundColor: filledColor,
+    };
+    const result = { ...style, ...filledBorderStyle };
+    return result;
+  }
 
   return (
     <>
@@ -124,13 +158,7 @@ export default function DonationGoal({}) {
               className={`${classes.goalprogressbar}`}
             ></div>
             <div
-              style={{
-                width: `${
-                  (goal.accumulatedAmount.major / goal.requiredAmount.major) *
-                  100
-                }%`,
-                backgroundColor: filledColor,
-              }}
+              style={calcBarStyle(goal)}
               className={`${classes.goalfilled}`}
             ></div>
             <div

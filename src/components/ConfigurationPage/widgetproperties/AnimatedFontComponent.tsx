@@ -52,7 +52,7 @@ export default function AnimatedFontComponent({
     <>
       {property.createFontImport()}
       <div className="widget-settings-item">
-        <label className="widget-settings-name">{t(property._label)}</label>
+        <label className="widget-settings-name">{t(property.label)}</label>
         <button
           className={`${classes.button} oda-btn-default`}
           onClick={toggleModal}

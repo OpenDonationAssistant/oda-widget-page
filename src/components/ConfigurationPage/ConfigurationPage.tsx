@@ -168,7 +168,7 @@ export default function ConfigurationPage({}: {}) {
     let widgetSettings = new Map();
 
     widgets.forEach((it) => {
-      widgetSettings.set(it.id, createSettings(it).copy());
+      widgetSettings.set(it.id, createSettings(it));
     });
 
     log.debug({ settings: widgetSettings }, "merged widget settings");

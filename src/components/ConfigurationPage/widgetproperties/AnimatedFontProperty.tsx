@@ -34,7 +34,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       "",
       params.tab,
     );
-    this._label = params.label ??  "widget-font-label";
+    this._label = params.label ?? "widget-font-label";
   }
 
   copy() {
@@ -43,7 +43,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       name: this.name,
       value: this.value,
       tab: this.tab,
-      label: this._label
+      label: this._label,
     });
   }
 
@@ -77,6 +77,13 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
   }
 
   markup(): ReactNode {
-    return <AnimatedFontComponent property={this}/>;
+    return <AnimatedFontComponent property={this} />;
+  }
+
+  public set label(value: string) {
+    this._label = value;
+  }
+  public get label(): string {
+    return this._label;
   }
 }
