@@ -1,6 +1,5 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
-import { FontProperty } from "../widgetproperties/FontProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ReelItemBackgroundProperty } from "../widgetproperties/ReelItemBackgroundProperty";
 import { ReelItemListProperty } from "../widgetproperties/ReelItemListProperty";
@@ -11,7 +10,6 @@ import {
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
-
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
     tabs.set("general", "tab-reel-general");
@@ -23,7 +21,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "titleFont",
-          tab: "general"
+          tab: "general",
         }),
         new ColorProperty(
           widgetId,
@@ -89,21 +87,14 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "widget-reel-required-amount",
           "general",
         ),
-        new ReelItemListProperty(
-          widgetId,
-          ["Ничего", "Выигрыш"]
-        ),
-        new ReelItemBackgroundProperty(
-          widgetId,
-          ""
-        ),
+        new ReelItemListProperty(widgetId, ["Ничего", "Выигрыш"]),
+        new ReelItemBackgroundProperty(widgetId, ""),
       ],
       tabs,
     );
   }
 
-  copy(){
+  copy() {
     return new ReelWidgetSettings(this.widgetId, this.properties);
   }
-
 }

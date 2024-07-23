@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Select } from "antd";
 import { Trans } from "react-i18next";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 export class SingleChoiceProperty extends DefaultWidgetProperty {
   options: string[];
@@ -21,12 +22,10 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
 
   markup(updateConfig: Function): ReactNode {
     return (
-      <div key={this.name} className="widget-settings-item">
-        <label className="widget-settings-name">
-          <Trans i18nKey={this.displayName}/>
-        </label>
+      <LabeledContainer displayName={this.displayName}>
         <Select
           value={this.value}
+          className="full-width"
           onChange={(e) => {
             if (!this.widgetId) {
               return;
@@ -34,10 +33,17 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
             updateConfig(this.widgetId, this.name, e);
           }}
           options={this.options.map((option) => {
-            return { value: option, label: <><Trans i18nKey={option}/></> };
+            return {
+              value: option,
+              label: (
+                <>
+                  <Trans i18nKey={option} />
+                </>
+              ),
+            };
           })}
         />
-      </div>
+      </LabeledContainer>
     );
   }
 

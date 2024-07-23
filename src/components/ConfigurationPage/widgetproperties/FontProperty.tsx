@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import FontSelect from "../settings/FontSelect";
-import { Trans } from "react-i18next";
-import classes from "./FontProperty.module.css";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 export class FontProperty {
   widgetId: string | null;
@@ -40,12 +39,10 @@ export class FontProperty {
 
   markup(updateConfig: Function): ReactNode {
     return (
-      <div key={this.name} className="widget-settings-item">
-        <label className={`${classes.label}`}>
-          <Trans i18nKey={this.displayName}/>
-        </label>
+      <LabeledContainer displayName={this.displayName}>
         <FontSelect
           prop={this}
+          className="full-width"
           onChange={(value: string) => {
             if (!this.widgetId) {
               return;
@@ -53,7 +50,7 @@ export class FontProperty {
             updateConfig(this.widgetId, this.name, value);
           }}
         />
-      </div>
+      </LabeledContainer>
     );
   }
 }

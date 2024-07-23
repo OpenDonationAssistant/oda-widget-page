@@ -3,10 +3,10 @@ import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
-import { TextProperty } from "../widgetproperties/TextProperty";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { DonationGoalLabelProperty } from "../widgetproperties/DonationGoalLabelProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
+import { BackgroundProperty } from "../widgetproperties/BackgroundProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
@@ -64,9 +64,23 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "header",
         ),
         new DonationGoalLabelProperty(widgetId),
-        new BorderProperty({ widgetId: widgetId, name: "outerBorder", tab:"header" }),
-        new BorderProperty({ widgetId: widgetId, name: "innerBorder", tab:"header" }),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "outerBorder",
+          tab: "header",
+        }),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "innerBorder",
+          tab: "header",
+        }),
         new DonationGoalProperty(widgetId),
+        new BackgroundProperty({
+          widgetId: widgetId,
+          name: "background",
+          displayName: "label-background",
+          tab: "header"
+        })
       ],
       tabs,
     );

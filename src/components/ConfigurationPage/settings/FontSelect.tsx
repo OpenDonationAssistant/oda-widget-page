@@ -43,12 +43,21 @@ const fonts = [
   "Noto Serif",
 ];
 
-export default function FontSelect({ prop, onChange }) {
+export default function FontSelect({
+  prop,
+  className,
+  onChange,
+}: {
+  prop: { value: string };
+  className?: string;
+  onChange: (name: string) => void;
+}) {
   return (
     <Select
       showSearch
       value={prop.value}
       onChange={onChange}
+      className={className}
       options={fonts.sort().map((font) => {
         return { value: font, label: font };
       })}

@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import TextPropertyModal from "./TextPropertyModal";
-import { Trans } from "react-i18next";
+import ModalButton from "../../ModalButton/ModalButton";
 
 export class TextProperty extends DefaultWidgetProperty {
   constructor(
@@ -28,25 +27,21 @@ export class TextProperty extends DefaultWidgetProperty {
 
   markup(updateConfig: Function): ReactNode {
     return (
-      <div key={this.name} className="widget-settings-item">
-        <label
-          htmlFor={`${this.widgetId}_${this.name}`}
-          className="widget-settings-name"
-        >
-          <Trans i18nKey={this.displayName}/>
-        </label>
-        <TextPropertyModal title={this.displayName}>
-          <div className="textarea-container">
-            <textarea
-              className="widget-settings-value"
-              value={this.value}
-              onChange={(e) =>
-                updateConfig(this.widgetId, this.name, e.target.value)
-              }
-            />
-          </div>
-        </TextPropertyModal>
-      </div>
+      <ModalButton
+        modalTitle={this.displayName}
+        buttonLabel="button-settings"
+        label={this.displayName}
+      >
+        <div className="textarea-container">
+          <textarea
+            className="widget-settings-value"
+            value={this.value}
+            onChange={(e) =>
+              updateConfig(this.widgetId, this.name, e.target.value)
+            }
+          />
+        </div>
+      </ModalButton>
     );
   }
 }

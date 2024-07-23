@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import { InputNumber } from 'antd';
+import { InputNumber } from "antd";
 import { Trans } from "react-i18next";
 import classes from "./NumberProperty.module.css";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 export class NumberProperty extends DefaultWidgetProperty {
-
   copy() {
     return new NumberProperty(
       this.widgetId,
@@ -19,13 +19,10 @@ export class NumberProperty extends DefaultWidgetProperty {
 
   markup(updateConfig: Function): ReactNode {
     return (
-      <div key={this.name} className="widget-settings-item">
-        <label className={`${classes.name}`}>
-          <Trans i18nKey={this.displayName}/>
-        </label>
+      <LabeledContainer displayName={this.displayName}>
         <InputNumber
           value={this.value}
-          className={`${classes.value}`}
+          className={`${classes.value} full-width`}
           onChange={(e) => {
             if (!this.widgetId) {
               return;
@@ -33,7 +30,7 @@ export class NumberProperty extends DefaultWidgetProperty {
             updateConfig(this.widgetId, this.name, e);
           }}
         />
-      </div>
+      </LabeledContainer>
     );
   }
 }

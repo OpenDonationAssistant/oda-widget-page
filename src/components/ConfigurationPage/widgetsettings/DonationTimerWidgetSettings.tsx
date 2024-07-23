@@ -1,5 +1,6 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
+import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
@@ -18,8 +19,8 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           "widget-donation-timer-refresh",
         ),
         new AnimatedFontProperty({
-          widgetId:widgetId,
-          name:"titleFont"
+          widgetId: widgetId,
+          name: "titleFont",
         }),
         new TextProperty(
           widgetId,
@@ -28,11 +29,12 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           "Без донатов уже <time>",
           "widget-donation-timer-text",
         ),
+        new BorderProperty({ widgetId: widgetId, name: "border" }),
       ],
       new Map(),
     );
   }
-  copy(){
+  copy() {
     return new DonationTimerWidgetSettings(this.widgetId, this.properties);
   }
 }

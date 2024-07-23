@@ -1,6 +1,5 @@
 import { Modal } from "antd";
 import React, { ReactNode, useState } from "react";
-import classes from "./TextPropertyModal.module.css";
 import { useTranslation } from "react-i18next";
 
 export default function TextPropertyModal({
@@ -37,7 +36,7 @@ export default function TextPropertyModal({
 
   return (
     <>
-      <button className={`${classes.modalopenbutton} oda-btn-default`} onClick={toggleModal}>
+      <button className={`oda-btn-default`} onClick={toggleModal}>
         {t("button-edit")}
       </button>
       <Modal

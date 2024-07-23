@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
-import ColorPicker from "../settings/ColorPicker";
-import { Trans } from "react-i18next";
-import classes from "./ColorProperty.module.css";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { ColorPicker } from "antd";
 
 export class ColorProperty {
   widgetId: string | null;
@@ -29,20 +28,18 @@ export class ColorProperty {
 
   markup(updateConfig: Function): ReactNode {
     return (
-      <div key={this.name} className="widget-settings-item">
-        <label className={`${classes.label}`} >
-          <Trans i18nKey={this.displayName}/>
-        </label>
+      <LabeledContainer displayName={this.displayName}>
         <ColorPicker
           value={this.value}
-          onChange={(value: string) => {
+          showText
+          onChange={(value) => {
             if (!this.widgetId) {
               return;
             }
-            updateConfig(this.widgetId, this.name, value);
+            updateConfig(this.widgetId, this.name, value.toRgbString());
           }}
         />
-      </div>
+    </LabeledContainer>
     );
   }
   copy() {
