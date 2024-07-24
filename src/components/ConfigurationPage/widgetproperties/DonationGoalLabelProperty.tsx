@@ -78,7 +78,7 @@ export class DonationGoalLabelProperty extends DefaultWidgetProperty {
       "predefined",
       value ?? "<collected> / <required> <currency>",
       "widget-donationgoal-label-template",
-      "header",
+      "progressbar",
     );
   }
 

@@ -11,12 +11,14 @@ import { BackgroundProperty } from "../widgetproperties/BackgroundProperty";
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
     const tabs = new Map();
-    tabs.set("header", "tab-donationgoal-appearance");
     tabs.set("goals", "tab-donationgoal-goals");
+    tabs.set("header", "tab-donationgoal-header");
+    tabs.set("progressbar", "tab-donationgoal-bar");
     super(
       widgetId,
       properties,
       [
+        new DonationGoalProperty(widgetId),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "descriptionFont",
@@ -32,10 +34,17 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           ["left", "center", "right"],
           "header",
         ),
+        new BackgroundProperty({
+          widgetId: widgetId,
+          name: "background",
+          displayName: "label-background",
+          tab: "header"
+        }),
+        new DonationGoalLabelProperty(widgetId),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "amountFont",
-          tab: "header",
+          tab: "progressbar",
           label: "widget-donationgoal-amount-font-family",
         }),
         new ColorProperty(
@@ -44,7 +53,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "color",
           "#818181",
           "widget-donationgoal-background",
-          "header",
+          "progressbar",
         ),
         new ColorProperty(
           widgetId,
@@ -52,7 +61,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "color",
           "#00aa00",
           "widget-donationgoal-filled-color",
-          "header",
+          "progressbar",
         ),
         new SingleChoiceProperty(
           widgetId,
@@ -61,26 +70,18 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           "left",
           "widget-donationgoal-amount-alignment",
           ["left", "center", "right"],
-          "header",
+          "progressbar",
         ),
-        new DonationGoalLabelProperty(widgetId),
         new BorderProperty({
           widgetId: widgetId,
           name: "outerBorder",
-          tab: "header",
+          tab: "progressbar",
         }),
         new BorderProperty({
           widgetId: widgetId,
           name: "innerBorder",
-          tab: "header",
+          tab: "progressbar",
         }),
-        new DonationGoalProperty(widgetId),
-        new BackgroundProperty({
-          widgetId: widgetId,
-          name: "background",
-          displayName: "label-background",
-          tab: "header"
-        })
       ],
       tabs,
     );

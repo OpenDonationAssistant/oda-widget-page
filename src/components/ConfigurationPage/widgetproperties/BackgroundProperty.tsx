@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import ModalButton from "../../ModalButton/ModalButton";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { ColorPicker, Select } from "antd";
+import { Button, ColorPicker, Flex, InputNumber, Select, Space } from "antd";
 import { produce } from "immer";
 
 interface BackgroundPropertyValue {
@@ -105,6 +105,38 @@ export class BackgroundProperty extends DefaultWidgetProperty {
               }}
             />
           </LabeledContainer>
+        )}
+        {(this.value.gradient === "linear") && (
+              <LabeledContainer displayName="Угол">
+                  <InputNumber addonAfter="deg" />
+              </LabeledContainer>
+        )}
+        {(this.value.gradient === "linear" || this.value.gradient === "radial") && (
+          <>
+            {this.value.colors.map((color:string, index: number) => (
+              <LabeledContainer key={index} displayName="label-color">
+                <Flex>
+                <ColorPicker
+                  showText
+                  value={color}
+                  onChange={(newcolor) => {
+                    const updated = produce(
+                      this.value,
+                      (draft: BackgroundPropertyValue) => {
+                        draft.colors[index] = newcolor.toRgbString();
+                      },
+                    );
+                    updateConfig(this.widgetId, this.name, updated);
+                  }}
+                />
+                  <InputNumber addonAfter="%" />
+                </Flex>
+              </LabeledContainer>
+            ))}
+            <Flex style={{ marginTop: "10px"  }} justify="center">
+              <Button>Добавить цвет</Button>
+            </Flex>
+          </>
         )}
       </ModalButton>
     );
