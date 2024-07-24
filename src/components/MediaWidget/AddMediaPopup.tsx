@@ -7,8 +7,6 @@ import { Playlist } from "../../logic/playlist/Playlist";
 import { Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 
-const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
-
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
@@ -26,6 +24,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }, [showNewMediaPopup]);
 
   function addVideo(videoId: string) {
+    log.debug({videoId: videoId}, "adding song");
     return axios
       .get(
         `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/available?videoId=${videoId}`,
@@ -50,6 +49,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }
 
   function addPlaylistItems(playlistId: string) {
+    log.debug({playlistId: playlistId}, "adding playlist");
     return axios
       .get(
         `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlists/${playlistId}`,
@@ -74,6 +74,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }
 
   function addMedia(url: string) {
+    log.debug({url:url}, "adding media");
     if (url.includes("playlist")) {
       const index = url.lastIndexOf("list=");
       let id = url.substring(index + 5);
@@ -100,7 +101,9 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         localStorage.setItem("playlists", JSON.stringify(filteredPlaylists));
       });
     } else {
+      const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
       const videoId = youtube_url_regexp.exec(url)?.at(6);
+      log.debug({videoId: videoId}, "parsed videoId");
       videoId && addVideo(videoId);
     }
     document.getElementById("new-media-input").value = "";
@@ -131,6 +134,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
       <input
         id="new-media-input"
         onChange={(e) => {
+          log.debug({value:  e.target.value}, "handling input");
           addMedia(e.target.value);
         }}
       />
