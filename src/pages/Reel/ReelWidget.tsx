@@ -120,11 +120,8 @@ export default function ReelWidget({}) {
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
-  const borderColor = findSetting(settings, "borderColor", "red");
-  const borderWidth = findSetting(settings, "borderWidth", 30);
   const selectionColor = findSetting(settings, "selectionColor", "green");
   const slideStyle = {
-    borderColor: borderColor,
     alignItems: "stretch",
   };
   const backgroundImage = findSetting(settings, "backgroundImage", "");
