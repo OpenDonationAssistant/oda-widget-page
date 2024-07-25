@@ -37,22 +37,11 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           name: "widgetBorder",
           tab: "general"
         }),
-        new ColorProperty(
-          widgetId,
-          "borderColor",
-          "color",
-          "#FF0000",
-          "widget-reel-border-color",
-          "general",
-        ),
-        new NumberProperty(
-          widgetId,
-          "borderWidth",
-          "number",
-          1,
-          "widget-reel-border-width",
-          "general",
-        ),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "cardBorder",
+          tab: "general"
+        }),
         new ColorProperty(
           widgetId,
           "selectionColor",

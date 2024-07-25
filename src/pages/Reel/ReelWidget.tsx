@@ -15,7 +15,10 @@ import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
+} from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -127,9 +130,11 @@ export default function ReelWidget({}) {
   const backgroundImage = findSetting(settings, "backgroundImage", "");
 
   function calcItemStyle(option: string) {
-    const style: CSSProperties = {};
-    style.borderColor = borderColor;
-    style.borderWidth = `${borderWidth}px`;
+    const style = new BorderProperty({
+      widgetId: widgetId,
+      name: "cardBorder",
+      value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    }).calcCss();
     if (highlight && active === option) {
       style.backgroundColor = selectionColor;
     } else {
@@ -141,13 +146,13 @@ export default function ReelWidget({}) {
     log.debug({ style }, "calculated style for slide item");
     return style;
   }
-  const borderStyle =  new BorderProperty({
+  const borderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "widgetBorder",
     value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
-  const widgetStyle = {...titleFont.calcStyle(),...borderStyle};
+  const widgetStyle = { ...titleFont.calcStyle(), ...borderStyle };
 
   return (
     <>
