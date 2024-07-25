@@ -8,10 +8,10 @@ import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 export default function DonationTimer({}: {}) {
-  const { recipientId, conf } =
-    useLoaderData() as WidgetData;
+  const { recipientId, conf } = useLoaderData() as WidgetData;
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
   const { widgetId, settings, subscribe, unsubscribe } = useContext(
@@ -70,17 +70,27 @@ export default function DonationTimer({}: {}) {
       });
   }
 
+  const text = findSetting(settings, "text", "Без донатов уже <time>");
+
   const titleFont = new AnimatedFontProperty({
     widgetId: widgetId,
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
-  const text = findSetting(settings, "text", "Без донатов уже <time>");
+  const borderStyle =  new BorderProperty({
+    widgetId: widgetId,
+    name: "border",
+    value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+  const style = {...titleFont.calcStyle(), ...borderStyle}
 
   return (
     <>
       {titleFont.createFontImport}
-      <div className={`${classes.timer} ${titleFont.calcClassName()}`} style={titleFont.calcStyle()}>
+      <div
+        className={`${classes.timer} ${titleFont.calcClassName()}`}
+        style={style}
+      >
         {text ? text.replace("<time>", time) : "Без донатов уже " + time}
       </div>
     </>

@@ -8,6 +8,10 @@ import { WidgetData } from "../../types/WidgetData";
 import { Carousel, Flex } from "antd";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ApiContext } from "../../contexts/ApiContext";
+import {
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
+} from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
@@ -106,24 +110,47 @@ export default function DonatersTopList({}: {}) {
     }
   }
 
-  const textStyle = messageFont.calcStyle();
+  let textStyle = messageFont.calcStyle();
   textStyle.maxWidth = "100vw";
   textStyle.width = "50vw";
   textStyle.flex = "1 1 auto";
 
-  const donatersTopStyle = headerFont.calcStyle();
+  let donatersTopStyle = headerFont.calcStyle();
   donatersTopStyle.backgroundColor = titleBackgroundColor;
   let headerAlignment = findSetting(settings, "headerAlignment", "Center");
   donatersTopStyle.textAlign = headerAlignment;
   donatersTopStyle.flex = "0 0 auto";
 
+  const headerBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "headerBorder",
+    value: findSetting(settings, "headerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const listBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "listBorder",
+    value: findSetting(settings, "listBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const widgetBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "widgetBorder",
+    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const widgetStyle = {
+    ...{ height: "100%", backgroundColor: backgroundColor },
+    ...widgetBorderStyle,
+  };
+
+  donatersTopStyle = { ...donatersTopStyle, ...headerBorderStyle };
+  textStyle = { ...textStyle, ...listBorderStyle };
+
   const hideEmpty = findSetting(settings, "hideEmpty", false);
 
   if (hideEmpty && (!donaters || donaters.size == 0)) {
-    return (
-      <>
-      </>
-    );
+    return <></>;
   }
 
   const carouselSettings = findSetting(settings, "carousel", {
@@ -161,10 +188,11 @@ export default function DonatersTopList({}: {}) {
     <>
       {headerFont.createFontImport()}
       {messageFont.createFontImport()}
-      <Flex style={{
-        backgroundColor: backgroundColor,
-        height: "100%"
-      }} gap={gap} vertical={layout === "vertical"}>
+      <Flex
+        style={widgetStyle}
+        gap={gap}
+        vertical={layout === "vertical"}
+      >
         <div
           style={donatersTopStyle}
           className={`donaters-title ${headerFont.calcClassName()}`}

@@ -40,6 +40,11 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           displayName: "label-background",
           tab: "header"
         }),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "border",
+          tab: "header",
+        }),
         new DonationGoalLabelProperty(widgetId),
         new AnimatedFontProperty({
           widgetId: widgetId,

@@ -1,4 +1,5 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
+import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ReelItemBackgroundProperty } from "../widgetproperties/ReelItemBackgroundProperty";
@@ -18,10 +19,23 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
+        new NumberProperty(
+          widgetId,
+          "requiredAmount",
+          "number",
+          100,
+          "widget-reel-required-amount",
+          "general",
+        ),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "titleFont",
           tab: "general",
+        }),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "widgetBorder",
+          tab: "general"
         }),
         new ColorProperty(
           widgetId,
@@ -77,14 +91,6 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           "number",
           10,
           "widget-reel-waiting-time",
-          "general",
-        ),
-        new NumberProperty(
-          widgetId,
-          "requiredAmount",
-          "number",
-          100,
-          "widget-reel-required-amount",
           "general",
         ),
         new ReelItemListProperty(widgetId, ["Ничего", "Выигрыш"]),

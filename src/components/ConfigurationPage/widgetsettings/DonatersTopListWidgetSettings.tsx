@@ -1,5 +1,6 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
+import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { ColorProperty } from "../widgetproperties/ColorProperty";
 import { DonatersTopListCarouselProperty } from "../widgetproperties/DonatersTopListCarouselProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
@@ -89,6 +90,11 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "widget-donaterslist-title-background-color",
           "header",
         ),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "headerBorder",
+          tab: "header",
+        }),
         new ColorProperty(
           widgetId,
           "backgroundColor",
@@ -114,8 +120,18 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           "widget-donaterslist-gap",
           "list",
         ),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "listBorder",
+          tab: "list",
+        }),
         new DonatersTopListLayoutProperty(widgetId, "vertical"),
         new DonatersTopListCarouselProperty(widgetId),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "widgetBorder",
+          tab: "layout",
+        }),
       ],
       tabs,
     );

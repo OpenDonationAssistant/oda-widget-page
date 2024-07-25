@@ -138,8 +138,14 @@ export default function DonationGoal({}) {
     return result;
   }
 
+  const widgetBorderStyle = new BorderProperty({
+    widgetId: widgetId,
+    name: "border",
+    value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
   return (
-    <>
+    <div style={widgetBorderStyle}>
       {amountFont.createFontImport()}
       {titleFont.createFontImport()}
       {goals.map((goal) => (
@@ -180,6 +186,6 @@ export default function DonationGoal({}) {
           </div>
         </>
       ))}
-    </>
+    </div>
   );
 }

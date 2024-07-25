@@ -1,5 +1,6 @@
 import { log } from "../../../logging";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
+import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
@@ -16,6 +17,10 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
           false,
           "widget-player-popup-sound-only",
         ),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "widgetBorder",
+        }),
       ],
       new Map(),
     );

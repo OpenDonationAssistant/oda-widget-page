@@ -2,7 +2,7 @@ import Glide from "@glidejs/glide";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   cleanupCommandListener,
@@ -15,6 +15,7 @@ import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -126,7 +127,7 @@ export default function ReelWidget({}) {
   const backgroundImage = findSetting(settings, "backgroundImage", "");
 
   function calcItemStyle(option: string) {
-    const style = {};
+    const style: CSSProperties = {};
     style.borderColor = borderColor;
     style.borderWidth = `${borderWidth}px`;
     if (highlight && active === option) {
@@ -140,6 +141,13 @@ export default function ReelWidget({}) {
     log.debug({ style }, "calculated style for slide item");
     return style;
   }
+  const borderStyle =  new BorderProperty({
+    widgetId: widgetId,
+    name: "widgetBorder",
+    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const widgetStyle = {...titleFont.calcStyle(),...borderStyle};
 
   return (
     <>
@@ -149,8 +157,8 @@ export default function ReelWidget({}) {
         }}
       />
       {titleFont.createFontImport()}
-      <div className={titleFont.calcClassName()} style={titleFont.calcStyle()}>
-        <div className={`glide hidden`} ref={glideRef}>
+      <div className={titleFont.calcClassName()}>
+        <div className={`glide hidden`} ref={glideRef} style={widgetStyle}>
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides" style={slideStyle}>
               {options.map((option) => (

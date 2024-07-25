@@ -14,6 +14,7 @@ import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import "animate.css";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 function PlayerInfo() {
   const navigate = useNavigate();
@@ -47,15 +48,21 @@ function PlayerInfo() {
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
-  const titleTemplate = findSetting(settings, "titleTemplate", null);
-  const backgroundColor = findSetting(settings, "backgroundColor", "#FFFFFF");
+
+  const borderStyle =  new BorderProperty({
+    widgetId: widgetId,
+    name: "widgetBorder",
+    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const widgetStyle =  {...titleFontProperty.calcStyle(), ...borderStyle};
 
   return (
     <>
       {titleFontProperty.createFontImport()}
       <div
         className={`player-info-container ${titleFontProperty.calcClassName()}`}
-        style={titleFontProperty.calcStyle()}
+        style={widgetStyle}
         data-vjs-player
       >
         <div className="player-info"></div>
