@@ -1,17 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap");
 
 :root {
-  --oda-main-border: 1px solid #674afd;
-  --oda-main-text-color: white;
-  --oda-main-font-family: Play;
   --oda-control-background-color: #684aff;
+  --oda-main-background-color: #0c122e;
+  --oda-main-border: 1px solid #674afd;
+  --oda-main-font-family: Play;
+  --oda-main-text-color: white;
   --oda-secondary-text-color: rgba(220, 220, 220, 0.9);
   --oda-label-font: 1rem var(--oda-main-font-family);
   --oda-label-color: #ffffffda;
   --oda-label-background-color: #151a33;
   --oda-btn-background-color: #151a33;
+  --oda-panel-backgroun-color: #2b3566;
 }
 
+.widget-settings button.oda-btn-default,
 .oda-btn-default {
   color: var(--oda-main-text-color);
   background-color: var(--oda-btn-background-color);
@@ -40,8 +43,8 @@
 
 .widget-settings {
   color: white;
-  padding-left: 15px;
-  padding-right: 15px;
+  /* padding-left: 15px; */
+  /* padding-right: 15px; */
 }
 
 .widget-settings-item {
@@ -92,16 +95,6 @@
 
 .widget-settings .ant-divider-horizontal.ant-divider-with-text-left::after {
   border-color: #674afd;
-}
-
-.widget-settings .ant-switch.ant-switch-checked {
-  background-color: #684aff;
-  border: 1px solid #674afd;
-  box-shadow: inset 0 0 5px 0px rgba(0, 0, 0, 0.6);
-}
-
-.widget-settings .ant-switch .ant-switch-handle {
-  top: 1px;
 }
 
 .widget-settings
@@ -160,9 +153,6 @@
   border-radius: 3px;
 }
 
-.textarea-popup-container {
-  width: 700px !important;
-}
 .textarea-container {
   width: 100%;
   text-align: right;
@@ -209,6 +199,8 @@ textarea.widget-settings-value {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .payment-alerts-previews-item {
@@ -219,6 +211,14 @@ textarea.widget-settings-value {
   border: var(--oda-main-border);
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
   border-radius: 5px;
+  & .ant-tabs {
+    &.ant-tabs-top {
+      padding-top: 10px;
+      & .ant-tabs-nav {
+        background: unset;
+      }
+    }
+  }
 }
 
 .image-preview-container {
@@ -455,4 +455,17 @@ div.payment-alert-image-preview {
 .menu-button:hover {
   transform: translateY(-2px);
   color: white;
+}
+
+.settings-item {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  &:nth-child(even) {
+    background-color: rgb(12, 18, 46, 0.12);
+  }
+}
+
+.widget-settings .payment-alerts-previews-item button.oda-btn-default {
+  width: 100%;
 }

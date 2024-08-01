@@ -14,7 +14,14 @@ import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import "animate.css";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
+} from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  ColorProperty,
+  ColorPropertyTarget,
+} from "../ConfigurationPage/widgetproperties/ColorProperty";
 
 function PlayerInfo() {
   const navigate = useNavigate();
@@ -49,27 +56,49 @@ function PlayerInfo() {
     value: findSetting(settings, "titleFont", null),
   });
 
-  const borderStyle =  new BorderProperty({
+  const borderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "widgetBorder",
     value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
-  const widgetStyle =  {...titleFontProperty.calcStyle(), ...borderStyle};
+  const background = new ColorProperty({
+    widgetId: widgetId,
+    name: "background",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(settings, "background", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  const rounding = new ColorProperty({
+    widgetId: widgetId,
+    name: "background",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(settings, "background", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
+  console.log({background: background});
+
+  const widgetStyle = { ...titleFontProperty.calcStyle(), ...borderStyle };
 
   return (
     <>
       {titleFontProperty.createFontImport()}
-      <div
-        className={`player-info-container ${titleFontProperty.calcClassName()}`}
-        style={widgetStyle}
-        data-vjs-player
-      >
-        <div className="player-info"></div>
-        <span className={`player-info-text`}>
-          {title && left > 1 && `Треков в очереди: ${left}, играет ${title}`}
-          {title && !(left > 1) && `Играет: ${title}`}
-        </span>
+      <div style={background}>
+        <div
+          className={`player-info-container ${titleFontProperty.calcClassName()}`}
+          style={widgetStyle}
+          data-vjs-player
+        >
+          <div className="player-info"></div>
+          <span className={`player-info-text`}>
+            {title && left > 1 && `Треков в очереди: ${left}, играет ${title}`}
+            {title && !(left > 1) && `Играет: ${title}`}
+          </span>
+        </div>
       </div>
     </>
   );

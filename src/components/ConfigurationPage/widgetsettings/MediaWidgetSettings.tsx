@@ -5,6 +5,8 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 export class MediaWidgetSettings extends AbstractWidgetSettings {
 
   constructor(widgetId: string, properties: WidgetProperty[]) {
+    const tabs  = new Map();
+    tabs.set("general", "Общие");
     super(
       widgetId,
       properties,
@@ -14,17 +16,19 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
           "playlistSongTitleFontSize",
           "number",
           "16",
-          "widget-media-title-font-size"
+          "widget-media-title-font-size",
+          "general"
         ),
         new NumberProperty(
           widgetId,
           "playlistNicknameFontSize",
           "number",
           "16",
-          "widget-media-customer-font-size"
+          "widget-media-customer-font-size",
+          "general"
         ),
       ],
-      new Map(),
+      tabs
     );
   }
 

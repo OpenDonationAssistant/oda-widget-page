@@ -26,6 +26,7 @@ import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
 import DonationGoal from "../DonationGoal/DonationGoal";
 import DonationTimer from "../DonationTimer/DonationTimer";
+import classes from "./WidgetConfiguration.module.css";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -233,7 +234,7 @@ export default function WidgetConfiguration({
         {(type === "donaters-top-list" ||
           type === "donationgoal" ||
           type === "donation-timer") && (
-          <Flex justify="space-around">
+          <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
               height={250}

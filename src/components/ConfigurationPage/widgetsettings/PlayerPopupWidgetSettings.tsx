@@ -6,6 +6,8 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
+    const tabs = new Map();
+    tabs.set("general", "Общие");
     super(
       widgetId,
       properties,
@@ -16,13 +18,15 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
           "boolean",
           false,
           "widget-player-popup-sound-only",
+          "general"
         ),
         new BorderProperty({
           widgetId: widgetId,
           name: "widgetBorder",
+          tab: "general"
         }),
       ],
-      new Map(),
+      tabs
     );
   }
   public copy() {

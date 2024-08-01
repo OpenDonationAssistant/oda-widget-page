@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { log } from "../../logging";
 import classes from "./DonationGoal.module.css";
@@ -19,6 +19,11 @@ import {
   BorderProperty,
   DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  DEFAULT_ROUNDING_PROPERTY_VALUE,
+  RoundingProperty,
+} from "../ConfigurationPage/widgetproperties/RoundingProperty";
+import { ColorProperty, ColorPropertyTarget, DEFAULT_COLOR_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function DonationGoal({}) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
@@ -94,20 +99,48 @@ export default function DonationGoal({}) {
     draft.textAlign = titleTextAlign;
   });
 
-  const backgroundColor = findSetting(settings, "backgroundColor", "lightgray");
+  const backgroundColor = new ColorProperty({
+    widgetId: widgetId,
+    name: "backgroundColor",
+    value: findSetting(
+      settings,
+      "backgroundColor",
+      DEFAULT_COLOR_PROPERTY_VALUE,
+    ),
+    displayName: "",
+    target: ColorPropertyTarget.BACKGROUND
+  }).calcCss();
+
   const progressBarBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "outerBorder",
     value: findSetting(settings, "outerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
+
+  const outerRoundingStyle = new RoundingProperty({
+    widgetId: widgetId,
+    name: "outerRounding",
+    value: findSetting(
+      settings,
+      "outerRounding",
+      DEFAULT_ROUNDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
   const progressbarStyle = {
-    ...{
-      backgroundColor: backgroundColor,
-    },
+    ...backgroundColor,
     ...progressBarBorderStyle,
+    ...outerRoundingStyle,
   };
 
-  const filledColor = findSetting(settings, "filledColor", "green");
+  const filledColor = new ColorProperty({
+    widgetId: widgetId,
+    name: "filledColor",
+    value: findSetting(settings, "filledColor", DEFAULT_COLOR_PROPERTY_VALUE),
+    displayName: "",
+    target: ColorPropertyTarget.BACKGROUND,
+  }).calcCss();
+
   let filledTextAlign = findSetting(settings, "filledTextAlign", "left");
   switch (filledTextAlign) {
     case "left":
@@ -127,14 +160,28 @@ export default function DonationGoal({}) {
     value: findSetting(settings, "innerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
+  const filledRoundingStyle = new RoundingProperty({
+    widgetId: widgetId,
+    name: "innerRounding",
+    value: findSetting(
+      settings,
+      "innerRounding",
+      DEFAULT_ROUNDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
   function calcBarStyle(goal: Goal) {
     const style: CSSProperties = {
       width: `${
         (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100
       }%`,
-      backgroundColor: filledColor,
     };
-    const result = { ...style, ...filledBorderStyle };
+    const result = {
+      ...style,
+      ...filledBorderStyle,
+      ...filledRoundingStyle,
+      ...filledColor,
+    };
     return result;
   }
 

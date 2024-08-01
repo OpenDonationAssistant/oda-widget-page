@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Trans } from "react-i18next";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 export class BooleanProperty extends DefaultWidgetProperty {
   constructor(
@@ -29,13 +30,7 @@ export class BooleanProperty extends DefaultWidgetProperty {
   markup(updateConfig: Function): ReactNode {
     return (
       <>
-        <div key={this.name} className="widget-settings-item">
-          <label
-            htmlFor={`${this.widgetId}_${this.name}`}
-            className="widget-settings-name"
-          >
-            <Trans i18nKey={this.displayName}/>
-          </label>
+        <LabeledContainer displayName={this.displayName}>
           <BooleanPropertyInput
             prop={this}
             onChange={() => {
@@ -44,7 +39,7 @@ export class BooleanProperty extends DefaultWidgetProperty {
               }
             }}
           />
-        </div>
+        </LabeledContainer>
       </>
     );
   }

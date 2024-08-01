@@ -28,7 +28,6 @@ const fullHeight = (
   />
 );
 
-
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { recipientId, settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
@@ -66,7 +65,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
                 .then((response) => response.data),
           }}
         >
-        {children}
+          {children}
         </ApiContext.Provider>
       </WidgetSettingsContext.Provider>
     </>

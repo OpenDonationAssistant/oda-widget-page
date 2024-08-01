@@ -1,16 +1,23 @@
 import React, { useContext, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { WidgetsContext } from "../WidgetsContext";
-import { Tabs as AntTabs, Modal } from "antd";
+import {
+  Tabs as AntTabs,
+  ColorPicker,
+  Flex,
+  InputNumber,
+  Modal,
+  Switch,
+} from "antd";
 import { FontProperty } from "./FontProperty";
 import { NumberProperty } from "./NumberProperty";
-import { ColorProperty } from "./ColorProperty";
-import { BooleanProperty } from "./BooleanProperty";
 import { produce } from "immer";
 import { SingleChoiceProperty } from "./SingleChoiceProperty";
 import { AnimatedFontProperty } from "./AnimatedFontProperty";
 import classes from "./AnimatedFontComponent.module.css";
 import ModalButton from "../../ModalButton/ModalButton";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { ColorProperty, ColorPropertyTarget } from "./ColorProperty";
 
 const animationType = ["entire", "by words", "by symbols"];
 
@@ -35,29 +42,18 @@ export default function AnimatedFontComponent({
 }: {
   property: AnimatedFontProperty;
 }) {
-  const [showModal, setShowModal] = useState<boolean>();
   const { t } = useTranslation();
   const { updateConfig } = useContext(WidgetsContext);
 
-  function toggleModal() {
-    const classList = document.getElementById("root")?.classList;
-    if (classList?.contains("blured")) {
-      classList.remove("blured");
-    } else {
-      classList?.add("blured");
-    }
-    setShowModal((old) => !old);
-  }
-
   return (
     <>
-      {property.createFontImport()}
       <ModalButton
         label="widget-font-label"
         buttonLabel={"button-settings"}
         modalTitle="widget-font-settings"
       >
         <div className={`${classes.democontainer}`}>
+          {property.createFontImport()}
           <div
             className={`${classes.demo} ${property.calcClassName()}`}
             style={property.calcStyle()}
@@ -79,96 +75,91 @@ export default function AnimatedFontComponent({
               key: "font",
               children: (
                 <>
-                  {new FontProperty(
-                    property.widgetId,
-                    "font-family",
-                    "font",
-                    property.value.family,
-                    "button-font",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
+                  <div className="settings-item">
+                    {new FontProperty(
                       property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.family = value;
-                      }),
-                    );
-                  })}
-                  {new NumberProperty(
-                    property.widgetId,
-                    "font-size",
-                    "number",
-                    property.value.size,
-                    "button-font-size",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
+                      "font-family",
+                      "font",
+                      property.value.family,
+                      "button-font",
+                    ).markup((p1, p2, value) => {
+                      updateConfig(
+                        property.widgetId,
+                        property.name,
+                        produce(property.value, (draft) => {
+                          draft.family = value;
+                        }),
+                      );
+                    })}
+                  </div>
+                  <div className="settings-item">
+                    {new NumberProperty(
                       property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.size = value;
-                      }),
-                    );
-                  })}
-                  {new ColorProperty(
-                    property.widgetId,
-                    "color",
-                    "color",
-                    property.value.color,
-                    "button-text-color",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.color = value;
-                      }),
-                    );
-                  })}
-                  {new BooleanProperty(
-                    property.widgetId,
-                    "bold",
-                    "boolean",
-                    property.value.weight,
-                    "widget-font-bold",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.weight = value;
-                      }),
-                    );
-                  })}
-                  {new BooleanProperty(
-                    property.widgetId,
-                    "italic",
-                    "boolean",
-                    property.value.italic,
-                    "widget-font-italic",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.italic = value;
-                      }),
-                    );
-                  })}
-                  {new BooleanProperty(
-                    property.widgetId,
-                    "bold",
-                    "boolean",
-                    property.value.underline,
-                    "widget-font-underline",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.underline = value;
-                      }),
-                    );
-                  })}
+                      "font-size",
+                      "number",
+                      property.value.size,
+                      "button-font-size",
+                    ).markup((p1, p2, value) => {
+                      updateConfig(
+                        property.widgetId,
+                        property.name,
+                        produce(property.value, (draft) => {
+                          draft.size = value;
+                        }),
+                      );
+                    })}
+                  </div>
+                  <div className="settings-item">
+                    {new ColorProperty({
+                      widgetId: property.widgetId,
+                      name: "color",
+                      value: property.value.color,
+                      displayName: "button-text-color",
+                      target: ColorPropertyTarget.TEXT
+                    }).markup((p1, p2, value) => {
+                      updateConfig(
+                        property.widgetId,
+                        property.name,
+                        produce(property.value, (draft) => {
+                          draft.color = value;
+                        }),
+                      );
+                    })}
+                  </div>
+                  <div className="settings-item">
+                    <Flex justify="space-around" align="center">
+                      <Flex gap={5}>
+                        <Trans i18nKey="widget-font-bold" />
+                        <Switch
+                          value={property.value.weight}
+                          onChange={(checked) => {
+                            updateConfig(
+                              property.widgetId,
+                              property.name,
+                              produce(property.value, (draft) => {
+                                draft.weight = checked;
+                              }),
+                            );
+                          }}
+                        />
+                      </Flex>
+                      <Flex gap={5}>
+                        <Trans i18nKey="widget-font-italic" />
+                        <Switch
+                          value={property.value.italic}
+                          onChange={(checked) => {
+                            updateConfig(
+                              property.widgetId,
+                              property.name,
+                              produce(property.value, (draft) => {
+                                draft.italic = checked;
+                              }),
+                            );
+                          }}
+                        />
+                      </Flex>
+                    </Flex>
+                  </div>
                 </>
               ),
             },
@@ -177,66 +168,77 @@ export default function AnimatedFontComponent({
               key: "shadow",
               children: (
                 <>
-                  {new NumberProperty(
-                    property.widgetId,
-                    "shadow-offset-x",
-                    "number",
-                    property.value.shadowOffsetX,
-                    "button-shadow-offset-x",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.shadowOffsetX = value;
-                      }),
-                    );
-                  })}
-                  {new NumberProperty(
-                    property.widgetId,
-                    "shadow-offset-y",
-                    "number",
-                    property.value.shadowOffsetY,
-                    "button-shadow-offset-y",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.shadowOffsetY = value;
-                      }),
-                    );
-                  })}
-                  {new NumberProperty(
-                    property.widgetId,
-                    "shadow-size",
-                    "number",
-                    property.value.shadowWidth,
-                    "button-shadow-size",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.shadowWidth = value;
-                      }),
-                    );
-                  })}
-                  {new ColorProperty(
-                    property.widgetId,
-                    "shadow-color",
-                    "color",
-                    property.value.shadowColor,
-                    "button-shadow-color",
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.shadowColor = value;
-                      }),
-                    );
-                  })}
+                  <div className="settings-item">
+                    <LabeledContainer displayName="button-shadow-offset-x">
+                      <InputNumber
+                        value={property.value.shadowOffsetX}
+                        className="full-width"
+                        addonAfter="px"
+                        onChange={(value) => {
+                          updateConfig(
+                            property.widgetId,
+                            property.name,
+                            produce(property.value, (draft) => {
+                              draft.shadowOffsetX = value;
+                            }),
+                          );
+                        }}
+                      />
+                    </LabeledContainer>
+                  </div>
+                  <div className="settings-item">
+                    <LabeledContainer displayName="button-shadow-offset-y">
+                      <InputNumber
+                        value={property.value.shadowOffsetY}
+                        className="full-width"
+                        addonAfter="px"
+                        onChange={(value) => {
+                          updateConfig(
+                            property.widgetId,
+                            property.name,
+                            produce(property.value, (draft) => {
+                              draft.shadowOffsetY = value;
+                            }),
+                          );
+                        }}
+                      />
+                    </LabeledContainer>
+                  </div>
+                  <div className="settings-item">
+                    <LabeledContainer displayName="button-shadow-size">
+                      <InputNumber
+                        value={property.value.shadowWidth}
+                        addonAfter="px"
+                        className="full-width"
+                        onChange={(value) => {
+                          updateConfig(
+                            property.widgetId,
+                            property.name,
+                            produce(property.value, (draft) => {
+                              draft.shadowWidth = value;
+                            }),
+                          );
+                        }}
+                      />
+                    </LabeledContainer>
+                  </div>
+                  <div className="settings-item">
+                    <LabeledContainer displayName={"button-shadow-color"}>
+                      <ColorPicker
+                        showText
+                        value={property.value.shadowColor}
+                        onChange={(color) => {
+                          updateConfig(
+                            property.widgetId,
+                            property.name,
+                            produce(property.value, (draft) => {
+                              draft.shadowColor = color;
+                            }),
+                          );
+                        }}
+                      />
+                    </LabeledContainer>
+                  </div>
                 </>
               ),
             },
@@ -245,22 +247,23 @@ export default function AnimatedFontComponent({
               key: "animation",
               children: (
                 <>
-                  {new SingleChoiceProperty(
-                    property.widgetId,
-                    "font-animation",
-                    "choice",
-                    property.value.animation,
-                    "widget-font-animation",
-                    animations,
-                  ).markup((p1, p2, value) => {
-                    updateConfig(
-                      property.widgetId,
-                      property.name,
-                      produce(property.value, (draft) => {
-                        draft.animation = value;
-                      }),
-                    );
-                  })}
+                  <div className="settings-item">
+                    {new SingleChoiceProperty({
+                      widgetId: property.widgetId,
+                      name: "font-animation",
+                      value: property.value.animation,
+                      displayName: "widget-font-animation",
+                      options: animations,
+                    }).markup((p1, p2, value) => {
+                      updateConfig(
+                        property.widgetId,
+                        property.name,
+                        produce(property.value, (draft) => {
+                          draft.animation = value;
+                        }),
+                      );
+                    })}
+                  </div>
                 </>
               ),
             },

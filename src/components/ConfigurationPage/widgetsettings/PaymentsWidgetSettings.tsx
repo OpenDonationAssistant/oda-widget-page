@@ -4,6 +4,8 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
+    const  tabs = new Map();
+    tabs.set("general", "Общие");
     super(
       widgetId,
       properties,
@@ -14,6 +16,7 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
           "number",
           "28",
           "widget-payments-customer-font-size",
+          "general"
         ),
         new NumberProperty(
           widgetId,
@@ -21,9 +24,10 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
           "number",
           "19",
           "widget-payments-message-font-size",
+          "general"
         ),
       ],
-      new Map(),
+      tabs
     );
   }
 

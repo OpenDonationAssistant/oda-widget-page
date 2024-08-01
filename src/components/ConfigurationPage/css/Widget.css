@@ -55,8 +55,14 @@
   background-image: linear-gradient(180deg, #2b3566, #5d4cb4, #2b3566);
 }
 
+.widget.extended .widget-header{
+  background-color: #0c122e;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .widget.extended .widget-header:hover {
-  background-image: linear-gradient(180deg, #2b3566, #5d4cb4, #2b3566);
+  background-image: linear-gradient(180deg, #0c122e 0%, #181556, #0c122e);
 }
 
 .widget-icon {
@@ -159,6 +165,7 @@
 }
 
 .audio-button-container {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -21,14 +21,14 @@ export default function Tabs({
       children: properties
         ?.filter((prop) => prop.type !== "custom")
         ?.filter((prop) => prop.tab === key)
-        .map((prop) => prop.markup(updateConfig)),
+        .map((prop) => <div className="settings-item">{prop.markup(updateConfig)}</div>),
     };
   };
 
   return (
     <>
       {(!tabs || tabs.size === 0) &&
-        properties.map((prop) => prop.markup(updateConfig))}
+        properties.map((prop) => <div className="settings-item">{prop.markup(updateConfig)}</div>)}
       {tabs && tabs.size > 0 && (
         <AntTabs type="card" items={[...tabs.keys()].map(tabPaneGenerator)} />
       )}
