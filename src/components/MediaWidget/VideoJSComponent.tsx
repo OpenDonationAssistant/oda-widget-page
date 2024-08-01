@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
 import "videojs-youtube";
-import { Song } from "./types";
+import { Provider, Song } from "./types";
 import { VideoJsPlayer } from "video.js";
 import { VideoJsPlayerOptions } from "video.js";
 import { log } from "../../logging";
@@ -10,9 +10,10 @@ import ProgressBar from "./ProgressBar";
 import VideoDuration from "./VideoDuration";
 import { PlaylistController } from "./PlaylistController";
 import { publish, subscribe, unsubscribe } from "../../socket";
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
+import "https://vk.com/js/api/videoplayer.js";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -31,6 +32,13 @@ enum PLAYER_STATE {
   PAUSED,
 }
 
+interface Player {
+  play(): void;
+  pause(): void;
+  paused(): boolean;
+  volume(value: number): void;
+}
+
 export default function VideoJSComponent({
   song,
   playlistController,
@@ -40,14 +48,15 @@ export default function VideoJSComponent({
   playlistController: PlaylistController;
   isRemote: boolean;
 }) {
-  const { conf, widgetId } = useLoaderData() as  WidgetData;
+  const { conf, widgetId } = useLoaderData() as WidgetData;
   const videoRef = useRef<HTMLDivElement>(null);
+  const vkRef = useRef<HTMLDivElement>(null);
   const [hideVideo, setHideVideo] = useState(true);
   const [playerState, setPlayerState] = useState<PLAYER_STATE>(
     PLAYER_STATE.PAUSED,
   );
   const pausedByCommand = useRef<boolean>(false);
-  const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
+  const [player, setPlayer] = useState<Player | null>(null);
   const commandHandler = useRef<Function | null>(null);
   const [volume, setVolume] = useState<number>(() => {
     const vol = localStorage.getItem("volume");
@@ -83,6 +92,66 @@ export default function VideoJSComponent({
     setHideVideo((value) => !value);
   }
 
+  const vkplayer = (song: Song) => {
+    log.debug({ song: song }, "creating vk  player for song");
+    const videoElement = document.createElement("iframe");
+    videoElement.setAttribute(
+      "src",
+      `https://vk.com/video_ext.php?oid=-${song.originId?.replace(
+        "_",
+        "&id=",
+      )}&hd=2&autoplay=1&js_api=1`,
+    );
+    videoElement.setAttribute(
+      "allow",
+      "autoplay;  encrypted-media; picture-in-picture",
+    );
+    vkRef.current?.appendChild(videoElement);
+    const player = VK.VideoPlayer(videoElement);
+    player.on("started", () => {
+      log.debug("start playing");
+      setPlayerState(PLAYER_STATE.PLAYING);
+      if (song) {
+        sendAlert(song);
+      }
+    });
+    player.on("resumed", () => {
+      log.debug("start playing");
+      setPlayerState(PLAYER_STATE.PLAYING);
+      if (song) {
+        sendAlert(song);
+      }
+    });
+    player.on("paused", () => {
+      log.debug("pause player");
+      setPlayerState(PLAYER_STATE.PAUSED);
+      sendAlert();
+    });
+    player.on("ended", () => {
+      log.debug("song ended");
+      playlistController.finishSong();
+      sendAlert();
+    });
+    player.on("error", function () {
+      log.error(player.error());
+      playlistController.finishSong();
+      sendAlert();
+    });
+    log.debug({ vkPlayer: player });
+    const playerAdapter = {
+      play: player.play,
+      pause: player.pause,
+      paused: () => player.getState() !== "playing",
+      volume: (value: number) => {
+        player.setVolume(value);
+      },
+    };
+    setPlayer(playerAdapter);
+    return () => {
+      videoElement.remove();
+    };
+  };
+
   useEffect(() => {
     document.addEventListener("toggleVideo", listenToggleVideoEvent);
     return () =>
@@ -92,6 +161,10 @@ export default function VideoJSComponent({
   useEffect(() => {
     commandHandler.current = (message) => {
       let json = JSON.parse(message.body);
+      if (player === null) {
+        message.ack();
+        return;
+      }
       if (json.command === "pause") {
         freeze();
       }
@@ -113,7 +186,7 @@ export default function VideoJSComponent({
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.playerCommands, (message) => {
-      log.debug({message: message}, "Received player command");
+      log.debug({ message: message }, "Received player command");
       if (commandHandler.current) {
         commandHandler.current(message);
       }
@@ -133,7 +206,7 @@ export default function VideoJSComponent({
 
   function sendAlert(song?: Song) {
     publish(conf.topic.player, {
-      title: song?.title  ?? "",
+      title: song?.title ?? "",
       owner: song?.owner ?? "",
     });
   }
@@ -144,16 +217,20 @@ export default function VideoJSComponent({
     }
     log.debug(`playing song ${JSON.stringify(song)}`);
 
+    if (song.provider === Provider.VK) {
+      return vkplayer(song);
+    }
+
     const videoElement = document.createElement("video-js");
     videoElement.setAttribute("id", "mediaplayer");
     videoElement.classList.add("vjs-big-play-centered");
     videoRef.current?.appendChild(videoElement);
     options.sources = song;
-    log.debug({options: options}, "creating player with  options");
+    log.debug({ options: options }, "creating player with  options");
 
     const player = videojs(videoElement, options);
     player.src(song);
-    player.volume(volume/100);
+    player.volume(volume / 100);
     player.on("play", () => {
       log.debug("start playing");
       setPlayerState(PLAYER_STATE.PLAYING);
@@ -184,13 +261,14 @@ export default function VideoJSComponent({
 
   useEffect(() => {
     if (player) {
-      player.volume(volume/100);
+      player.volume(volume / 100);
       localStorage.setItem("volume", JSON.stringify(volume));
     }
-  },[volume]);
+  }, [volume]);
 
   return (
     <>
+      <div ref={vkRef} />
       {!isRemote && song && (
         <div
           className="video-player"
@@ -200,7 +278,9 @@ export default function VideoJSComponent({
           <div ref={videoRef} />
         </div>
       )}
-      {!isRemote && <ProgressBar player={player} />}
+      {!isRemote && song?.provider === Provider.YOUTUBE && (
+        <ProgressBar player={player} />
+      )}
       <div className="player-container">
         <div className="video-controls">
           <div className="video-buttons">
@@ -261,12 +341,17 @@ export default function VideoJSComponent({
             >
               <span className="material-symbols-sharp">skip_next</span>
             </button>
-            {!isRemote && <VideoDuration player={player} />}
+            {!isRemote && song?.provider === Provider.YOUTUBE && (
+              <VideoDuration player={player} />
+            )}
           </div>
         </div>
-        <Slider value={volume} onChange={(value) => {
-          setVolume(value);
-        }} />
+        <Slider
+          value={volume}
+          onChange={(value) => {
+            setVolume(value);
+          }}
+        />
       </div>
     </>
   );

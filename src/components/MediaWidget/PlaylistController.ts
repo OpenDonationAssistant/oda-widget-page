@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { log } from "../../logging";
-import { Song } from "./types";
+import { Provider, Song } from "./types";
 import { IPlaylistRenderer } from "./IPlaylist";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
 import { subscribe } from "../../socket";
@@ -67,6 +67,7 @@ export class PlaylistController {
               originId: element.id,
               owner: element.owner,
               title: element.title,
+              provider: Provider.YOUTUBE
             };
           },
         );
@@ -79,14 +80,17 @@ export class PlaylistController {
     subscribe(widgetId, conf.topic.media, (message) => {
       let json = JSON.parse(message.body);
       log.debug({ media: json }, "Received new media");
+
       let song = {
         src: json.url,
         type: "video/youtube",
         id: uuidv4(),
-        originId: json.id,
+        originId: json.originId,
         owner: json.owner,
         title: json.title,
+        provider: json.provider == "vk" ? Provider.VK : Provider.YOUTUBE,
       };
+
       const playlist =
         PLAYLIST_TYPE.parse(json.playlist) ?? PLAYLIST_TYPE.REQUESTED;
       this.handleNewRequestedSongEvent(playlist, song);

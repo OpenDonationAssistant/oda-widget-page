@@ -1,3 +1,8 @@
+enum Provider {
+  YOUTUBE,
+  VK
+}
+
 interface Song {
   src: string;
   type: string;
@@ -5,6 +10,7 @@ interface Song {
   originId: string|null;
   owner: string;
   title: string;
+  provider: Provider;
 }
 
-export { Song };
+export { Song, Provider };

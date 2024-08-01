@@ -4,7 +4,7 @@ import axios from "axios";
 import { useLoaderData } from "react-router";
 import { log } from "../../logging";
 import { Playlist } from "../../logic/playlist/Playlist";
-import { Song } from "./types";
+import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
@@ -40,6 +40,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
             originId: videoId, // todo remove originId?
             owner: recipientId,
             title: video.snippet.title,
+            provider: Provider.YOUTUBE,
           };
           return song;
         });
