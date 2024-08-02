@@ -11,14 +11,6 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^29.5.5",
-    "@types/node": "^20.8.4",
-    "@types/react": "^18.2.28",
-    "@types/react-dom": "^18.2.13",
-    "@types/react-resizable": "^3.0.8",
-    "@types/react-toggle": "^4.0.5",
-    "@types/uuid": "^9.0.7",
-    "@types/video.js": "^7.3.56",
     "ahooks": "^3.8.0",
     "animate.css": "^4.1.1",
     "antd": "^5.17.4",
@@ -69,7 +61,9 @@
   },
   "browserslist": {
     "production": [
-      "defaults and supports es6-module"
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ],
     "development": [
       "last 1 chrome version",
@@ -79,6 +73,14 @@
   },
   "devDependencies": {
     "@types/glidejs__glide": "^3.6.5",
-    "@types/react-beautiful-dnd": "^13.1.8"
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.4",
+    "@types/react": "^18.2.28",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/react-dom": "^18.2.13",
+    "@types/react-resizable": "^3.0.8",
+    "@types/react-toggle": "^4.0.5",
+    "@types/uuid": "^9.0.7",
+    "@types/video.js": "^7.3.56"
   }
 }
