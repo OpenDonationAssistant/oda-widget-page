@@ -4,10 +4,12 @@ import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
-import { Collapse } from "antd";
+import { Collapse, InputNumber } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
 import { NumberProperty } from "./NumberProperty";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { produce } from "immer";
 
 export interface Amount {
   major: number;
@@ -84,77 +86,62 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
   item(goal: Goal, index: number, updateConfig: Function) {
     return (
       <div key={index} className={`${classes.goalcontainer}`}>
-        <div className="widget-settings-item">
-          <label
-            htmlFor={`${this.widgetId}_${index}`}
-            className="widget-settings-name"
-          >
-            <Trans i18nKey="widget-goal-title" />
-          </label>
-          <TextPropertyModal title="Название">
-            <textarea
-              className="widget-settings-value"
-              value={goal.briefDescription}
-              onChange={(e) => {
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-title">
+            <TextPropertyModal title="Название">
+              <textarea
+                className="widget-settings-value"
+                value={goal.briefDescription}
+                onChange={(e) => {
+                  const updated = structuredClone(goal);
+                  updated.briefDescription = e.target.value;
+                  this.updateGoal(updateConfig, updated, index);
+                }}
+              />
+            </TextPropertyModal>
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-description">
+            <TextPropertyModal title="Описание">
+              <textarea
+                className="widget-settings-value"
+                value={goal.fullDescription}
+                onChange={(e) => {
+                  const updated = structuredClone(goal);
+                  updated.fullDescription = e.target.value;
+                  this.updateGoal(updateConfig, updated, index);
+                }}
+              />
+            </TextPropertyModal>
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-amount">
+            <InputNumber
+              value={goal.requiredAmount.major}
+              addonAfter="руб."
+              onChange={(value) => {
                 const updated = structuredClone(goal);
-                updated.briefDescription = e.target.value;
+                updated.requiredAmount.major = value ?? 0;
                 this.updateGoal(updateConfig, updated, index);
               }}
             />
-          </TextPropertyModal>
+          </LabeledContainer>
         </div>
-        <div className="widget-settings-item">
-          <label
-            htmlFor={`${this.widgetId}_${this.name}`}
-            className="widget-settings-name"
-          >
-            <Trans i18nKey="widget-goal-description" />
-          </label>
-          <TextPropertyModal title="Описание">
-            <textarea
-              className="widget-settings-value"
-              value={goal.fullDescription}
-              onChange={(e) => {
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-default">
+            <BooleanPropertyInput
+              onChange={() => {
                 const updated = structuredClone(goal);
-                updated.fullDescription = e.target.value;
+                updated.default = !updated.default;
                 this.updateGoal(updateConfig, updated, index);
               }}
+              prop={{
+                value: goal.default,
+              }}
             />
-          </TextPropertyModal>
-        </div>
-        {new NumberProperty(
-          this.widgetId,
-          "goal-amount",
-          "number",
-          goal.requiredAmount.major,
-          "widget-goal-amount",
-        ).markup((p1, p2, value) => {
-          if (!this.widgetId) {
-            return;
-          }
-          const updated = structuredClone(goal);
-          updated.requiredAmount.major = value ?? 0;
-          this.updateGoal(updateConfig, updated, index);
-        })}
-        <div className="widget-settings-item">
-          <label
-            htmlFor={`${this.widgetId}_${this.name}`}
-            className="widget-settings-name"
-          >
-            <Trans i18nKey="widget-goal-default" />
-          </label>
-          <BooleanPropertyInput
-            onChange={() => {
-              const updated = structuredClone(goal);
-              updated.default = !updated.default;
-              this.updateGoal(updateConfig, updated, index);
-            }}
-            prop={{
-              name: "test",
-              type: "predefined",
-              value: goal.default,
-            }}
-          />
+          </LabeledContainer>
         </div>
         <div style={{ textAlign: "right", marginBottom: "20px;" }}>
           <button

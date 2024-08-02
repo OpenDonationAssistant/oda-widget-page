@@ -7,6 +7,8 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor(widgetId: string, properties: WidgetProperty[]) {
+    const tabs = new Map();
+    tabs.set("general", "Общие");
     super(
       widgetId,
       properties,
@@ -17,10 +19,12 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           "boolean",
           true,
           "widget-donation-timer-refresh",
+          "general",
         ),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "titleFont",
+          tab: "general",
         }),
         new TextProperty(
           widgetId,
@@ -28,10 +32,15 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           "text",
           "Без донатов уже <time>",
           "widget-donation-timer-text",
+          "general",
         ),
-        new BorderProperty({ widgetId: widgetId, name: "border" }),
+        new BorderProperty({
+          widgetId: widgetId,
+          name: "border",
+          tab: "general",
+        }),
       ],
-      new Map(),
+      tabs
     );
   }
   copy() {

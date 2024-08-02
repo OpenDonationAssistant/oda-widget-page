@@ -2,3 +2,28 @@
   font: var(--oda-label-font);
   color: var(--oda-label-color);
 }
+
+.addbutton {
+  border:var(--oda-main-border);
+}
+
+.addbutton:hover {
+  cursor: pointer;
+}
+
+.colorStopLabel{
+  min-width: 100px;
+}
+
+.deleteButton {
+  vertical-align: middle;
+}
+
+.deleteButton:hover {
+  cursor: pointer;
+  text-shadow: 0 0 5px #684aff;
+}
+
+.angleinput{
+  max-width: 100px;
+}

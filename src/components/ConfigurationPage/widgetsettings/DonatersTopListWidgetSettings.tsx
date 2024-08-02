@@ -1,11 +1,11 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
-import { ColorProperty } from "../widgetproperties/ColorProperty";
+import { ColorProperty, ColorPropertyTarget } from "../widgetproperties/ColorProperty";
 import { DonatersTopListCarouselProperty } from "../widgetproperties/DonatersTopListCarouselProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
-import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
+import { SELECTION_TYPE, SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
@@ -21,24 +21,24 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
-        new SingleChoiceProperty(
-          widgetId,
-          "type",
-          "predefined",
-          "Top",
-          "widget-donaterslist-widget-type",
-          ["Top", "Last"],
-          "content",
-        ),
-        new SingleChoiceProperty(
-          widgetId,
-          "period",
-          "predefined",
-          "month",
-          "widget-donaterslist-period",
-          ["month", "day"],
-          "content",
-        ),
+        new SingleChoiceProperty({
+          widgetId:widgetId,
+          name:"type",
+          value:"Top",
+          displayName:"widget-donaterslist-widget-type",
+          options:["Top", "Last"],
+          tab:"content",
+          selectionType: SELECTION_TYPE.SEGMENTED
+        }),
+        new SingleChoiceProperty({
+          widgetId:widgetId,
+          name:"period",
+          value:"month",
+          displayName:"widget-donaterslist-period",
+          options:["month", "day"],
+          tab:"content",
+          selectionType: SELECTION_TYPE.SEGMENTED
+        }),
         new NumberProperty(
           widgetId,
           "topsize",
@@ -68,50 +68,48 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           name: "headerFont",
           tab: "header",
         }),
-        new SingleChoiceProperty(
-          widgetId,
-          "headerAlignment",
-          "predefined",
-          "Center",
-          "widget-donaterslist-list-alignment",
-          ["Left", "Center", "Right"],
-          "header",
-        ),
+        new SingleChoiceProperty({
+          widgetId:widgetId,
+          name:"headerAlignment",
+          value:"Center",
+          displayName:"widget-donaterslist-list-alignment",
+          options:["Left", "Center", "Right"],
+          tab:"header",
+          selectionType: SELECTION_TYPE.SEGMENTED
+        }),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "messageFont",
           tab: "list",
         }),
-        new ColorProperty(
-          widgetId,
-          "titleBackgroundColor",
-          "color",
-          "#000000",
-          "widget-donaterslist-title-background-color",
-          "header",
-        ),
+        new ColorProperty({
+          widgetId: widgetId,
+          name: "titleBackgroundColor",
+          displayName: "widget-donaterslist-title-background-color",
+          tab: "header",
+          target: ColorPropertyTarget.BACKGROUND,
+        }),
         new BorderProperty({
           widgetId: widgetId,
           name: "headerBorder",
           tab: "header",
         }),
-        new ColorProperty(
-          widgetId,
-          "backgroundColor",
-          "color",
-          "#000000",
-          "widget-donaterslist-list-background-color",
-          "list",
-        ),
-        new SingleChoiceProperty(
-          widgetId,
-          "listAlignment",
-          "predefined",
-          "Center",
-          "widget-donaterslist-list-alignment",
-          ["Left", "Center", "Right"],
-          "list",
-        ),
+        new ColorProperty({
+          widgetId: widgetId,
+          name: "backgroundColor",
+          displayName: "widget-donaterslist-list-background-color",
+          tab: "list",
+          target: ColorPropertyTarget.BACKGROUND,
+        }),
+        new SingleChoiceProperty({
+          widgetId:widgetId,
+          name:"listAlignment",
+          value: "Center",
+          displayName: "widget-donaterslist-list-alignment",
+          options: ["Left", "Center", "Right"],
+          tab: "list",
+          selectionType:  SELECTION_TYPE.SEGMENTED
+        }),
         new NumberProperty(
           widgetId,
           "gap",

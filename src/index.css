@@ -187,3 +187,15 @@ input[type="file"] {
   bottom: 0;
   transform: rotate(45deg);
 }
+
+.grow {
+  flex-grow: 1;
+}
+
+.shrink {
+  flex-shrink: 1;
+}
+
+.backgroundClipText{
+  background-clip: text;
+}

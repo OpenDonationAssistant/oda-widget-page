@@ -195,47 +195,59 @@ export default function HistoryPage({}) {
             setShowModal(false);
           }}
         >
-          <LabeledContainer displayName="dialog-add-donation-nickname">
-            <Input
-              value={nickname}
-              onChange={(value) => setNickname(value.target.value)}
-            />
-          </LabeledContainer>
-          <LabeledContainer displayName="dialog-add-donation-amount">
-            <InputNumber
-              className={`full-width`}
-              value={amount}
-              onChange={(value) => setAmount(value ?? 0)}
-            />
-          </LabeledContainer>
-          <LabeledContainer displayName="dialog-add-donation-count-in-goal">
-            <Select
-              className="full-width"
-              value={goalId}
-              onChange={(selected) => setGoalId(selected)}
-              options={paymentPageConfig.current?.goals.map((goal) => {
-                return { value: goal.id, label: goal.briefDescription };
-              })}
-            />
-          </LabeledContainer>
-          <LabeledContainer displayName="dialog-add-donation-show-alert">
-            <Switch
-              value={showAlert}
-              onChange={() => setShowAlert((old) => !old)}
-            />
-          </LabeledContainer>
-          <LabeledContainer displayName="dialog-add-donation-count-in-top">
-            <Switch
-              value={countInTop}
-              onChange={() => setCountInTop((old) => !old)}
-            />
-          </LabeledContainer>
-          <LabeledContainer displayName="dialog-add-donation-trigger-reel">
-            <Switch
-              value={triggerReel}
-              onChange={() => setTriggerReel((old) => !old)}
-            />
-          </LabeledContainer>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-nickname">
+              <Input
+                value={nickname}
+                onChange={(value) => setNickname(value.target.value)}
+              />
+            </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-amount">
+              <InputNumber
+                className={`full-width`}
+                value={amount}
+                onChange={(value) => setAmount(value ?? 0)}
+              />
+            </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-count-in-goal">
+              <Select
+                className="full-width"
+                value={goalId}
+                onChange={(selected) => setGoalId(selected)}
+                options={paymentPageConfig.current?.goals.map((goal) => {
+                  return { value: goal.id, label: goal.briefDescription };
+                })}
+              />
+            </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-show-alert">
+              <Switch
+                value={showAlert}
+                onChange={() => setShowAlert((old) => !old)}
+              />
+            </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-count-in-top">
+              <Switch
+                value={countInTop}
+                onChange={() => setCountInTop((old) => !old)}
+              />
+            </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            <LabeledContainer displayName="dialog-add-donation-trigger-reel">
+              <Switch
+                value={triggerReel}
+                onChange={() => setTriggerReel((old) => !old)}
+              />
+            </LabeledContainer>
+          </div>
         </Modal>
       </div>
     </Content>

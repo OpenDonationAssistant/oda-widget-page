@@ -4,12 +4,21 @@ import axios from "axios";
 import ColorPicker from "./ColorPicker";
 import BaseSettings from "./BaseSettings";
 import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import { Tabs as AntTabs, Flex, Input, Slider } from "antd";
+import {
+  Tabs as AntTabs,
+  Flex,
+  Input,
+  InputNumber,
+  Segmented,
+  Select,
+  Slider,
+} from "antd";
 import TextPropertyModal from "../widgetproperties/TextPropertyModal";
 import { useTranslation } from "react-i18next";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import AnimatedFontComponent from "../widgetproperties/AnimatedFontComponent";
 import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 interface PaymentAlertSettingsProps {
   id: string;
@@ -446,7 +455,9 @@ export default function PaymentAlertSettings({
 
   const previews = () => (
     <>
-      <div style={{ marginBottom: "10px", textAlign: "center" }}>
+      <div
+        style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center" }}
+      >
         <button className="oda-btn-default" onClick={() => addDefaultAlert()}>
           {t("button-add-alert")}
         </button>
@@ -463,26 +474,23 @@ export default function PaymentAlertSettings({
       .filter((it) => it.type !== "fontselect")
       .filter((it) => it.type !== "custom")
       .map((prop) => (
-        <div key={`${prop.name}`} className="widget-settings-item">
-          <div className="widget-settings-name">{t(prop.displayName)}</div>
-          {(!prop.type || prop.type == "string") && (
-            <Input
-              value={prop.value}
-              size="small"
-              className="widget-settings-value"
-              onChange={(e) => {
-                update(prop.name, e.target.value, index);
-              }}
-            />
-          )}
-          {prop.type === "color" && (
-            <ColorPicker
-              value={prop.value}
-              onChange={(value) => update(prop.name, value, index)}
-            />
-          )}
-          {prop.type === "text" && (
-            <>
+        <div className="settings-item">
+          <LabeledContainer key={`${prop.name}`} displayName={prop.displayName}>
+            {(!prop.type || prop.type == "string") && (
+              <Input
+                value={prop.value}
+                onChange={(e) => {
+                  update(prop.name, e.target.value, index);
+                }}
+              />
+            )}
+            {prop.type === "color" && (
+              <ColorPicker
+                value={prop.value}
+                onChange={(value) => update(prop.name, value, index)}
+              />
+            )}
+            {prop.type === "text" && (
               <TextPropertyModal
                 title={prop.displayName}
                 className="textarea-popup-container"
@@ -496,14 +504,14 @@ export default function PaymentAlertSettings({
                   />
                 </div>
               </TextPropertyModal>
-            </>
-          )}
-          {prop.type === "boolean" && (
-            <BooleanPropertyInput
-              prop={prop}
-              onChange={() => update(prop.name, !prop.value, index)}
-            />
-          )}
+            )}
+            {prop.type === "boolean" && (
+              <BooleanPropertyInput
+                prop={prop}
+                onChange={() => update(prop.name, !prop.value, index)}
+              />
+            )}
+          </LabeledContainer>
         </div>
       ));
 
@@ -514,17 +522,14 @@ export default function PaymentAlertSettings({
       children: [
         <>
           {[
-            ...tabContent(alert, "trigger", index),
-            <div key={`${index}_trigger`} className="widget-settings-item">
-              <div className="widget-settings-name">
-                {t("widget-alert-amount")}
-              </div>
-              <Input
-                size="small"
-                className="widget-settings-value"
-                value={alert.trigger.amount}
-                onChange={(e) => updateTrigger(e.target.value, index)}
-              />
+            <div className="settings-item">
+              <LabeledContainer displayName="widget-alert-amount">
+                <InputNumber
+                  value={alert.trigger.amount}
+                  addonAfter="руб."
+                  onChange={(value) => updateTrigger(value, index)}
+                />
+              </LabeledContainer>
             </div>,
           ]}
         </>,
@@ -537,21 +542,35 @@ export default function PaymentAlertSettings({
         <>
           {[
             ...tabContent(alert, "image", index),
-            new SingleChoiceProperty(
-              "widgetId",
-              "appearance",
-              "choice",
-              alert.properties.find((prop) => prop.name === "appearance")
-                ?.value,
-              "alert-appearance-label",
-              [...APPEARANCE_ANIMATIONS, "random", "none"],
-            ).markup((widgetId, name, value) =>
-              update("appearance", value, index),
-            ),
+            <div className="settings-item">
+              <LabeledContainer displayName="alert-appearance-label">
+                <Select
+                  className="full-width"
+                  value={
+                    alert.properties.find((prop) => prop.name === "appearance")
+                      ?.value
+                  }
+                  options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
+                    (option) => {
+                      return { label: t(option), value: option };
+                    },
+                  )}
+                  onChange={(selected) => {
+                    update("appearance", selected, index);
+                  }}
+                />
+              </LabeledContainer>
+            </div>,
             <div className="upload-button-container">
               {!alert.video && !alert.image && (
                 <>
-                  <div style={{ marginBottom: "10px", marginTop: "10px" }}>
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      marginTop: "10px",
+                      marginRight: "10px",
+                    }}
+                  >
                     <label
                       className="oda-btn-default"
                       style={{ marginRight: "10px" }}
@@ -602,47 +621,41 @@ export default function PaymentAlertSettings({
             <div className="sound-container">
               {alert.audio && (
                 <>
-                  <Flex
-                    className="full-width"
-                    justify="space-between"
-                    align="center"
-                  >
-                    <span>Файл</span>
-                    <div className="current-sound">
-                      <span className="audio-name">{alert.audio}</span>
-                      <span
-                        onClick={() => playAudio(alert.audio)}
-                        className="material-symbols-sharp"
-                      >
-                        play_circle
-                      </span>
-                      <span
-                        onClick={() => deleteAudio(index)}
-                        className="material-symbols-sharp"
-                      >
-                        delete
-                      </span>
-                    </div>
-                  </Flex>
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span>Громкость</span>
-                    <Slider
-                      min={1}
-                      max={100}
-                      defaultValue={100}
-                      value={
-                        alert.properties.find((prop) => prop.name === "audio-volume")
-                          ?.value
-                      }
-                      onChange={(value) => update("audio-volume",value, index)}
-                    />
+                  <div className="settings-item">
+                    <LabeledContainer displayName="Файл">
+                      <div className="current-sound">
+                        <span className="audio-name">{alert.audio}</span>
+                        <span
+                          onClick={() => playAudio(alert.audio)}
+                          className="material-symbols-sharp"
+                        >
+                          play_circle
+                        </span>
+                        <span
+                          onClick={() => deleteAudio(index)}
+                          className="material-symbols-sharp"
+                        >
+                          delete
+                        </span>
+                      </div>
+                    </LabeledContainer>
+                  </div>
+                  <div className="settings-item full-width">
+                    <LabeledContainer displayName="Громкость">
+                      <Slider
+                        min={1}
+                        max={100}
+                        defaultValue={100}
+                        value={
+                          alert.properties.find(
+                            (prop) => prop.name === "audio-volume",
+                          )?.value
+                        }
+                        onChange={(value) =>
+                          update("audio-volume", value, index)
+                        }
+                      />
+                    </LabeledContainer>
                   </div>
                 </>
               )}
@@ -676,27 +689,29 @@ export default function PaymentAlertSettings({
         <>
           {[
             ...tabContent(alert, "header", index),
-            <WidgetsContext.Provider
-              value={{
-                config: config,
-                setConfig: setConfig,
-                updateConfig: (widgetId, name, value) =>
-                  update("headerFont", value, index),
-              }}
-            >
-              <AnimatedFontComponent
-                property={
-                  new AnimatedFontProperty({
-                    widgetId: "widgetId",
-                    name: "headerFont",
-                    value: alert.properties.find(
-                      (prop) => prop.name === "headerFont",
-                    )?.value,
-                    label: "widget-alert-title-font-family",
-                  })
-                }
-              />
-            </WidgetsContext.Provider>,
+            <div className="settings-item">
+              <WidgetsContext.Provider
+                value={{
+                  config: config,
+                  setConfig: setConfig,
+                  updateConfig: (widgetId, name, value) =>
+                    update("headerFont", value, index),
+                }}
+              >
+                <AnimatedFontComponent
+                  property={
+                    new AnimatedFontProperty({
+                      widgetId: "widgetId",
+                      name: "headerFont",
+                      value: alert.properties.find(
+                        (prop) => prop.name === "headerFont",
+                      )?.value,
+                      label: "widget-alert-title-font-family",
+                    })
+                  }
+                />
+              </WidgetsContext.Provider>
+            </div>,
           ]}
         </>,
       ],
@@ -707,37 +722,42 @@ export default function PaymentAlertSettings({
       children: [
         <>
           {[
-            <WidgetsContext.Provider
-              value={{
-                config: config,
-                setConfig: setConfig,
-                updateConfig: (widgetId, name, value) =>
-                  update("font", value, index),
-              }}
-            >
-              <AnimatedFontComponent
-                property={
-                  new AnimatedFontProperty({
-                    widgetId: "widgetId",
-                    name: "font",
-                    value: alert.properties.find((prop) => prop.name === "font")
-                      ?.value,
-                    label: "widget-alert-message-font-family",
-                  })
-                }
-              />
-            </WidgetsContext.Provider>,
-            new SingleChoiceProperty(
-              "widgetId",
-              "message-appearance",
-              "choice",
-              alert.properties.find((prop) => prop.name === "appearance")
-                ?.value,
-              "alert-message-appearance-label",
-              [...APPEARANCE_ANIMATIONS, "random", "none"],
-            ).markup((widgetId, name, value) =>
-              update("message-appearance", value, index),
-            ),
+            <div className="settings-item">
+              <WidgetsContext.Provider
+                value={{
+                  config: config,
+                  setConfig: setConfig,
+                  updateConfig: (widgetId, name, value) =>
+                    update("font", value, index),
+                }}
+              >
+                <AnimatedFontComponent
+                  property={
+                    new AnimatedFontProperty({
+                      widgetId: "widgetId",
+                      name: "font",
+                      value: alert.properties.find(
+                        (prop) => prop.name === "font",
+                      )?.value,
+                      label: "widget-alert-message-font-family",
+                    })
+                  }
+                />
+              </WidgetsContext.Provider>
+            </div>,
+            <div className="settings-item">
+              {new SingleChoiceProperty({
+                widgetId: "widgetId",
+                name: "message-appearance",
+                value: alert.properties.find(
+                  (prop) => prop.name === "message-appearance",
+                )?.value,
+                displayName: "alert-message-appearance-label",
+                options: [...APPEARANCE_ANIMATIONS, "random", "none"],
+              }).markup((widgetId, name, value) =>
+                update("message-appearance", value, index),
+              )}
+            </div>,
           ]}
         </>,
       ],

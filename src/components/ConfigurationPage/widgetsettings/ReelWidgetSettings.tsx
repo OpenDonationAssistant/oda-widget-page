@@ -1,6 +1,6 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
-import { ColorProperty } from "../widgetproperties/ColorProperty";
+import { ColorProperty, ColorPropertyTarget } from "../widgetproperties/ColorProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { ReelItemBackgroundProperty } from "../widgetproperties/ReelItemBackgroundProperty";
 import { ReelItemListProperty } from "../widgetproperties/ReelItemListProperty";
@@ -42,14 +42,13 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           name: "cardBorder",
           tab: "general"
         }),
-        new ColorProperty(
-          widgetId,
-          "selectionColor",
-          "color",
-          "#00FF00",
-          "widget-reel-background-color",
-          "general",
-        ),
+        new ColorProperty({
+          widgetId: widgetId,
+          name: "selectionColor",
+          displayName: "widget-reel-background-color",
+          tab: "general",
+          target: ColorPropertyTarget.BACKGROUND,
+        }),
         new DefaultWidgetProperty(
           widgetId,
           "type",
