@@ -21,6 +21,7 @@ export default function PlayerControl({}: {}) {
   }
 
   function add() {
+    console.log({url:url},"adding url");
     if (url.includes("playlist")) {
       const index = url.lastIndexOf("list=");
       const id = url.substring(index + 5);
@@ -38,30 +39,44 @@ export default function PlayerControl({}: {}) {
               url: `https://www.youtube.com/watch?v=${video.id}`,
               recipientId: recipientId,
               title: video.snippet.title,
-              playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL)
+              playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL),
             });
           });
         });
     } else {
       let id = uuidv4();
-      const videoId = youtube_url_regexp.exec(url)?.at(6);
-      if (videoId) {
-        axios
-          .get(
-            `${process.env.REACT_APP_API_ENDPOINT}/media/available?videoId=${videoId}`,
-          )
-          .then((json) => json.data)
-          .then((list) => {
-            list.forEach((item) =>
-              publish(conf.topic.media, {
-                id: id,
-                url: url,
-                recipientId: recipientId,
-                title: item.snippet.title,
-                playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL)
-              }),
-            );
-          });
+      if (url.includes("vk.com")) {
+        const originId = url.replace("https://vk.com/video-", "");
+        publish(conf.topic.media, {
+          id: id,
+          url: url,
+          originId: originId,
+          recipientId: recipientId,
+          title: "Unknown",
+          provider: "vk",
+          playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL),
+        });
+      } else {
+        const videoId = youtube_url_regexp.exec(url)?.at(6);
+        if (videoId) {
+          axios
+            .get(
+              `${process.env.REACT_APP_API_ENDPOINT}/media/available?videoId=${videoId}`,
+            )
+            .then((json) => json.data)
+            .then((list) => {
+              list.forEach((item) =>
+                publish(conf.topic.media, {
+                  id: id,
+                  url: url,
+                  recipientId: recipientId,
+                  title: item.snippet.title,
+                  provider: "youtube",
+                  playlist: PLAYLIST_TYPE.toString(PLAYLIST_TYPE.PERSONAL),
+                }),
+              );
+            });
+        }
       }
     }
   }

@@ -13,7 +13,9 @@ import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
-import "https://vk.com/js/api/videoplayer.js";
+import "./VKPlayer.js";
+// import "https://vk.com/js/api/videoplayer.js";
+// import  "https://vk.com/dist/public/api/videoplayer.c495d7676171720c082fec7a958a4416.js"
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,

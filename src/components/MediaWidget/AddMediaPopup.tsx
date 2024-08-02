@@ -102,10 +102,25 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         localStorage.setItem("playlists", JSON.stringify(filteredPlaylists));
       });
     } else {
-      const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
-      const videoId = youtube_url_regexp.exec(url)?.at(6);
-      log.debug({videoId: videoId}, "parsed videoId");
-      videoId && addVideo(videoId);
+      console.log({urlCheck: url.includes("vk.com")});
+      if (url.includes("vk.com")){
+        const originId = url.replace("https://vk.com/video-","");
+        log.debug({vkId: originId}, "parsed vkId");
+        playlist.addSong({
+          id: uuidv4(),
+          originId: originId,
+          src: url,
+          provider:  Provider.VK,
+          type: "vk",
+          owner: recipientId,
+          title: "Unknown"
+        });
+      } else{
+        const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
+        const videoId = youtube_url_regexp.exec(url)?.at(6);
+        log.debug({videoId: videoId}, "parsed videoId");
+        videoId && addVideo(videoId);
+      }
     }
     document.getElementById("new-media-input").value = "";
     setShowNewMediaPopup(false);
