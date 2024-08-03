@@ -19,6 +19,7 @@ import {
   BorderProperty,
   DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
+import { ColorProperty, ColorPropertyTarget } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -120,20 +121,32 @@ export default function ReelWidget({}) {
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
-  const selectionColor = findSetting(settings, "selectionColor", "green");
+  const selectionStyle = new ColorProperty({
+    widgetId: widgetId,
+    name: "selectionColor",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "selectionColor",
+      DEFAULT_BORDER_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
   const slideStyle = {
     alignItems: "stretch",
   };
   const backgroundImage = findSetting(settings, "backgroundImage", "");
 
   function calcItemStyle(option: string) {
-    const style = new BorderProperty({
+    let style = new BorderProperty({
       widgetId: widgetId,
       name: "cardBorder",
       value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
     }).calcCss();
     if (highlight && active === option) {
-      style.backgroundColor = selectionColor;
+      style = {...selectionStyle, ...style };
     } else {
       if (backgroundImage) {
         style.backgroundSize = "cover";
@@ -159,8 +172,8 @@ export default function ReelWidget({}) {
         }}
       />
       {titleFont.createFontImport()}
-      <div className={titleFont.calcClassName()}>
-        <div className={`glide hidden`} ref={glideRef} style={widgetStyle}>
+      <div>
+        <div className={`glide hidden`} ref={glideRef} style={borderStyle}>
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides" style={slideStyle}>
               {options.map((option) => (
@@ -175,7 +188,8 @@ export default function ReelWidget({}) {
                 >
                   <li
                     key={option}
-                    className={`glide__slide ${classes.reelitem}`}
+                    style={titleFont.calcStyle()}
+                    className={`${titleFont.calcClassName()} glide__slide ${classes.reelitem}`}
                   >
                     {option}
                   </li>

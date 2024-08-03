@@ -12,6 +12,10 @@ import {
   BorderProperty,
   DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  ColorProperty,
+  ColorPropertyTarget,
+} from "../ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());
@@ -54,15 +58,33 @@ export default function DonatersTopList({}: {}) {
     };
   }, [recipientId]);
 
-  const type = findSetting(settings, "type", "All");
+  const type = findSetting(settings, "type", "Top");
 
   const title = findSetting(settings, "title", "Донатеры");
-  const titleBackgroundColor = findSetting(
-    settings,
-    "titleBackgroundColor",
-    "white",
-  );
-  const backgroundColor = findSetting(settings, "backgroundColor", "red");
+  const titleBackgroundStyle = new ColorProperty({
+    widgetId: widgetId,
+    name: "titleBackgroundColor",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "titleBackgroundColor",
+      DEFAULT_BORDER_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+  const backgroundStyle = new ColorProperty({
+    widgetId: widgetId,
+    name: "backgroundColor",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "backgroundColor",
+      DEFAULT_BORDER_PROPERTY_VALUE,
+    ),
+  }).calcCss();
   const headerFont = new AnimatedFontProperty({
     widgetId: widgetId,
     name: "headerFont",
@@ -116,7 +138,6 @@ export default function DonatersTopList({}: {}) {
   textStyle.flex = "1 1 auto";
 
   let donatersTopStyle = headerFont.calcStyle();
-  donatersTopStyle.backgroundColor = titleBackgroundColor;
   let headerAlignment = findSetting(settings, "headerAlignment", "Center");
   donatersTopStyle.textAlign = headerAlignment;
   donatersTopStyle.flex = "0 0 auto";
@@ -140,8 +161,9 @@ export default function DonatersTopList({}: {}) {
   }).calcCss();
 
   const widgetStyle = {
-    ...{ height: "100%", backgroundColor: backgroundColor },
+    ...{ height: "100%" },
     ...widgetBorderStyle,
+    ...backgroundStyle,
   };
 
   donatersTopStyle = { ...donatersTopStyle, ...headerBorderStyle };
@@ -188,19 +210,18 @@ export default function DonatersTopList({}: {}) {
     <>
       {headerFont.createFontImport()}
       {messageFont.createFontImport()}
-      <Flex
-        style={widgetStyle}
-        gap={gap}
-        vertical={layout === "vertical"}
-      >
-        <div
-          style={donatersTopStyle}
-          className={`donaters-title ${headerFont.calcClassName()}`}
-        >
-          {title}
+      <Flex style={widgetStyle} gap={gap} vertical={layout === "vertical"}>
+        <div style={titleBackgroundStyle}>
+          <div
+            style={donatersTopStyle}
+            className={`donaters-title ${headerFont.calcClassName()}`}
+          >
+            {title}
+          </div>
         </div>
         <Carousel
           style={textStyle}
+          className={messageFont.calcClassName()}
           speed={carouselSettings.speed * 1000}
           autoplaySpeed={carouselSettings.delay * 1000}
           autoplay
