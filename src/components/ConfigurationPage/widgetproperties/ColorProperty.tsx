@@ -15,7 +15,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import { produce } from "immer";
 import classes from "./ColorProperty.module.css";
 
-enum GRADIENT_TYPE {
+export enum GRADIENT_TYPE {
   LINEAR,
   RADIAL,
   CONIC,

@@ -1,7 +1,7 @@
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
-import { ColorProperty, ColorPropertyTarget } from "../widgetproperties/ColorProperty";
+import { ColorProperty, ColorPropertyTarget, GRADIENT_TYPE } from "../widgetproperties/ColorProperty";
 import { DonatersTopListCarouselProperty } from "../widgetproperties/DonatersTopListCarouselProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
@@ -87,6 +87,13 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           name: "titleBackgroundColor",
           displayName: "widget-donaterslist-title-background-color",
           tab: "header",
+          value: {
+            gradient: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            repeating: false,
+            colors: [{ color: "rgba(0,0,0,0)" }],
+            angle: 0,
+          },
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new BorderProperty({
@@ -97,6 +104,13 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         new ColorProperty({
           widgetId: widgetId,
           name: "backgroundColor",
+          value: {
+            gradient: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            repeating: false,
+            colors: [{ color: "rgba(0,0,0,0)" }],
+            angle: 0,
+          },
           displayName: "widget-donaterslist-list-background-color",
           tab: "list",
           target: ColorPropertyTarget.BACKGROUND,
