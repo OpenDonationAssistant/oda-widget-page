@@ -22,6 +22,7 @@ import {
   ColorProperty,
   ColorPropertyTarget,
 } from "../ConfigurationPage/widgetproperties/ColorProperty";
+import { DEFAULT_ROUNDING_PROPERTY_VALUE, RoundingProperty } from "../ConfigurationPage/widgetproperties/RoundingProperty";
 
 function PlayerInfo() {
   const navigate = useNavigate();
@@ -71,26 +72,26 @@ function PlayerInfo() {
     value: findSetting(settings, "background", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
-  const rounding = new ColorProperty({
+  const rounding = new RoundingProperty({
     widgetId: widgetId,
-    name: "background",
+    name: "rounding",
     tab: "general",
-    target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
-    value: findSetting(settings, "background", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "rounding", DEFAULT_ROUNDING_PROPERTY_VALUE),
   }).calcCss();
 
   console.log({background: background});
 
-  const widgetStyle = { ...titleFontProperty.calcStyle(), ...borderStyle };
+  const contentStyle = { ...titleFontProperty.calcStyle(), ...borderStyle };
+  const widgetStyle =  { ...rounding, ...background };
 
   return (
     <>
       {titleFontProperty.createFontImport()}
-      <div style={background}>
+      <div style={widgetStyle}>
         <div
           className={`player-info-container ${titleFontProperty.calcClassName()}`}
-          style={widgetStyle}
+          style={contentStyle}
           data-vjs-player
         >
           <div className="player-info"></div>

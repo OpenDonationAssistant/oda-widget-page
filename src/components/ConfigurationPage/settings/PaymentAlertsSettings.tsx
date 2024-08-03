@@ -774,15 +774,6 @@ export default function PaymentAlertSettings({
             label: t("tab-alert-alerts"),
             children: previews(),
           },
-          {
-            key: "2",
-            label: t("tab-alert-default"),
-            children: (
-              <>
-                <BaseSettings id={id} />
-              </>
-            ),
-          },
         ]}
       />
     </>

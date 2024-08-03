@@ -183,13 +183,6 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       widgetId,
       properties,
       [
-        new BooleanProperty(
-          widgetId,
-          "useGreenscreen",
-          "boolean",
-          false,
-          "widget-alert-use-greenscreen",
-        ),
       ],
       new Map(),
     );
