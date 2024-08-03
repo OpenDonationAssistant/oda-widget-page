@@ -356,11 +356,11 @@ export class ColorProperty extends DefaultWidgetProperty {
       style.background = this.calcRowColorValue();
     }
     if (this._target === ColorPropertyTarget.TEXT) {
-      style.color  = "transparent";
       if (setting.gradient) {
+        style.color  = "transparent";
         style.backgroundImage = this.calcRowColorValue();
       } else {
-        style.backgroundColor = this.calcRowColorValue();
+        style.color = this.calcRowColorValue();
         style.textDecorationColor = setting.colors[0].color;
       }
     }
