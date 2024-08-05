@@ -25,7 +25,7 @@ function PaymentAlerts({}: {}) {
   }, [alertController]);
 
   useEffect(() => {
-    setUseGreenscreen(findSetting(settings, "useGreenscreen", true));
+    setUseGreenscreen(findSetting(settings, "useGreenscreen", false));
   },[settings]);
 
   useEffect(() => {
