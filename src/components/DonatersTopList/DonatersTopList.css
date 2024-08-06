@@ -1,8 +1,6 @@
-.donaters-list {
-  color: white;
-  font-size: 28px;
+.sliding {
   position: relative;
-  animation: linear dotleft 60s infinite;
+  animation: linear dotleft 10s infinite;
   white-space: nowrap;
 }
 
@@ -21,9 +19,9 @@
 
 @keyframes dotleft {
   0% {
-    left: 100%;
+    left: 50%;
   }
   100% {
-    left: -100%;
+    left: 0%;
   }
 }

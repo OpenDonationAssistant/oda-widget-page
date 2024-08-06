@@ -70,6 +70,7 @@ function cleanupCommandListener(widgetId: string){
 
 
 function publish(topic: string, payload: any) {
+  log.debug({payload: payload}, "sending payload");
   socket.publish({
     destination: topic,
     body: JSON.stringify(payload),

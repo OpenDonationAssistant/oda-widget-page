@@ -4,6 +4,7 @@ import { WidgetData } from "./types/WidgetData";
 import { WidgetSettingsContext } from "./contexts/WidgetSettingsContext";
 import {
   cleanupCommandListener,
+  publish,
   setupCommandListener,
   subscribe,
   unsubscribe,
@@ -52,6 +53,9 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           },
           unsubscribe: (topic: string) => {
             unsubscribe(widgetId, topic);
+          },
+          publish: (topic: string, payload:  any)  => {
+            publish(topic, payload);
           },
         }}
       >

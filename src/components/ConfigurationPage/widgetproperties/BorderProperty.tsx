@@ -591,9 +591,10 @@ export class BorderProperty extends DefaultWidgetProperty {
 
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
-    if (this.value.isSame === false) {
+    if (this.value.isSame === true) {
       style.border = this.createRule(this.value.top);
-    } else {
+    }
+    if (this.value.isSame === false) {
       style.borderTop = this.createRule(this.value.top);
       style.borderRight = this.createRule(this.value.right);
       style.borderLeft = this.createRule(this.value.left);

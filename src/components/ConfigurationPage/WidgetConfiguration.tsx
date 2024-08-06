@@ -20,13 +20,14 @@ import { useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ApiContext } from "../../contexts/ApiContext";
-import { messageCallbackType } from "@stomp/stompjs";
+import { StompHeaders, messageCallbackType } from "@stomp/stompjs";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
 import DonationGoal from "../DonationGoal/DonationGoal";
 import DonationTimer from "../DonationTimer/DonationTimer";
 import classes from "./WidgetConfiguration.module.css";
+import PlayerInfo from "../PlayerInfo/PlayerInfo";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -43,6 +44,8 @@ function getWidget(type: string) {
       return <DonationGoal />;
     case "donation-timer":
       return <DonationTimer />;
+    case "player-info":
+      return <PlayerInfo />;
     default:
       return <div></div>;
   }
@@ -233,6 +236,7 @@ export default function WidgetConfiguration({
       >
         {(type === "donaters-top-list" ||
           type === "donationgoal" ||
+          type === "player-info" ||
           type === "donation-timer") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
@@ -258,9 +262,26 @@ export default function WidgetConfiguration({
                     },
                     subscribe: (
                       topic: string,
-                      onMessage: messageCallbackType,
-                    ) => {},
+                      onMessage: (params: {
+                        ack: () => void;
+                        body: string;
+                      }) => void,
+                    ) => {
+                      if (topic === conf.topic.player) {
+                        log.debug("sending mock message");
+                        onMessage({
+                          ack: () => {},
+                          body: JSON.stringify({
+                            title: "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
+                            owner: "testuser",
+                            count:  11,
+                            number: 0
+                          }),
+                        });
+                      }
+                    },
                     unsubscribe: (topic: string) => {},
+                    publish: (topic: string, payload: any) => {},
                   }}
                 >
                   <ApiContext.Provider

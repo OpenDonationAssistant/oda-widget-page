@@ -43,7 +43,7 @@
 .ant-color-picker-trigger {
   background-color: #684aff;
   width: 100%;
-  min-width: 100px;
+  min-width: 140px;
   justify-content: flex-start;
   flex-flow: row-reverse;
   padding-right: 10px;

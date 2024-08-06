@@ -172,7 +172,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/player-info/:widgetId",
-    element: <PlayerInfo />,
+    element: (
+      <WidgetWrapper>
+        <PlayerInfo />
+      </WidgetWrapper>
+    ),
     loader: widgetSettingsLoader,
   },
   {

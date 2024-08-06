@@ -152,6 +152,11 @@ export class PlaylistController {
       this.current = playlist;
     }
   }
+
+  publishState(){
+    this.current.publishState();
+  }
+
   public get repeat() {
     return this._repeat;
   }

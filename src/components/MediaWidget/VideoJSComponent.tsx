@@ -180,6 +180,14 @@ export default function VideoJSComponent({
       if (json.command === "next") {
         playlistController.finishSong();
       }
+      if (json.command === "state") {
+        if (song) {
+          if (playerState === PLAYER_STATE.PLAYING){
+            sendAlert(song);
+            playlistController.publishState();
+          }
+        }
+      }
       message.ack();
     };
   }, [player]);

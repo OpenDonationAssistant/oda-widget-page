@@ -181,7 +181,7 @@ class Playlist {
     );
   }
 
-  triggerListeners() {
+  publishState(){
     publish(this.topic, {
       count:
         this._index === null || this._type === PLAYLIST_TYPE.PERSONAL
@@ -192,6 +192,10 @@ class Playlist {
           ? 0
           : this._index,
     });
+  }
+
+  triggerListeners() {
+    this.publishState();
     this._listeners.forEach((listener) => {
       listener.trigger(this);
       log.debug(
