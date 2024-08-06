@@ -109,6 +109,7 @@ function PlayerInfo() {
 
   const useOnelineWidget = findSetting(settings, "widgetType", "Старый");
   const showRequester = findSetting(settings, "showRequester", "show");
+  const showQueueSize = findSetting(settings, "showQueueSize", "show");
 
   const titleBackground = new ColorProperty({
     widgetId: widgetId,
@@ -117,6 +118,12 @@ function PlayerInfo() {
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "titleBackground", null),
+  }).calcCss();
+
+  const titleBorder = new BorderProperty({
+    widgetId: widgetId,
+    name: "titleBorder",
+    value: findSetting(settings, "titleBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const titleRounding = new RoundingProperty({
@@ -149,6 +156,12 @@ function PlayerInfo() {
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "requesterBackground", null),
+  }).calcCss();
+
+  const requesterBorder = new BorderProperty({
+    widgetId: widgetId,
+    name: "requesterBorder",
+    value: findSetting(settings, "requesterBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const requesterRounding = new RoundingProperty({
@@ -206,6 +219,12 @@ function PlayerInfo() {
     ),
   }).calcCss();
 
+  const queueBorder = new BorderProperty({
+    widgetId: widgetId,
+    name: "queueBorder",
+    value: findSetting(settings, "queueBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+  }).calcCss();
+
   const onelineWidget = () => {
     return (
       <>
@@ -242,7 +261,7 @@ function PlayerInfo() {
           }}
         >
           <div
-            style={{ ...titleBackground, ...titleRounding, ...titlePadding }}
+            style={{ ...titleBackground, ...titleRounding, ...titlePadding,...titleBorder }}
           >
             <Flex
               align="center"
@@ -266,6 +285,7 @@ function PlayerInfo() {
                 ...requesterPadding,
                 ...requesterBackground,
                 ...requesterRounding,
+                ...requesterBorder
               }}
             >
               {owner && showRequester === "show" && (
@@ -288,9 +308,9 @@ function PlayerInfo() {
             </Col>
             <Col
               span={12}
-              style={{ ...queueBackground, ...queuePadding, ...queueRounding }}
+              style={{ ...queueBackground, ...queuePadding, ...queueRounding,...queueBorder }}
             >
-              {left > 0 && (
+              {left > 0 && showQueueSize  ==="show" && (
                 <Flex
                   align="center"
                   gap={5}

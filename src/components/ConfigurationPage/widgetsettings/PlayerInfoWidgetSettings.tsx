@@ -128,6 +128,20 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
           name: "requesterRounding",
           tab: "requester",
         }),
+        new PaddingProperty({
+          widgetId: widgetId,
+          name: "requesterPadding",
+          tab: "requester",
+        }),
+        new SingleChoiceProperty({
+          widgetId: widgetId,
+          name: "showQueueSize",
+          tab: "queue",
+          value: "show",
+          displayName:  "display-queue-size",
+          options:["show","hide"],
+          selectionType: SELECTION_TYPE.SEGMENTED
+        }),
         new AnimatedFontProperty({
           widgetId: widgetId,
           name: "queueFont",
@@ -155,6 +169,11 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           widgetId: widgetId,
           name: "queueRounding",
+          tab: "queue",
+        }),
+        new PaddingProperty({
+          widgetId: widgetId,
+          name: "queuePadding",
           tab: "queue",
         }),
       ],
