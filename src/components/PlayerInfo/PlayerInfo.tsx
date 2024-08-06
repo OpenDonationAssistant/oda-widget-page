@@ -110,6 +110,102 @@ function PlayerInfo() {
   const useOnelineWidget = findSetting(settings, "widgetType", "Старый");
   const showRequester = findSetting(settings, "showRequester", "show");
 
+  const titleBackground = new ColorProperty({
+    widgetId: widgetId,
+    name: "titleBackground",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(settings, "titleBackground", null),
+  }).calcCss();
+
+  const titleRounding = new RoundingProperty({
+    widgetId: widgetId,
+    name: "titleRounding",
+    tab: "general",
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "titleRounding",
+      DEFAULT_ROUNDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const titlePadding = new PaddingProperty({
+    widgetId: widgetId,
+    name: "titlePadding",
+    tab: "general",
+    value: findSetting(
+      settings,
+      "titlePadding",
+      DEFAULT_PADDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const requesterBackground = new ColorProperty({
+    widgetId: widgetId,
+    name: "requesterBackground",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(settings, "requesterBackground", null),
+  }).calcCss();
+
+  const requesterRounding = new RoundingProperty({
+    widgetId: widgetId,
+    name: "requesterRounding",
+    tab: "general",
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "requesterRounding",
+      DEFAULT_ROUNDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const requesterPadding = new PaddingProperty({
+    widgetId: widgetId,
+    name: "requesterPadding",
+    tab: "general",
+    value: findSetting(
+      settings,
+      "requesterPadding",
+      DEFAULT_PADDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const queueBackground = new ColorProperty({
+    widgetId: widgetId,
+    name: "queueBackground",
+    tab: "general",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(settings, "queueBackground", null),
+  }).calcCss();
+
+  const queueRounding = new RoundingProperty({
+    widgetId: widgetId,
+    name: "queueRounding",
+    tab: "general",
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "queueRounding",
+      DEFAULT_ROUNDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const queuePadding = new PaddingProperty({
+    widgetId: widgetId,
+    name: "queuePadding",
+    tab: "general",
+    value: findSetting(
+      settings,
+      "queuePadding",
+      DEFAULT_PADDING_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
   const onelineWidget = () => {
     return (
       <>
@@ -145,22 +241,33 @@ function PlayerInfo() {
             ...padding,
           }}
         >
-          <Flex
-            align="center"
-            gap={10}
-            style={{
-              ...{ overflow: "hidden" },
-              ...titleFontProperty.calcStyle(),
-            }}
-            className={titleFontProperty.calcClassName()}
+          <div
+            style={{ ...titleBackground, ...titleRounding, ...titlePadding }}
           >
-            <span className="material-symbols-sharp">music_cast</span>
-            <Marquee>
-              <span style={{ marginRight: "10px" }}>{title}</span>
-            </Marquee>
-          </Flex>
+            <Flex
+              align="center"
+              gap={10}
+              style={{
+                ...{ overflow: "hidden" },
+                ...titleFontProperty.calcStyle(),
+              }}
+              className={titleFontProperty.calcClassName()}
+            >
+              <span className="material-symbols-sharp">music_cast</span>
+              <Marquee>
+                <span style={{ marginRight: "10px" }}>{title}</span>
+              </Marquee>
+            </Flex>
+          </div>
           <Row align="middle">
-            <Col span={12}>
+            <Col
+              span={12}
+              style={{
+                ...requesterPadding,
+                ...requesterBackground,
+                ...requesterRounding,
+              }}
+            >
               {owner && showRequester === "show" && (
                 <Flex
                   align="center"
@@ -179,7 +286,10 @@ function PlayerInfo() {
                 </Flex>
               )}
             </Col>
-            <Col span={12}>
+            <Col
+              span={12}
+              style={{ ...queueBackground, ...queuePadding, ...queueRounding }}
+            >
               {left > 0 && (
                 <Flex
                   align="center"
@@ -199,7 +309,7 @@ function PlayerInfo() {
     );
   };
 
-  return useOnelineWidget === "Старый"  ? onelineWidget()  : multilineWidget();
+  return useOnelineWidget === "Старый" ? onelineWidget() : multilineWidget();
 }
 
 export default PlayerInfo;
