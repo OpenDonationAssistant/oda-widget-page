@@ -39,6 +39,7 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
     const { t } = useTranslation();
     return (
       <Segmented
+        value={this.value}
         block
         className="full-width"
         options={this._options.map((option) => {
