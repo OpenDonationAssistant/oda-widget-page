@@ -1,7 +1,9 @@
 .alertimage {
   flex-grow: 1;
   flex-shrink: 1;
-  display: flex;
+  display: block;
   border: none;
   height: 0px;
+  width: auto;
+  object-fit: contain;
 }
