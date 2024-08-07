@@ -261,8 +261,8 @@ export class AlertController {
       }
       renderer.setStyle(
         this.calculateImageStyle(
-          this.findSetting(alert.properties, "imageWidth", 100),
-          this.findSetting(alert.properties, "imageHeight", 100),
+          this.findSetting(alert.properties, "imageWidth", null),
+          this.findSetting(alert.properties, "imageHeight", null),
         ),
       );
     });
@@ -319,8 +319,6 @@ export class AlertController {
           height: imageHeight + "px",
         }
       : {
-          objectFit: "fill",
-          maxWidth: "100%",
         };
   }
 }
