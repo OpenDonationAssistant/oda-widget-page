@@ -247,6 +247,9 @@ function PlayerInfo() {
   };
 
   const multilineWidget = () => {
+    if (!title) {
+      return  <></>;
+    }
     return (
       <>
         <Flex
