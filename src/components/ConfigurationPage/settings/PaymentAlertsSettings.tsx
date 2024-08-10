@@ -599,12 +599,12 @@ export default function PaymentAlertSettings({
                     marginRight: "40px",
                   }}
                 >
-                  <button
+                  <label
                     className="oda-btn-default"
                     onClick={() => deleteImage(index)}
                   >
                     {t("button-delete")}
-                  </button>
+                  </label>
                 </div>
               )}
             </div>,
