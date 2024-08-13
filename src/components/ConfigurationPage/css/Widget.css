@@ -20,13 +20,6 @@
   border: 1px solid #684aff;
 }
 
-  .ant-tabs-card
-  > .ant-tabs-nav
-  .ant-tabs-tab-active
-  .ant-tabs-tab-btn {
-  color: white;
-}
-
 .widget-header {
   display: flex;
   border-radius: 5px;
@@ -72,7 +65,7 @@
 }
 
 .widget-title {
-  color: white;
+  color: var(--oda-main-text-color);
   display: inline-block;
   line-height: 40px;
   vertical-align: middle;
@@ -227,6 +220,7 @@
   top: 12px;
   right: 12px;
   padding-bottom: 1px;
+  color: var(--oda-secondary-text-color);
 }
 
 .alert-delete-button .material-symbols-sharp {

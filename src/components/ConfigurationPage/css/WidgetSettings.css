@@ -3,14 +3,14 @@
 :root {
   --oda-control-background-color: #684aff;
   --oda-main-background-color: #0c122e;
-  --oda-main-border: 1px solid #674afd;
+  --oda-label-background-color: #0c122e;
+  --oda-btn-background-color: #0c122e;
+  --oda-main-border: 1px solid var(--oda-control-background-color);
   --oda-main-font-family: Play;
-  --oda-main-text-color: white;
-  --oda-secondary-text-color: rgba(220, 220, 220, 0.9);
+  --oda-main-text-color: #FBFFF1;
+  --oda-secondary-text-color: #B4C5E4;
   --oda-label-font: 1rem var(--oda-main-font-family);
   --oda-label-color: #ffffffda;
-  --oda-label-background-color: #151a33;
-  --oda-btn-background-color: #151a33;
   --oda-panel-backgroun-color: #2b3566;
 }
 

@@ -11,7 +11,7 @@
 
 .toolbar-button {
 	background: none;
-  color: rgb(120, 133, 189);
+  color: var(--oda-secondary-text-color);
   border: none;
   font-family: Roboto;
   font-weight: 400;
@@ -26,14 +26,11 @@
 }
 
 .toolbar-button:not(.active):hover {
-	/* background: #111529; */
-  color: white;
-  /* box-shadow: inset 0 0 10px 2px rgba(104, 74, 255, 0.5); */
+  color: var(--oda-main-text-color);
 }
 
 .toolbar-button.active {
-  /* background: #684aff; */
-  color: white;
+  color: var(--oda-main-text-color);
   box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
   border: 1px solid #674afd;
 }

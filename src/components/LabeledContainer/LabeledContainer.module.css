@@ -8,6 +8,7 @@
 
 .name {
   flex: 1 1;
+  color: var(--oda-main-text-color);
 }
 
 .child {
