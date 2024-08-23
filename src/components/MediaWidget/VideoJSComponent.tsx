@@ -97,7 +97,7 @@ export default function VideoJSComponent({
     const videoElement = document.createElement("iframe");
     videoElement.setAttribute(
       "src",
-      `https://vk.com/video_ext.php?oid=-${song.originId?.replace(
+      `https://vk.com/video_ext.php?oid=${song.originId?.replace(
         "_",
         "&id=",
       )}&hd=2&autoplay=1&js_api=1`,

@@ -102,9 +102,8 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         localStorage.setItem("playlists", JSON.stringify(filteredPlaylists));
       });
     } else {
-      console.log({urlCheck: url.includes("vk.com")});
       if (url.includes("vk.com")){
-        const originId = url.replace("https://vk.com/video-","");
+        const originId = url.replace("https://vk.com/video","");
         log.debug({vkId: originId}, "parsed vkId");
         playlist.addSong({
           id: uuidv4(),
