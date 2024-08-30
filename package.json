@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "@fontsource/material-symbols-sharp": "^5.0.40",
+    "@fontsource/play": "^5.0.21",
     "@glidejs/glide": "^3.6.0",
     "@google-cloud/text-to-speech": "^5.0.0",
     "@opendonationassistant/oda-history-service-client": "^0.3.0",

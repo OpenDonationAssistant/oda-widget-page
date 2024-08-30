@@ -17,6 +17,8 @@ import DonatersTopList from "./components/DonatersTopList/DonatersTopList";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
 import "./ant-override.css";
+import "@fontsource/material-symbols-sharp";
+import '@fontsource/play';
 import { config } from "./config";
 import { log, setLoglevel } from "./logging";
 import auth from "./auth";
