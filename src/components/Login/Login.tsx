@@ -4,36 +4,81 @@ import axios from "axios";
 import { log } from "../../logging";
 import { useSearchParams } from "react-router-dom";
 
-function tokenRequest(login: string, password: string): Promise<String> {
-  return axios
-    .post(
-      `${process.env.REACT_APP_AUTH_API_ENDPOINT}/realms/ODA/protocol/openid-connect/token`,
-      {
+interface Tokens {
+  idToken: string;
+  refreshToken: string;
+}
+
+async function tokenApiCall(credentials: any) {
+  return axios.post(
+    `${process.env.REACT_APP_AUTH_API_ENDPOINT}/realms/ODA/protocol/openid-connect/token`,
+    {
+      ...credentials,
+      ...{
         client_id: "oda-console",
         client_secret: "TYaqCopUUsx2Jmakif55qBquZSUXOGhL",
-        // client_secret: "wlm5js28Tnp99BCuo7EcWdsXHG4bYm35",
+        scope: "offline_access openid audience profile",
+      },
+    },
+    { headers: { "content-type": "application/x-www-form-urlencoded" } },
+  );
+}
+
+function parseTokens(response: any): Tokens {
+  const idToken = response.data.id_token;
+  const refreshToken = response.data.refresh_token;
+  log.debug({ idToken: idToken, refreshToken: refreshToken });
+  document.cookie = `JWT=${idToken}`;
+  localStorage.setItem("access-token", idToken.toString());
+  localStorage.setItem("refresh-token", refreshToken.toString());
+  axios.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${idToken.toString()}`;
+  return {
+    idToken: idToken,
+    refreshToken: refreshToken,
+  };
+}
+
+export async function tokenRequest({
+  login,
+  password,
+  refreshToken,
+}: {
+  login?: string;
+  password?: string;
+  refreshToken?: string;
+}): Promise<Tokens> {
+  if (refreshToken) {
+    try {
+      const credentials = {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      };
+      const response = await tokenApiCall(credentials);
+      return parseTokens(response);
+    } catch (error) {}
+  }
+  if (login && password) {
+    try {
+      const credentials = {
         grant_type: "password",
         username: login,
         password: password,
-        scope: "openid audience profile",
-      },
-      { headers: { "content-type": "application/x-www-form-urlencoded" } },
-    )
-    .then((data) => data.data.id_token);
+      };
+      const response = await tokenApiCall(credentials);
+      return parseTokens(response);
+    } catch (error) {}
+  }
+  return Promise.reject();
 }
 
-async function getToken(page: string, login: string, password: string) {
-  await tokenRequest(login, password)
-    .then((token) => {
-      document.cookie = `JWT=${token}`;
-      localStorage.setItem("login", login);
-      localStorage.setItem("password", password);
-			log.debug(`access-token: ${token.toString()}`);
-      localStorage.setItem("access-token", token.toString());
-			axios.defaults.headers.common['Authorization'] = `Bearer ${token.toString()}`;
+async function getToken(page: string | null, login: string, password: string) {
+  await tokenRequest({ login: login, password: password })
+    .then(() => {
       window.location.replace(page ? page : "/");
     })
-    .catch((error) => {
+    .catch(() => {
       alert("Incorrect login/password");
     });
 }
@@ -42,6 +87,7 @@ export default function Login({}) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
+  const savedRefreshToken = localStorage.getItem("refresh-token");
   const savedLogin = localStorage.getItem("login");
   const savedPassword = localStorage.getItem("password");
 
@@ -49,19 +95,25 @@ export default function Login({}) {
   log.debug(`params: ${params}`);
   log.debug(`page: ${params.get("page")}`);
 
-  tokenRequest(savedLogin, savedPassword)
-    .then((token) => {
-			log.debug("Getting token by saved credentials");
-      document.cookie = `JWT=${token}`;
-			log.debug(`access-token: ${token.toString()}`);
-      localStorage.setItem("access-token", token.toString());
-			axios.defaults.headers.common['Authorization'] = `Bearer ${token.toString()}`;
-      window.location.replace(params.get("page") ? params.get("page") : "/");
+  tokenRequest({
+    login: savedLogin ?? undefined,
+    password: savedPassword ?? undefined,
+    refreshToken: savedRefreshToken ?? undefined,
+  })
+    .then(() => {
+      window.location.replace(params.get("page") ?? "/");
     })
-    .catch((error) => {
+    .catch(() => {
       localStorage.removeItem("login");
       localStorage.removeItem("password");
       localStorage.removeItem("access-token");
+      localStorage.removeItem("refresh-token");
+      const refreshToken = params.get("refresh-token");
+      if (refreshToken) {
+        tokenRequest({ refreshToken: refreshToken }).then(() => {
+          window.location.replace(params.get("page") ?? "/");
+        });
+      }
     });
 
   return (
@@ -74,7 +126,7 @@ export default function Login({}) {
       <div className="login-page">
         <div className="login-form">
           <div className="login-container">
-            <span>Login </span>
+            <span>Login</span>
             <input
               value={login}
               type="text"
@@ -82,7 +134,7 @@ export default function Login({}) {
             />
           </div>
           <div className="password-container">
-            <span>Password </span>
+            <span>Password</span>
             <input
               value={password}
               type="password"

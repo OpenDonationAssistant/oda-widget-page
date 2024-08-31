@@ -10,6 +10,7 @@ function logout(){
   localStorage.removeItem("login");
   localStorage.removeItem("password");
   localStorage.removeItem("access-token");
+  localStorage.removeItem("refresh-token");
   window.location.replace("/");
 }
 

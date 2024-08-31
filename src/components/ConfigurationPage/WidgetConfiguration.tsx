@@ -28,6 +28,7 @@ import DonationGoal from "../DonationGoal/DonationGoal";
 import DonationTimer from "../DonationTimer/DonationTimer";
 import classes from "./WidgetConfiguration.module.css";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
+import { tokenRequest } from "../Login/Login";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -63,6 +64,15 @@ function getSettingsWidget(id: string, type: string, onChange: Function) {
 function deleteWidget(id: string) {
   return axios.delete(
     `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
+  );
+}
+
+async function copyUrl(type: string, id: string) {
+  const tokens = await tokenRequest({
+    refreshToken: localStorage.getItem("refresh-token") ?? "",
+  });
+  navigator.clipboard.writeText(
+    `${process.env.REACT_APP_ENDPOINT}/${type}/${id}?refresh-token=${tokens.refreshToken}`,
   );
 }
 
@@ -198,10 +208,7 @@ export default function WidgetConfiguration({
                   {
                     key: "copy-url",
                     label: t("button-copy-url"),
-                    onClick: () =>
-                      navigator.clipboard.writeText(
-                        `${process.env.REACT_APP_ENDPOINT}/${type}/${id}`,
-                      ),
+                    onClick: () => copyUrl(type, id)
                   },
                   {
                     key: "rename",
@@ -272,10 +279,11 @@ export default function WidgetConfiguration({
                         onMessage({
                           ack: () => {},
                           body: JSON.stringify({
-                            title: "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
+                            title:
+                              "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
                             owner: "testuser",
-                            count:  11,
-                            number: 0
+                            count: 11,
+                            number: 0,
                           }),
                         });
                       }
