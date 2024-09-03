@@ -39,6 +39,17 @@ export class VoiceController {
 
   pronounceTitle(alert: any, data: any, onEndHandler: any) {
     log.debug("start to pronounce title");
+    const playTitle = this.findSetting(
+      alert.properties,
+      "enableVoiceForHeader",
+      true,
+    );
+    if (!playTitle) {
+      if (onEndHandler) {
+        onEndHandler();
+      }
+      return;
+    }
     const playIfMessageEmpty = this.findSetting(
       alert.properties,
       "enableVoiceWhenMessageIsEmpty",

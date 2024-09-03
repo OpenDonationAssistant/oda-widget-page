@@ -157,6 +157,13 @@ export default function PaymentAlertSettings({
         },
         {
           tab: "voice",
+          name: "enableVoiceForHeader",
+          type: "boolean",
+          value: true,
+          displayName: "widget-alert-voice-for-header",
+        },
+        {
+          tab: "voice",
           name: "voiceTextTemplate",
           type: "text",
           value: `Пользователь <username> оставил сообщение
@@ -198,6 +205,13 @@ export default function PaymentAlertSettings({
         },
         {
           tab: "voice",
+          name: "enableVoiceWhenMessageIsEmpty",
+          type: "boolean",
+          value: true,
+          displayName: "widget-alert-voice-if-empty",
+        },
+        {
+          tab: "voice",
           name: "voiceEmptyTextTemplates",
           type: "text",
           value: `Пользователь <username> оставил сообщение
@@ -236,13 +250,6 @@ export default function PaymentAlertSettings({
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
           displayName: "widget-alert-voice-empty-alert-phrase",
-        },
-        {
-          tab: "voice",
-          name: "enableVoiceWhenMessageIsEmpty",
-          type: "boolean",
-          value: true,
-          displayName: "widget-alert-voice-if-empty",
         },
       ],
     });

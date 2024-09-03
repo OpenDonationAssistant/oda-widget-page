@@ -163,6 +163,7 @@ i18n
           "widget-alert-voice-title-phrase": "Phrase for title announcement",
           "widget-alert-voice-empty-alert-phrase":
             "Phrase for alert announcement without message",
+          "widget-alert-voice-for-header": "Announce header",
           "widget-alert-voice-if-empty": "Announce donation without message",
           "widget-alert-title-font-family": "Font",
           "widget-alert-title-font-size": "Font size",
@@ -377,6 +378,7 @@ i18n
             "Фразы для озвучивания заголовка с сообщением",
           "widget-alert-voice-empty-alert-phrase":
             "Фразы для озвучивания заголовка если нет сообщения",
+          "widget-alert-voice-for-header": "Озвучивать заголовок",
           "widget-alert-voice-if-empty":
             "Озвучивать заголовок если сообщение отсутствует",
           "widget-alert-title-font-family": "Шрифт",
