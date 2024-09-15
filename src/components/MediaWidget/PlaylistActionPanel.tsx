@@ -1,0 +1,189 @@
+import { Flex, Input, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import classes from "./PlaylistActionPanel.module.css";
+import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
+import { PlaylistController } from "./PlaylistController";
+import {
+  DefaultApiFactory as MediaService,
+  PlaylistDto,
+} from "@opendonationassistant/oda-media-service-client";
+import LabeledContainer from "../LabeledContainer/LabeledContainer";
+import { uuidv7 } from "uuidv7";
+import { Provider } from "./types";
+
+interface SavedPlaylist {
+  id: string;
+  name: string;
+}
+
+export default function PlaylistActionPanel({
+  type,
+  controller,
+}: {
+  type: PLAYLIST_TYPE;
+  controller: PlaylistController;
+}) {
+  const [repeat, enableRepeat] = useState<boolean>(false);
+  const [savedPlaylists, setSavedPlaylists] = useState<SavedPlaylist[]>([]);
+  const [showSavedPlaylists, setShowSavedPlaylists] = useState<boolean>(false);
+  const [showEditNameModal, setShowEditNameModal] = useState<boolean>(false);
+  const [playlistName, setPlaylistName] = useState<string>("");
+
+  useEffect(() => {
+    controller.repeat = repeat;
+  }, [repeat, controller]);
+
+  const loadPlaylists: () => Promise<void> = async () => {
+    return MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT)
+      .list1({ orderBy: [], size: 100, sort: { orderBy: [] } })
+      .then((res) => res.data?.content)
+      .then((data) => {
+        setSavedPlaylists(
+          data.map((playlist: PlaylistDto) => {
+            return { id: playlist.id, name: playlist.title };
+          }),
+        );
+      });
+  };
+
+  const showModalForSavedPlaylist: () => void = () => {
+    loadPlaylists().then(() => {
+      setShowSavedPlaylists(true);
+    });
+  };
+
+  const savePlaylist: () => Promise<void> = async () => {
+    const items = controller.current.songs().map((song) => {
+      return { title: song.title, src: song.src };
+    });
+    const playlistId = savedPlaylists.find(
+      (playlist) => playlist.name === playlistName,
+    )?.id;
+    if (playlistId) {
+      MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT).update1(
+        {
+          id: playlistId,
+          items: items,
+        },
+      );
+    } else {
+      MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT).create({
+        title: playlistName,
+        items: items,
+      });
+    }
+  };
+
+  const loadPlaylist: (playlistId: string) => Promise<void> = async (
+    playlistId: string,
+  ) => {
+    controller.current.clear();
+    MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT)
+      .list2(playlistId)
+      .then((res) => {
+        controller.current.clear();
+        setPlaylistName(res.data.title);
+        controller.current.addSongs(
+          res.data.items.map((item) => {
+            return {
+              src: item.src,
+              title: item.title,
+              id: uuidv7(),
+              originId: null,
+              owner: "",
+              type: "video/youtube",
+              provider: item.src.includes("vk.com")
+                ? Provider.VK
+                : Provider.YOUTUBE,
+            };
+          }),
+        );
+      });
+    setShowSavedPlaylists(false);
+  };
+
+  return (
+    <>
+      <Flex justify="center" className={`${classes.panelcontainer}`}>
+        <div className={`${classes.panel}`}>
+          <button
+            onClick={() => {
+              document.dispatchEvent(new CustomEvent("toggleAddMediaPopup"));
+            }}
+          >
+            <span className="material-symbols-sharp">playlist_add</span>
+          </button>
+          <button
+            className="repeat-button"
+            onClick={() => enableRepeat((old) => !old)}
+          >
+            <span className="material-symbols-sharp">
+              {repeat ? "repeat_on" : "repeat"}
+            </span>
+          </button>
+          {type === PLAYLIST_TYPE.PERSONAL && (
+            <>
+              <button
+                onClick={() => {
+                  setShowEditNameModal(true);
+                }}
+              >
+                <span className="material-symbols-sharp">save</span>
+              </button>
+              <button>
+                <span
+                  className="material-symbols-sharp"
+                  onClick={showModalForSavedPlaylist}
+                >
+                  queue_music
+                </span>
+              </button>
+              <Modal
+                title="Saved playlists"
+                footer={null}
+                open={showSavedPlaylists}
+                onClose={() => setShowSavedPlaylists(false)}
+                onCancel={() => setShowSavedPlaylists(false)}
+              >
+                <Flex
+                  vertical={true}
+                  gap={10}
+                  className={`${classes.savedPlaylists}`}
+                >
+                  {savedPlaylists.map((playlist) => (
+                    <button
+                      className="oda-btn-default"
+                      onClick={() => loadPlaylist(playlist.id)}
+                    >
+                      {playlist.name}
+                    </button>
+                  ))}
+                </Flex>
+              </Modal>
+              <Modal
+                title={"Edit playlist name"}
+                open={showEditNameModal}
+                onOk={() => {
+                  console.log("saving playlist");
+                  savePlaylist();
+                  setShowEditNameModal(false);
+                }}
+                onCancel={() => setShowEditNameModal(false)}
+              >
+                <LabeledContainer
+                  className={`${classes.editPlaylistNameInput}`}
+                  displayName={"Playlist name"}
+                >
+                  <Input
+                    value={playlistName}
+                    onChange={(e) => setPlaylistName(e.target.value)}
+                  />
+                </LabeledContainer>
+              </Modal>
+            </>
+          )}
+        </div>
+      </Flex>
+    </>
+  );
+}

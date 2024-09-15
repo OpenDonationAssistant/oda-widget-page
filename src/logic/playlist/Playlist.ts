@@ -46,21 +46,26 @@ class Playlist {
     this.topic = topic;
   }
 
-  addSong(song: Song) {
-    log.debug(`adding song ${song.title}`);
-    if (
-      this._songs.some(
-        (existing) => existing.originId && existing.originId === song.originId,
-      )
-    ) {
-      log.debug("skipping playlist update because of same song");
-      return;
-    }
-    this._songs.push(song);
-    if (this._index == null) {
-      this._index = this._songs.length - 1;
-    }
+  addSongs(songs: Song[]) {
+    songs.forEach((song) => {
+      if (
+        this._songs.some(
+          (existing) => existing.originId && existing.originId === song.originId,
+        )
+      ) {
+        log.debug("skipping playlist update because of same song");
+        return;
+      }
+      this._songs.push(song);
+      if (this._index == null) {
+        this._index = this._songs.length - 1;
+      }
+    });
     this.triggerListeners();
+  }
+
+  addSong(song: Song) {
+    this.addSongs([song]);
   }
 
   removeSong(index: number) {
@@ -113,6 +118,12 @@ class Playlist {
       return this._songs[this._index];
     }
     return null;
+  }
+
+  clear(){
+    this._songs = [];
+    this._index = null;
+    this.triggerListeners();
   }
 
   setIndex(current: number): void {

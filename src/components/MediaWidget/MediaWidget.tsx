@@ -4,7 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "./MediaWidget.css";
 import { PlaylistController } from "./PlaylistController";
-import { cleanupCommandListener, publish, setupCommandListener } from "../../socket";
+import {
+  cleanupCommandListener,
+  publish,
+  setupCommandListener,
+} from "../../socket";
 import Menu from "../Menu/Menu";
 import { PaymentPageConfig } from "./PaymentPageConfig";
 import RequestsDisabledWarning from "./RequestsDisabledWarning";
@@ -16,9 +20,13 @@ import VideoJSComponent from "./VideoJSComponent";
 import { Song } from "./types";
 import { log } from "../../logging";
 import VideoPopupToggler from "./VideoPopupToggler";
+import { WidgetData } from "../../types/WidgetData";
+import { Dropdown } from "antd";
+import { useTranslation } from "react-i18next";
+import PlaylistActionPanel from "./PlaylistActionPanel";
 
 export default function MediaWidget({}: {}) {
-  const { recipientId, conf, widgetId } = useLoaderData();
+  const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
 
   const [playlist, setPlaylist] = useState<Playlist>(
     new Playlist(PLAYLIST_TYPE.REQUESTED),
@@ -31,7 +39,7 @@ export default function MediaWidget({}: {}) {
   const playlistController = useRef<PlaylistController>();
   const [song, setSong] = useState<Song | null>(null);
   const [isRemote, setIsRemote] = useState<boolean>(false);
-  const [repeat, enableRepeat] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const playlistListener = {
@@ -69,13 +77,6 @@ export default function MediaWidget({}: {}) {
       cleanupCommandListener(widgetId);
     };
   }, [recipientId, widgetId]);
-
-  useEffect(() => {
-    if (!playlistController.current) {
-      return;
-    }
-    playlistController.current.repeat = repeat;
-  }, [repeat, playlistController]);
 
   return (
     <>
@@ -144,14 +145,12 @@ export default function MediaWidget({}: {}) {
           <div className="video-counter">
             {`${index ? index : "-"} / ${playlistSize}`}
           </div>
-          <button
-            className="repeat-button"
-            onClick={() => enableRepeat((old) => !old)}
-          >
-            <span className="material-symbols-sharp">
-              {repeat ? "repeat_on" : "repeat"}
-            </span>
-          </button>
+          {playlistController.current && (
+            <PlaylistActionPanel
+              controller={playlistController.current}
+              type={playlist.type()}
+            />
+          )}
         </div>
         {playlist && <PlaylistComponent playlist={playlist} />}
       </div>
