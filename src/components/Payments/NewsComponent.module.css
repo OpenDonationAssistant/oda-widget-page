@@ -1,0 +1,64 @@
+.newscontainer {
+  position: relative;
+  background-color: rgb(251, 255, 241);
+  margin-left: 20px;
+  margin-right: 20px;
+  padding-top: 8px;
+  border-radius: 8px;
+  animation: shadow 2s infinite;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.closebutton {
+  position: absolute;
+  right: 0;
+  top: 20px;
+}
+
+.closebutton button {
+  border: none;
+  background-color: transparent;
+}
+
+.progressbar {
+  width: 100%;
+  background-color: var(--oda-control-background-color);
+  height: 10px;
+}
+
+.filledprogress {
+  background-color: rgb(252, 255, 241);
+  height: 10px;
+}
+
+@keyframes shadow {
+  0% {box-shadow: none;}
+  50% {box-shadow: 0 0px 10px 5px rgb(122,122,122, 0.5);}
+  100% {box-shadow: 0 0px 10px 5px rgb(122,122,122, 1);}
+}
+
+.newstitle {
+  font-size: 20px;
+  text-decoration: underline;
+  margin-left: 40px;
+  margin-right: 40px;
+  font-weight: bold;
+}
+
+.newsbody {
+  margin-left: 10px;
+  margin-right: 10px;
+  text-wrap: balance;
+}
+
+.newsdemo{
+  border-radius: 8px;
+  border: 2px solid var(--oda-control-background-color);
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  max-width: 90%;
+  max-height: 300px;
+}

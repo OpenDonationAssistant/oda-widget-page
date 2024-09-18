@@ -10,6 +10,7 @@
     "@google-cloud/text-to-speech": "^5.0.0",
     "@opendonationassistant/oda-history-service-client": "^0.3.0",
     "@opendonationassistant/oda-media-service-client": "^0.2.0",
+    "@opendonationassistant/oda-news-service-client": "^0.1.0",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

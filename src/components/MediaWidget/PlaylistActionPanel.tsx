@@ -10,6 +10,7 @@ import {
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
 import { uuidv7 } from "uuidv7";
 import { Provider } from "./types";
+import { useTranslation } from "react-i18next";
 
 interface SavedPlaylist {
   id: string;
@@ -28,6 +29,7 @@ export default function PlaylistActionPanel({
   const [showSavedPlaylists, setShowSavedPlaylists] = useState<boolean>(false);
   const [showEditNameModal, setShowEditNameModal] = useState<boolean>(false);
   const [playlistName, setPlaylistName] = useState<string>("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     controller.repeat = repeat;
@@ -139,7 +141,8 @@ export default function PlaylistActionPanel({
                 </span>
               </button>
               <Modal
-                title="Saved playlists"
+              className={`${classes.modal}`}
+                title={t("saved-playlist-label")}
                 footer={null}
                 open={showSavedPlaylists}
                 onClose={() => setShowSavedPlaylists(false)}
@@ -161,10 +164,10 @@ export default function PlaylistActionPanel({
                 </Flex>
               </Modal>
               <Modal
-                title={"Edit playlist name"}
+              className={`${classes.modal}`}
+                title={t("button-edit-playlist-name")}
                 open={showEditNameModal}
                 onOk={() => {
-                  console.log("saving playlist");
                   savePlaylist();
                   setShowEditNameModal(false);
                 }}
@@ -172,7 +175,7 @@ export default function PlaylistActionPanel({
               >
                 <LabeledContainer
                   className={`${classes.editPlaylistNameInput}`}
-                  displayName={"Playlist name"}
+                  displayName={t("playlist-name-label")}
                 >
                   <Input
                     value={playlistName}

@@ -6,10 +6,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import Menu from "../Menu/Menu";
 import { findSetting } from "../utils";
-import { cleanupCommandListener, publish, setupCommandListener, subscribe, unsubscribe } from "../../socket";
+import {
+  cleanupCommandListener,
+  publish,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import { log } from "../../logging";
 import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
 import MenuEventButton from "../Menu/MenuEventButton";
+import NewsComponent from "./NewsComponent";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -95,13 +102,14 @@ function Payments({}: {}) {
 
         const attachQueryString = json
           .reduce((attachmentIds, payment) => {
-            const paymentAttachIds = payment.attachments
-              ?.reduce(
-                (paymentAttachmentIds, attach) =>
-                  `${paymentAttachmentIds},${attach}`,
-                "",
-              )
-              ?.substring(1) ?? "";
+            const paymentAttachIds =
+              payment.attachments
+                ?.reduce(
+                  (paymentAttachmentIds, attach) =>
+                    `${paymentAttachmentIds},${attach}`,
+                  "",
+                )
+                ?.substring(1) ?? "";
             return `${attachmentIds},${paymentAttachIds}`;
           }, "")
           .substring(1);
@@ -253,7 +261,7 @@ function Payments({}: {}) {
         }}
       />
       <div style={{ marginBottom: "5px", marginLeft: "5px" }}>
-        <TestAlertPopup config={conf}/>
+        <TestAlertPopup config={conf} />
         <Menu>
           <MenuEventButton
             event="toggleSendAlertPopup"
@@ -262,6 +270,9 @@ function Payments({}: {}) {
         </Menu>
       </div>
       <div>
+        <NewsComponent
+          news={{ id: "1", title: "title", body: "body", demoUrl: "demoUrl" }}
+        />
         <div>{todayPayments.map((data) => paymentList(data))}</div>
         {paymentDates().map((date, number) => {
           return (

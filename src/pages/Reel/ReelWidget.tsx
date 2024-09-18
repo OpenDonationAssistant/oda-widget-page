@@ -19,7 +19,10 @@ import {
   BorderProperty,
   DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
-import { ColorProperty, ColorPropertyTarget } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
+import {
+  ColorProperty,
+  ColorPropertyTarget,
+} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -146,7 +149,7 @@ export default function ReelWidget({}) {
       value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
     }).calcCss();
     if (highlight && active === option) {
-      style = {...selectionStyle, ...style };
+      style = { ...selectionStyle, ...style };
     } else {
       if (backgroundImage) {
         style.backgroundSize = "cover";
@@ -189,7 +192,9 @@ export default function ReelWidget({}) {
                   <li
                     key={option}
                     style={titleFont.calcStyle()}
-                    className={`${titleFont.calcClassName()} glide__slide ${classes.reelitem}`}
+                    className={`${titleFont.calcClassName()} glide__slide ${
+                      classes.reelitem
+                    }`}
                   >
                     {option}
                   </li>
