@@ -7,7 +7,7 @@ export const WidgetSettingsContext = createContext({
   settings: { config: new AbstractWidgetSettings("", [], [], new Map()) },
   subscribe: (
     topic: string,
-    onMessage: (message: {ack: () => void, body: string}) => void,
+    onMessage: (message: { ack: () => void; body: string }) => void,
   ) => {},
   unsubscribe: (topic: string) => {},
   publish: (topic: string, payload: any) => {},

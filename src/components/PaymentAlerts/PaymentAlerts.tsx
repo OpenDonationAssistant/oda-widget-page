@@ -3,7 +3,12 @@ import classes from "./PaymentAlerts.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { log } from "../../logging";
-import { cleanupCommandListener, setupCommandListener, subscribe, unsubscribe } from "../../socket";
+import {
+  cleanupCommandListener,
+  setupCommandListener,
+  subscribe,
+  unsubscribe,
+} from "../../socket";
 import { AlertController } from "../../logic/alert/AlertController";
 import MessageBody from "./sections/MessageBody";
 import MessageTitle from "./sections/MessageTitle";
@@ -11,9 +16,11 @@ import AlertImage from "./sections/AlertImage/AlertImage";
 import FontLoader from "../FontLoader/FontLoader";
 import ImageCache from "../ImageCache/ImageCache";
 import { findSetting } from "../utils";
+import { WidgetData } from "../../types/WidgetData";
 
 function PaymentAlerts({}: {}) {
-  const { recipientId, settings, conf, widgetId } = useLoaderData();
+  const { recipientId, settings, conf, widgetId } =
+    useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const [useGreenscreen, setUseGreenscreen] = useState<boolean>(true);
   const alertController = useRef<AlertController>(
@@ -26,7 +33,7 @@ function PaymentAlerts({}: {}) {
 
   useEffect(() => {
     setUseGreenscreen(findSetting(settings, "useGreenscreen", false));
-  },[settings]);
+  }, [settings]);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.alertWidgetCommans, (message) => {
@@ -44,14 +51,16 @@ function PaymentAlerts({}: {}) {
     return () => {
       unsubscribe(widgetId, conf.topic.alertWidgetCommans);
       cleanupCommandListener(widgetId);
-    }
+    };
   }, [widgetId]);
 
   return (
     <>
       <style
         dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%; background-color: ${useGreenscreen ? "green" : "rgba(0,0,0,0)"};}`,
+          __html: `html, body {height: 100%; background-color: ${
+            useGreenscreen ? "green" : "rgba(0,0,0,0)"
+          };}`,
         }}
       />
       <FontLoader fontProvider={alertController.current} />

@@ -1,9 +1,8 @@
 import { log } from "../../../logging";
-import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
-const DEFAULT_ALERT = {
+export const DEFAULT_ALERT = {
   audio: null,
   image: null,
   video: null,
@@ -15,66 +14,59 @@ const DEFAULT_ALERT = {
       tab: "image",
       name: "imageWidth",
       value: null,
-      displayName: "Ширина изображения в пикселях",
+      displayName: "widget-alert-image-width",
     },
     {
       tab: "image",
       name: "imageHeight",
       value: null,
-      displayName: "Высота изображения в пикселях",
+      displayName: "widget-alert-image-height",
     },
     {
       tab: "image",
       name: "imageShowTime",
       value: null,
-      displayName: "Сколько времени показывать изображение (сек)",
+      displayName: "widget-alert-image-show-time",
+    },
+    {
+      tab: "image",
+      name: "appearance",
+      type: "custom",
+      value: "none",
+    },
+    {
+      tab: "sound",
+      name: "audio-volume",
+      type: "custom",
+      value: 50,
     },
     {
       tab: "header",
-      name: "nicknameFont",
+      name: "headerFont",
       type: "fontselect",
-      value: "Roboto",
-      displayName: "Шрифт в заголовке",
-    },
-    {
-      tab: "header",
-      name: "nicknameFontSize",
-      value: "60",
-      displayName: "Размер шрифта в заголовке",
-    },
-    {
-      tab: "header",
-      name: "headerColor",
-      type: "color",
-      value: "#fb8c2b",
-      displayName: "Цвет заголовка",
+      value: null,
+      displayName: "widget-alert-title-font-family",
     },
     {
       tab: "header",
       name: "nicknameTextTemplate",
       type: "text",
       value: "<username> - <amount>",
-      displayName: "Шаблон заголовка",
+      displayName: "widget-alert-title-template",
     },
     {
       tab: "message",
-      name: "messageFont",
+      name: "font",
       type: "fontselect",
-      value: "Roboto",
-      displayName: "Шрифт в сообщении",
+      value: null,
+      displayName: "widget-alert-message-font-family",
     },
     {
-      tab: "message",
-      name: "messageFontSize",
-      value: "25",
-      displayName: "Размер шрифта в сообщении",
-    },
-    {
-      tab: "message",
-      name: "messageColor",
-      type: "color",
-      value: "#ffffff",
-      displayName: "Цвет сообщения",
+      tab: "voice",
+      name: "enableVoiceForHeader",
+      type: "boolean",
+      value: true,
+      displayName: "widget-alert-voice-for-header",
     },
     {
       tab: "voice",
@@ -115,14 +107,14 @@ const DEFAULT_ALERT = {
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-      displayName: "Фразы для озвучивания заголовка с сообщением",
+      displayName: "widget-alert-voice-title-phrase",
     },
     {
       tab: "voice",
       name: "enableVoiceWhenMessageIsEmpty",
       type: "boolean",
       value: true,
-      displayName: "Озвучивать заголовок если сообщение отсутствует",
+      displayName: "widget-alert-voice-if-empty",
     },
     {
       tab: "voice",
@@ -163,31 +155,18 @@ const DEFAULT_ALERT = {
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-      displayName: "Фразы для озвучивания заголовка если нет сообщения",
+      displayName: "widget-alert-voice-empty-alert-phrase",
     },
   ],
 };
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   public alerts: any[];
-  private _defaultAlert: any;
 
-  constructor(
-    widgetId: string,
-    properties: WidgetProperty[],
-    alerts: any[],
-    defaultAlert?: any,
-  ) {
+  constructor(widgetId: string, properties: WidgetProperty[], alerts: any[]) {
     log.debug({ alerts: alerts }, `creating payment-alerts settings`);
-    super(
-      widgetId,
-      properties,
-      [
-      ],
-      new Map(),
-    );
+    super(widgetId, properties, [], new Map());
     this.alerts = alerts;
-    this._defaultAlert = defaultAlert ??  DEFAULT_ALERT;
   }
 
   public copy() {
@@ -195,13 +174,6 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       this.widgetId,
       this.properties,
       this.alerts,
-      this._defaultAlert,
     );
-  }
-  public get defaultAlert(): any {
-    return this._defaultAlert;
-  }
-  public set defaultAlert(value: any) {
-    this._defaultAlert = value;
   }
 }
