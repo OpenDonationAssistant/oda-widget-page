@@ -71,7 +71,10 @@ export default function NewsComponent({}: {}) {
           <div className={`${classes.closebutton}`}>
             <button
               className="material-symbols-sharp"
-              onClick={() => clearNews()}
+              onClick={() => {
+                log.error("close news by hand");
+                clearNews();
+              }}
             >
               close
             </button>
