@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ODALogo from "../ODALogo/ODALogo";
 import { Dropdown } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./Header.module.css";
 import { useTranslation } from "react-i18next";
+import { log } from "../../logging";
 
 function logout(){
   localStorage.removeItem("login");
@@ -17,17 +18,11 @@ function logout(){
 export default function Header({}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { t, i18n } = useTranslation();
-  const [lang, setLang] = useState<string>(
-    () => localStorage.getItem("language") ?? "ru",
-  );
 
-  useEffect(() => {
-    i18n.changeLanguage(lang);
-  },[i18n, lang]);
+  log.debug({language: i18n.resolvedLanguage});
 
   const changeLang = (l: string) => {
-    setLang(l);
-    localStorage.setItem("language", l);
+    i18n.changeLanguage(l);
   };
 
   return (
@@ -54,7 +49,7 @@ export default function Header({}) {
           >
             <a onClick={(e) => e.preventDefault()}>
               <span className="material-symbols-sharp">language</span>
-              <span>{lang === "ru" ? "Ru" : "En"}</span>
+              <span>{i18n.resolvedLanguage === "en" ? "En" : "Ru"}</span>
             </a>
           </Dropdown>
           <Dropdown

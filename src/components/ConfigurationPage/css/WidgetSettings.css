@@ -41,8 +41,6 @@
 
 .widget-settings {
   color: white;
-  /* padding-left: 15px; */
-  /* padding-right: 15px; */
 }
 
 .widget-settings-item {
@@ -383,7 +381,6 @@ div.payment-alert-image-preview {
   .ant-descriptions
   .ant-descriptions-item-container
   .ant-descriptions-item-label {
-  /* background-color: var(--oda-label-background-color); */
   margin-right: 10px;
   color: black;
   font-weight: 900;

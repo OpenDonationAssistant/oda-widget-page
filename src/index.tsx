@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import Payments from "./components/Payments/Payments";
 import PlayerInfo from "./components/PlayerInfo/PlayerInfo";
@@ -18,7 +18,7 @@ import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage"
 import "./index.css";
 import "./ant-override.css";
 import "@fontsource/material-symbols-sharp";
-import '@fontsource/play';
+import "@fontsource/play";
 import { config } from "./config";
 import { log, setLoglevel } from "./logging";
 import auth from "./auth";
@@ -40,6 +40,7 @@ import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
 import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
+import { useTranslation } from "react-i18next";
 
 async function widgetSettingsLoader({
   params,
@@ -61,7 +62,7 @@ async function widgetSettingsLoader({
 
   const conf = await config(recipientId);
   setLoglevel(conf.loglevel);
-  log.debug(`Configuration: ${JSON.stringify(conf)}`);
+  log.debug({ configuration: conf });
   const widgetId = params.widgetId ?? "unknown";
 
   return { recipientId, settings, conf, widgetId };
@@ -87,9 +88,6 @@ body::before {
 );
 
 function detectPage(path: string): Page {
-  if (path.endsWith("widgets")) {
-    return Page.WIDGETS;
-  }
   if (path.endsWith("payment-page")) {
     return Page.PAYMENTPAGE;
   }
@@ -102,6 +100,7 @@ function detectPage(path: string): Page {
 function ConfigurationPageTemplate() {
   const location = useLocation();
   const page = detectPage(location.pathname);
+
   return (
     <>
       {backgroundColor}

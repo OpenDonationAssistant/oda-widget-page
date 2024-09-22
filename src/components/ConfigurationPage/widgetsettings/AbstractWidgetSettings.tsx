@@ -33,16 +33,11 @@ export class AbstractWidgetSettings {
     return updated;
   }
 
-  markup(): ReactNode {
-    log.debug("running markup in AbstractWidgetSettings");
-    return (
-      <>
-        <Tabs tabs={this._tabDescriptions} properties={this._properties}/>
-      </>
-    );
+  public markup(): ReactNode {
+    return <Tabs tabs={this._tabDescriptions} properties={this._properties} />;
   }
 
-  set(key: string, value: any) {
+  public set(key: string, value: any) {
     this._properties.map((prop) => {
       if (prop.name === key) {
         const updated = structuredClone(prop);
@@ -53,7 +48,7 @@ export class AbstractWidgetSettings {
     });
   }
 
-  get(key: string): WidgetProperty | undefined {
+  public get(key: string): WidgetProperty | undefined {
     const setting = this.properties.find((prop) => key === prop.name);
     if (setting) {
       return setting.value;

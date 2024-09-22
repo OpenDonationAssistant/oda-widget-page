@@ -9,11 +9,8 @@ import {
   Row,
   Segmented,
   Select,
-  Switch,
 } from "antd";
 import { produce } from "immer";
-import ModalButton from "../../ModalButton/ModalButton";
-import classes from "./BorderProperty.module.css";
 import { Trans } from "react-i18next";
 
 export interface Border {
@@ -37,7 +34,7 @@ const DEFAULT_BORDER_VALUE = {
 };
 
 export const DEFAULT_BORDER_PROPERTY_VALUE: BorderPropertyValue = {
-  isSame: true,
+  isSame: null,
   bottom: DEFAULT_BORDER_VALUE,
   top: DEFAULT_BORDER_VALUE,
   left: DEFAULT_BORDER_VALUE,

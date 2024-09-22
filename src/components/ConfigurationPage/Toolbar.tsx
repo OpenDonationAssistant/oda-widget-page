@@ -1,44 +1,52 @@
 import React from "react";
-import "./css/Toolbar.css";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import classes from "./Toolbar.module.css";
 
 enum Page {
   WIDGETS,
   GATEWAYS,
   PAYMENTPAGE,
-  HISTORY
+  HISTORY,
 }
 
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (
-    <div className="toolbar">
+    <div className={`${classes.toolbar}`}>
       <button
-        className={`toolbar-button ${page === Page.WIDGETS ? "active" : ""}`}
+        className={`${classes.toolbarbutton} ${
+          page === Page.WIDGETS ? "selected" : "inactive"
+        }`}
         onClick={() => navigate(`/configuration/widgets`)}
       >
         <span className="material-symbols-sharp">widgets</span>
-        <span className="toolbar-button-title">{t("menu-widgets")}</span>
+        <span className={`${classes.toolbarbuttontitle}`}>
+          {t("menu-widgets")}
+        </span>
       </button>
       <button
-        className={`toolbar-button ${
-          page === Page.HISTORY ? "active" : ""
+        className={`${classes.toolbarbutton} ${
+          page === Page.HISTORY ? "selected" : "inactive"
         }`}
         onClick={() => navigate(`/configuration/history-page`)}
       >
         <span className="material-symbols-sharp">history</span>
-        <span className="toolbar-button-title">{t("menu-history")}</span>
+        <span className={`${classes.toolbarbuttontitle}`}>
+          {t("menu-history")}
+        </span>
       </button>
       <button
-        className={`toolbar-button ${
-          page === Page.PAYMENTPAGE ? "active" : ""
+        className={`${classes.toolbarbutton} ${
+          page === Page.PAYMENTPAGE ? "selected" : "inactive"
         }`}
         onClick={() => navigate(`/configuration/payment-page`)}
       >
         <span className="material-symbols-sharp">language</span>
-        <span className="toolbar-button-title">{t("menu-payment-page-config")}</span>
+        <span className={`${classes.toolbarbuttontitle}`}>
+          {t("menu-payment-page-config")}
+        </span>
       </button>
     </div>
   );

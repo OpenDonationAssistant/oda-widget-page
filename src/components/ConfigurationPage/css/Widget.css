@@ -7,23 +7,9 @@
   box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
 }
 
-.ant-tabs-top > .ant-tabs-nav::before {
-  border-bottom: 1px solid #674afd;
-}
-
-.ant-tabs-card.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
-  background-color: #684aff;
-  border: 1px solid #684aff;
-}
-
-.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
-  border: 1px solid #684aff;
-}
-
 .widget-header {
   display: flex;
   border-radius: 5px;
-  /* background-image: linear-gradient(180deg, #0c122e, #2b3566); */
   justify-content: space-between;
   align-items: baseline;
   padding-left: 15px;
@@ -146,7 +132,6 @@
   width: 400px;
   overflow: hidden;
   border: none;
-  /* background-color: #684aff; */
   background-color: #2b3566;
   margin-left: 10px;
   color: #45d3c2;
@@ -232,8 +217,4 @@
   color: white;
   box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
   transform: translateY(-2px);
-}
-
-.ant-modal-content {
-  min-width: 800px;
 }

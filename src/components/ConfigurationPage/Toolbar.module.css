@@ -1,0 +1,38 @@
+.toolbar {
+  height: 100%;
+  padding-top: 10px;
+
+  & [class*="material-symbols-sharp"] {
+    vertical-align: bottom;
+  }
+}
+
+.toolbarbutton {
+	background: none;
+  color: var(--oda-secondary-text-color);
+  border: none;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100%;
+  text-align: left;
+  border-radius: 3px;
+
+  &[class*="inactive"]:hover {
+    color: var(--oda-main-text-color);
+  }
+
+  &[class*="selected"] {
+    color: var(--oda-main-text-color);
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
+    border: 1px solid #674afd;
+  }
+}
+
+.toolbarbuttontitle {
+  margin-left: 10px;
+  font-family: 'Play';
+}

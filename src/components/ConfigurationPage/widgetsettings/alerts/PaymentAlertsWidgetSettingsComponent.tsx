@@ -1,29 +1,20 @@
 import React, { ChangeEvent, useContext } from "react";
-import { WidgetsContext } from "../WidgetsContext";
+import { WidgetsContext } from "../../WidgetsContext";
 import axios from "axios";
-import ColorPicker from "./ColorPicker";
-import BaseSettings from "./BaseSettings";
-import BooleanPropertyInput from "./properties/BooleanPropertyInput";
-import {
-  Tabs as AntTabs,
-  Flex,
-  Input,
-  InputNumber,
-  Segmented,
-  Select,
-  Slider,
-} from "antd";
-import TextPropertyModal from "../widgetproperties/TextPropertyModal";
+import { Tabs as AntTabs, Input, InputNumber, Select, Slider } from "antd";
 import { useTranslation } from "react-i18next";
-import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
-import AnimatedFontComponent from "../widgetproperties/AnimatedFontComponent";
-import { SingleChoiceProperty } from "../widgetproperties/SingleChoiceProperty";
-import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { DEFAULT_ALERT } from "../widgetsettings/PaymentAlertsWidgetSettings";
+import { PaymentAlertsWidgetSettings } from "./PaymentAlertsWidgetSettings";
+import { Alert } from "./Alert";
+import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
+import ColorPicker from "../../settings/ColorPicker";
+import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
+import BooleanPropertyInput from "../../settings/properties/BooleanPropertyInput";
+import AnimatedFontComponent from "../../widgetproperties/AnimatedFontComponent";
+import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
+import { SingleChoiceProperty } from "../../widgetproperties/SingleChoiceProperty";
 
 interface PaymentAlertSettingsProps {
   id: string;
-  onChange: Function;
 }
 
 export const APPEARANCE_ANIMATIONS = [
@@ -87,14 +78,14 @@ export const APPEARANCE_ANIMATIONS = [
 
 export default function PaymentAlertSettings({
   id,
-  onChange,
 }: PaymentAlertSettingsProps) {
   const { config, setConfig } = useContext(WidgetsContext);
   const { t } = useTranslation();
 
   function addDefaultAlert(): void {
-    let alerts = config.get(id)?.alerts ?? [];
-    alerts.push(DEFAULT_ALERT);
+    const alertConfig = config.get(id) as PaymentAlertsWidgetSettings;
+    let alerts = (alertConfig?.alerts ?? []) as Alert[];
+    alerts.push(new Alert({}));
 
     setConfig((oldConfig) => {
       const alertConfig = oldConfig.get(id);
@@ -151,7 +142,6 @@ export default function PaymentAlertSettings({
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
         });
-        onChange.call({});
       });
     }
   };
@@ -168,7 +158,6 @@ export default function PaymentAlertSettings({
       const newConfig = new Map(oldConfig).set(id, alertConfig);
       return newConfig;
     });
-    onChange.call({});
   }
 
   const handleVideoUpload = (
@@ -189,7 +178,6 @@ export default function PaymentAlertSettings({
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
         });
-        onChange.call({});
       });
     }
   };
@@ -212,7 +200,6 @@ export default function PaymentAlertSettings({
           const newConfig = new Map(oldConfig).set(id, alertConfig);
           return newConfig;
         });
-        onChange.call({});
       });
     }
   };
@@ -228,7 +215,6 @@ export default function PaymentAlertSettings({
       const newConfig = new Map(oldConfig).set(id, alertConfig);
       return newConfig;
     });
-    onChange.call({});
   }
 
   function update(key: string, value: any, index: number) {
@@ -253,7 +239,6 @@ export default function PaymentAlertSettings({
       widgetConfig.alerts = updatedAlerts;
       return new Map(oldConfig).set(id, widgetConfig);
     });
-    onChange.call({});
   }
 
   function updateTrigger(value: string, index: number) {
@@ -268,7 +253,6 @@ export default function PaymentAlertSettings({
       }
       return new Map(oldConfig);
     });
-    onChange.call({});
   }
 
   const alertCard = (alert: any, index?: number) => (
@@ -614,17 +598,15 @@ export default function PaymentAlertSettings({
   ];
 
   return (
-    <>
-      <AntTabs
-        type="card"
-        items={[
-          {
-            key: "1",
-            label: t("tab-alert-alerts"),
-            children: previews(),
-          },
-        ]}
-      />
-    </>
+    <AntTabs
+      type="card"
+      items={[
+        {
+          key: "1",
+          label: t("tab-alert-alerts"),
+          children: previews(),
+        },
+      ]}
+    />
   );
 }

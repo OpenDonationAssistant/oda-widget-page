@@ -1,5 +1,5 @@
-import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/settings/PaymentAlertsSettings";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettingsComponent";
 import { IFontLoader } from "../../components/FontLoader/IFontLoader";
 import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";

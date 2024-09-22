@@ -7,9 +7,7 @@ import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
 
-import PaymentAlertSettings from "./settings/PaymentAlertsSettings";
 import { WidgetsContext } from "./WidgetsContext";
-import BaseSettings from "./settings/BaseSettings";
 import { publish, socket } from "../../socket";
 import { log } from "../../logging";
 import { Button, Flex } from "antd";
@@ -20,7 +18,6 @@ import { useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ApiContext } from "../../contexts/ApiContext";
-import { StompHeaders, messageCallbackType } from "@stomp/stompjs";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
@@ -49,15 +46,6 @@ function getWidget(type: string) {
       return <PlayerInfo />;
     default:
       return <div></div>;
-  }
-}
-
-function getSettingsWidget(id: string, type: string, onChange: Function) {
-  switch (type) {
-    case "payment-alerts":
-      return <PaymentAlertSettings id={id} onChange={onChange} />;
-    default:
-      return <BaseSettings id={id} />;
   }
 }
 
@@ -90,7 +78,10 @@ export default function WidgetConfiguration({
   const [newName, setNewName] = useState(name);
   const context = {
     config: config,
-    setConfig: setConfig,
+    setConfig: (newConfig: Map<string, AbstractWidgetSettings>) => {
+      setConfig(newConfig);
+      setHasChanges(true);
+    },
     updateConfig: update,
   };
 
@@ -208,7 +199,7 @@ export default function WidgetConfiguration({
                   {
                     key: "copy-url",
                     label: t("button-copy-url"),
-                    onClick: () => copyUrl(type, id)
+                    onClick: () => copyUrl(type, id),
                   },
                   {
                     key: "rename",
@@ -309,11 +300,9 @@ export default function WidgetConfiguration({
             </ResizableBox>
           </Flex>
         )}
-        {config.get(id) && (
-          <WidgetsContext.Provider value={context}>
-            {getSettingsWidget(id, type, () => setHasChanges(true))}
-          </WidgetsContext.Provider>
-        )}
+        <WidgetsContext.Provider value={context}>
+          {config.get(id)?.markup()}
+        </WidgetsContext.Provider>
       </div>
     </div>
   );

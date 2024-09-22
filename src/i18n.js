@@ -461,7 +461,7 @@ i18n
         },
       },
     },
-    fallbackLng: "en",
+    fallbackLng: "ru",
     detection: {
       order: ["path", "localStorage", "htmlTag", "cookie"],
       caches: ["localStorage", "cookie"], // cache user language on

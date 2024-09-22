@@ -6,28 +6,73 @@ import { useLoaderData } from "react-router";
 import { EmptyWidgetSettings } from "./WidgetSettings";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
-import { WidgetSettings } from "../../types/WidgetSettings";
 import { PlayerPopupWidgetSettings } from "./widgetsettings/PlayerPopupWidgetSettings";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
 import { DonationTimerWidgetSettings } from "./widgetsettings/DonationTimerWidgetSettings";
 import { MediaWidgetSettings } from "./widgetsettings/MediaWidgetSettings";
 import { PaymentsWidgetSettings } from "./widgetsettings/PaymentsWidgetSettings";
-import { PaymentAlertsWidgetSettings } from "./widgetsettings/PaymentAlertsWidgetSettings";
+import { PaymentAlertsWidgetSettings } from "./widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
 import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
+import {
+  DefaultApiFactory,
+} from "@opendonationassistant/oda-widget-service-client";
+import { WidgetConfigData, WidgetSettings } from "../../types/WidgetSettings";
 
-function loadSettings() {
-  return axios
-    .get(`${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets`)
-    .then((data) => data.data)
-    .then((data: WidgetSettings[]) => {
-      const sorted = data.sort((a, b) => a.sortOrder - b.sortOrder);
-      log.debug({ settings: data }, "loaded widget settings");
-      return sorted;
+async function loadSettings(): Promise<WidgetSettings[]> {
+  const response = await DefaultApiFactory(
+    undefined,
+    process.env.REACT_APP_WIDGET_API_ENDPOINT,
+  ).list();
+  return response.data
+    .sort((a, b) => {
+      if (a.sortOrder === undefined && b.sortOrder === undefined) {
+        return 0;
+      }
+      if (a.sortOrder === undefined) {
+        return 1;
+      }
+      if (b.sortOrder === undefined) {
+        return -1;
+      }
+      return a.sortOrder - b.sortOrder;
+    })
+    .flatMap((widget) => {
+      if (widget.id === undefined) {
+        return [];
+      }
+      if (widget.type === undefined) {
+        return [];
+      }
+      if (widget.sortOrder === undefined) {
+        return [];
+      }
+      if (widget.sortOrder === undefined) {
+        return [];
+      }
+      if (widget.name === undefined) {
+        return [];
+      }
+      if (widget.ownerId === undefined) {
+        return [];
+      }
+      if (widget.config === undefined) {
+        return [];
+      }
+      return [
+        {
+          id: widget.id,
+          type: widget.type,
+          sortOrder: widget.sortOrder,
+          name: widget.name,
+          ownerId: widget.ownerId,
+          config: widget.config as WidgetConfigData,
+        },
+      ];
     });
 }
 
@@ -79,7 +124,7 @@ export default function ConfigurationPage({}: {}) {
   }
 
   function load() {
-    loadSettings().then((widgets) => setWidgets(widgets));
+    loadSettings().then(setWidgets);
   }
 
   useEffect(() => {

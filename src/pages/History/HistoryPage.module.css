@@ -1,5 +1,4 @@
 .pagecontainer {
-  width:  90%;
   margin-left: 20px;
   margin-top: 20px;
 }
@@ -22,13 +21,6 @@
   width: 100%;
   display: flex;
   align-items: baseline;
-}
-
-.adddonationinput {
-  /* text-align: left; */
-  /* background-color: #684aff; */
-  /* box-shadow: inset 0 0 10px 0px rgba(0, 0, 0, 0.9); */
-  /* border: none; */
 }
 
 .buttons {

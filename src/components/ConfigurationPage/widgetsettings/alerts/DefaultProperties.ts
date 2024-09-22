@@ -1,15 +1,4 @@
-import { log } from "../../../logging";
-import { WidgetProperty } from "../widgetproperties/WidgetProperty";
-import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
-
-export const DEFAULT_ALERT = {
-  audio: null,
-  image: null,
-  video: null,
-  trigger: {
-    amount: 10,
-  },
-  properties: [
+export const DEFAULT_PROPERTIES = [
     {
       tab: "image",
       name: "imageWidth",
@@ -157,23 +146,4 @@ export const DEFAULT_ALERT = {
 Очень рады <username> и <amount> рублям`,
       displayName: "widget-alert-voice-empty-alert-phrase",
     },
-  ],
-};
-
-export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
-  public alerts: any[];
-
-  constructor(widgetId: string, properties: WidgetProperty[], alerts: any[]) {
-    log.debug({ alerts: alerts }, `creating payment-alerts settings`);
-    super(widgetId, properties, [], new Map());
-    this.alerts = alerts;
-  }
-
-  public copy() {
-    return new PaymentAlertsWidgetSettings(
-      this.widgetId,
-      this.properties,
-      this.alerts,
-    );
-  }
-}
+]
