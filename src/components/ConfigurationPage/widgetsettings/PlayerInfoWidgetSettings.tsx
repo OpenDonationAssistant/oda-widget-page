@@ -1,3 +1,4 @@
+import { Notifier } from "../Notifier";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
@@ -13,7 +14,7 @@ import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
-  constructor(widgetId: string, properties: WidgetProperty[]) {
+  constructor(properties: WidgetProperty<any>[], notifier: Notifier) {
     const tabs = new Map();
     tabs.set("general", "Общие");
     tabs.set("title", "Название");

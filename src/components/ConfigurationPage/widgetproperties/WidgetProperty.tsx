@@ -1,89 +1,58 @@
 import React from "react";
 import { ReactNode } from "react";
+import { Notifier } from "../Notifier";
+import { makeObservable, observable, reaction } from "mobx";
 
-export interface WidgetProperty {
-  widgetId: string | null;
+export interface WidgetProperty<Type> {
   name: string;
-  type: string;
-  value: any;
+  value: Type;
   displayName: string;
-  tab?: string;
-  markup: (updateConfig: Function) => ReactNode;
-  copy: () => WidgetProperty;
+  markup: () => ReactNode;
 }
 
-export class DefaultWidgetProperty {
-  private _widgetId: string;
+export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   private _name: string;
-  private _type: string;
-  private _value: any;
+  public value: Type;
   private _displayName: string;
-  private _tab?: string | undefined;
+  private _notifier: Notifier;
 
-  constructor(
-    widgetId: string,
-    name: string,
-    type: string,
-    value: any,
-    displayName: string,
-    tab?: string | undefined,
-  ) {
-    this._widgetId = widgetId;
+  constructor({
+    name,
+    value,
+    displayName,
+    notifier,
+  }: {
+    name: string;
+    value: any;
+    displayName: string;
+    notifier: Notifier;
+  }) {
     this._name = name;
-    this._type = type;
     this._displayName = displayName;
-    this._value = value;
-    this._tab = tab;
+    this.value = value;
+    this._notifier = notifier;
+    makeObservable(this, {
+      value: observable,
+    });
+    reaction(() => this.value, () => {
+      this._notifier.notify();
+    });
   }
 
-  markup(updateConfig: Function): ReactNode {
+  markup(): ReactNode {
     return React.createElement("div");
   }
 
-  copy() {
-    return new DefaultWidgetProperty(
-      this._widgetId,
-      this._name,
-      this._type,
-      this._value,
-      this._displayName,
-      this._tab,
-    );
-  }
-  public get widgetId(): string {
-    return this._widgetId;
-  }
-  public set widgetId(value: string) {
-    this._widgetId = value;
-  }
   public get name(): string {
     return this._name;
   }
   public set name(value: string) {
     this._name = value;
   }
-  public get type(): string {
-    return this._type;
-  }
-  public set type(value: string) {
-    this._type = value;
-  }
-  public get value(): any {
-    return this._value;
-  }
-  public set value(value: any) {
-    this._value = value;
-  }
   public get displayName(): string {
     return this._displayName;
   }
   public set displayName(value: string) {
     this._displayName = value;
-  }
-  public get tab(): string | undefined {
-    return this._tab;
-  }
-  public set tab(value: string | undefined) {
-    this._tab = value;
   }
 }

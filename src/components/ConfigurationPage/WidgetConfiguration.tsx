@@ -26,24 +26,23 @@ import DonationTimer from "../DonationTimer/DonationTimer";
 import classes from "./WidgetConfiguration.module.css";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { tokenRequest } from "../Login/Login";
+import { observer } from "mobx-react-lite";
+import { Widget } from "../../types/Widget";
 
 interface WidgetConfigurationProps {
-  id: string;
-  name: string;
-  type: string;
-  reload: Function;
+  widget: Widget;
 }
 
 function getWidget(type: string) {
   switch (type) {
-    case "donaters-top-list":
-      return <DonatersTopList />;
-    case "donationgoal":
-      return <DonationGoal />;
-    case "donation-timer":
-      return <DonationTimer />;
-    case "player-info":
-      return <PlayerInfo />;
+    // case "donaters-top-list":
+    //   return <DonatersTopList />;
+    // case "donationgoal":
+    //   return <DonationGoal />;
+    // case "donation-timer":
+    //   return <DonationTimer />;
+    // case "player-info":
+    //   return <PlayerInfo />;
     default:
       return <div></div>;
   }
@@ -55,142 +54,68 @@ function deleteWidget(id: string) {
   );
 }
 
-async function copyUrl(type: string, id: string) {
-  const tokens = await tokenRequest({
-    refreshToken: localStorage.getItem("refresh-token") ?? "",
-  });
-  navigator.clipboard.writeText(
-    `${process.env.REACT_APP_ENDPOINT}/${type}/${id}?refresh-token=${tokens.refreshToken}`,
-  );
-}
-
-export default function WidgetConfiguration({
-  id,
-  name,
-  type,
-  reload,
-}: WidgetConfigurationProps) {
-  const { config, setConfig, updateConfig } = useContext(WidgetsContext);
-  const { recipientId, conf } = useLoaderData() as WidgetData;
-  const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
-  const [hasChanges, setHasChanges] = useState<boolean>(false);
-  const [renaming, setRenaming] = useState(false);
-  const [newName, setNewName] = useState(name);
-  const context = {
-    config: config,
-    setConfig: (newConfig: Map<string, AbstractWidgetSettings>) => {
-      setConfig(newConfig);
-      setHasChanges(true);
-    },
-    updateConfig: update,
-  };
-
+export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
 
-  function update(id: string, key: string, value: any) {
-    updateConfig(id, key, value);
-    setHasChanges(true);
-  }
-
-  function toggleSettings() {
-    setSettingsHidden(!settingsHidden);
-  }
-
-  function saveSettings() {
-    const settings = config.get(id);
-    log.debug({ id: id, settings: settings }, "saving settings");
-    const props = settings?.properties.map((prop) => {
-      return {
-        name: prop.name,
-        value: prop.value,
-      };
-    });
-    log.debug({ updated: props }, "sending props");
-    const request = {
-      name: newName,
-      config: {
-        properties: props,
-        alerts: settings?.alerts,
-      },
-    };
-    return axios.patch(
-      `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
-      request,
-    );
-  }
-
-  function getProperty(name: string): any {
-    return config.get(id)?.properties.find((prop) => prop.name === name)?.value;
-  }
-
-  function getRndInteger(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  function runReel() {
-    const optionList = getProperty("optionList");
-    const choosenIndex = getRndInteger(0, optionList.length - 1);
-    publish(conf.topic.reel, {
-      type: "trigger",
-      selection: optionList[choosenIndex],
-      widgetId: id,
-    });
-  }
-
   return (
-    <div className={`widget ${settingsHidden ? "collapsed" : "extended"}`}>
-      <div className="widget-header">
-        <div className="widget-header-toogler" onClick={toggleSettings}>
-          <img className="widget-icon" src={`/icons/${type}.png`} />
-          {!renaming && <div className="widget-title">{name}</div>}
-          {renaming && (
-            <input
-              onChange={(e) => setNewName(e.target.value)}
-              className="new-name-input"
-              value={newName}
-            />
-          )}
-        </div>
-        {!hasChanges && type === "reel" && (
-          <Button onClick={runReel} className="oda-btn-default">
-            {t("button-spin")}
-          </Button>
-        )}
-        {!hasChanges && type === "payment-alerts" && (
-          <TextAlertButton config={config} />
-        )}
-        {hasChanges && (
-          <>
-            <button
-              className="widget-button widget-button-accept"
-              onClick={() => {
-                setHasChanges(false);
-                setRenaming(false);
-                saveSettings().then((ignore) => reload.apply({}));
+    <>
+      {widget.config.unsaved && (
+        <>
+          <button
+            className="widget-button widget-button-accept"
+            onClick={() => {
+              widget.save().then(() => {
                 socket.publish({
                   destination: "/topic/commands",
                   body: JSON.stringify({
-                    id: id,
+                    id: widget.id,
                     command: "reload",
                   }),
                 });
-              }}
-            >
-              <div className="blinker">{t("button-save")}</div>
-            </button>
-            <button
-              className="widget-button widget-button-decline"
-              onClick={() => {
-                setHasChanges(false);
-                setRenaming(false);
-                reload.apply({});
-              }}
-            >
-              <div className="blinker">{t("button-cancel")}</div>
-            </button>
-          </>
-        )}
-        {!hasChanges && (
+              });
+            }}
+          >
+            <div className="blinker">{t("button-save")}</div>
+          </button>
+          <button
+            className="widget-button widget-button-decline"
+            onClick={() => {
+              widget.reload();
+            }}
+          >
+            <div className="blinker">{t("button-cancel")}</div>
+          </button>
+        </>
+      )}
+    </>
+  );
+});
+
+const NameComponent = observer(({ widget }: { widget: Widget }) => {
+  return (
+    <div className="widget-header-toogler">
+      <img className="widget-icon" src={`/icons/${widget.type}.png`} />
+      <div className="widget-title">{widget.name}</div>
+    </div>
+  );
+});
+
+export default function WidgetConfiguration({
+  widget,
+}: WidgetConfigurationProps) {
+  const { recipientId, conf } = useLoaderData() as WidgetData;
+  const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
+  const { t } = useTranslation();
+
+  return (
+    <div className={`widget ${settingsHidden ? "collapsed" : "extended"}`}>
+      <div
+        className="widget-header"
+        onClick={() => setSettingsHidden(!settingsHidden)}
+      >
+        <NameComponent widget={widget} />
+        <SaveButtons widget={widget} />
+        {!widget.config.unsaved && (
           <>
             <Dropdown
               trigger={["click"]}
@@ -199,21 +124,20 @@ export default function WidgetConfiguration({
                   {
                     key: "copy-url",
                     label: t("button-copy-url"),
-                    onClick: () => copyUrl(type, id),
+                    onClick: widget.url,
                   },
                   {
                     key: "rename",
                     label: t("button-rename"),
                     onClick: () => {
-                      setRenaming(true);
-                      setHasChanges(true);
+                      widget.config.unsaved = true;
                     },
                   },
                   {
                     key: "delete",
                     label: t("button-delete"),
                     onClick: () => {
-                      deleteWidget(id).then(() => reload.apply({}));
+                      deleteWidget(widget.id).then(() => reload.apply({}));
                     },
                   },
                 ],
@@ -232,10 +156,10 @@ export default function WidgetConfiguration({
       <div
         className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
       >
-        {(type === "donaters-top-list" ||
-          type === "donationgoal" ||
-          type === "player-info" ||
-          type === "donation-timer") && (
+        {(widget.type === "donaters-top-list" ||
+          widget.type === "donationgoal" ||
+          widget.type === "player-info" ||
+          widget.type === "donation-timer") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
@@ -249,60 +173,54 @@ export default function WidgetConfiguration({
               axis="both"
               minConstraints={[650, 100]}
             >
-              {config.get(id) && (
-                <WidgetSettingsContext.Provider
+              <WidgetSettingsContext.Provider
+                value={{
+                  widgetId: widget.id,
+                  settings: {
+                    config: widget.config,
+                  },
+                  subscribe: (
+                    topic: string,
+                    onMessage: (params: {
+                      ack: () => void;
+                      body: string;
+                    }) => void,
+                  ) => {
+                    if (topic === conf.topic.player) {
+                      log.debug("sending mock message");
+                      onMessage({
+                        ack: () => {},
+                        body: JSON.stringify({
+                          title:
+                            "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
+                          owner: "testuser",
+                          count: 11,
+                          number: 0,
+                        }),
+                      });
+                    }
+                  },
+                  unsubscribe: (topic: string) => {},
+                  publish: (topic: string, payload: any) => {},
+                }}
+              >
+                <ApiContext.Provider
                   value={{
-                    widgetId: id,
-                    settings: {
-                      config:
-                        config.get(id) ??
-                        new AbstractWidgetSettings(id, [], [], new Map()),
-                    },
-                    subscribe: (
-                      topic: string,
-                      onMessage: (params: {
-                        ack: () => void;
-                        body: string;
-                      }) => void,
-                    ) => {
-                      if (topic === conf.topic.player) {
-                        log.debug("sending mock message");
-                        onMessage({
-                          ack: () => {},
-                          body: JSON.stringify({
-                            title:
-                              "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
-                            owner: "testuser",
-                            count: 11,
-                            number: 0,
-                          }),
-                        });
-                      }
-                    },
-                    unsubscribe: (topic: string) => {},
-                    publish: (topic: string, payload: any) => {},
+                    listDonaters: (period: string) =>
+                      axios
+                        .get(
+                          `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
+                        )
+                        .then((response) => response.data),
                   }}
                 >
-                  <ApiContext.Provider
-                    value={{
-                      listDonaters: (period: string) =>
-                        axios
-                          .get(
-                            `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
-                          )
-                          .then((response) => response.data),
-                    }}
-                  >
-                    {getWidget(type)}
-                  </ApiContext.Provider>
-                </WidgetSettingsContext.Provider>
-              )}
+                  {getWidget(widget.type)}
+                </ApiContext.Provider>
+              </WidgetSettingsContext.Provider>
             </ResizableBox>
           </Flex>
         )}
-        <WidgetsContext.Provider value={context}>
-          {config.get(id)?.markup()}
-        </WidgetsContext.Provider>
+        {widget.config.markup()}
       </div>
     </div>
   );

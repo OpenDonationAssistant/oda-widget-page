@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import { Trans } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 
 export class BooleanProperty extends DefaultWidgetProperty {

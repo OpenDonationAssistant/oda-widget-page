@@ -7,9 +7,7 @@ import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { Collapse, InputNumber } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
-import { NumberProperty } from "./NumberProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { produce } from "immer";
 
 export interface Amount {
   major: number;

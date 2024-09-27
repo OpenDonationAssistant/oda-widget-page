@@ -190,15 +190,6 @@ textarea.widget-settings-value {
   background-color: none;
 }
 
-.payment-alerts-previews {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
 .payment-alerts-previews-item {
   height: 350px;
   display: flex;

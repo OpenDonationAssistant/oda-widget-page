@@ -1,28 +1,62 @@
-import { ReactNode } from "react";
+import { ReactNode, createContext, useContext } from "react";
 import { log } from "../../../../logging";
 import { WidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "../AbstractWidgetSettings";
 import { Alert } from "./Alert";
-import PaymentAlertsWidgetSettingsComponent from "./PaymentAlertsWidgetSettingsComponent";
+import { PaymentAlertsWidgetSettingsComponent } from "./PaymentAlertsWidgetSettingsComponent";
+import { makeObservable, observable } from "mobx";
+import { Notifier } from "../../Notifier";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
-  public alerts: Alert[];
+  private _alerts: Alert[];
 
-  constructor(widgetId: string, properties: WidgetProperty[], alerts: Alert[]) {
+  constructor({
+    properties,
+    alerts,
+    notifier,
+  }: {
+    properties: WidgetProperty<any>[];
+    alerts: Alert[];
+    notifier: Notifier;
+  }) {
     log.debug({ alerts: alerts }, `creating payment-alerts settings`);
-    super(widgetId, properties, [], new Map());
-    this.alerts = alerts;
+    super({
+      properties: properties,
+      sections: [],
+      notifier: notifier,
+    });
+    this._alerts = alerts;
+    makeObservable(this, {
+      _alerts: observable,
+    });
   }
 
-  public copy() {
-    return new PaymentAlertsWidgetSettings(
-      this.widgetId,
-      this.properties,
-      this.alerts,
-    );
+  public get alerts(): Alert[] {
+    return this._alerts;
+  }
+
+  public addAlert(): void {
+    this._alerts.push(new Alert({}));
+  }
+
+  public deleteAlert(id: string) {
+    this._alerts = this._alerts.filter((alert) => alert.id !== id);
   }
 
   public markup(): ReactNode {
-    return <PaymentAlertsWidgetSettingsComponent id={this.widgetId} />;
+    return (
+      <PaymentAlertsWidgetSettingsContext.Provider value={this}>
+        <PaymentAlertsWidgetSettingsComponent />
+      </PaymentAlertsWidgetSettingsContext.Provider>
+    );
   }
 }
+
+export const PaymentAlertsWidgetSettingsContext =
+  createContext<PaymentAlertsWidgetSettings>(
+    new PaymentAlertsWidgetSettings({
+      properties: [],
+      alerts: [],
+      notifier: { notify: () => {} },
+    }),
+  );

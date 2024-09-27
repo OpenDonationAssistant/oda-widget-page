@@ -1,37 +1,36 @@
+import { log } from "../../../logging";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
-import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class PaymentsWidgetSettings extends AbstractWidgetSettings {
-  constructor(widgetId: string, properties: WidgetProperty[]) {
-    const  tabs = new Map();
-    tabs.set("general", "Общие");
-    super(
-      widgetId,
-      properties,
-      [
-        new NumberProperty(
-          widgetId,
-          "nicknameFontSize",
-          "number",
-          "28",
-          "widget-payments-customer-font-size",
-          "general"
-        ),
-        new NumberProperty(
-          widgetId,
-          "messageFontSize",
-          "number",
-          "19",
-          "widget-payments-message-font-size",
-          "general"
-        ),
+  constructor() {
+    super({
+      sections: [
+        {
+          key: "general",
+          title: "Общие",
+          properties: [
+            new NumberProperty({
+              name: "nicknameFontSize",
+              value: 28,
+              displayName: "widget-payments-customer-font-size",
+              notifier: { notify: () => {
+                log.debug("notified");
+                this.unsaved = true;
+              } },
+            }),
+            new NumberProperty({
+              name: "messageFontSize",
+              value: 19,
+              displayName: "widget-payments-message-font-size",
+              notifier: { notify: () => {
+                log.debug("notified");
+                this.unsaved = true;
+              } },
+            }),
+          ],
+        },
       ],
-      tabs
-    );
-  }
-
-  copy(){
-    return new PaymentsWidgetSettings(this.widgetId, this.properties);
+    });
   }
 }

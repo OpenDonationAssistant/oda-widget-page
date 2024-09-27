@@ -10,6 +10,7 @@
     width: 100%;
   }
 }
+
 @media (min-width: 1501px) {
   .headercontainer {
     min-width: 1200px;
@@ -26,4 +27,5 @@
 
 .buttons {
   display: flex;
+  align-items: flex-end;
 }

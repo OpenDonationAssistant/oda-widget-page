@@ -1,10 +1,15 @@
 import { createContext } from "react";
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
-import { messageCallbackType } from "@stomp/stompjs";
 
 export const WidgetSettingsContext = createContext({
   widgetId: "",
-  settings: { config: new AbstractWidgetSettings("", [], [], new Map()) },
+  settings: {
+    config: new AbstractWidgetSettings({
+      properties: [],
+      sections: [],
+      notifier: { notify: () => {} },
+    }),
+  },
   subscribe: (
     topic: string,
     onMessage: (message: { ack: () => void; body: string }) => void,
