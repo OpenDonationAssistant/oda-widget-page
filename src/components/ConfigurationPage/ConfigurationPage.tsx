@@ -32,25 +32,31 @@ import { observer } from "mobx-react-lite";
 export class Selection {
   private _id: string | null = null;
 
-  constructor({}) {
+  constructor() {
     makeAutoObservable(this);
   }
 
   public get id(): string | null {
     return this._id;
   }
+
   public set id(value: string) {
     this._id = value;
   }
 }
 
-export const SelectionContext = createContext<Selection>(new Selection({}));
+export const SelectionContext = createContext<Selection>(new Selection());
 
 const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
+  const selection = useContext(SelectionContext);
   return (
     <>
       {widgetStore.list.map((data) => (
-        <WidgetConfiguration key={data.id} widget={data} />
+        <WidgetConfiguration
+          key={data.id}
+          widget={data}
+          open={selection.id === data.id}
+        />
       ))}
     </>
   );
@@ -107,9 +113,9 @@ const AddWidgetComponent = observer(
 );
 
 export default function ConfigurationPage({}: {}) {
-  const widgetStore = useRef(new WidgetStore());
   const { recipientId } = useLoaderData() as WidgetData;
-  const { t } = useTranslation();
+  const widgetStore = useRef(new WidgetStore());
+  const selection = useRef(new Selection());
 
   useEffect(() => {
     widgetStore.current.load();
@@ -118,7 +124,9 @@ export default function ConfigurationPage({}: {}) {
   return (
     <Content style={{ overflow: "initial" }}>
       <div className="widget-list">
-        <WidgetList widgetStore={widgetStore.current} />
+        <SelectionContext.Provider value={selection.current}>
+          <WidgetList widgetStore={widgetStore.current} />
+        </SelectionContext.Provider>
         <AddWidgetComponent widgetStore={widgetStore.current} />
       </div>
     </Content>

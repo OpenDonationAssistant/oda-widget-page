@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { useState } from "react";
 import axios from "axios";
 
@@ -10,7 +10,7 @@ import "./css/WidgetSettings.css";
 import { WidgetsContext } from "./WidgetsContext";
 import { publish, socket } from "../../socket";
 import { log } from "../../logging";
-import { Button, Flex } from "antd";
+import { Button, Flex, Input, Modal } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import TextAlertButton from "./settings/TestAlertButton";
@@ -28,9 +28,13 @@ import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { tokenRequest } from "../Login/Login";
 import { observer } from "mobx-react-lite";
 import { Widget } from "../../types/Widget";
+import LabeledContainer from "../LabeledContainer/LabeledContainer";
+import { makeAutoObservable } from "mobx";
+import { SelectionContext } from "./ConfigurationPage";
 
 interface WidgetConfigurationProps {
   widget: Widget;
+  open: boolean;
 }
 
 function getWidget(type: string) {
@@ -92,27 +96,93 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
 });
 
 const NameComponent = observer(({ widget }: { widget: Widget }) => {
+  const selection = useContext(SelectionContext);
   return (
-    <div className="widget-header-toogler">
+    <div
+      className="widget-header-toogler"
+      onClick={() => {
+        if (selection.id){
+          selection.id = "";
+        } else {
+          selection.id = widget.id;
+        }
+      }}
+    >
       <img className="widget-icon" src={`/icons/${widget.type}.png`} />
       <div className="widget-title">{widget.name}</div>
     </div>
   );
 });
 
+class RenameModalState {
+  private _open: boolean = false;
+  private _name: string;
+  private _widget: Widget;
+
+  constructor(widget: Widget) {
+    this._widget = widget;
+    this._name = widget.name;
+    makeAutoObservable(this);
+  }
+
+  public reset(): void {
+    this._name = this._widget.name;
+    this._open = false;
+  }
+
+  public apply(): void {
+    this._widget.rename(this._name);
+    this._open = false;
+  }
+
+  public get open(): boolean {
+    return this._open;
+  }
+  public set open(value: boolean) {
+    this._open = value;
+  }
+  public get name(): string {
+    return this._name;
+  }
+  public set name(value: string) {
+    this._name = value;
+  }
+}
+
+// TODO: localize
+const RenameModal = observer(({ state }: { state: RenameModalState }) => {
+  return (
+    <Modal
+      title={"Rename"}
+      open={state.open}
+      onOk={() => state.apply()}
+      onClose={() => state.reset()}
+      onCancel={() => state.reset()}
+    >
+      <div className="settings-item">
+        <LabeledContainer displayName="Rename">
+          <Input
+            value={state.name}
+            onChange={(e) => (state.name = e.target.value)}
+          />
+        </LabeledContainer>
+      </div>
+    </Modal>
+  );
+});
+
 export default function WidgetConfiguration({
   widget,
+  open,
 }: WidgetConfigurationProps) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
-  const [settingsHidden, setSettingsHidden] = useState<boolean>(true);
   const { t } = useTranslation();
+  const renameModalState = useRef(new RenameModalState(widget));
 
   return (
-    <div className={`widget ${settingsHidden ? "collapsed" : "extended"}`}>
-      <div
-        className="widget-header"
-        onClick={() => setSettingsHidden(!settingsHidden)}
-      >
+    <div className={`widget ${open ? "extended":"collapsed"}`}>
+      <RenameModal state={renameModalState.current} />
+      <div className="widget-header">
         <NameComponent widget={widget} />
         <SaveButtons widget={widget} />
         {!widget.config.unsaved && (
@@ -130,7 +200,7 @@ export default function WidgetConfiguration({
                     key: "rename",
                     label: t("button-rename"),
                     onClick: () => {
-                      widget.config.unsaved = true;
+                      renameModalState.current.open = true;
                     },
                   },
                   {
@@ -153,9 +223,7 @@ export default function WidgetConfiguration({
           </>
         )}
       </div>
-      <div
-        className={`widget-settings ${settingsHidden ? "visually-hidden" : ""}`}
-      >
+      <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
         {(widget.type === "donaters-top-list" ||
           widget.type === "donationgoal" ||
           widget.type === "player-info" ||

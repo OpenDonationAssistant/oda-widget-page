@@ -141,7 +141,7 @@ export default function PlaylistActionPanel({
                 </span>
               </button>
               <Modal
-              className={`${classes.modal}`}
+                className={`${classes.modal}`}
                 title={t("saved-playlist-label")}
                 footer={null}
                 open={showSavedPlaylists}

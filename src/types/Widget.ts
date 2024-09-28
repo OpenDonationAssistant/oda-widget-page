@@ -31,6 +31,7 @@ interface SavedProperty {
   value: any;
 }
 
+// TODO: use decorators
 export class Widget {
   private _id: string;
   private _type: string;
@@ -56,6 +57,7 @@ export class Widget {
     this._ownerId = ownerId;
     this._config = config;
     makeObservable(this, {
+      _name: observable,
       _config: observable,
       reload: action,
     });
@@ -123,6 +125,7 @@ export class Widget {
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
       request,
     );
+    this.name = name;
   }
 
   public async save(): Promise<void>{
