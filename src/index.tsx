@@ -33,7 +33,7 @@ import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import DonationGoal from "./components/DonationGoal/DonationGoal";
 import HistoryPage from "./pages/History/HistoryPage";
-import { ConfigProvider, Layout, theme } from "antd";
+import { ConfigProvider, Flex, Layout, theme } from "antd";
 import "./i18n";
 import "animate.css";
 import WidgetWrapper from "./WidgetWrapper";
@@ -41,6 +41,7 @@ import Header from "./components/ConfigurationPage/Header";
 import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 import { useTranslation } from "react-i18next";
+import NewsComponent from "./components/Payments/NewsComponent";
 
 async function widgetSettingsLoader({
   params,
@@ -112,7 +113,10 @@ function ConfigurationPageTemplate() {
           <Sider>
             <Toolbar page={page} />
           </Sider>
-          <Outlet />
+          <Flex vertical>
+            <NewsComponent />
+            <Outlet />
+          </Flex>
         </Layout>
       </Layout>
     </>

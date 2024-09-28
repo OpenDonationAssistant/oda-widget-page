@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
 import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
-import { log } from "../../logging";
 
 interface News {
   id: string;
@@ -15,13 +14,17 @@ export default function NewsComponent({}: {}) {
   const [news, setNews] = useState<News | null>(null);
   const [progress, setProgress] = useState<number>(0);
 
-  function clearNews() {
+  function sendFeedback(rating: number) {
     setNews((prev) => {
       if (prev) {
-        NewsService(
+        const service = NewsService(
           undefined,
           process.env.REACT_APP_NEWS_API_ENDPOINT,
-        ).markAsRead({
+        );
+        service.createFeedback(prev.id, {
+          rating: rating,
+        });
+        service.markAsRead({
           newsId: prev.id,
         });
       }
@@ -35,7 +38,7 @@ export default function NewsComponent({}: {}) {
         setTimeout(updateProgress, 30);
         return prev + 0.02;
       } else {
-        clearNews();
+        sendFeedback(-1);
         return 0;
       }
     });
@@ -67,18 +70,11 @@ export default function NewsComponent({}: {}) {
   return (
     <>
       {news && (
-        <div className={`${classes.newscontainer}`}>
-          <div className={`${classes.closebutton}`}>
-            <button
-              className="material-symbols-sharp"
-              onClick={() => {
-                log.error("close news by hand");
-                clearNews();
-              }}
-            >
-              close
-            </button>
-          </div>
+        <Flex
+          vertical={true}
+          wrap={false}
+          className={`${classes.newscontainer}`}
+        >
           <div className={`${classes.progressbar}`}>
             <div
               className={`${classes.filledprogress}`}
@@ -88,13 +84,25 @@ export default function NewsComponent({}: {}) {
           <Flex justify="center" align="baseline">
             <div className={`${classes.newstitle}`}>{news.title}</div>
           </Flex>
-          <div className={`${classes.newsbody}`}>{news.description}</div>
-          {news.demoUrl && (
-            <div>
+          <Flex
+            className={`${classes.bodycontainer} full-width`}
+            align="middle"
+            justify="center"
+          >
+            <div className={`${classes.newsbody}`}>{news.description}</div>
+            {news.demoUrl && (
               <img className={`${classes.newsdemo}`} src={news.demoUrl} />
-            </div>
-          )}
-        </div>
+            )}
+          </Flex>
+          <Flex
+            className={`${classes.buttons}`}
+            vertical={false}
+            justify="space-around"
+          >
+            <img src="/icons/thumb-up.png" onClick={() => sendFeedback(10)} />
+            <img src="/icons/thumb-down.png" onClick={() => sendFeedback(0)} />
+          </Flex>
+        </Flex>
       )}
     </>
   );
