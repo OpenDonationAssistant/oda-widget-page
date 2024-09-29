@@ -101,7 +101,7 @@ const NameComponent = observer(({ widget }: { widget: Widget }) => {
     <div
       className="widget-header-toogler"
       onClick={() => {
-        if (selection.id){
+        if (selection.id === widget.id) {
           selection.id = "";
         } else {
           selection.id = widget.id;
@@ -123,6 +123,10 @@ class RenameModalState {
     this._widget = widget;
     this._name = widget.name;
     makeAutoObservable(this);
+  }
+
+  public show(): void {
+    this._open = true;
   }
 
   public reset(): void {
@@ -194,13 +198,13 @@ export default function WidgetConfiguration({
                   {
                     key: "copy-url",
                     label: t("button-copy-url"),
-                    onClick: widget.url,
+                    onClick: () => widget.url(),
                   },
                   {
                     key: "rename",
                     label: t("button-rename"),
                     onClick: () => {
-                      renameModalState.current.open = true;
+                      renameModalState.current.show()
                     },
                   },
                   {
