@@ -4,6 +4,7 @@ import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetse
 import { EmptyWidgetSettings } from "../components/ConfigurationPage/EmptyWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
 import { tokenRequest } from "../components/Login/Login";
+import { WidgetStore } from "../components/ConfigurationPage/WidgetStore";
 
 export const WIDGET_TYPES = [
   { name: "payment-alerts", description: "Payment Alerts", create: () => {} },
@@ -39,16 +40,18 @@ export class Widget {
   private _name: string;
   private _ownerId: string;
   private _config: AbstractWidgetSettings;
+  private _store: WidgetStore;
 
   constructor({
-    id, type, sortOrder, name, ownerId, config
+    id, type, sortOrder, name, ownerId, config, store
   }: {
     id: string,
     type: string,
     sortOrder: number,
     name: string,
     ownerId: string,
-    config: AbstractWidgetSettings
+    config: AbstractWidgetSettings,
+    store: WidgetStore
   }){
     this._id = id;
     this._type = type;
@@ -56,6 +59,7 @@ export class Widget {
     this._name = name;
     this._ownerId = ownerId;
     this._config = config;
+    this._store = store;
     makeObservable(this, {
       _name: observable,
       _config: observable,
@@ -77,7 +81,7 @@ export class Widget {
     return settings;
   }
 
-  public static fromJson(json: any): Widget|null {
+  public static fromJson(json: any, store: WidgetStore): Widget|null {
       if (json.id === undefined) {
         return null;
       }
@@ -106,6 +110,7 @@ export class Widget {
           name: json.name,
           ownerId: json.ownerId,
           config: this.configFromJson(json) || new EmptyWidgetSettings(),
+          store: store
         });
   }
 
@@ -149,6 +154,10 @@ export class Widget {
     navigator.clipboard.writeText(
       `${process.env.REACT_APP_ENDPOINT}/${this._type}/${this._id}?refresh-token=${tokens.refreshToken}`,
     );
+  }
+
+  async delete(): Promise<void> {
+    await this._store.deleteWidget(this._id);
   }
 
   public get id(): string {

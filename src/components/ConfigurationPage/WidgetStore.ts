@@ -1,6 +1,7 @@
 import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-client";
 import { Widget } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
+import { log } from "../../logging";
 
 export class WidgetStore {
 
@@ -33,15 +34,22 @@ export class WidgetStore {
         return a.sortOrder - b.sortOrder;
       })
       .flatMap((widget) => {
-        const created = Widget.fromJson(widget);
+        const created = Widget.fromJson(widget, this);
         return created ? [created] : [];
       });
   }
 
   async addWidget(type: string): Promise<void> {
-    this.client().add({
+    const response = await this.client().add({
       type: type,
       sortOrder: this.list.length,
-    })
+    });
+    log.debug({ response: response.data }, "add widget response");
+    this.list.push(Widget.fromJson(response.data, this)!);
+  }
+
+  async deleteWidget(id: string): Promise<void> {
+    this.list = this.list.filter((widget) => widget.id !== id);
+    await this.client()._delete(id);
   }
 }

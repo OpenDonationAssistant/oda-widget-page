@@ -52,11 +52,7 @@ function getWidget(type: string) {
   }
 }
 
-function deleteWidget(id: string) {
-  return axios.delete(
-    `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${id}`,
-  );
-}
+
 
 export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -210,9 +206,7 @@ export default function WidgetConfiguration({
                   {
                     key: "delete",
                     label: t("button-delete"),
-                    onClick: () => {
-                      deleteWidget(widget.id).then(() => reload.apply({}));
-                    },
+                    onClick: () => widget.delete(),
                   },
                 ],
               }}
