@@ -1,0 +1,66 @@
+.container {
+  background-color: var(--oda-main-background-color);
+  height: 100vh;
+}
+
+.payment {
+  margin-bottom: 16px;
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: var(--oda-panel-background-color);
+  color: var(--oda-main-text-color);
+  border-radius: 5px;
+  border: var(--oda-main-border);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+}
+
+.paymentbody {
+  color: rgb(180, 197, 228);
+  font-size: 19px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	padding-left: 10px;
+	padding-right: 15px;
+	padding-top: 3px;
+  border-top: var(--oda-main-border);
+  background-color: rgb(43, 53, 102);
+  box-shadow: 0 -10px 10px 1px rgba(0, 0, 0, 0.5);
+}
+
+.paymentheader {
+  position: relative;
+	margin-bottom: 3px;
+	margin-left: 10px;
+	margin-right: 15px;
+	margin-top: 5px;
+	padding-bottom: 3px;
+}
+
+.paymentinfo {
+  position: relative;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.paymentamount {
+  text-align: left;
+  background-image: linear-gradient(to right, rgb(255, 191, 52), #ec5800);
+  display: inline;
+  border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 10px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.paymenttime {
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  font-size: 20px;
+  color: var(--oda-secondary-text-color);
+}

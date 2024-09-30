@@ -17,6 +17,8 @@ import { log } from "../../logging";
 import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
 import MenuEventButton from "../Menu/MenuEventButton";
 import NewsComponent from "./NewsComponent";
+import { WidgetData } from "../../types/WidgetData";
+import classes from "./Payments.module.css";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -29,13 +31,13 @@ const timeFormat = new Intl.DateTimeFormat("ru-RU", {
 });
 
 function Payments({}: {}) {
-  const clientRef = useRef(null);
   const navigate = useNavigate();
   const [active, setActive] = useState("");
   const [dateToPaymentsMap, setDateToPaymentsMap] = useState(new Map());
   const [todayPayments, setTodayPayments] = useState([]);
   const [attachmentTitles, setAttachmentTitles] = useState(new Map());
-  const { recipientId, settings, conf, widgetId } = useLoaderData();
+  const { recipientId, settings, conf, widgetId } =
+    useLoaderData() as WidgetData;
 
   useEffect(() => {
     let timerFunc = setTimeout(() => {
@@ -71,10 +73,8 @@ function Payments({}: {}) {
 
   function setDisplayedTimeForTodayPayments(todayPayments) {
     const now = Date.now();
-    log.debug("Now: " + now);
     return todayPayments.map((payment) => {
       const paymentDate = new Date(payment.authorizationTimestamp);
-      log.debug("PaymentDate: " + paymentDate);
       if (now - paymentDate > 60 * 60 * 1000) {
         payment.displayedTime = timeFormat.format(paymentDate);
         return payment;
@@ -84,7 +84,6 @@ function Payments({}: {}) {
         payment.displayedTime = "Now";
         return payment;
       }
-      log.debug("Difference: " + (now - paymentDate));
       payment.displayedTime =
         Math.floor((now - paymentDate) / (60 * 1000)) + " min";
       return payment;
@@ -180,7 +179,7 @@ function Payments({}: {}) {
   }
 
   function paymentList(data) {
-    log.debug(`rendering ${JSON.stringify(data)}`);
+    log.debug({data:data}, "rendering payment list");
     const nicknameFontSize = findSetting(settings, "nicknameFontSize", "24px");
     const nicknameStyle = nicknameFontSize
       ? { fontSize: nicknameFontSize + "px" }
@@ -192,18 +191,16 @@ function Payments({}: {}) {
     return (
       <div
         key={data.id}
-        className={`payment ${data.id === active ? "active" : ""}`}
+        className={`${classes.payment} ${data.id === active ? "active" : ""}`}
       >
-        <div className="payment-header">
+        <div className={`${classes.paymentheader}`}>
           <div className="payment-maker">
-            <span className="payment-maker-icon material-symbols-sharp">
-              payments
-            </span>{" "}
+            <div className={`${classes.paymentamount}`}>{`\u20BD${data.amount.major}`}</div>
             <span style={nicknameStyle}>
               {data.nickname ? data.nickname : "Аноним"}
             </span>
           </div>
-          <div className="payment-time">
+          <div className={`${classes.paymenttime}`}>
             {data.isRelativeTime && (
               <span className="material-symbols-sharp">history</span>
             )}
@@ -225,8 +222,7 @@ function Payments({}: {}) {
             <span className="material-symbols-sharp">replay</span>
           </button>
         </div>
-        <div className="payment-info">
-          <div className="payment-amount">{`\u20BD${data.amount.major}`}</div>
+        <div className={`${classes.paymentinfo}`}>
           {data.attachments && data.attachments.length === 1 && (
             <>
               <div className="single-attach-title">
@@ -245,7 +241,7 @@ function Payments({}: {}) {
           ) : null}
         </div>
         {data.message && (
-          <div style={messageStyle} className="payment-body">
+          <div style={messageStyle} className={`${classes.paymentbody}`}>
             {data.message}
           </div>
         )}
@@ -254,12 +250,7 @@ function Payments({}: {}) {
   }
 
   return (
-    <div className="Payments h-100">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `html, body {background-color: rgb(25,27,27);}`,
-        }}
-      />
+    <div className={`${classes.container}`}>
       <div style={{ marginBottom: "5px", marginLeft: "5px" }}>
         <TestAlertPopup config={conf} />
         <Menu>
@@ -270,9 +261,7 @@ function Payments({}: {}) {
         </Menu>
       </div>
       <div>
-        <NewsComponent
-          news={{ id: "1", title: "title", body: "body", demoUrl: "demoUrl" }}
-        />
+        <NewsComponent />
         <div>{todayPayments.map((data) => paymentList(data))}</div>
         {paymentDates().map((date, number) => {
           return (
