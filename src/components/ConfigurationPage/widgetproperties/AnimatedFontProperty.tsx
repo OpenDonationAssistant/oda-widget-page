@@ -9,6 +9,23 @@ import {
   DEFAULT_COLOR_PROPERTY_VALUE,
 } from "./ColorProperty";
 
+export const DEFAULT_FONT_PROPERTY_VALUE = {
+  family: "Roboto",
+  size: 24,
+  color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {
+    draft.colors[0].color = "#684aff";
+  }),
+  weight: false,
+  italic: false,
+  underline: false,
+  shadowWidth: 0,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  shadowColor: "#000000",
+  animation: "none",
+  animationType: "entire",
+};
+
 export class AnimatedFontProperty extends DefaultWidgetProperty {
   private _label: string;
 
@@ -23,22 +40,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
       params.widgetId,
       params.name,
       "animatedfont",
-      params.value ?? {
-        family: "Roboto",
-        size: 24,
-        color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {
-          draft.colors[0].color = "#684aff";
-        }),
-        weight: false,
-        italic: false,
-        underline: false,
-        shadowWidth: 0,
-        shadowOffsetX: 0,
-        shadowOffsetY: 0,
-        shadowColor: "#000000",
-        animation: "none",
-        animationType: "entire",
-      },
+      params.value ?? DEFAULT_FONT_PROPERTY_VALUE,
       "",
       params.tab,
     );

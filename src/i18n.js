@@ -228,7 +228,10 @@ i18n
           "display-queue-size":"Show queue size",
           "show":"Show",
           "hide":"Hide",
-          "display-requester":"Nickname of requester"
+          "display-requester":"Nickname of requester",
+          "widget-payments-title-font": "Header font",
+          "widget-payments-music-font": "Requests font",
+          "widget-payments-message-font": "Message font",
         },
       },
       ru: {
@@ -369,6 +372,9 @@ i18n
           "widget-donationgoal-filled-color": "Цвет заполненной части",
           "widget-donationgoal-amount-alignment": "Выравнивание суммы",
           "widget-donationgoal-label-template": "Шаблон надписи",
+          "widget-payments-title-font": "Шрифт заголовка",
+          "widget-payments-music-font": "Шрифт реквестов",
+          "widget-payments-message-font": "Шрифт сообщения",
           outerBorder: "Граница(обводка) для незаполненной части",
           innerBorder: "Граница(обводка) заполненной части",
           listBorder: "Граница",

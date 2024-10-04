@@ -1,66 +1,30 @@
-.container {
-  background-color: var(--oda-main-background-color);
-  height: 100vh;
+.padded {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.payment {
-  margin-bottom: 16px;
-  margin-left: 10px;
-  margin-right: 10px;
-  background-color: var(--oda-panel-background-color);
-  color: var(--oda-main-text-color);
-  border-radius: 5px;
-  border: var(--oda-main-border);
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+.paymentdatebuttonopened {
+    background: #0c122e;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-top: var(--oda-main-border);
+    width: 100%;
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    margin-top: 5px;
 }
 
-.paymentbody {
-  color: rgb(180, 197, 228);
-  font-size: 19px;
-	border-bottom-right-radius: 5px;
-	border-bottom-left-radius: 5px;
-	padding-left: 10px;
-	padding-right: 15px;
-	padding-top: 3px;
-  border-top: var(--oda-main-border);
-  background-color: rgb(43, 53, 102);
-  box-shadow: 0 -10px 10px 1px rgba(0, 0, 0, 0.5);
-}
-
-.paymentheader {
-  position: relative;
-	margin-bottom: 3px;
-	margin-left: 10px;
-	margin-right: 15px;
-	margin-top: 5px;
-	padding-bottom: 3px;
-}
-
-.paymentinfo {
-  position: relative;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	margin-left: 15px;
-	margin-right: 15px;
-}
-
-.paymentamount {
-  text-align: left;
-  background-image: linear-gradient(to right, rgb(255, 191, 52), #ec5800);
-  display: inline;
-  border-radius: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-right: 10px;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.paymenttime {
-  position: absolute;
-  top: 5px;
-  right: 0px;
-  font-size: 20px;
-  color: var(--oda-secondary-text-color);
+.paymentdatebuttonclosed {
+    background: rgb(43, 53, 102);
+    border: var(--oda-main-border);
+    width: 100%;
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 5px;
 }

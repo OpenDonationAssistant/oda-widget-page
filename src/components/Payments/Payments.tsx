@@ -5,10 +5,8 @@ import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import Menu from "../Menu/Menu";
-import { findSetting } from "../utils";
 import {
   cleanupCommandListener,
-  publish,
   setupCommandListener,
   subscribe,
   unsubscribe,
@@ -17,6 +15,7 @@ import { log } from "../../logging";
 import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
 import MenuEventButton from "../Menu/MenuEventButton";
 import NewsComponent from "./NewsComponent";
+import EventComponent from "./EventComponent";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./Payments.module.css";
 
@@ -30,12 +29,60 @@ const timeFormat = new Intl.DateTimeFormat("ru-RU", {
   minute: "numeric",
 });
 
-function Payments({}: {}) {
+const Collapse = ({
+  active,
+  dateToPaymentsMap,
+  attachmentTitles,
+  date,
+  number,
+}) => {
+  log.debug("rerendering old payments");
+  const [hidden, setHidden] = useState<boolean>(true);
+  return (
+    <div key={date}>
+      <button
+        type="button"
+        className={`${
+          hidden
+            ? classes.paymentdatebuttonclosed
+            : classes.paymentdatebuttonopened
+        }`}
+        onClick={() => {
+          setHidden((prev) => !prev);
+        }}
+      >
+        {date}
+        <span
+          id={`payment_${number}_toggler`}
+          className="payment-toggler material-symbols-sharp"
+        >
+          {hidden ? "expand_more" : "expand_less"}
+        </span>
+      </button>
+      <div
+        id={`payment_${number}`}
+        className={`payment-list ${hidden ? "visually-hidden" : ""}`}
+      >
+        {dateToPaymentsMap.get(date).map((data) => (
+          <EventComponent
+            key={"event" + data.id}
+            active={active === data.id}
+            data={data}
+            attachmentTitles={attachmentTitles}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default function Payments({}: {}) {
   const navigate = useNavigate();
   const [active, setActive] = useState("");
   const [dateToPaymentsMap, setDateToPaymentsMap] = useState(new Map());
   const [todayPayments, setTodayPayments] = useState([]);
   const [attachmentTitles, setAttachmentTitles] = useState(new Map());
+  const [paymentDates, setPaymentDates] = useState<any[]>([]);
   const { recipientId, settings, conf, widgetId } =
     useLoaderData() as WidgetData;
 
@@ -81,7 +128,7 @@ function Payments({}: {}) {
       }
       payment.isRelativeTime = true;
       if (now - paymentDate < 60 * 1000) {
-        payment.displayedTime = "Now";
+        payment.displayedTime = "Новое"; // TODO: use i18n
         return payment;
       }
       payment.displayedTime =
@@ -95,7 +142,8 @@ function Payments({}: {}) {
       .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
       .then((data) => data.data)
       .then((json) => {
-        let updatedDateToPaymentsMap = dateToPaymentsMap;
+        // let updatedDateToPaymentsMap = dateToPaymentsMap;
+        let updatedDateToPaymentsMap = new Map();
         const today = dateTimeFormat.format(Date.now());
         updatedDateToPaymentsMap.set(today, []);
 
@@ -121,7 +169,7 @@ function Payments({}: {}) {
           .then((json) => {
             let updatedAttachmentTitles = new Map();
             json.forEach((attach) => {
-              updatedAttachmentTitles.set(attach.id, attach.title);
+              updatedAttachmentTitles.set(attach.id, attach);
             });
             setAttachmentTitles(updatedAttachmentTitles);
             log.debug(`${JSON.stringify(updatedAttachmentTitles)}`);
@@ -139,34 +187,16 @@ function Payments({}: {}) {
           updatedDateToPaymentsMap.set(date, paymentsInThatDate);
         });
 
-        log.debug(`${JSON.stringify(updatedDateToPaymentsMap)}`);
+        log.debug({updatedDateToPaymentsMap: updatedDateToPaymentsMap});
         setDateToPaymentsMap((prev) => updatedDateToPaymentsMap);
         setTodayPayments((prev) =>
           setDisplayedTimeForTodayPayments(updatedDateToPaymentsMap.get(today)),
         );
+        updatePaymentDates(updatedDateToPaymentsMap);
       });
   }
 
-  function interruptAlert() {
-    publish(conf.topic.alertWidgetCommans, {
-      command: "interrupt",
-    });
-  }
-
-  function resendAlert(data) {
-    publish(conf.topic.alerts, {
-      id: data.id,
-      nickname: data.nickname ? data.nickname : "Аноним",
-      message: data.message,
-      amount: {
-        major: data.amount.major,
-        currency: "RUB",
-      },
-    });
-    log.debug("resend alert");
-  }
-
-  function paymentDates() {
+  function updatePaymentDates(dateToPaymentsMap) {
     const today = dateTimeFormat.format(Date.now());
     const dates = Array.from(dateToPaymentsMap.keys());
     const index = dates.indexOf(today);
@@ -174,83 +204,28 @@ function Payments({}: {}) {
       dates.splice(index, 1);
     }
     log.debug(`using payment dates array: ${JSON.stringify(dates)}`);
-    console.log(dates);
-    return dates;
-  }
-
-  function paymentList(data) {
-    log.debug({data:data}, "rendering payment list");
-    const nicknameFontSize = findSetting(settings, "nicknameFontSize", "24px");
-    const nicknameStyle = nicknameFontSize
-      ? { fontSize: nicknameFontSize + "px" }
-      : {};
-    const messageFontSize = findSetting(settings, "messageFontSize", "24px");
-    const messageStyle = messageFontSize
-      ? { fontSize: messageFontSize + "px" }
-      : {};
-    return (
-      <div
-        key={data.id}
-        className={`${classes.payment} ${data.id === active ? "active" : ""}`}
-      >
-        <div className={`${classes.paymentheader}`}>
-          <div className="payment-maker">
-            <div className={`${classes.paymentamount}`}>{`\u20BD${data.amount.major}`}</div>
-            <span style={nicknameStyle}>
-              {data.nickname ? data.nickname : "Аноним"}
-            </span>
-          </div>
-          <div className={`${classes.paymenttime}`}>
-            {data.isRelativeTime && (
-              <span className="material-symbols-sharp">history</span>
-            )}
-            {!data.isRelativeTime && (
-              <span className="material-symbols-sharp">schedule</span>
-            )}
-            {data.displayedTime}
-          </div>
-          <button
-            className="stop-button btn btn-outline-light"
-            onClick={() => interruptAlert()}
-          >
-            <span className="material-symbols-sharp">block</span>
-          </button>
-          <button
-            className="replay-button btn btn-outline-light"
-            onClick={() => resendAlert(data)}
-          >
-            <span className="material-symbols-sharp">replay</span>
-          </button>
-        </div>
-        <div className={`${classes.paymentinfo}`}>
-          {data.attachments && data.attachments.length === 1 && (
-            <>
-              <div className="single-attach-title">
-                <span className="material-symbols-sharp">music_note</span>
-                {attachmentTitles.get(data.attachments[0])}
-              </div>
-            </>
-          )}
-          {data.attachments && data.attachments.length > 1 ? (
-            <span className="song-container">
-              <span className="song-counter">{data.attachments.length}</span>
-              <span className="song-marker material-symbols-sharp">
-                music_note
-              </span>
-            </span>
-          ) : null}
-        </div>
-        {data.message && (
-          <div style={messageStyle} className={`${classes.paymentbody}`}>
-            {data.message}
-          </div>
-        )}
-      </div>
-    );
+    setPaymentDates(dates);
   }
 
   return (
-    <div className={`${classes.container}`}>
+    <div>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+body::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    background-color: #0c122e;
+    width: 100%;
+    height: 100%;
+`,
+        }}
+      />
+
       <div style={{ marginBottom: "5px", marginLeft: "5px" }}>
         <TestAlertPopup config={conf} />
         <Menu>
@@ -262,47 +237,27 @@ function Payments({}: {}) {
       </div>
       <div>
         <NewsComponent />
-        <div>{todayPayments.map((data) => paymentList(data))}</div>
-        {paymentDates().map((date, number) => {
-          return (
-            <div key={date}>
-              <button
-                type="button"
-                className="payment-date-button"
-                onClick={() => {
-                  let target = document.getElementById(`payment_${number}`);
-                  let icon = document.getElementById(
-                    `payment_${number}_toggler`,
-                  );
-                  if (target?.classList.contains("visually-hidden")) {
-                    target.classList.remove("visually-hidden");
-                    icon.innerHTML = "expand_less";
-                  } else {
-                    target?.classList.add("visually-hidden");
-                    icon.innerHTML = "expand_more";
-                  }
-                }}
-              >
-                {date}
-                <span
-                  id={`payment_${number}_toggler`}
-                  className="payment-toggler material-symbols-sharp"
-                >
-                  expand_more
-                </span>
-              </button>
-              <div
-                id={`payment_${number}`}
-                className="payment-list visually-hidden"
-              >
-                {dateToPaymentsMap.get(date).map((data) => paymentList(data))}
-              </div>
-            </div>
-          );
-        })}
+        <div>
+          {todayPayments.map((data) => (
+            <EventComponent
+              key={data.id}
+              active={active == data.id}
+              data={data}
+              attachmentTitles={attachmentTitles}
+            />
+          ))}
+        </div>
+        {paymentDates.map((date, number) => (
+          <Collapse
+            key={number}
+            active={active}
+            dateToPaymentsMap={dateToPaymentsMap}
+            attachmentTitles={attachmentTitles}
+            date={date}
+            number={number}
+          />
+        ))}
       </div>
     </div>
   );
 }
-
-export default Payments;

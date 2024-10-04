@@ -113,7 +113,7 @@ function ConfigurationPageTemplate() {
           <Sider>
             <Toolbar page={page} />
           </Sider>
-          <Flex vertical>
+          <Flex className="full-width" vertical>
             <NewsComponent />
             <Outlet />
           </Flex>

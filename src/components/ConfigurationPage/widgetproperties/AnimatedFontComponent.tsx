@@ -48,7 +48,7 @@ export default function AnimatedFontComponent({
   return (
     <>
       <ModalButton
-        label="widget-font-label"
+        label={t(property.label)}
         buttonLabel={"button-settings"}
         modalTitle="widget-font-settings"
       >

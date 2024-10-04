@@ -52,10 +52,6 @@
   overflow-y: auto;
 }
 
-.playlist::-webkit-scrollbar {
-  background-color: black;
-}
-
 .playlist::-webkit-scrollbar-button {
   display: none;
 }

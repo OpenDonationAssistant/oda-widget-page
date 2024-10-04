@@ -4,17 +4,7 @@
   padding-right: 30px;
 }
 
-.Payments .stop-button, .Payments .replay-button {
-  line-height: 0px;
-  border: none;
-}
 
-.payment.active {
-  border: 3px solid rgb(13, 110, 253);
-  border-radius: 0px;
-  animation: blink-animation 1s steps(5, start) infinite;
-  -webkit-animation: blink-animation 1s steps(5, start) infinite;
-}
 
 @keyframes blink-animation {
   to {
@@ -26,11 +16,7 @@
   background-color: black;
 }
 
-.payment-maker {
-  font-size: 28px;
-  font-weight: bold;
-  margin-right: 90px;
-}
+
 
 .payment-info {
   position: relative;
@@ -49,31 +35,6 @@
   padding-bottom: 4px;
 }
 
-.stop-button {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  color: red;
-  margin-top: 5px;
-  display: none;
-}
-
-.active .stop-button {
-  display: initial;
-}
-
-.stop-button span {
-  font-weight: bolder;
-}
-
-.replay-button {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  margin-top: 5px;
-  display: none;
-}
-
 .payment:hover .replay-button {
 	display: initial;
 }
@@ -86,9 +47,6 @@
 	display: none;
 }
 
-.replay-button span {
-  font-weight: bolder;
-}
 
 .payment-menu {
   position: absolute;
@@ -157,7 +115,6 @@
 .payment-list {
   padding-top: 10px;
   padding-bottom: 2px;
-  background-color: rgb(25,27,27);
 }
 
 .payment-toggler {
@@ -169,7 +126,6 @@
 .single-attach-title {
 	text-align: right;
 	display: inline-block;
-	/* color: rgb(138,43,226); */
 	color: #b39ddb;
 	text-size: 17px;
 }
