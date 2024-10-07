@@ -1,5 +1,4 @@
 import React, { useContext, useRef } from "react";
-import { useState } from "react";
 import axios from "axios";
 
 import "./css/Widget.css";
@@ -7,25 +6,17 @@ import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
 
-import { WidgetsContext } from "./WidgetsContext";
-import { publish, socket } from "../../socket";
+import { socket } from "../../socket";
 import { log } from "../../logging";
-import { Button, Flex, Input, Modal } from "antd";
+import { Flex, Input, Modal } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import TextAlertButton from "./settings/TestAlertButton";
 import { useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ApiContext } from "../../contexts/ApiContext";
-import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
-import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import { ResizableBox } from "react-resizable";
-import DonationGoal from "../DonationGoal/DonationGoal";
-import DonationTimer from "../DonationTimer/DonationTimer";
 import classes from "./WidgetConfiguration.module.css";
-import PlayerInfo from "../PlayerInfo/PlayerInfo";
-import { tokenRequest } from "../Login/Login";
 import { observer } from "mobx-react-lite";
 import { Widget } from "../../types/Widget";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
@@ -39,20 +30,10 @@ interface WidgetConfigurationProps {
 
 function getWidget(type: string) {
   switch (type) {
-    // case "donaters-top-list":
-    //   return <DonatersTopList />;
-    // case "donationgoal":
-    //   return <DonationGoal />;
-    // case "donation-timer":
-    //   return <DonationTimer />;
-    // case "player-info":
-    //   return <PlayerInfo />;
     default:
       return <div></div>;
   }
 }
-
-
 
 export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -171,6 +152,10 @@ const RenameModal = observer(({ state }: { state: RenameModalState }) => {
   );
 });
 
+const Comp = observer(({ widget }: { widget: Widget }) => (
+  <> {widget.config.markup()} </>
+));
+
 export default function WidgetConfiguration({
   widget,
   open,
@@ -180,46 +165,39 @@ export default function WidgetConfiguration({
   const renameModalState = useRef(new RenameModalState(widget));
 
   return (
-    <div className={`widget ${open ? "extended":"collapsed"}`}>
+    <div className={`widget ${open ? "extended" : "collapsed"}`}>
       <RenameModal state={renameModalState.current} />
       <div className="widget-header">
         <NameComponent widget={widget} />
         <SaveButtons widget={widget} />
-        {!widget.config.unsaved && (
-          <>
-            <Dropdown
-              trigger={["click"]}
-              menu={{
-                items: [
-                  {
-                    key: "copy-url",
-                    label: t("button-copy-url"),
-                    onClick: () => widget.url(),
-                  },
-                  {
-                    key: "rename",
-                    label: t("button-rename"),
-                    onClick: () => {
-                      renameModalState.current.show()
-                    },
-                  },
-                  {
-                    key: "delete",
-                    label: t("button-delete"),
-                    onClick: () => widget.delete(),
-                  },
-                ],
-              }}
-            >
-              <button
-                onClick={(e) => e.preventDefault()}
-                className="menu-button"
-              >
-                <span className="material-symbols-sharp">more_vert</span>
-              </button>
-            </Dropdown>
-          </>
-        )}
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "copy-url",
+                label: t("button-copy-url"),
+                onClick: () => widget.url(),
+              },
+              {
+                key: "rename",
+                label: t("button-rename"),
+                onClick: () => {
+                  renameModalState.current.show();
+                },
+              },
+              {
+                key: "delete",
+                label: t("button-delete"),
+                onClick: () => widget.delete(),
+              },
+            ],
+          }}
+        >
+          <button onClick={(e) => e.preventDefault()} className="menu-button">
+            <span className="material-symbols-sharp">more_vert</span>
+          </button>
+        </Dropdown>
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
         {(widget.type === "donaters-top-list" ||
@@ -286,7 +264,7 @@ export default function WidgetConfiguration({
             </ResizableBox>
           </Flex>
         )}
-        {widget.config.markup()}
+        <Comp widget={widget} />
       </div>
     </div>
   );

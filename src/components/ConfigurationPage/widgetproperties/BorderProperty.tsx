@@ -10,69 +10,72 @@ import {
   Segmented,
   Select,
 } from "antd";
-import { produce } from "immer";
 import { Trans } from "react-i18next";
+import { getObserverTree, makeAutoObservable, makeObservable, observable, observe, reaction } from "mobx";
+import { log } from "../../../logging";
 
-export interface Border {
-  width: number;
-  color: string;
-  type: string;
+export class Border {
+  private _width: number = 1;
+  private _color: string = "#FFFFFF";
+  private _type: string = "solid";
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  public get color() {
+    return this._color;
+  }
+  public set color(value: string) {
+    this._color = value;
+  }
+  public get type(): string {
+    return this._type;
+  }
+  public set type(value: string) {
+    this._type = value;
+  }
+  public get width(): number {
+    return this._width;
+  }
+  public set width(value: number) {
+    this._width = value;
+  }
 }
 
-export interface BorderPropertyValue {
-  isSame: boolean | null;
-  bottom: Border;
-  top: Border;
-  left: Border;
-  right: Border;
+export class BorderPropertyValue {
+  isSame: boolean | null = null;
+  bottom = new Border();
+  top = new Border();
+  left = new Border();
+  right = new Border();
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 }
 
-const DEFAULT_BORDER_VALUE = {
-  width: 0,
-  color: "#FFFFFF",
-  type: "solid",
-};
-
-export const DEFAULT_BORDER_PROPERTY_VALUE: BorderPropertyValue = {
-  isSame: null,
-  bottom: DEFAULT_BORDER_VALUE,
-  top: DEFAULT_BORDER_VALUE,
-  left: DEFAULT_BORDER_VALUE,
-  right: DEFAULT_BORDER_VALUE,
-};
-
-export class BorderProperty extends DefaultWidgetProperty {
-  constructor({
-    widgetId,
-    name,
-    value,
-    tab,
-  }: {
-    widgetId: string;
+export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
+  constructor(params: {
     name: string;
     value?: BorderPropertyValue;
-    tab?: string;
+    displayName: string;
   }) {
-    super(
-      widgetId,
-      name,
-      "predefined",
-      value ?? DEFAULT_BORDER_PROPERTY_VALUE,
-      "",
-      tab,
-    );
-  }
-
-  copy(): BorderProperty {
-    return new BorderProperty({
-      widgetId: this.widgetId,
-      name: this.name,
-      value: this.value,
-      tab: this.tab,
+    super({
+      name: params.name,
+      value: params.value ?? new BorderPropertyValue(),
+      displayName: params.displayName,
     });
+    observe(this, "changed", () => {
+      log.debug("border changed");
+    });
+    reaction(() => this.changed, () => {
+      log.debug("border changed", this.value);
+    });
+    log.debug({borderTree: getObserverTree(this, "changed")});
   }
 
-  comp = (updateConfig: Function) => {
+  comp = () => {
     return (
       <Flex vertical={true} gap={10}>
         <LabeledContainer displayName={this.name}>
@@ -95,13 +98,8 @@ export class BorderProperty extends DefaultWidgetProperty {
             ]}
             value={this.value.isSame}
             onChange={(checked) => {
-              const updated = produce(
-                this.value,
-                (draft: BorderPropertyValue) => {
-                  draft.isSame = checked;
-                },
-              );
-              updateConfig(this.widgetId, this.name, updated);
+              this.value.isSame = checked;
+              this.checkChanged();
             }}
           />
         </LabeledContainer>
@@ -115,16 +113,11 @@ export class BorderProperty extends DefaultWidgetProperty {
                 className="full-width"
                 value={this.value.top.type}
                 onChange={(value) => {
-                  const updated = produce(
-                    this.value,
-                    (draft: BorderPropertyValue) => {
-                      draft.top.type = value;
-                      draft.right.type = value;
-                      draft.bottom.type = value;
-                      draft.left.type = value;
-                    },
-                  );
-                  updateConfig(this.widgetId, this.name, updated);
+                  this.value.top.type = value;
+                  this.value.right.type = value;
+                  this.value.bottom.type = value;
+                  this.value.left.type = value;
+                  this.checkChanged();
                 }}
                 options={[
                   {
@@ -169,17 +162,12 @@ export class BorderProperty extends DefaultWidgetProperty {
               <ColorPicker
                 showText
                 value={this.value.top.color}
-                onChange={(value) => {
-                  const updated = produce(
-                    this.value,
-                    (draft: BorderPropertyValue) => {
-                      draft.top.color = value.toRgbString();
-                      draft.right.color = value.toRgbString();
-                      draft.bottom.color = value.toRgbString();
-                      draft.left.color = value.toRgbString();
-                    },
-                  );
-                  updateConfig(this.widgetId, this.name, updated);
+                onChange={(updated) => {
+                  this.value.top.color = updated.toRgbString();
+                  this.value.right.color = updated.toRgbString();
+                  this.value.bottom.color = updated.toRgbString();
+                  this.value.left.color = updated.toRgbString();
+                  this.checkChanged();
                 }}
               />
             </Col>
@@ -191,16 +179,14 @@ export class BorderProperty extends DefaultWidgetProperty {
                 value={this.value.top.width}
                 addonAfter="px"
                 onChange={(value) => {
-                  const updated = produce(
-                    this.value,
-                    (draft: BorderPropertyValue) => {
-                      draft.top.width = value;
-                      draft.right.width = value;
-                      draft.left.width = value;
-                      draft.bottom.width = value;
-                    },
-                  );
-                  updateConfig(this.widgetId, this.name, updated);
+                  if (!value) {
+                    return;
+                  }
+                  this.value.top.width = value;
+                  this.value.right.width = value;
+                  this.value.left.width = value;
+                  this.value.bottom.width = value;
+                  this.checkChanged();
                 }}
               />
             </Col>
@@ -220,13 +206,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   className="full-width"
                   value={this.value.top.type}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.top.type = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.top.type = value;
+                    this.checkChanged();
                   }}
                   options={[
                     {
@@ -272,13 +253,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   showText
                   value={this.value.top.color}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.top.color = value.toRgbString();
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.top.color = value.toRgbString();
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -290,13 +266,11 @@ export class BorderProperty extends DefaultWidgetProperty {
                   value={this.value.top.width}
                   addonAfter="px"
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.top.width = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    if (!value) {
+                      return;
+                    }
+                    this.value.top.width = value;
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -313,13 +287,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   className="full-width"
                   value={this.value.right.type}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.right.type = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.right.type = value;
+                    this.checkChanged();
                   }}
                   options={[
                     {
@@ -365,13 +334,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   showText
                   value={this.value.right.color}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.right.color = value.toRgbString();
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.right.color = value.toRgbString();
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -383,13 +347,11 @@ export class BorderProperty extends DefaultWidgetProperty {
                   value={this.value.right.width}
                   addonAfter="px"
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.right.width = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    if (!value) {
+                      return;
+                    }
+                    this.value.right.width = value;
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -406,13 +368,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   className="full-width"
                   value={this.value.bottom.type}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.bottom.type = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.bottom.type = value;
+                    this.checkChanged();
                   }}
                   options={[
                     {
@@ -458,13 +415,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   showText
                   value={this.value.bottom.color}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.bottom.color = value.toRgbString();
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.bottom.color = value.toRgbString();
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -476,13 +428,11 @@ export class BorderProperty extends DefaultWidgetProperty {
                   value={this.value.bottom.width}
                   addonAfter="px"
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.bottom.width = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    if (!value) {
+                      return;
+                    }
+                    this.value.bottom.width = value;
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -499,13 +449,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   className="full-width"
                   value={this.value.left.type}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.left.type = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.left.type = value;
+                    this.checkChanged();
                   }}
                   options={[
                     {
@@ -551,13 +496,8 @@ export class BorderProperty extends DefaultWidgetProperty {
                   showText
                   value={this.value.left.color}
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.left.color = value.toRgbString();
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    this.value.left.color = value.toRgbString();
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -569,13 +509,11 @@ export class BorderProperty extends DefaultWidgetProperty {
                   value={this.value.left.width}
                   addonAfter="px"
                   onChange={(value) => {
-                    const updated = produce(
-                      this.value,
-                      (draft: BorderPropertyValue) => {
-                        draft.left.width = value;
-                      },
-                    );
-                    updateConfig(this.widgetId, this.name, updated);
+                    if (!value) {
+                      return;
+                    }
+                    this.value.left.width = value;
+                    this.checkChanged();
                   }}
                 />
               </Col>
@@ -604,7 +542,7 @@ export class BorderProperty extends DefaultWidgetProperty {
     return `${border.width}px ${border.type} ${border.color}`;
   }
 
-  markup(updateConfig: Function): ReactNode {
-    return this.comp(updateConfig);
+  markup(): ReactNode {
+    return this.comp();
   }
 }

@@ -10,8 +10,7 @@ import { VideoJsPlayer } from "video.js";
 import { findSetting } from "../utils";
 import { WidgetData } from "../../types/WidgetData";
 import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
+  BorderProperty, BorderPropertyValue,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 let options = {
@@ -91,7 +90,7 @@ export default function PlayerPopup({}) {
   const borderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "widgetBorder",
-    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "widgetBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const widgetStyle: CSSProperties = hideVideo

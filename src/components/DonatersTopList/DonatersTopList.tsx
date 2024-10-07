@@ -9,8 +9,7 @@ import { Carousel, Flex } from "antd";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ApiContext } from "../../contexts/ApiContext";
 import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
+  BorderProperty, BorderPropertyValue,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -70,7 +69,7 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(
       settings,
       "titleBackgroundColor",
-      DEFAULT_BORDER_PROPERTY_VALUE,
+      new BorderPropertyValue(),
     ),
   }).calcCss();
   const backgroundStyle = new ColorProperty({
@@ -82,7 +81,7 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(
       settings,
       "backgroundColor",
-      DEFAULT_BORDER_PROPERTY_VALUE,
+      new BorderPropertyValue(),
     ),
   }).calcCss();
   const headerFont = new AnimatedFontProperty({
@@ -145,19 +144,19 @@ export default function DonatersTopList({}: {}) {
   const headerBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "headerBorder",
-    value: findSetting(settings, "headerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "headerBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const listBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "listBorder",
-    value: findSetting(settings, "listBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "listBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const widgetBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "widgetBorder",
-    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "widgetBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const widgetStyle = {

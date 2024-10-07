@@ -6,62 +6,69 @@ import { produce } from "immer";
 import {
   ColorProperty,
   ColorPropertyTarget,
+  ColorPropertyValue,
   DEFAULT_COLOR_PROPERTY_VALUE,
 } from "./ColorProperty";
+import { Notifier } from "../Notifier";
 
-export class AnimatedFontProperty extends DefaultWidgetProperty {
+export interface FontPropertyValue {
+  family: string;
+  size: number;
+  color: ColorPropertyValue;
+  weight: boolean;
+  italic: boolean;
+  underline: boolean;
+  shadowWidth: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shadowColor: string;
+  animation: string;
+  animationType: string;
+}
+
+export const DEFAULT_FONT_PROPERTY_VALUE = {
+  family: "Roboto",
+  size: 24,
+  color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {
+    draft.colors[0].color = "#684aff";
+  }),
+  weight: false,
+  italic: false,
+  underline: false,
+  shadowWidth: 0,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  shadowColor: "#000000",
+  animation: "none",
+  animationType: "entire",
+};
+
+export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValue> {
   private _label: string;
 
   constructor(params: {
-    widgetId: string;
     name: string;
-    value?: any;
-    tab?: string;
+    value?: FontPropertyValue;
     label?: string;
+    notifier: Notifier;
   }) {
-    super(
-      params.widgetId,
-      params.name,
-      "animatedfont",
-      params.value ?? {
-        family: "Roboto",
-        size: 24,
-        color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {
-          draft.colors[0].color = "#684aff";
-        }),
-        weight: false,
-        italic: false,
-        underline: false,
-        shadowWidth: 0,
-        shadowOffsetX: 0,
-        shadowOffsetY: 0,
-        shadowColor: "#000000",
-        animation: "none",
-        animationType: "entire",
-      },
-      "",
-      params.tab,
-    );
-    this._label = params.label ?? "widget-font-label";
-  }
-
-  copy() {
-    return new AnimatedFontProperty({
-      widgetId: this.widgetId,
-      name: this.name,
-      value: this.value,
-      tab: this.tab,
-      label: this._label,
+    super({
+      name: params.name,
+      value: params.value ?? DEFAULT_FONT_PROPERTY_VALUE,
+      displayName: "animatedfont",
+      notifier: params.notifier,
     });
+    this._notifier = params.notifier;
+    this._label = params.label ?? "widget-font-label";
   }
 
   calcClassName() {
     const fontClassName = new ColorProperty({
-      widgetId: this.widgetId,
       name: "color",
       value: this.value.color,
       displayName: "button-text-color",
       target: ColorPropertyTarget.TEXT,
+      notifier: this._notifier,
     }).calcClassName();
     if (!this.value.animation) {
       return fontClassName;
@@ -81,11 +88,11 @@ export class AnimatedFontProperty extends DefaultWidgetProperty {
 
   calcStyle(): React.CSSProperties {
     const fontColorStyle = new ColorProperty({
-      widgetId: this.widgetId,
       name: "color",
       value: this.value.color,
       displayName: "button-text-color",
       target: ColorPropertyTarget.TEXT,
+      notifier: this._notifier,
     }).calcCss();
 
     const shadowStyle = this.value.shadowWidth

@@ -2,9 +2,14 @@ import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { Tabs as AntTabs } from "antd";
-import { Notifier } from "../Notifier";
-import { Trans, useTranslation } from "react-i18next";
-import { makeObservable, observable } from "mobx";
+import { Trans } from "react-i18next";
+import {
+  computed,
+  getObserverTree,
+  makeObservable,
+  observable,
+  observe,
+} from "mobx";
 
 export interface SettingsSection {
   key: string;
@@ -15,25 +20,38 @@ export interface SettingsSection {
 export class AbstractWidgetSettings {
   private _index: Map<string, WidgetProperty<any>> = new Map();
   private _sections: SettingsSection[];
-  public unsaved: boolean = false;
+  private _initial: any;
 
   constructor({ sections }: { sections: SettingsSection[] }) {
     this._sections = sections;
+    this._initial = this.prepareConfig();
     this.makeIndex();
     makeObservable(this, {
-      unsaved: observable,
+      _sections: observable,
+      unsaved: computed,
     });
   }
 
-  public prepareConfig(): { name: string, value: any }[]{
-    return this._sections
+  public get unsaved(): boolean {
+    log.debug("calc unsaved");
+    return (
+      this._sections
+        .flatMap((section) => section.properties)
+        .find((prop) => prop.changed) !== undefined
+    );
+  }
+
+  public prepareConfig(): { name: string; value: any }[] {
+    const prepared = this._sections
       .flatMap((section) => section.properties)
       .map((prop) => {
         return {
           name: prop.name,
-          value: prop.value
-        }
+          value: prop.value,
+        };
       });
+    log.debug({preparedConfig: prepared});
+    return prepared;
   }
 
   private makeIndex() {
@@ -49,7 +67,9 @@ export class AbstractWidgetSettings {
       label: <Trans i18nKey={section.title} />,
       key: section.key,
       children: section.properties.map((prop) => (
-        <div className="settings-item">{prop.markup()}</div>
+        <div key={prop.name} className="settings-item">
+          {prop.markup()}
+        </div>
       )),
     };
   };

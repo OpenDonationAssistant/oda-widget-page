@@ -5,9 +5,7 @@ export const WidgetSettingsContext = createContext({
   widgetId: "",
   settings: {
     config: new AbstractWidgetSettings({
-      properties: [],
       sections: [],
-      notifier: { notify: () => {} },
     }),
   },
   subscribe: (

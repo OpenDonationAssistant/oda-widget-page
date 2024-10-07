@@ -1,43 +1,12 @@
-.Payments {
-  background-color: rgb(25,27,27);
-  padding-top: 10px;
-}
-
 .Payments .buttons {
   margin-bottom: 10px;
   text-align: right;
   padding-right: 30px;
 }
 
-.Payments .stop-button, .Payments .replay-button {
-  line-height: 0px;
-  border: none;
-}
 
-.payment {
-  margin-bottom: 16px;
-  margin-left: 10px;
-  margin-right: 10px;
-	padding-bottom: 8px;
-  background-color: rgb(45, 48, 51);
-  color: white;
-  border-radius: 8px;
-  border: 1px solid black;
-}
-
-.payment.active {
-  border: 3px solid rgb(13, 110, 253);
-  border-radius: 0px;
-  animation: blink-animation 1s steps(5, start) infinite;
-  -webkit-animation: blink-animation 1s steps(5, start) infinite;
-}
 
 @keyframes blink-animation {
-  to {
-    border: 3px solid black;
-  }
-}
-@-webkit-keyframes blink-animation {
   to {
     border: 3px solid black;
   }
@@ -47,11 +16,7 @@
   background-color: black;
 }
 
-.payment .payment-maker {
-  font-size: 28px;
-  font-weight: bold;
-  margin-right: 90px;
-}
+
 
 .payment-info {
   position: relative;
@@ -62,56 +27,12 @@
 	margin-right: 15px;
 }
 
-.payment .payment-amount {
-  text-align: left;
-  background-image: linear-gradient(to right, rgb(255, 191, 52), #ec5800);
-  display: flex;
-	justify-content: center;
-  border-radius: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  font-size: 28px;
-  font-weight: bold;
-}
+
 
 .payment-maker-icon {
   vertical-align: middle;
   font-size: 30px;
   padding-bottom: 4px;
-}
-
-.payment .payment-header {
-  position: relative;
-	margin-bottom: 3px;
-	margin-left: 15px;
-	margin-right: 15px;
-	margin-top: 5px;
-	padding-bottom: 3px;
-}
-
-.payment .stop-button {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  color: red;
-  margin-top: 5px;
-  display: none;
-}
-
-.payment.active .stop-button {
-  display: initial;
-}
-
-.payment .stop-button span {
-  font-weight: bolder;
-}
-
-.payment .replay-button {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  margin-top: 5px;
-  display: none;
 }
 
 .payment:hover .replay-button {
@@ -126,9 +47,6 @@
 	display: none;
 }
 
-.payment .replay-button span {
-  font-weight: bolder;
-}
 
 .payment-menu {
   position: absolute;
@@ -140,17 +58,6 @@
   display: block;
   line-height: initial;
   width: 100%;
-}
-
-.payment-body {
-  margin-top: 10px;
-  font-size: 19px;
-	border-bottom-right-radius: 8px;
-	border-bottom-left-radius: 8px;
-	padding-left: 20px;
-	padding-right: 15px;
-	padding-top: 3px;
-	border-top: 1px dashed rgb(80,90,90);
 }
 
 .song-container,
@@ -171,14 +78,6 @@
     rgb(75, 0, 130),
     rgb(138, 43, 226)
   );
-}
-
-.payment-time {
-  position: absolute;
-  top: 5px;
-  right: 0px;
-  font-size: 20px;
-  color: rgb(170, 170, 170);
 }
 
 .payment.active .payment-time {
@@ -216,7 +115,6 @@
 .payment-list {
   padding-top: 10px;
   padding-bottom: 2px;
-  background-color: rgb(25,27,27);
 }
 
 .payment-toggler {
@@ -228,7 +126,6 @@
 .single-attach-title {
 	text-align: right;
 	display: inline-block;
-	/* color: rgb(138,43,226); */
 	color: #b39ddb;
 	text-size: 17px;
 }

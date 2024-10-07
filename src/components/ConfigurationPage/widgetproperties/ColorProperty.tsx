@@ -14,6 +14,7 @@ import {
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { produce } from "immer";
 import classes from "./ColorProperty.module.css";
+import { Notifier } from "../Notifier";
 
 export enum GRADIENT_TYPE {
   LINEAR,
@@ -34,7 +35,7 @@ interface ColorStop {
   };
 }
 
-interface ColorPropertyValue {
+export interface ColorPropertyValue {
   gradient: boolean;
   gradientType: GRADIENT_TYPE;
   repeating: boolean;
@@ -42,7 +43,7 @@ interface ColorPropertyValue {
   angle: number;
 }
 
-export const DEFAULT_COLOR_PROPERTY_VALUE = {
+export const DEFAULT_COLOR_PROPERTY_VALUE: ColorPropertyValue = {
   gradient: false,
   gradientType: GRADIENT_TYPE.LINEAR,
   repeating: false,
@@ -50,40 +51,30 @@ export const DEFAULT_COLOR_PROPERTY_VALUE = {
   angle: 0,
 };
 
-export enum ColorPropertyTarget{
+export enum ColorPropertyTarget {
   BACKGROUND,
   TEXT,
 }
 
-export class ColorProperty extends DefaultWidgetProperty {
+export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
   private _target: ColorPropertyTarget;
-  constructor({
-    widgetId,
-    name,
-    value,
-    displayName,
-    tab,
-    target
-  }: {
-    widgetId: string;
+  constructor(params: {
     name: string;
     value?: ColorPropertyValue;
     displayName: string;
-    tab?: string;
-    target: ColorPropertyTarget
+    target: ColorPropertyTarget;
+    notifier: Notifier;
   }) {
-    super(
-      widgetId,
-      name,
-      "predefined",
-      value ?? DEFAULT_COLOR_PROPERTY_VALUE,
-      displayName,
-      tab,
-    );
-    this._target = target;
+    super({
+      name: params.name,
+      value: params.value ?? DEFAULT_COLOR_PROPERTY_VALUE,
+      displayName: params.displayName,
+      notifier: params.notifier,
+    });
+    this._target = params.target;
   }
 
-  gradientSettings = (updateConfig: Function) => {
+  gradientSettings = () => {
     return (
       <Row align={"middle"}>
         <Col span={22} offset={2}>
@@ -107,13 +98,12 @@ export class ColorProperty extends DefaultWidgetProperty {
                   },
                 ]}
                 onChange={(value) => {
-                  const updated = produce(
+                  this.value = produce(
                     this.value,
                     (draft: ColorPropertyValue) => {
                       draft.gradientType = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
                 }}
               />
             </Flex>
@@ -122,13 +112,12 @@ export class ColorProperty extends DefaultWidgetProperty {
               <Switch
                 value={this.value.repeating}
                 onChange={(value) => {
-                  const updated = produce(
+                  this.value = produce(
                     this.value,
                     (draft: ColorPropertyValue) => {
                       draft.repeating = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
                 }}
               />
             </Flex>
@@ -140,13 +129,15 @@ export class ColorProperty extends DefaultWidgetProperty {
                   value={this.value.angle}
                   addonAfter="Deg"
                   onChange={(value) => {
-                    const updated = produce(
+                    if (!value) {
+                      return;
+                    }
+                    this.value = produce(
                       this.value,
                       (draft: ColorPropertyValue) => {
                         draft.angle = value;
                       },
                     );
-                    updateConfig(this.widgetId, this.name, updated);
                   }}
                 />
               </Flex>
@@ -157,7 +148,7 @@ export class ColorProperty extends DefaultWidgetProperty {
     );
   };
 
-  colorStop = (updateConfig: Function, color: ColorStop, index: number) => {
+  colorStop = (color: ColorStop, index: number) => {
     return (
       <>
         {color.stop && (
@@ -165,7 +156,7 @@ export class ColorProperty extends DefaultWidgetProperty {
             <InputNumber
               value={color.stop.value}
               onChange={(value) => {
-                const updated = produce(
+                this.value = produce(
                   this.value,
                   (draft: ColorPropertyValue) => {
                     const stop = draft.colors[index].stop;
@@ -174,7 +165,6 @@ export class ColorProperty extends DefaultWidgetProperty {
                     }
                   },
                 );
-                updateConfig(this.widgetId, this.name, updated);
               }}
               addonAfter={
                 <Select
@@ -190,7 +180,7 @@ export class ColorProperty extends DefaultWidgetProperty {
                     },
                   ]}
                   onChange={(value) => {
-                    const updated = produce(
+                    this.value = produce(
                       this.value,
                       (draft: ColorPropertyValue) => {
                         const stop = draft.colors[index].stop;
@@ -199,7 +189,6 @@ export class ColorProperty extends DefaultWidgetProperty {
                         }
                       },
                     );
-                    updateConfig(this.widgetId, this.name, updated);
                   }}
                 />
               }
@@ -210,16 +199,15 @@ export class ColorProperty extends DefaultWidgetProperty {
     );
   };
 
-  addColorToGradient = (updateConfig: Function) => {
+  addColorToGradient = () => {
     return (
       <Flex justify="space-around" align="center">
         <Button
           className="oda-btn-default"
           onClick={() => {
-            const updated = produce(this.value, (draft: ColorPropertyValue) => {
+            this.value = produce(this.value, (draft: ColorPropertyValue) => {
               draft.colors.push({ color: "#FFFFFF" });
             });
-            updateConfig(this.widgetId, this.name, updated);
           }}
         >
           Добавить цвет
@@ -228,10 +216,10 @@ export class ColorProperty extends DefaultWidgetProperty {
     );
   };
 
-  gradientColors = (updateConfig: Function) => {
+  gradientColors = () => {
     return (
       <Flex vertical={true} className="full-width" gap={10}>
-        {this.gradientSettings(updateConfig)}
+        {this.gradientSettings()}
         {this.value.colors.map((color: ColorStop, index: number) => (
           <Row align="middle" className="full-width">
             <Col span={2} offset={4}>
@@ -243,13 +231,12 @@ export class ColorProperty extends DefaultWidgetProperty {
                 showText
                 value={color.color}
                 onChange={(value) => {
-                  const updated = produce(
+                  this.value = produce(
                     this.value,
                     (draft: ColorPropertyValue) => {
                       draft.colors[index].color = value.toRgbString();
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
                 }}
               />
             </Col>
@@ -258,7 +245,7 @@ export class ColorProperty extends DefaultWidgetProperty {
                 <Switch
                   value={color.stop !== undefined}
                   onChange={(value) => {
-                    const updated = produce(
+                    this.value = produce(
                       this.value,
                       (draft: ColorPropertyValue) => {
                         if (value) {
@@ -271,25 +258,23 @@ export class ColorProperty extends DefaultWidgetProperty {
                         }
                       },
                     );
-                    updateConfig(this.widgetId, this.name, updated);
                   }}
                 />
                 <span className={classes.colorStopLabel}>Color Stop</span>
               </Flex>
             </Col>
-            {this.colorStop(updateConfig, color, index)}
+            {this.colorStop(color, index)}
             {!color.stop && <Col span={4} />}
             <Col span={1} offset={1}>
               <span
                 className={`material-symbols-sharp ${classes.deleteButton}`}
                 onClick={() => {
-                  const updated = produce(
+                  this.value = produce(
                     this.value,
                     (draft: ColorPropertyValue) => {
                       draft.colors.splice(index, 1);
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
                 }}
               >
                 delete
@@ -301,7 +286,7 @@ export class ColorProperty extends DefaultWidgetProperty {
     );
   };
 
-  markup(updateConfig: Function): ReactNode {
+  markup(): ReactNode {
     return (
       <Flex gap={10} vertical={true}>
         <LabeledContainer displayName={this.displayName}>
@@ -313,13 +298,12 @@ export class ColorProperty extends DefaultWidgetProperty {
                   style={{ width: "50%" }}
                   showText
                   onChange={(value) => {
-                    const updated = produce(
+                    this.value = produce(
                       this.value,
                       (draft: ColorPropertyValue) => {
                         draft.colors[0].color = value.toRgbString();
                       },
                     );
-                    updateConfig(this.widgetId, this.name, updated);
                   }}
                 />
               </Col>
@@ -329,13 +313,12 @@ export class ColorProperty extends DefaultWidgetProperty {
                 <Switch
                   value={this.value.gradient}
                   onChange={(value) => {
-                    const updated = produce(
+                    this.value = produce(
                       this.value,
                       (draft: ColorPropertyValue) => {
                         draft.gradient = value;
                       },
                     );
-                    updateConfig(this.widgetId, this.name, updated);
                   }}
                 />
                 <span>Градиент</span>
@@ -343,8 +326,8 @@ export class ColorProperty extends DefaultWidgetProperty {
             </Col>
           </Row>
         </LabeledContainer>
-        {this.value.gradient && this.gradientColors(updateConfig)}
-        {this.value.gradient && this.addColorToGradient(updateConfig)}
+        {this.value.gradient && this.gradientColors()}
+        {this.value.gradient && this.addColorToGradient()}
       </Flex>
     );
   }
@@ -357,7 +340,7 @@ export class ColorProperty extends DefaultWidgetProperty {
     }
     if (this._target === ColorPropertyTarget.TEXT) {
       if (setting.gradient) {
-        style.color  = "transparent";
+        style.color = "transparent";
         style.backgroundImage = this.calcRowColorValue();
       } else {
         style.color = this.calcRowColorValue();
@@ -367,14 +350,14 @@ export class ColorProperty extends DefaultWidgetProperty {
     return style;
   }
 
-  calcClassName():string{
-    if  (this._target === ColorPropertyTarget.TEXT){
-      return  "backgroundClipText";
+  calcClassName(): string {
+    if (this._target === ColorPropertyTarget.TEXT) {
+      return "backgroundClipText";
     }
-    return  "";
+    return "";
   }
 
-  calcRowColorValue():  string | undefined {
+  calcRowColorValue(): string | undefined {
     const setting = this.value as ColorPropertyValue;
     let value = setting.colors.at(0)?.color;
     if (setting.gradient) {
@@ -410,19 +393,10 @@ export class ColorProperty extends DefaultWidgetProperty {
         setting.gradientType === GRADIENT_TYPE.LINEAR
           ? `${setting.angle}deg,${colors}`
           : colors;
-      value = `${setting.repeating  ? "repeating-":""}${type}-gradient(${gradientConfig})`;
+      value = `${
+        setting.repeating ? "repeating-" : ""
+      }${type}-gradient(${gradientConfig})`;
     }
     return value;
-  }
-
-  copy() {
-    return new ColorProperty({
-      widgetId: this.widgetId,
-      name: this.name,
-      value: this.value,
-      displayName: this.displayName,
-      tab: this.tab,
-      target: this._target,
-    });
   }
 }

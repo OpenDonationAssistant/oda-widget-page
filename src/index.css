@@ -209,3 +209,12 @@ input[type="file"] {
 .backgroundClipText{
   background-clip: text;
 }
+
+::-webkit-scrollbar {
+    background-color: black;
+    display: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(33, 37, 41);
+}

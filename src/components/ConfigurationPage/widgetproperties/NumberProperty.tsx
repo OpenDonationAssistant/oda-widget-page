@@ -4,7 +4,6 @@ import { InputNumber } from "antd";
 import classes from "./NumberProperty.module.css";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { Notifier } from "../Notifier";
-import { makeObservable, observable } from "mobx";
 import { observer } from "mobx-react-lite";
 
 export class NumberProperty extends DefaultWidgetProperty<number> {
@@ -39,4 +38,5 @@ export class NumberProperty extends DefaultWidgetProperty<number> {
   markup(): ReactNode {
     return <this.comp />;
   }
+
 }

@@ -16,8 +16,7 @@ import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
+  BorderProperty, BorderPropertyValue,
 } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -133,7 +132,7 @@ export default function ReelWidget({}) {
     value: findSetting(
       settings,
       "selectionColor",
-      DEFAULT_BORDER_PROPERTY_VALUE,
+      new BorderPropertyValue(),
     ),
   }).calcCss();
 
@@ -146,7 +145,7 @@ export default function ReelWidget({}) {
     let style = new BorderProperty({
       widgetId: widgetId,
       name: "cardBorder",
-      value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+      value: findSetting(settings, "cardBorder", new BorderPropertyValue()),
     }).calcCss();
     if (highlight && active === option) {
       style = { ...selectionStyle, ...style };

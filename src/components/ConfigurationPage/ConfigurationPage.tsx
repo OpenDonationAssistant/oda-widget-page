@@ -49,6 +49,7 @@ export const SelectionContext = createContext<Selection>(new Selection());
 
 const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectionContext);
+  log.debug({ widgets: widgetStore.list }, "calling widget list");
   return (
     <>
       {widgetStore.list.map((data) => (

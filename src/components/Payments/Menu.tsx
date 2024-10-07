@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { log } from "../../logging";
-import "./Menu.css";
 import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
 
 export default function Menu({ config, socket }) {

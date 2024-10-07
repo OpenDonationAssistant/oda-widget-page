@@ -1,0 +1,30 @@
+.padded {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.paymentdatebuttonopened {
+    background: #0c122e;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    border-top: var(--oda-main-border);
+    width: 100%;
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.paymentdatebuttonclosed {
+    background: rgb(43, 53, 102);
+    border: var(--oda-main-border);
+    width: 100%;
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 5px;
+}

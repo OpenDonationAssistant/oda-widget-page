@@ -5,32 +5,27 @@ import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
-  constructor(widgetId: string, properties: WidgetProperty[]) {
-    const tabs = new Map();
-    tabs.set("general", "Общие");
+  constructor() {
     super(
-      widgetId,
-      properties,
-      [
-        new BooleanProperty(
-          widgetId,
-          "audioOnly",
-          "boolean",
-          false,
-          "widget-player-popup-sound-only",
-          "general"
-        ),
-        new BorderProperty({
-          widgetId: widgetId,
-          name: "widgetBorder",
-          tab: "general"
-        }),
-      ],
-      tabs
+      {
+        sections: [
+          {
+            key: "general",
+            title: "Общие",
+            properties: [
+              new BooleanProperty({
+                name: "audioOnly",
+                value: false,
+                displayName: "widget-player-popup-sound-only",
+              }),
+              new BorderProperty({
+                name: "widgetBorder",
+                displayName: "widget-player-popup-border",
+              })
+            ],
+          },
+        ],
+      },
     );
-  }
-  public copy() {
-    log.debug("copying PlayerPopupWidgetSettings");
-    return new PlayerPopupWidgetSettings(this.widgetId, this.properties);
   }
 }

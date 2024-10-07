@@ -5,6 +5,7 @@ import { EmptyWidgetSettings } from "../components/ConfigurationPage/EmptyWidget
 import { action, makeObservable, observable } from "mobx";
 import { tokenRequest } from "../components/Login/Login";
 import { WidgetStore } from "../components/ConfigurationPage/WidgetStore";
+import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 
 export const WIDGET_TYPES = [
   { name: "payment-alerts", description: "Payment Alerts", create: () => {} },
@@ -22,7 +23,11 @@ export const WIDGET_TYPES = [
     create: () => {},
   },
   { name: "donation-timer", description: "Donation Timer", create: () => {} },
-  { name: "player-popup", description: "Video Popup", create: () => {} },
+  {
+    name: "player-popup",
+    description: "Video Popup",
+    create: () => new PlayerPopupWidgetSettings(),
+  },
   { name: "reel", description: "Roulette", create: () => {} },
   { name: "donationgoal", description: "Donation Goals", create: () => {} },
 ];
@@ -42,27 +47,26 @@ export class Widget {
   private _config: AbstractWidgetSettings;
   private _store: WidgetStore;
 
-  constructor({
-    id, type, sortOrder, name, ownerId, config, store
-  }: {
-    id: string,
-    type: string,
-    sortOrder: number,
-    name: string,
-    ownerId: string,
-    config: AbstractWidgetSettings,
-    store: WidgetStore
-  }){
-    this._id = id;
-    this._type = type;
-    this._sortOrder = sortOrder;
-    this._name = name;
-    this._ownerId = ownerId;
-    this._config = config;
-    this._store = store;
+  constructor(params: {
+    id: string;
+    type: string;
+    sortOrder: number;
+    name: string;
+    ownerId: string;
+    config: AbstractWidgetSettings;
+    store: WidgetStore;
+  }) {
+    this._id = params.id;
+    this._type = params.type;
+    this._sortOrder = params.sortOrder;
+    this._name = params.name;
+    this._ownerId = params.ownerId;
+    this._config = params.config;
+    this._store = params.store;
     makeObservable(this, {
       _name: observable,
       _config: observable,
+      setConfig: action,
       reload: action,
     });
   }
@@ -77,54 +81,59 @@ export class Widget {
         settings.set(prop.name, prop.value);
       },
     );
-    settings.unsaved = false;
     return settings;
   }
 
-  public static fromJson(json: any, store: WidgetStore): Widget|null {
-      if (json.id === undefined) {
-        return null;
-      }
-      if (json.type === undefined) {
-        return null;
-      }
-      if (json.sortOrder === undefined) {
-        return null;
-      }
-      if (json.sortOrder === undefined) {
-        return null;
-      }
-      if (json.name === undefined) {
-        return null;
-      }
-      if (json.ownerId === undefined) {
-        return null;
-      }
-      if (json.config === undefined) {
-        return null;
-      }
-      return new Widget({
-          id: json.id,
-          type: json.type,
-          sortOrder: json.sortOrder,
-          name: json.name,
-          ownerId: json.ownerId,
-          config: this.configFromJson(json) || new EmptyWidgetSettings(),
-          store: store
-        });
-  }
-
-  public async reload(): Promise<void>{
-    await axios.get(
-      `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
-    ).then((response) => {
-      this._config = Widget.configFromJson(response.data) || new EmptyWidgetSettings();
+  public static fromJson(json: any, store: WidgetStore): Widget | null {
+    if (json.id === undefined) {
+      return null;
+    }
+    if (json.type === undefined) {
+      return null;
+    }
+    if (json.sortOrder === undefined) {
+      return null;
+    }
+    if (json.sortOrder === undefined) {
+      return null;
+    }
+    if (json.name === undefined) {
+      return null;
+    }
+    if (json.ownerId === undefined) {
+      return null;
+    }
+    if (json.config === undefined) {
+      return null;
+    }
+    return new Widget({
+      id: json.id,
+      type: json.type,
+      sortOrder: json.sortOrder,
+      name: json.name,
+      ownerId: json.ownerId,
+      config: this.configFromJson(json) || new EmptyWidgetSettings(),
+      store: store,
     });
   }
 
-  public async rename(name: string): Promise<void>{
+  private setConfig(config: AbstractWidgetSettings) {
+    this._config = config;
+  }
+
+  public async reload(): Promise<void> {
+    await axios
+      .get(`${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`)
+      .then((response) => {
+        this.setConfig(
+          Widget.configFromJson(response.data) || new EmptyWidgetSettings(),
+        );
+      });
+  }
+
+  public async rename(name: string): Promise<void> {
     const request = {
-      name: name
+      name: name,
     };
     await axios.patch(
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
@@ -133,7 +142,7 @@ export class Widget {
     this.name = name;
   }
 
-  public async save(): Promise<void>{
+  public async save(): Promise<void> {
     const request = {
       name: this._name,
       config: {
@@ -144,7 +153,6 @@ export class Widget {
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
       request,
     );
-    this._config.unsaved = false;
   }
 
   async url() {
@@ -172,7 +180,7 @@ export class Widget {
   public get name(): string {
     return this._name;
   }
-  public set name(name:string) {
+  public set name(name: string) {
     this._name = name;
   }
   public get ownerId(): string {

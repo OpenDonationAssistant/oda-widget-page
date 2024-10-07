@@ -1,45 +1,33 @@
 import { ReactNode } from "react";
-import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { observer } from "mobx-react-lite";
+import classes from "./BooleanProperty.module.css";
+import { Switch } from "antd";
 
-export class BooleanProperty extends DefaultWidgetProperty {
-  constructor(
-    widgetId: string,
-    name: string,
-    type: string,
-    value: any,
-    displayName: string,
-    tab?: string | undefined,
-  ) {
-    super(widgetId, name, type, value, displayName, tab);
+export class BooleanProperty extends DefaultWidgetProperty<boolean> {
+  constructor(params: { name: string; value: boolean; displayName: string }) {
+    super({
+      name: params.name,
+      value: params.value,
+      displayName: params.displayName,
+    });
   }
 
-  copy() {
-    return new BooleanProperty(
-      this.widgetId,
-      this.name,
-      this.type,
-      this.value,
-      this.displayName,
-      this.tab,
-    );
-  }
+  comp = observer(() => (
+    <LabeledContainer displayName={this.displayName}>
+      <div className={classes.checkboxwrapper}>
+        <Switch
+          checked={true === this.value}
+          onChange={() => {
+            this.value = !this.value;
+          }}
+        />
+      </div>
+    </LabeledContainer>
+  ));
 
-  markup(updateConfig: Function): ReactNode {
-    return (
-      <>
-        <LabeledContainer displayName={this.displayName}>
-          <BooleanPropertyInput
-            prop={this}
-            onChange={() => {
-              if (this.widgetId) {
-                updateConfig(this.widgetId, this.name, !this.value);
-              }
-            }}
-          />
-        </LabeledContainer>
-      </>
-    );
+  markup(): ReactNode {
+    return <this.comp />;
   }
 }

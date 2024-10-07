@@ -16,11 +16,9 @@ import { produce } from "immer";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
+  BorderProperty, BorderPropertyValue,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 import {
-  DEFAULT_ROUNDING_PROPERTY_VALUE,
   RoundingProperty,
 } from "../ConfigurationPage/widgetproperties/RoundingProperty";
 import { ColorProperty, ColorPropertyTarget, DEFAULT_COLOR_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/ColorProperty";
@@ -114,7 +112,7 @@ export default function DonationGoal({}) {
   const progressBarBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "outerBorder",
-    value: findSetting(settings, "outerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "outerBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const outerRoundingStyle = new RoundingProperty({
@@ -157,7 +155,7 @@ export default function DonationGoal({}) {
   const filledBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "innerBorder",
-    value: findSetting(settings, "innerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "innerBorder", new BorderPropertyValue()),
   }).calcCss();
 
   const filledRoundingStyle = new RoundingProperty({
@@ -166,7 +164,7 @@ export default function DonationGoal({}) {
     value: findSetting(
       settings,
       "innerRounding",
-      DEFAULT_ROUNDING_PROPERTY_VALUE,
+      new BorderPropertyValue(),
     ),
   }).calcCss();
 
@@ -188,7 +186,7 @@ export default function DonationGoal({}) {
   const widgetBorderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "border",
-    value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(settings, "border", new BorderPropertyValue()),
   }).calcCss();
 
   return (

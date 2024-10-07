@@ -48,7 +48,7 @@ export default function AnimatedFontComponent({
   return (
     <>
       <ModalButton
-        label="widget-font-label"
+        label={t(property.label)}
         buttonLabel={"button-settings"}
         modalTitle="widget-font-settings"
       >
@@ -76,21 +76,12 @@ export default function AnimatedFontComponent({
               children: (
                 <>
                   <div className="settings-item">
-                    {new FontProperty(
-                      property.widgetId,
-                      "font-family",
-                      "font",
-                      property.value.family,
-                      "button-font",
-                    ).markup((p1, p2, value) => {
-                      updateConfig(
-                        property.widgetId,
-                        property.name,
-                        produce(property.value, (draft) => {
-                          draft.family = value;
-                        }),
-                      );
-                    })}
+                    {new FontProperty({
+                      name: "font-family",
+                      value: property.value.family,
+                      displayName: "button-font",
+                      notifier: { notify: () => {}}, // TODO: add notifier
+                    }).markup()}
                   </div>
                   <div className="settings-item">
                     {new NumberProperty(
