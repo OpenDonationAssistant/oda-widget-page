@@ -17,9 +17,6 @@
   &[class*="active"]:hover .replaybutton {
     display: none;
   }
-  &:hover .paymenttime {
-    display: none;
-  }
 }
 
 .paymentheader {
@@ -78,8 +75,14 @@
 
 .replaybutton {
   line-height: 0px;
-  border: none;
   height: min-content;
+
+  button&[class*="oda-btn-default"] {
+    border: none;
+    box-shadow: none;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 
   [class*="active"] & {
     display: none;
@@ -95,6 +98,13 @@
   display: none;
   line-height: 0px;
   height: min-content;
+
+  button&[class*="oda-btn-default"] {
+    border: none;
+    box-shadow: none;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 
   [class*="active"] & {
     display: initial;
