@@ -26,6 +26,7 @@ import DonationTimer from "../DonationTimer/DonationTimer";
 import classes from "./WidgetConfiguration.module.css";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { tokenRequest } from "../Login/Login";
+import WidgetUrlModal from "./WidgetUrlModal";
 
 interface WidgetConfigurationProps {
   id: string;
@@ -76,6 +77,7 @@ export default function WidgetConfiguration({
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(name);
+  const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
   const context = {
     config: config,
     setConfig: (newConfig: Map<string, AbstractWidgetSettings>) => {
@@ -190,6 +192,7 @@ export default function WidgetConfiguration({
             </button>
           </>
         )}
+        <WidgetUrlModal open={showUrlModal} type={type} id={id} />
         {!hasChanges && (
           <>
             <Dropdown
@@ -199,7 +202,7 @@ export default function WidgetConfiguration({
                   {
                     key: "copy-url",
                     label: t("button-copy-url"),
-                    onClick: () => copyUrl(type, id),
+                    onClick: () => setShowUrlModal(true),
                   },
                   {
                     key: "rename",
