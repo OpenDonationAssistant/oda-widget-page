@@ -79,8 +79,11 @@
 .replaybutton {
   line-height: 0px;
   border: none;
-  display: none;
   height: min-content;
+
+  [class*="active"] & {
+    display: none;
+  }
 
   & span {
     font-weight: bolder;
