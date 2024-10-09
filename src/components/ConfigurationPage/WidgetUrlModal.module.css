@@ -1,3 +1,15 @@
+.window{
+  width: min-content;
+  & [class*="ant-modal"] {
+    & [class*="ant-modal-content"] {
+      width: min-content;
+      min-width: unset;
+    }
+    & [class*="ant-modal-footer"] {
+      display: none;
+    }
+  }
+}
 .modal {
   padding: 20px;
 }

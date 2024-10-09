@@ -192,7 +192,12 @@ export default function WidgetConfiguration({
             </button>
           </>
         )}
-        <WidgetUrlModal open={showUrlModal} type={type} id={id} />
+        <WidgetUrlModal
+          open={showUrlModal}
+          type={type}
+          id={id}
+          onClose={() => setShowUrlModal(false)}
+        />
         {!hasChanges && (
           <>
             <Dropdown

@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tokens, tokenRequest } from "../Login/Login";
 import { useRequest } from "ahooks";
 import { Button, Flex, Input, Modal, QRCode, Spin } from "antd";
 import classes from "./WidgetUrlModal.module.css";
-import { DefaultApiFactory as WidgetService } from "@opendonationassistant/oda-widget-service-client";
+import axios from "axios";
 
 async function createOtp(id: string) {
   const token = (await getToken()).refreshToken;
-  const response = await WidgetService(
-    undefined,
-    process.env.REACT_APP_WIDGET_API_ENDPOINT,
-  ).createOtp({
-    widgetId: id,
-    refreshToken: token,
-  });
+  const response = await axios.post(
+    `${process.env.REACT_APP_AUTH_API_ENDPOINT}/otp/create`,
+    {
+      widgetId: id,
+      refreshToken: token,
+    },
+  );
   return response.data.otp;
 }
 
@@ -23,27 +23,28 @@ async function getToken(): Promise<Tokens> {
   });
 }
 
-async function copyUrl(type: string, id: string) {
-  const tokens = await tokenRequest({
-    refreshToken: localStorage.getItem("refresh-token") ?? "",
-  });
-  navigator.clipboard.writeText(
-    `${process.env.REACT_APP_ENDPOINT}/${type}/${id}?refresh-token=${tokens.refreshToken}`,
-  );
+function copyUrl(url: string) {
+  navigator.clipboard.writeText(url);
+}
+
+function openUrl(url: string) {
+  window.open(url);
 }
 
 function url(type: string, id: string, otp: string): string {
-  return `${process.env.REACT_APP_ENDPOINT}/${type}/${id}?refresh-token=${otp}`;
+  return `${process.env.REACT_APP_ENDPOINT}/${type}/${id}?otp=${otp}`;
 }
 
 export default function WidgetUrlModal({
   open,
   type,
   id,
+  onClose
 }: {
   open: boolean;
   type: string;
   id: string;
+  onClose: Function
 }) {
   const { data, loading } = useRequest(
     () => {
@@ -58,27 +59,36 @@ export default function WidgetUrlModal({
   );
   return (
     <>
-      <Modal open={open} title="URL виджета">
+      <Modal
+        open={open}
+        title="URL виджета"
+        rootClassName={classes.window}
+        okButtonProps={{ hidden: true }}
+        cancelButtonProps={{ hidden: true }}
+        onClose={() => onClose()}
+        onCancel={() => onClose()}
+        destroyOnClose={true}
+      >
         {loading && <Spin />}
-        <Flex vertical gap={10} className={`${classes.modal}`}>
-          <Flex gap={5}>
-            <Input value={data} />
-            <Button
-              className="oda-btn-default"
-              onClick={() => copyUrl(type, id)}
-            >
-              <span className="material-symbols-sharp">content_copy</span>
-            </Button>
-          </Flex>
-          {data && (
+        {data && (
+          <Flex vertical gap={20} className={`${classes.modal}`}>
             <Flex justify="center">
-              <QRCode
-                size={320}
-                value="https://widgets.oda.digital/once/stcarolas/9fa40c33-b25e-42d4-a889-d52a97429d9b/c6edd857-01e8-4e56-bb20-c5968b52024c"
-              />
+              <QRCode size={320} value={data} />
             </Flex>
-          )}
-        </Flex>
+            <Flex gap={5}>
+              <Input value={data} />
+              <Button className="oda-btn-default" onClick={() => copyUrl(data)}>
+                <span className="material-symbols-sharp">content_copy</span>
+              </Button>
+              <Button
+                className="oda-btn-default"
+                onClick={() => openUrl(data)}
+              >
+                <span className="material-symbols-sharp">open_in_new</span>
+              </Button>
+            </Flex>
+          </Flex>
+        )}
       </Modal>
     </>
   );

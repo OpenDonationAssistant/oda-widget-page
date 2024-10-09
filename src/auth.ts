@@ -1,27 +1,48 @@
 import axios from "axios";
 import { log } from "./logging";
 
-async function loadSession(){
+async function loadSession() {
   const sessionInfo = await axios
     .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
     .then((json) => {
-			log.debug(`login info: ${JSON.stringify(json.data)}`)
+      log.debug(`login info: ${JSON.stringify(json.data)}`);
       return json.data;
     });
   return sessionInfo;
 }
 
+async function exchangeOtp(otp: string): Promise<string>{
+  const response = await axios.post(
+    `${process.env.REACT_APP_AUTH_API_ENDPOINT}/otp/exchange`,
+    {
+      otp: otp,
+    },
+  );
+  return response.data.refreshToken;
+}
+
+// TODO: get access-token without redirecting to login page
+// TODO: get recipient id lazily
 export default async function auth() {
   let sessionInfo = await loadSession();
-
   if (window.location.href.endsWith("login")) {
   } else {
-    if (!sessionInfo.logged || !localStorage.getItem('access-token')) {
-      const refreshToken = new URLSearchParams(window.location.search).get("refresh-token");
+    if (!sessionInfo.logged || !localStorage.getItem("access-token")) {
+      let refreshToken = new URLSearchParams(window.location.search).get(
+        "refresh-token",
+      );
+      const otp = new URLSearchParams(window.location.search).get(
+        "otp",
+      );
+      if (!refreshToken && otp){
+        refreshToken = await exchangeOtp(otp);
+      }
       const page = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-			log.debug(`return to login page before page: ${page}`);
-      if (refreshToken){
-        window.location.replace(`/login?refresh-token=${refreshToken}&page=${page}`);
+      log.debug(`return to login page before page: ${page}`);
+      if (refreshToken) {
+        window.location.replace(
+          `/login?refresh-token=${refreshToken}&page=${page}`,
+        );
       } else {
         window.location.replace(`/login?page=${page}`);
       }
@@ -32,7 +53,9 @@ export default async function auth() {
   if (sessionInfo.logged) {
     log.debug(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
     recipientId = sessionInfo.id;
-		axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access-token')}`;
+    axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${localStorage.getItem("access-token")}`;
   }
 
   return recipientId;
