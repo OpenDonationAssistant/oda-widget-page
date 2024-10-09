@@ -4,7 +4,7 @@ import axios from "axios";
 import { log } from "../../logging";
 import { useSearchParams } from "react-router-dom";
 
-interface Tokens {
+export interface Tokens {
   idToken: string;
   refreshToken: string;
 }

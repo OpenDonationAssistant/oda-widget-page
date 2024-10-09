@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
 import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
+import { useRequest } from "ahooks";
 
 interface News {
   id: string;
@@ -11,11 +12,27 @@ interface News {
 }
 
 export default function NewsComponent({}: {}) {
-  const [news, setNews] = useState<News | null>(null);
-  const [progress, setProgress] = useState<number>(0);
+  const { data, mutate, run, loading } = useRequest<News | null, any>(
+    async () => {
+      const feed = await NewsService(
+        undefined,
+        process.env.REACT_APP_NEWS_API_ENDPOINT,
+      )
+        .getFeed()
+        .then((data) => data.data);
+      return feed.map((it) => {
+        return {
+          id: it.id ?? "",
+          title: it.title ?? "",
+          description: it.description ?? "",
+          demoUrl: it.demoUrl ?? "",
+        };
+      })[0];
+    },
+  );
 
   function sendFeedback(rating: number) {
-    setNews((prev) => {
+    mutate((prev) => {
       if (prev) {
         const service = NewsService(
           undefined,
@@ -32,66 +49,35 @@ export default function NewsComponent({}: {}) {
     });
   }
 
-  function updateProgress() {
-    setProgress((prev) => {
-      if (prev < 100) {
-        setTimeout(updateProgress, 30);
-        return prev + 0.02;
-      } else {
-        sendFeedback(-1);
-        return 0;
-      }
-    });
-  }
-
-  useEffect(() => {
-    if (news) {
-      return;
-    }
-    NewsService(undefined, process.env.REACT_APP_NEWS_API_ENDPOINT)
-      .getFeed()
-      .then((data) => {
-        setNews(
-          data.data.map((it) => {
-            return {
-              id: it.id ?? "",
-              title: it.title ?? "",
-              description: it.description ?? "",
-              demoUrl: it.demoUrl ?? "",
-            };
-          })[0],
-        );
-        if (data.data.length > 0) {
-          setTimeout(updateProgress, 125);
-        }
-      });
-  }, []);
-
   return (
     <>
-      {news && (
+      {data && (
         <Flex
           vertical={true}
           wrap={false}
           className={`${classes.newscontainer}`}
         >
-          <div className={`${classes.progressbar}`}>
-            <div
-              className={`${classes.filledprogress}`}
-              style={{ width: `${progress}%` }}
-            />
+          <div className={`${classes.closebutton}`}>
+            <button
+              className="material-symbols-sharp"
+              onClick={() => {
+                sendFeedback(-1);
+              }}
+            >
+              close
+            </button>
           </div>
           <Flex justify="center" align="baseline">
-            <div className={`${classes.newstitle}`}>{news.title}</div>
+            <div className={`${classes.newstitle}`}>{data.title}</div>
           </Flex>
           <Flex
             className={`${classes.bodycontainer} full-width`}
             align="middle"
             justify="center"
           >
-            <div className={`${classes.newsbody}`}>{news.description}</div>
-            {news.demoUrl && (
-              <img className={`${classes.newsdemo}`} src={news.demoUrl} />
+            <div className={`${classes.newsbody}`}>{data.description}</div>
+            {data.demoUrl && (
+              <img className={`${classes.newsdemo}`} src={data.demoUrl} />
             )}
           </Flex>
           <Flex

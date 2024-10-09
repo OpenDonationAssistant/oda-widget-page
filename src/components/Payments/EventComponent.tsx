@@ -6,6 +6,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { Flex } from "antd";
 
 export default function EventComponent({
   active,
@@ -38,10 +39,10 @@ export default function EventComponent({
     value: findSetting(settings, "nicknameFont", {}),
   });
   const nicknameStyle = headerFont.calcStyle();
-  const amountStyle= headerFont.calcStyle();
+  const amountStyle = headerFont.calcStyle();
   amountStyle.color = undefined;
   amountStyle.background = undefined;
-  const timeStyle= headerFont.calcStyle();
+  const timeStyle = headerFont.calcStyle();
   timeStyle.color = undefined;
   timeStyle.background = undefined;
 
@@ -72,39 +73,30 @@ export default function EventComponent({
       <div className={`${classes.payment} ${active ? "active" : ""}`}>
         <div className={`${classes.paymentheader}`}>
           <div className="payment-maker">
-            <div
-              style={amountStyle}
-              className={`${
-                classes.paymentamount
-              }`}
-            >
+            <div style={amountStyle} className={`${classes.paymentamount}`}>
               {`\u20BD${data.amount.major}`}
             </div>
-            <div
-              className={`${classes.nickname}`}
-              style={nicknameStyle}
-            >
+            <div className={`${classes.nickname}`} style={nicknameStyle}>
               {data.nickname ? data.nickname : "Аноним"}
             </div>
           </div>
-          <div
-            style={timeStyle}
-            className={`${classes.paymenttime}`}
-          >
-            {data.displayedTime}
-          </div>
-          <button
-            className={`${classes.stopbutton} oda-btn-default`}
-            onClick={() => interruptAlert()}
-          >
-            <span className="material-symbols-sharp">block</span>
-          </button>
-          <button
-            className={`${classes.replaybutton} oda-btn-default`}
-            onClick={() => resendAlert(data)}
-          >
-            <span className="material-symbols-sharp">replay</span>
-          </button>
+          <Flex gap={5}>
+            <div style={timeStyle} className={`${classes.paymenttime}`}>
+              {data.displayedTime}
+            </div>
+            <button
+              className={`${classes.stopbutton} oda-btn-default`}
+              onClick={() => interruptAlert()}
+            >
+              <span className="material-symbols-sharp">block</span>
+            </button>
+            <button
+              className={`${classes.replaybutton} oda-btn-default`}
+              onClick={() => resendAlert(data)}
+            >
+              <span className="material-symbols-sharp">replay</span>
+            </button>
+          </Flex>
         </div>
         <div
           className={`${classes.paymentinfo} ${
