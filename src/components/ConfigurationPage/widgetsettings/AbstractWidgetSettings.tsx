@@ -9,6 +9,7 @@ import {
   makeObservable,
   observable,
   observe,
+  toJS,
 } from "mobx";
 
 export interface SettingsSection {
@@ -47,7 +48,7 @@ export class AbstractWidgetSettings {
       .map((prop) => {
         return {
           name: prop.name,
-          value: prop.value,
+          value: toJS(prop.value)
         };
       });
     log.debug({preparedConfig: prepared});
@@ -84,10 +85,17 @@ export class AbstractWidgetSettings {
     return this._index.get(key);
   }
 
-  public set(key: string, value: any): void {
+  public markSaved(): void{
+    [...this._index.values()].forEach(prop => prop.markSaved());
+  }
+
+  public set(key: string, value: any, asInitialValue = false): void {
     const prop = this._index.get(key);
     if (prop) {
       prop.value = value;
+      if( asInitialValue) {
+        prop.markSaved();
+      }
     }
   }
 }

@@ -14,7 +14,7 @@ import {
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { produce } from "immer";
 import classes from "./ColorProperty.module.css";
-import { Notifier } from "../Notifier";
+import { toJS } from "mobx";
 
 export enum GRADIENT_TYPE {
   LINEAR,
@@ -63,13 +63,11 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
     value?: ColorPropertyValue;
     displayName: string;
     target: ColorPropertyTarget;
-    notifier: Notifier;
   }) {
     super({
       name: params.name,
       value: params.value ?? DEFAULT_COLOR_PROPERTY_VALUE,
       displayName: params.displayName,
-      notifier: params.notifier,
     });
     this._target = params.target;
   }
@@ -99,7 +97,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                 ]}
                 onChange={(value) => {
                   this.value = produce(
-                    this.value,
+                    toJS(this.value),
                     (draft: ColorPropertyValue) => {
                       draft.gradientType = value;
                     },
@@ -113,7 +111,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                 value={this.value.repeating}
                 onChange={(value) => {
                   this.value = produce(
-                    this.value,
+                    toJS(this.value),
                     (draft: ColorPropertyValue) => {
                       draft.repeating = value;
                     },
@@ -133,7 +131,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                       return;
                     }
                     this.value = produce(
-                      this.value,
+                      toJS(this.value),
                       (draft: ColorPropertyValue) => {
                         draft.angle = value;
                       },
@@ -157,7 +155,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
               value={color.stop.value}
               onChange={(value) => {
                 this.value = produce(
-                  this.value,
+                  toJS(this.value),
                   (draft: ColorPropertyValue) => {
                     const stop = draft.colors[index].stop;
                     if (stop && value) {
@@ -181,7 +179,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                   ]}
                   onChange={(value) => {
                     this.value = produce(
-                      this.value,
+                      toJS(this.value),
                       (draft: ColorPropertyValue) => {
                         const stop = draft.colors[index].stop;
                         if (stop) {
@@ -205,9 +203,12 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
         <Button
           className="oda-btn-default"
           onClick={() => {
-            this.value = produce(this.value, (draft: ColorPropertyValue) => {
-              draft.colors.push({ color: "#FFFFFF" });
-            });
+            this.value = produce(
+              toJS(this.value),
+              (draft: ColorPropertyValue) => {
+                draft.colors.push({ color: "#FFFFFF" });
+              },
+            );
           }}
         >
           Добавить цвет
@@ -232,7 +233,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                 value={color.color}
                 onChange={(value) => {
                   this.value = produce(
-                    this.value,
+                    toJS(this.value),
                     (draft: ColorPropertyValue) => {
                       draft.colors[index].color = value.toRgbString();
                     },
@@ -246,7 +247,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                   value={color.stop !== undefined}
                   onChange={(value) => {
                     this.value = produce(
-                      this.value,
+                      toJS(this.value),
                       (draft: ColorPropertyValue) => {
                         if (value) {
                           draft.colors[index].stop = {
@@ -270,7 +271,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                 className={`material-symbols-sharp ${classes.deleteButton}`}
                 onClick={() => {
                   this.value = produce(
-                    this.value,
+                    toJS(this.value),
                     (draft: ColorPropertyValue) => {
                       draft.colors.splice(index, 1);
                     },
@@ -299,7 +300,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                   showText
                   onChange={(value) => {
                     this.value = produce(
-                      this.value,
+                      toJS(this.value),
                       (draft: ColorPropertyValue) => {
                         draft.colors[0].color = value.toRgbString();
                       },
@@ -314,7 +315,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
                   value={this.value.gradient}
                   onChange={(value) => {
                     this.value = produce(
-                      this.value,
+                      toJS(this.value),
                       (draft: ColorPropertyValue) => {
                         draft.gradient = value;
                       },

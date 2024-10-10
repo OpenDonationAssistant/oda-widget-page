@@ -78,7 +78,7 @@ export class Widget {
     }
     (json.config as { properties: SavedProperty[] }).properties.forEach(
       (prop) => {
-        settings.set(prop.name, prop.value);
+        settings.set(prop.name, prop.value, true);
       },
     );
     return settings;
@@ -152,7 +152,9 @@ export class Widget {
     await axios.patch(
       `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
       request,
-    );
+    ).then(() => {
+      this.config.markSaved();
+    });
   }
 
   async url() {

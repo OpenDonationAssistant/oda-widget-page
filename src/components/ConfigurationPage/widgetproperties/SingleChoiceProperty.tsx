@@ -9,33 +9,29 @@ export enum SELECTION_TYPE {
   SEGMENTED,
 }
 
-export class SingleChoiceProperty extends DefaultWidgetProperty {
+export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
   private _options: string[];
   private _selectionType: SELECTION_TYPE;
 
   constructor({
-    widgetId,
     name,
     value,
     displayName,
     options,
-    tab,
     selectionType,
   }: {
-    widgetId: string;
     name: string;
-    value: any;
+    value: string;
     displayName: string;
     options?: string[];
-    tab?: string;
     selectionType?: SELECTION_TYPE;
   }) {
-    super(widgetId, name, "choice", value, displayName, tab);
+    super({name: name, value: value, displayName: displayName});
     this._options = options ?? [];
     this._selectionType = selectionType ?? SELECTION_TYPE.DROPDOWN;
   }
 
-  segmentedSelect = (updateConfig: Function) => {
+  segmentedSelect = () => {
     const { t } = useTranslation();
     return (
       <Segmented
@@ -46,19 +42,19 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
           return { label: t(option), value: option };
         })}
         onChange={(selected) => {
-          updateConfig(this.widgetId, this.name, selected);
+          this.value = selected;
         }}
       />
     );
   };
 
-  dropdownSelect = (updateConfig: Function) => {
+  dropdownSelect = () => {
     return (
       <Select
         value={this.value}
         className="full-width"
         onChange={(e) => {
-          updateConfig(this.widgetId, this.name, e);
+          this.value = e;
         }}
         options={this._options.map((option) => {
           return {
@@ -74,32 +70,20 @@ export class SingleChoiceProperty extends DefaultWidgetProperty {
     );
   };
 
-  renderSelect(updateConfig: Function) {
+  renderSelect() {
     switch (this._selectionType) {
       case SELECTION_TYPE.DROPDOWN:
-        return this.dropdownSelect(updateConfig);
+        return this.dropdownSelect();
       case SELECTION_TYPE.SEGMENTED:
-        return this.segmentedSelect(updateConfig);
+        return this.segmentedSelect();
     }
   }
 
-  markup(updateConfig: Function): ReactNode {
+  markup(): ReactNode {
     return (
       <LabeledContainer displayName={this.displayName}>
-        {this.renderSelect(updateConfig)}
+        {this.renderSelect()}
       </LabeledContainer>
     );
-  }
-
-  copy(): SingleChoiceProperty {
-    return new SingleChoiceProperty({
-      widgetId: this.widgetId,
-      name: this.name,
-      value: this.value,
-      displayName: this.displayName,
-      options: this._options,
-      tab: this.tab,
-      selectionType: this._selectionType,
-    });
   }
 }

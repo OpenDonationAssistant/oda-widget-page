@@ -2,7 +2,7 @@ import Glide from "@glidejs/glide";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   cleanupCommandListener,
@@ -16,7 +16,7 @@ import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
-  BorderProperty, BorderPropertyValue,
+  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE
 } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -132,7 +132,7 @@ export default function ReelWidget({}) {
     value: findSetting(
       settings,
       "selectionColor",
-      new BorderPropertyValue(),
+      DEFAULT_BORDER_PROPERTY_VALUE
     ),
   }).calcCss();
 
@@ -145,7 +145,7 @@ export default function ReelWidget({}) {
     let style = new BorderProperty({
       widgetId: widgetId,
       name: "cardBorder",
-      value: findSetting(settings, "cardBorder", new BorderPropertyValue()),
+      value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
     }).calcCss();
     if (highlight && active === option) {
       style = { ...selectionStyle, ...style };

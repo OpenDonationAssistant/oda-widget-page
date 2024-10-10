@@ -11,13 +11,16 @@ import {
   reaction,
 } from "mobx";
 import { log } from "../../../logging";
+import { produce } from "immer";
+import { deepEqual } from "assert";
 
 export interface WidgetProperty<Type> {
   name: string;
   value: Type;
   displayName: string;
   markup: () => ReactNode;
-  changed: () => boolean;
+  changed: boolean;
+  markSaved: () => void;
 }
 
 export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
@@ -38,29 +41,24 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }) {
     this._name = name;
     this._displayName = displayName;
-    this._initialValue = structuredClone(value);
+    this._initialValue = typeof value === "object" ? { ...value } : value;
     this._value = value;
     makeObservable(
       this,
       {
+        _initialValue: observable,
         _value: observable,
         changed: computed,
-        checkChanged: action,
+        markSaved: action,
       },
       { deep: true, equals: comparer.structural },
     );
   }
 
-  public checkChanged(): void {
-    log.debug("checkChanged");
-    // log.debug({
-    //   _value: this._value,
-    //   _initialValue: this._initialValue,
-    //   changed:
-    //     JSON.stringify(this._value) !== JSON.stringify(this._initialValue),
-    // });
-    // log.debug({checkChangedTree: getObserverTree(this, "changed")});
-    // this._changed = JSON.stringify(this._value) !== JSON.stringify(this._initialValue);
+  public markSaved(): void {
+    this._initialValue =
+      typeof this._value === "object" ? { ...this._value } : this._value;
+    log.debug({ initialValue: this._initialValue }, "markSaved");
   }
 
   markup(): ReactNode {
@@ -78,7 +76,6 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }
   public set value(value: Type) {
     this._value = value;
-    this.checkChanged();
   }
   public get displayName(): string {
     return this._displayName;
@@ -86,7 +83,29 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   public set displayName(value: string) {
     this._displayName = value;
   }
-  public get changed() {
-    return JSON.stringify(this._value) !== JSON.stringify(this._initialValue);
+
+  private deepEqual(x: any, y: any): boolean {
+    const ok = Object.keys,
+      tx = typeof x,
+      ty = typeof y;
+    return x && y && tx === "object" && tx === ty
+      ? ok(x).length === ok(y).length &&
+          ok(x).every((key) => this.deepEqual(x[key], y[key]))
+      : x === y;
+  }
+
+  public get changed(): boolean {
+    const result = !this.deepEqual(this._value, this._initialValue);
+    if (result) {
+      log.debug(
+        {
+          changed: this,
+          left: JSON.stringify(this._value),
+          right: JSON.stringify(this._initialValue),
+        },
+        "change detected",
+      );
+    }
+    return result;
   }
 }

@@ -11,14 +11,12 @@ export class NumberProperty extends DefaultWidgetProperty<number> {
     name,
     value,
     displayName,
-    notifier,
   }: {
     name: string;
     value: any;
     displayName: string;
-    notifier: Notifier;
   }) {
-    super({ name, value, displayName, notifier });
+    super({ name, value, displayName});
   }
 
   comp = observer(() => {

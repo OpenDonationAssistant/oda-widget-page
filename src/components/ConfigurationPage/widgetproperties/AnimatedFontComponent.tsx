@@ -18,6 +18,8 @@ import classes from "./AnimatedFontComponent.module.css";
 import ModalButton from "../../ModalButton/ModalButton";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { ColorProperty, ColorPropertyTarget } from "./ColorProperty";
+import { toJS } from "mobx";
+import { observer } from "mobx-react-lite";
 
 const animationType = ["entire", "by words", "by symbols"];
 
@@ -37,13 +39,8 @@ const animations = [
   "heartBeat",
 ];
 
-export default function AnimatedFontComponent({
-  property,
-}: {
-  property: AnimatedFontProperty;
-}) {
+const Comp = observer(({ property }: { property: AnimatedFontProperty }) => {
   const { t } = useTranslation();
-  const { updateConfig } = useContext(WidgetsContext);
 
   return (
     <>
@@ -80,42 +77,22 @@ export default function AnimatedFontComponent({
                       name: "font-family",
                       value: property.value.family,
                       displayName: "button-font",
-                      notifier: { notify: () => {}}, // TODO: add notifier
                     }).markup()}
                   </div>
                   <div className="settings-item">
-                    {new NumberProperty(
-                      property.widgetId,
-                      "font-size",
-                      "number",
-                      property.value.size,
-                      "button-font-size",
-                    ).markup((p1, p2, value) => {
-                      updateConfig(
-                        property.widgetId,
-                        property.name,
-                        produce(property.value, (draft) => {
-                          draft.size = value;
-                        }),
-                      );
-                    })}
+                    {new NumberProperty({
+                      name: "font-size",
+                      value: property.value.size,
+                      displayName: "button-font-size",
+                    }).markup()}
                   </div>
                   <div className="settings-item">
                     {new ColorProperty({
-                      widgetId: property.widgetId,
                       name: "color",
                       value: property.value.color,
                       displayName: "button-text-color",
-                      target: ColorPropertyTarget.TEXT
-                    }).markup((p1, p2, value) => {
-                      updateConfig(
-                        property.widgetId,
-                        property.name,
-                        produce(property.value, (draft) => {
-                          draft.color = value;
-                        }),
-                      );
-                    })}
+                      target: ColorPropertyTarget.TEXT,
+                    }).markup()}
                   </div>
                   <div className="settings-item">
                     <Flex justify="space-around" align="center">
@@ -124,12 +101,11 @@ export default function AnimatedFontComponent({
                         <Switch
                           value={property.value.weight}
                           onChange={(checked) => {
-                            updateConfig(
-                              property.widgetId,
-                              property.name,
-                              produce(property.value, (draft) => {
+                            property.value = produce(
+                              toJS(property.value),
+                              (draft) => {
                                 draft.weight = checked;
-                              }),
+                              },
                             );
                           }}
                         />
@@ -139,12 +115,11 @@ export default function AnimatedFontComponent({
                         <Switch
                           value={property.value.italic}
                           onChange={(checked) => {
-                            updateConfig(
-                              property.widgetId,
-                              property.name,
-                              produce(property.value, (draft) => {
+                            property.value = produce(
+                              toJS(property.value),
+                              (draft) => {
                                 draft.italic = checked;
-                              }),
+                              },
                             );
                           }}
                         />
@@ -166,13 +141,12 @@ export default function AnimatedFontComponent({
                         className="full-width"
                         addonAfter="px"
                         onChange={(value) => {
-                          updateConfig(
-                            property.widgetId,
-                            property.name,
-                            produce(property.value, (draft) => {
-                              draft.shadowOffsetX = value;
-                            }),
-                          );
+                          if (!value) {
+                            return;
+                          }
+                          property.value = produce(property.value, (draft) => {
+                            draft.shadowOffsetX = value;
+                          });
                         }}
                       />
                     </LabeledContainer>
@@ -184,13 +158,12 @@ export default function AnimatedFontComponent({
                         className="full-width"
                         addonAfter="px"
                         onChange={(value) => {
-                          updateConfig(
-                            property.widgetId,
-                            property.name,
-                            produce(property.value, (draft) => {
-                              draft.shadowOffsetY = value;
-                            }),
-                          );
+                          if (!value) {
+                            return;
+                          }
+                          property.value = produce(property.value, (draft) => {
+                            draft.shadowOffsetY = value;
+                          });
                         }}
                       />
                     </LabeledContainer>
@@ -202,12 +175,14 @@ export default function AnimatedFontComponent({
                         addonAfter="px"
                         className="full-width"
                         onChange={(value) => {
-                          updateConfig(
-                            property.widgetId,
-                            property.name,
-                            produce(property.value, (draft) => {
+                          if (!value) {
+                            return;
+                          }
+                          property.value = produce(
+                            toJS(property.value),
+                            (draft) => {
                               draft.shadowWidth = value;
-                            }),
+                            },
                           );
                         }}
                       />
@@ -219,12 +194,11 @@ export default function AnimatedFontComponent({
                         showText
                         value={property.value.shadowColor}
                         onChange={(color) => {
-                          updateConfig(
-                            property.widgetId,
-                            property.name,
-                            produce(property.value, (draft) => {
+                          property.value = produce(
+                            toJS(property.value),
+                            (draft) => {
                               draft.shadowColor = color;
-                            }),
+                            },
                           );
                         }}
                       />
@@ -240,20 +214,11 @@ export default function AnimatedFontComponent({
                 <>
                   <div className="settings-item">
                     {new SingleChoiceProperty({
-                      widgetId: property.widgetId,
                       name: "font-animation",
                       value: property.value.animation,
                       displayName: "widget-font-animation",
                       options: animations,
-                    }).markup((p1, p2, value) => {
-                      updateConfig(
-                        property.widgetId,
-                        property.name,
-                        produce(property.value, (draft) => {
-                          draft.animation = value;
-                        }),
-                      );
-                    })}
+                    }).markup()}
                   </div>
                 </>
               ),
@@ -263,4 +228,14 @@ export default function AnimatedFontComponent({
       </ModalButton>
     </>
   );
+});
+
+export default function AnimatedFontComponent({
+  property,
+}: {
+  property: AnimatedFontProperty;
+}) {
+  return (
+    <Comp property={property}/>
+  )
 }

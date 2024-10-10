@@ -17,10 +17,8 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
           title: "Общие",
           properties: [
             new AnimatedFontProperty({
-              widgetId: widgetId,
               name: "nicknameFont",
               label: "widget-payments-title-font",
-              tab: "general",
               value: produce(DEFAULT_FONT_PROPERTY_VALUE, (draft) => {
                 draft.family = "Play";
                 draft.size = 24;
@@ -30,7 +28,6 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
             new AnimatedFontProperty({
               name: "messageFont",
               label: "widget-payments-message-font",
-              tab: "general",
               value: produce(DEFAULT_FONT_PROPERTY_VALUE, (draft) => {
                 draft.family = "Play";
                 draft.size = 24;
@@ -40,7 +37,6 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
             new AnimatedFontProperty({
               name: "musicFont",
               label: "widget-payments-music-font",
-              tab: "general",
               value: produce(DEFAULT_FONT_PROPERTY_VALUE, (draft) => {
                 draft.family = "Anonymous Pro";
                 draft.size = 18;

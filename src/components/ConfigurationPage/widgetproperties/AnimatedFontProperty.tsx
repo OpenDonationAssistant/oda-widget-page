@@ -9,7 +9,7 @@ import {
   ColorPropertyValue,
   DEFAULT_COLOR_PROPERTY_VALUE,
 } from "./ColorProperty";
-import { Notifier } from "../Notifier";
+import { log } from "../../../logging";
 
 export interface FontPropertyValue {
   family: string;
@@ -50,15 +50,12 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
     name: string;
     value?: FontPropertyValue;
     label?: string;
-    notifier: Notifier;
   }) {
     super({
       name: params.name,
       value: params.value ?? DEFAULT_FONT_PROPERTY_VALUE,
       displayName: "animatedfont",
-      notifier: params.notifier,
     });
-    this._notifier = params.notifier;
     this._label = params.label ?? "widget-font-label";
   }
 
@@ -68,7 +65,6 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
       value: this.value.color,
       displayName: "button-text-color",
       target: ColorPropertyTarget.TEXT,
-      notifier: this._notifier,
     }).calcClassName();
     if (!this.value.animation) {
       return fontClassName;
@@ -87,12 +83,14 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
   }
 
   calcStyle(): React.CSSProperties {
+    log.debug({
+      value: this.value,
+    });
     const fontColorStyle = new ColorProperty({
       name: "color",
       value: this.value.color,
       displayName: "button-text-color",
       target: ColorPropertyTarget.TEXT,
-      notifier: this._notifier,
     }).calcCss();
 
     const shadowStyle = this.value.shadowWidth

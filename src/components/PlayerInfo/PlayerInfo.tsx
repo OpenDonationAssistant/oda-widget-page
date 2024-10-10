@@ -9,7 +9,7 @@ import { WidgetData } from "../../types/WidgetData";
 import "animate.css";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
-  BorderProperty, BorderPropertyValue,
+  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -77,7 +77,7 @@ function PlayerInfo() {
   const borderStyle = new BorderProperty({
     widgetId: widgetId,
     name: "widgetBorder",
-    value: findSetting(settings, "widgetBorder", new BorderPropertyValue()),
+    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const background = new ColorProperty({
@@ -122,7 +122,7 @@ function PlayerInfo() {
   const titleBorder = new BorderProperty({
     widgetId: widgetId,
     name: "titleBorder",
-    value: findSetting(settings, "titleBorder", new BorderPropertyValue()),
+    value: findSetting(settings, "titleBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const titleRounding = new RoundingProperty({
@@ -160,7 +160,7 @@ function PlayerInfo() {
   const requesterBorder = new BorderProperty({
     widgetId: widgetId,
     name: "requesterBorder",
-    value: findSetting(settings, "requesterBorder", new BorderPropertyValue()),
+    value: findSetting(settings, "requesterBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const requesterRounding = new RoundingProperty({
@@ -221,7 +221,7 @@ function PlayerInfo() {
   const queueBorder = new BorderProperty({
     widgetId: widgetId,
     name: "queueBorder",
-    value: findSetting(settings, "queueBorder", new BorderPropertyValue()),
+    value: findSetting(settings, "queueBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const onelineWidget = () => {
