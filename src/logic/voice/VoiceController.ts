@@ -107,7 +107,7 @@ export class VoiceController {
         }
         return;
       }
-      this.voiceByMCS(data.message).then((audio) =>
+      this.voiceByGoogle(data.message).then((audio) =>
         this.pronounce(audio, 100, onEndHandler),
       );
     } catch (error) {
