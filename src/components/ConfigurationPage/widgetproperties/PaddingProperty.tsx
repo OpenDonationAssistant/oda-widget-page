@@ -4,6 +4,8 @@ import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { Col, Flex, InputNumber, Row, Segmented } from "antd";
 import { produce } from "immer";
 import { Trans } from "react-i18next";
+import { observer } from "mobx-react-lite";
+import { toJS } from "mobx";
 
 export interface PaddingPropertyValue {
   isSame: boolean | null;
@@ -21,41 +23,11 @@ export const DEFAULT_PADDING_PROPERTY_VALUE = {
   right: 5,
 };
 
-export class PaddingProperty extends DefaultWidgetProperty {
-  constructor({
-    widgetId,
-    name,
-    value,
-    tab,
-  }: {
-    widgetId: string;
-    name: string;
-    value?: PaddingPropertyValue;
-    tab?: string;
-  }) {
-    super(
-      widgetId,
-      name,
-      "predefined",
-      value ?? DEFAULT_PADDING_PROPERTY_VALUE,
-      "",
-      tab,
-    );
-  }
-
-  copy(): PaddingProperty {
-    return new PaddingProperty({
-      widgetId: this.widgetId,
-      name: this.name,
-      value: this.value,
-      tab: this.tab,
-    });
-  }
-
-  comp = (updateConfig: Function) => {
+const PaddingPropertyComponent = observer(
+  ({ property }: { property: PaddingProperty }) => {
     return (
       <Flex vertical={true} gap={10}>
-        <LabeledContainer displayName={this.name}>
+        <LabeledContainer displayName={property.name}>
           <Segmented
             block
             className="full-width"
@@ -73,30 +45,33 @@ export class PaddingProperty extends DefaultWidgetProperty {
                 label: "Стороны",
               },
             ]}
-            value={this.value.isSame}
+            value={property.value.isSame}
             onChange={(checked) => {
               const updated = produce(
-                this.value,
+                toJS(property.value),
                 (draft: PaddingPropertyValue) => {
                   draft.isSame = checked;
                 },
               );
-              updateConfig(this.widgetId, this.name, updated);
+              property.value = updated;
             }}
           />
         </LabeledContainer>
-        {this.value.isSame === true && (
+        {property.value.isSame === true && (
           <Row align="middle">
             <Col span={2} offset={8}>
               Отступ:
             </Col>
             <Col span={3}>
               <InputNumber
-                value={this.value.top}
+                value={property.value.top}
                 addonAfter="px"
                 onChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
                   const updated = produce(
-                    this.value,
+                    property.value,
                     (draft: PaddingPropertyValue) => {
                       draft.top = value;
                       draft.right = value;
@@ -104,29 +79,32 @@ export class PaddingProperty extends DefaultWidgetProperty {
                       draft.bottom = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
+                  property.value = updated;
                 }}
               />
             </Col>
           </Row>
         )}
-        {this.value.isSame === false && (
+        {property.value.isSame === false && (
           <Row align="middle">
             <Col span={2} offset={1}>
               <Trans i18nKey="paddingproperty-label-top" />
             </Col>
             <Col span={3}>
               <InputNumber
-                value={this.value.top}
+                value={property.value.top}
                 addonAfter="px"
                 onChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
                   const updated = produce(
-                    this.value,
+                    toJS(property.value),
                     (draft: PaddingPropertyValue) => {
                       draft.top = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
+                  property.value = updated;
                 }}
               />
             </Col>
@@ -135,16 +113,19 @@ export class PaddingProperty extends DefaultWidgetProperty {
             </Col>
             <Col span={3}>
               <InputNumber
-                value={this.value.right}
+                value={property.value.right}
                 addonAfter="px"
                 onChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
                   const updated = produce(
-                    this.value,
+                    toJS(property.value),
                     (draft: PaddingPropertyValue) => {
                       draft.right = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
+                  property.value = updated;
                 }}
               />
             </Col>
@@ -153,16 +134,19 @@ export class PaddingProperty extends DefaultWidgetProperty {
             </Col>
             <Col span={3}>
               <InputNumber
-                value={this.value.bottom}
+                value={property.value.bottom}
                 addonAfter="px"
                 onChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
                   const updated = produce(
-                    this.value,
+                    toJS(property.value),
                     (draft: PaddingPropertyValue) => {
                       draft.bottom = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
+                  property.value = updated;
                 }}
               />
             </Col>
@@ -171,16 +155,19 @@ export class PaddingProperty extends DefaultWidgetProperty {
             </Col>
             <Col span={3}>
               <InputNumber
-                value={this.value.left}
+                value={property.value.left}
                 addonAfter="px"
                 onChange={(value) => {
+                  if (!value) {
+                    return;
+                  }
                   const updated = produce(
-                    this.value,
+                    toJS(property.value),
                     (draft: PaddingPropertyValue) => {
                       draft.left = value;
                     },
                   );
-                  updateConfig(this.widgetId, this.name, updated);
+                  property.value = updated;
                 }}
               />
             </Col>
@@ -188,7 +175,25 @@ export class PaddingProperty extends DefaultWidgetProperty {
         )}
       </Flex>
     );
-  };
+  },
+);
+
+export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue> {
+  constructor({
+    name,
+    value,
+    displayName,
+  }: {
+    name: string;
+    value?: PaddingPropertyValue;
+    displayName?: string;
+  }) {
+    super({
+      name: name,
+      value: value ?? DEFAULT_PADDING_PROPERTY_VALUE,
+      displayName: displayName ?? "padding",
+    });
+  }
 
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
@@ -204,7 +209,7 @@ export class PaddingProperty extends DefaultWidgetProperty {
     return style;
   }
 
-  markup(updateConfig: Function): ReactNode {
-    return this.comp(updateConfig);
+  markup(): ReactNode {
+    return <PaddingPropertyComponent property={this} />;
   }
 }

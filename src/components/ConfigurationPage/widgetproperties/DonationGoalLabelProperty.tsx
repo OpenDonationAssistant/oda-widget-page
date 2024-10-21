@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Flex, Select } from "antd";
 import ModalButton from "../../ModalButton/ModalButton";
+import { toJS } from "mobx";
 
 const DonationGoalPropertyComponent = ({
   displayName,
@@ -70,29 +71,22 @@ const DonationGoalPropertyComponent = ({
   );
 };
 
-export class DonationGoalLabelProperty extends DefaultWidgetProperty {
-  constructor(widgetId: string, value?: string) {
-    super(
-      widgetId,
-      "labelTemplate",
-      "predefined",
-      value ?? "<collected> / <required> <currency>",
-      "widget-donationgoal-label-template",
-      "progressbar",
-    );
+export class DonationGoalLabelProperty extends DefaultWidgetProperty<string> {
+  constructor() {
+    super({
+      name: "labelTemplate",
+      value:  "<collected> / <required> <currency>",
+      displayName: "widget-donationgoal-label-template",
+    });
   }
 
-  copy() {
-    return new DonationGoalLabelProperty(this.widgetId, this.value);
-  }
-
-  // todo локализовать
-  markup(updateConfig: Function): ReactNode {
+  // TODO: локализовать
+  markup(): ReactNode {
     return (
       <DonationGoalPropertyComponent
         displayName={this.displayName}
         value={this.value}
-        onChange={(text) => updateConfig(this.widgetId, this.name, text)}
+        onChange={(text) => this.value = toJS(text)}
       />
     );
   }

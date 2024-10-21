@@ -11,15 +11,7 @@ import {
   Select,
 } from "antd";
 import { Trans } from "react-i18next";
-import {
-  getObserverTree,
-  makeObservable,
-  observable,
-  observe,
-  reaction,
-  toJS,
-} from "mobx";
-import { log } from "../../../logging";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { produce } from "immer";
 
@@ -55,12 +47,12 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
   constructor(params: {
     name: string;
     value?: BorderPropertyValue;
-    displayName: string;
+    displayName?: string;
   }) {
     super({
       name: params.name,
       value: params.value ?? DEFAULT_BORDER_PROPERTY_VALUE,
-      displayName: params.displayName,
+      displayName: params.displayName ?? "border"
     });
   }
 
@@ -177,7 +169,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                     draft.right.width = value;
                     draft.left.width = value;
                     draft.bottom.width = value;
-                  })
+                  });
                 }}
               />
             </Col>
@@ -248,7 +240,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.top.color = value.toRgbString();
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -265,7 +257,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                     }
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.top.width = value;
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -284,7 +276,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.right.type = value;
-                    })
+                    });
                   }}
                   options={[
                     {
@@ -332,7 +324,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.right.color = value.toRgbString();
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -349,7 +341,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                     }
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.right.width = value;
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -368,7 +360,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.bottom.type = value;
-                    })
+                    });
                   }}
                   options={[
                     {
@@ -416,7 +408,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.bottom.color = value.toRgbString();
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -433,7 +425,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                     }
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.bottom.width = value;
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -452,7 +444,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.left.type = value;
-                    })
+                    });
                   }}
                   options={[
                     {
@@ -500,7 +492,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                   onChange={(value) => {
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.left.color = value.toRgbString();
-                    })
+                    });
                   }}
                 />
               </Col>
@@ -517,7 +509,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
                     }
                     this.value = produce(toJS(this.value), (draft) => {
                       draft.left.width = value;
-                    })
+                    });
                   }}
                 />
               </Col>

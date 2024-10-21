@@ -6,7 +6,7 @@ export default function BooleanPropertyInput({
   prop,
   onChange,
 }: {
-  onChange: Function;
+  onChange: (value: boolean) => void;
   prop: {
     value: any;
   };

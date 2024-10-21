@@ -1,17 +1,29 @@
 import axios from "axios";
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
-import { EmptyWidgetSettings } from "../components/ConfigurationPage/EmptyWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
 import { tokenRequest } from "../components/Login/Login";
 import { WidgetStore } from "../components/ConfigurationPage/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
+import { MediaWidgetSettings } from "../components/ConfigurationPage/widgetsettings/MediaWidgetSettings";
+import { PlayerInfoWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerInfoWidgetSettings";
+import { DonatersTopListWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
+import { DonationTimerWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
+import { DonationGoalWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
+import { ReelWidgetSettings } from "../components/ConfigurationPage/widgetsettings/ReelWidgetSettings";
+import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 
 export const WIDGET_TYPES = [
-  { name: "payment-alerts", description: "Payment Alerts", create: () => {} },
-  { name: "media", description: "Music Player", create: () => {} },
-  { name: "player-info", description: "Music Player Info", create: () => {} },
-  { name: "donaters-top-list", description: "Donaters List", create: () => {} },
+  {
+    name: "media",
+    description: "Music Player",
+    create: () => new MediaWidgetSettings(),
+  },
+  {
+    name: "player-popup",
+    description: "Video Popup",
+    create: () => new PlayerPopupWidgetSettings(),
+  },
   {
     name: "payments",
     description: "Payment History",
@@ -20,16 +32,38 @@ export const WIDGET_TYPES = [
   {
     name: "player-control",
     description: "Music Player Remote Control",
-    create: () => {},
+    create: () => new AbstractWidgetSettings({ sections: [] }),
   },
-  { name: "donation-timer", description: "Donation Timer", create: () => {} },
   {
-    name: "player-popup",
-    description: "Video Popup",
-    create: () => new PlayerPopupWidgetSettings(),
+    name: "player-info",
+    description: "Music Player Info",
+    create: () => new PlayerInfoWidgetSettings(),
   },
-  { name: "reel", description: "Roulette", create: () => {} },
-  { name: "donationgoal", description: "Donation Goals", create: () => {} },
+  {
+    name: "donaters-top-list",
+    description: "Donaters List",
+    create: () => new DonatersTopListWidgetSettings(),
+  },
+  {
+    name: "donation-timer",
+    description: "Donation Timer",
+    create: () => new DonationTimerWidgetSettings(),
+  },
+  {
+    name: "donationgoal",
+    description: "Donation Goals",
+    create: () => new DonationGoalWidgetSettings(),
+  },
+  {
+    name: "reel",
+    description: "Roulette",
+    create: () => new ReelWidgetSettings(),
+  },
+  {
+    name: "payment-alerts",
+    description: "Payment Alerts",
+    create: () => new PaymentAlertsWidgetSettings(),
+  },
 ];
 
 interface SavedProperty {
@@ -112,7 +146,9 @@ export class Widget {
       sortOrder: json.sortOrder,
       name: json.name,
       ownerId: json.ownerId,
-      config: this.configFromJson(json) || new EmptyWidgetSettings(),
+      config:
+        this.configFromJson(json) ||
+        new AbstractWidgetSettings({ sections: [] }),
       store: store,
     });
   }
@@ -126,7 +162,8 @@ export class Widget {
       .get(`${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`)
       .then((response) => {
         this.setConfig(
-          Widget.configFromJson(response.data) || new EmptyWidgetSettings(),
+          Widget.configFromJson(response.data) ||
+            new AbstractWidgetSettings({ sections: [] }),
         );
       });
   }
@@ -149,12 +186,14 @@ export class Widget {
         properties: this._config.prepareConfig(),
       },
     };
-    await axios.patch(
-      `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
-      request,
-    ).then(() => {
-      this.config.markSaved();
-    });
+    await axios
+      .patch(
+        `${process.env.REACT_APP_WIDGET_API_ENDPOINT}/widgets/${this._id}`,
+        request,
+      )
+      .then(() => {
+        this.config.markSaved();
+      });
   }
 
   async url() {

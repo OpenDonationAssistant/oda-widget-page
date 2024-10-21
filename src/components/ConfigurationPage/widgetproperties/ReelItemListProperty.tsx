@@ -1,38 +1,16 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./ReelItemListProperty.module.css";
+import { observer } from "mobx-react-lite";
 
-export class ReelItemListProperty extends DefaultWidgetProperty {
-  constructor(widgetId: string, value: string[]) {
-    super(widgetId, "optionList", "predefined", value, "Призы", "prizes");
-  }
-
-  addOption(updateConfig: Function) {
-    this.value.push("");
-    updateConfig(this.widgetId, "optionList", this.value);
-  }
-
-  updateOption(index: number, value: string, updateConfig: Function) {
-    const updated = this.value.toSpliced(index, 1, value);
-    updateConfig(this.widgetId, "optionList", updated);
-  }
-
-  removeOption(index: number, updateConfig: Function) {
-    const updated = this.value.toSpliced(index, 1);
-    updateConfig(this.widgetId, "optionList", updated);
-  }
-
-  copy() {
-    return new ReelItemListProperty(this.widgetId, this.value);
-  }
-
-  markup(updateConfig: Function): ReactNode {
+const ReelItemListPropertyComponent = observer(
+  ({ property }: { property: ReelItemListProperty }) => {
     return (
       <div className="widget-settings-item">
         <label className="widget-settings-name">Призы</label>
         <div className={classes.optionscontainer}>
-          {this.value &&
-            this.value.map((option, number) => (
+          {property.value &&
+            property.value.map((option, number) => (
               <>
                 <div className={classes.option}>
                   <textarea
@@ -41,13 +19,13 @@ export class ReelItemListProperty extends DefaultWidgetProperty {
                     className="widget-settings-value"
                     style={{ width: "100%" }}
                     onChange={(e) =>
-                      this.updateOption(number, e.target.value, updateConfig)
+                      property.updateOption(number, e.target.value)
                     }
                   />
                   <button
                     className="widget-button"
                     onClick={() => {
-                      this.removeOption(number, updateConfig);
+                      property.removeOption(number);
                     }}
                   >
                     <span className="material-symbols-sharp">delete</span>
@@ -60,7 +38,7 @@ export class ReelItemListProperty extends DefaultWidgetProperty {
               className="widget-button"
               style={{ width: "100%" }}
               onClick={() => {
-                this.addOption(updateConfig);
+                property.addOption();
               }}
             >
               Добавить
@@ -69,5 +47,31 @@ export class ReelItemListProperty extends DefaultWidgetProperty {
         </div>
       </div>
     );
+  },
+);
+
+export class ReelItemListProperty extends DefaultWidgetProperty<string[]> {
+  constructor() {
+    super({
+      name: "optionList",
+      value: ["Ничего", "Выигрыш"],
+      displayName: "Призы",
+    });
+  }
+
+  addOption() {
+    this.value.push("");
+  }
+
+  updateOption(index: number, value: string): void {
+    this.value.splice(index, 1, value);
+  }
+
+  removeOption(index: number): void {
+    this.value.splice(index, 1);
+  }
+
+  markup(): ReactNode {
+    return <ReelItemListPropertyComponent property={this} />;
   }
 }

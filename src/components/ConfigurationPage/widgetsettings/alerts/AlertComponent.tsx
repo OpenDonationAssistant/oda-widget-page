@@ -1,311 +1,438 @@
-import { useContext } from "react";
-import { Alert, AlertContext } from "./Alert";
-import { useTranslation } from "react-i18next";
+import { ChangeEvent, useContext, useState } from "react";
+import {
+  Alert,
+  FixedDonationAmountTrigger,
+  RangeDonationAmountTrigger,
+  UnknownTrigger,
+} from "./Alert";
+import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { Tabs as AntTabs, Input, Select, Slider } from "antd";
-import ColorPicker from "../../settings/ColorPicker";
+import { Tabs as AntTabs, Input, InputNumber, Select, Slider } from "antd";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import BooleanPropertyInput from "../../settings/properties/BooleanPropertyInput";
-import { PaymentAlertsWidgetSettings, PaymentAlertsWidgetSettingsContext } from "./PaymentAlertsWidgetSettings";
 import { observer } from "mobx-react-lite";
-import Tabs from "../../../Tabs/Tabs";
+import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
+import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
+import axios from "axios";
+import TextArea from "antd/es/input/TextArea";
+import { log } from "../../../../logging";
+import { toJS } from "mobx";
+import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
 
-const tabs = () => {
-  const tabs = new Map();
-  tabs.set("trigger", "tab-alert-trigger");
-  tabs.set("image", "tab-alert-image");
-  tabs.set("audio", "tab-alert-audio");
-  tabs.set("voice", "tab-alert-voice");
-  tabs.set("title", "tab-alert-title");
-  tabs.set("message", "tab-alert-message");
-  return tabs;
+function playAudio(url: string | null) {
+  if (!url) {
+    return;
+  }
+  const audio = new Audio(
+    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${url}`,
+  );
+  audio.play();
 }
 
+function uploadFile(file: File, name: string) {
+  return axios.put(
+    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
+    { file: file },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+}
 
-export const AlertComponent = observer(() => {
-  const alert = useContext(AlertContext);
-  const settings = useContext(PaymentAlertsWidgetSettingsContext);
+const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files) {
+    return Promise.reject();
+  }
+  const file = e.target.files[0];
+  const name = file.name.replace(/[^0-9a-z\.]/gi, "");
+  return uploadFile(file, name).then((ignore) => {
+    return name;
+  });
+};
+
+const TriggerTab = observer(({ alert }: { alert: Alert }) => {
+  const [amount, setAmount] = useState<number>(10);
+  return (
+    <>
+      <div className="settings-item">
+        <LabeledContainer displayName="tab-alert-trigger">
+          <Select
+            value={alert.triggers.at(0)?.type}
+            className="full-width"
+            onChange={(e) => {
+              switch (e) {
+                case "fixed-donation-amount":
+                  alert.triggers.splice(
+                    0,
+                    1,
+                    new FixedDonationAmountTrigger({ amount: amount }),
+                  );
+                  break;
+                case "at-least-donation-amount":
+                  alert.triggers.splice(
+                    0,
+                    1,
+                    new RangeDonationAmountTrigger({ min: amount, max: null }),
+                  );
+                  break;
+                default:
+                  alert.triggers.splice(0, 1, new UnknownTrigger());
+                  break;
+              }
+            }}
+            options={[
+              {
+                value: "fixed-donation-amount",
+                label: <Trans i18nKey={"Сумма доната равна"} />,
+              },
+              {
+                value: "at-least-donation-amount",
+                label: <Trans i18nKey={"Сумма доната больше"} />,
+              },
+              {
+                value: "never",
+                label: <Trans i18nKey={"Никогда"} />,
+              },
+            ]}
+          />
+        </LabeledContainer>
+      </div>
+      {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
+        <div className="settings-item">
+          <LabeledContainer displayName="">
+            <InputNumber
+              value={amount}
+              onChange={(newAmount) => {
+                if (!newAmount) {
+                  return;
+                }
+                setAmount(newAmount);
+              }}
+            />
+          </LabeledContainer>
+        </div>
+      )}
+      {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
+        <div className="settings-item">
+          <LabeledContainer displayName="">
+            <InputNumber
+              value={amount}
+              onChange={(newAmount) => {
+                if (!newAmount) {
+                  return;
+                }
+                setAmount(newAmount);
+              }}
+            />
+          </LabeledContainer>
+        </div>
+      )}
+    </>
+  );
+});
+
+const MessageTab = observer(({ alert }: { alert: Alert }) => {
+  return (
+    <>
+      <div className="settings-item">
+        <AnimatedFontComponent
+          property={
+            new AnimatedFontProperty({
+              name: "font",
+              value: alert.properties.find((prop) => prop.name === "font")
+                ?.value,
+              label: "widget-alert-message-font-family",
+            })
+          }
+          onChange={(prop) => {
+            alert.update("font", prop.value);
+          }}
+        />
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="alert-message-appearance-label">
+          <Select
+            value={alert.property("message-appearance")}
+            className="full-width"
+            onChange={(e) => {
+              alert.update("message-appearance", e);
+            }}
+            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
+              (option) => {
+                return {
+                  value: option,
+                  label: (
+                    <>
+                      <Trans i18nKey={option} />
+                    </>
+                  ),
+                };
+              },
+            )}
+          />
+        </LabeledContainer>
+      </div>
+    </>
+  );
+});
+
+const HeaderTab = observer(({ alert }: { alert: Alert }) => {
+  return (
+    <>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-title-template">
+          <TextPropertyModal title="widget-alert-title-template">
+            <TextArea
+              className="full-width"
+              value={alert.property("nicknameTextTemplate")}
+              onChange={(text) =>
+                alert.update("nicknameTextTemplate", text.target.value)
+              }
+            />
+          </TextPropertyModal>
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <AnimatedFontComponent
+          property={
+            new AnimatedFontProperty({
+              name: "headerFont",
+              value: alert.property("headerFont"),
+              label: "widget-alert-title-font-family",
+            })
+          }
+          onChange={(prop) => {
+            alert.update("headerFont", prop.value);
+          }}
+        />
+      </div>
+    </>
+  );
+});
+
+const ImageTab = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
+  return (
+    <>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-image-width">
+          <InputNumber
+            className="full-width"
+            value={alert.property("imageWidth")}
+            onChange={(newValue) => {
+              alert.update("imageWidth", newValue);
+            }}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-image-height">
+          <InputNumber
+            className="full-width"
+            value={alert.property("imageHeight")}
+            onChange={(newValue) => {
+              alert.update("imageHeight", newValue);
+            }}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-image-show-time">
+          <InputNumber
+            className="full-width"
+            value={alert.property("imageShowTime")}
+            onChange={(newValue) => {
+              alert.update("imageShowTime", newValue);
+            }}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="alert-appearance-label">
+          <Select
+            className="full-width"
+            value={alert.property("appearance")}
+            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
+              (option) => {
+                return { label: t(option), value: option };
+              },
+            )}
+            onChange={(selected) => {
+              alert.update("appearance", selected);
+            }}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="upload-button-container">
+        {!alert.video && !alert.image && (
+          <div
+            style={{
+              marginBottom: "10px",
+              marginTop: "10px",
+              marginRight: "10px",
+            }}
+          >
+            <label className="oda-btn-default" style={{ marginRight: "10px" }}>
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleFileUpload(e).then((name) => {
+                    alert.video = name;
+                  })
+                }
+              />
+              {t("button-upload-video")}
+            </label>
+            <label className="oda-btn-default">
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleFileUpload(e).then((name) => {
+                    alert.image = name;
+                  })
+                }
+              />
+              {t("button-upload-image")}
+            </label>
+          </div>
+        )}
+        {(alert.video || alert.image) && (
+          <div
+            style={{
+              marginTop: "10px",
+              marginBottom: "10px",
+              marginRight: "40px",
+            }}
+          >
+            <label
+              className="oda-btn-default"
+              onClick={() => {
+                alert.image = null;
+                alert.video = null;
+              }}
+            >
+              {t("button-delete")}
+            </label>
+          </div>
+        )}
+      </div>
+    </>
+  );
+});
 
-  // const tabContent = (alert: Alert, selectedTab: string) =>
-  //   alert?.properties
-  //     .filter((it) => it.tab === selectedTab)
-  //     .filter((it) => it.type !== "fontselect")
-  //     .filter((it) => it.type !== "custom")
-  //     .map((prop) => (
-  //       <div className="settings-item">
-  //         <LabeledContainer key={`${prop.name}`} displayName={prop.displayName}>
-  //           {(!prop.type || prop.type == "string") && (
-  //             <Input
-  //               value={prop.value}
-  //               onChange={(e) => {
-  //                 // update(prop.name, e.target.value, index);
-  //               }}
-  //             />
-  //           )}
-  //           {prop.type === "color" && (
-  //             <ColorPicker
-  //               value={prop.value}
-  //               onChange={(value: any) => {
-  //                 // update(prop.name, value, index)
-  //               }}
-  //             />
-  //           )}
-  //           {prop.type === "text" && (
-  //             <TextPropertyModal
-  //               title={prop.displayName}
-  //               className="textarea-popup-container"
-  //             >
-  //               <div className="textarea-container">
-  //                 <textarea
-  //                   style={{ height: "700px" }}
-  //                   className="widget-settings-value"
-  //                   value={prop.value}
-  //                   // onChange={(e) => update(prop.name, e.target.value, index)}
-  //                 />
-  //               </div>
-  //             </TextPropertyModal>
-  //           )}
-  //           {prop.type === "boolean" && (
-  //             <BooleanPropertyInput
-  //               prop={prop}
-  //               // onChange={() => update(prop.name, !prop.value, index)}
-  //             />
-  //           )}
-  //         </LabeledContainer>
-  //       </div>
-  //     ));
+const SoundTab = observer(({ alert }: { alert: Alert }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="sound-container">
+      {alert.audio && (
+        <>
+          <div className="settings-item">
+            <LabeledContainer displayName="Файл">
+              <div className="current-sound">
+                <span className="audio-name">{alert.audio}</span>
+                <span
+                  onClick={() => playAudio(alert.audio)}
+                  className="material-symbols-sharp"
+                >
+                  play_circle
+                </span>
+                <span
+                  onClick={() => {
+                    alert.audio = null;
+                  }}
+                  className="material-symbols-sharp"
+                >
+                  delete
+                </span>
+              </div>
+            </LabeledContainer>
+          </div>
+          <div className="settings-item full-width">
+            <LabeledContainer displayName="Громкость">
+              <Slider
+                min={1}
+                max={100}
+                defaultValue={100}
+                value={alert.property("audio-volume")}
+                onChange={(value) => alert.update("audio-volume", value)}
+              />
+            </LabeledContainer>
+          </div>
+        </>
+      )}
+      <div className="audio-button-container">
+        {!alert.audio && (
+          <div style={{ textAlign: "center", width: "100%" }}>
+            <label className="oda-btn-default">
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleFileUpload(e).then((name) => (alert.audio = name))
+                }
+              />
+              {t("button-upload-audio")}
+            </label>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
 
-  // label: t("tab-alert-trigger"),
-  // const tabs = (alert: Alert) => [
-  //   {
-  //     key: "image",
-  //     label: t("tab-alert-image"),
-  //     children: [
-  //       <>
-  //         {[
-  //           ...tabContent(alert, "image", index),
-  //           <div className="settings-item">
-  //             <LabeledContainer displayName="alert-appearance-label">
-  //               <Select
-  //                 className="full-width"
-  //                 value={
-  //                   alert.properties.find((prop) => prop.name === "appearance")
-  //                     ?.value
-  //                 }
-  //                 options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
-  //                   (option) => {
-  //                     return { label: t(option), value: option };
-  //                   },
-  //                 )}
-  //                 onChange={(selected) => {
-  //                   update("appearance", selected, index);
-  //                 }}
-  //               />
-  //             </LabeledContainer>
-  //           </div>,
-  //           <div className="upload-button-container">
-  //             {!alert.video && !alert.image && (
-  //               <>
-  //                 <div
-  //                   style={{
-  //                     marginBottom: "10px",
-  //                     marginTop: "10px",
-  //                     marginRight: "10px",
-  //                   }}
-  //                 >
-  //                   <label
-  //                     className="oda-btn-default"
-  //                     style={{ marginRight: "10px" }}
-  //                   >
-  //                     <input
-  //                       type="file"
-  //                       onChange={(e) => handleVideoUpload(e, index)}
-  //                     />
-  //                     {t("button-upload-video")}
-  //                   </label>
-  //                   <label className="oda-btn-default">
-  //                     <input
-  //                       type="file"
-  //                       onChange={(e) => handleFileChange(e, index)}
-  //                     />
-  //                     {t("button-upload-image")}
-  //                   </label>
-  //                 </div>
-  //               </>
-  //             )}
-  //             {(alert.video || alert.image) && (
-  //               <div
-  //                 style={{
-  //                   marginTop: "10px",
-  //                   marginBottom: "10px",
-  //                   marginRight: "40px",
-  //                 }}
-  //               >
-  //                 <label
-  //                   className="oda-btn-default"
-  //                   onClick={() => deleteImage(index)}
-  //                 >
-  //                   {t("button-delete")}
-  //                 </label>
-  //               </div>
-  //             )}
-  //           </div>,
-  //         ]}
-  //       </>,
-  //     ],
-  //   },
-  //   {
-  //     key: "sound",
-  //     label: t("tab-alert-audio"),
-  //     children: [
-  //       <>
-  //         {[
-  //           <div className="sound-container">
-  //             {alert.audio && (
-  //               <>
-  //                 <div className="settings-item">
-  //                   <LabeledContainer displayName="Файл">
-  //                     <div className="current-sound">
-  //                       <span className="audio-name">{alert.audio}</span>
-  //                       <span
-  //                         onClick={() => playAudio(alert.audio)}
-  //                         className="material-symbols-sharp"
-  //                       >
-  //                         play_circle
-  //                       </span>
-  //                       <span
-  //                         onClick={() => deleteAudio(index)}
-  //                         className="material-symbols-sharp"
-  //                       >
-  //                         delete
-  //                       </span>
-  //                     </div>
-  //                   </LabeledContainer>
-  //                 </div>
-  //                 <div className="settings-item full-width">
-  //                   <LabeledContainer displayName="Громкость">
-  //                     <Slider
-  //                       min={1}
-  //                       max={100}
-  //                       defaultValue={100}
-  //                       value={
-  //                         alert.properties.find(
-  //                           (prop) => prop.name === "audio-volume",
-  //                         )?.value
-  //                       }
-  //                       onChange={(value) =>
-  //                         update("audio-volume", value, index)
-  //                       }
-  //                     />
-  //                   </LabeledContainer>
-  //                 </div>
-  //               </>
-  //             )}
-  //             <div className="audio-button-container">
-  //               {!alert.audio && (
-  //                 <div style={{ textAlign: "center", width: "100%" }}>
-  //                   <label className="oda-btn-default">
-  //                     <input
-  //                       type="file"
-  //                       onChange={(e) => handleAudioUpload(e, index)}
-  //                     />
-  //                     {t("button-upload-audio")}
-  //                   </label>
-  //                 </div>
-  //               )}
-  //             </div>
-  //           </div>,
-  //         ]}
-  //       </>,
-  //     ],
-  //   },
-  //   {
-  //     key: "voice",
-  //     label: t("tab-alert-voice"),
-  //     children: [<>{tabContent(alert, "voice", index)}</>],
-  //   },
-  //   {
-  //     key: "header",
-  //     label: t("tab-alert-title"),
-  //     children: [
-  //       <>
-  //         {[
-  //           ...tabContent(alert, "header", index),
-  //           <div className="settings-item">
-  //             <WidgetsContext.Provider
-  //               value={{
-  //                 config: config,
-  //                 setConfig: setConfig,
-  //                 updateConfig: (widgetId, name, value) =>
-  //                   update("headerFont", value, index),
-  //               }}
-  //             >
-  //               <AnimatedFontComponent
-  //                 property={
-  //                   new AnimatedFontProperty({
-  //                     widgetId: "widgetId",
-  //                     name: "headerFont",
-  //                     value: alert.properties.find(
-  //                       (prop) => prop.name === "headerFont",
-  //                     )?.value,
-  //                     label: "widget-alert-title-font-family",
-  //                   })
-  //                 }
-  //               />
-  //             </WidgetsContext.Provider>
-  //           </div>,
-  //         ]}
-  //       </>,
-  //     ],
-  //   },
-  //   {
-  //     key: "message",
-  //     label: t("tab-alert-message"),
-  //     children: [
-  //       <>
-  //         {[
-  //           <div className="settings-item">
-  //             <WidgetsContext.Provider
-  //               value={{
-  //                 config: config,
-  //                 setConfig: setConfig,
-  //                 updateConfig: (widgetId, name, value) =>
-  //                   update("font", value, index),
-  //               }}
-  //             >
-  //               <AnimatedFontComponent
-  //                 property={
-  //                   new AnimatedFontProperty({
-  //                     widgetId: "widgetId",
-  //                     name: "font",
-  //                     value: alert.properties.find(
-  //                       (prop) => prop.name === "font",
-  //                     )?.value,
-  //                     label: "widget-alert-message-font-family",
-  //                   })
-  //                 }
-  //               />
-  //             </WidgetsContext.Provider>
-  //           </div>,
-  //           <div className="settings-item">
-  //             {new SingleChoiceProperty({
-  //               widgetId: "widgetId",
-  //               name: "message-appearance",
-  //               value: alert.properties.find(
-  //                 (prop) => prop.name === "message-appearance",
-  //               )?.value,
-  //               displayName: "alert-message-appearance-label",
-  //               options: [...APPEARANCE_ANIMATIONS, "random", "none"],
-  //             }).markup((widgetId, name, value) =>
-  //               update("message-appearance", value, index),
-  //             )}
-  //           </div>,
-  //         ]}
-  //       </>,
-  //     ],
-  //   },
-  // ];
+const VoiceTab = observer(({ alert }: { alert: Alert }) => {
+  return (
+    <>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-voice-for-header">
+          <BooleanPropertyInput
+            prop={{ value: alert.property("voiceForHeader") }}
+            onChange={(e) => alert.update("voiceForHeader", e)}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-voice-title-phrase">
+          <TextPropertyModal title="widget-alert-voice-title-phrase">
+            <TextArea
+              className="full-width"
+              value={alert.property("voiceTextTemplate")}
+              onChange={(text) =>
+                alert.update("voiceTextTemplate", text.target.value)
+              }
+            />
+          </TextPropertyModal>
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-voice-if-empty">
+          <BooleanPropertyInput
+            prop={{ value: alert.property("enableVoiceWhenMessageIsEmpty") }}
+            onChange={(e) => alert.update("enableVoiceWhenMessageIsEmpty", e)}
+          />
+        </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-voice-empty-alert-phrase">
+          <TextPropertyModal title="widget-alert-voice-empty-alert-phrase">
+            <TextArea
+              className="full-width"
+              value={alert.property("voiceEmptyTextTemplates")}
+              onChange={(text) =>
+                alert.update("voiceEmptyTextTemplates", text.target.value)
+              }
+            />
+          </TextPropertyModal>
+        </LabeledContainer>
+      </div>
+    </>
+  );
+});
+
+export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
+  const { t } = useTranslation();
+  log.debug({ alert: toJS(alert) }, "render alert");
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
@@ -329,11 +456,42 @@ export const AlertComponent = observer(() => {
           <img className="alert-no-image" src={`/icons/picture.png`} />
         </div>
       )}
-      <Tabs tabs={tabs()} properties={[]} />
-      <div
-        onClick={() => settings.deleteAlert(alert.id)}
-        className="alert-delete-button"
-      >
+      <AntTabs
+        type="card"
+        items={[
+          {
+            key: "trigger",
+            label: t("tab-alert-trigger"),
+            children: [<TriggerTab alert={alert} />],
+          },
+          {
+            key: "image",
+            label: t("tab-alert-image"),
+            children: [<ImageTab alert={alert} />],
+          },
+          {
+            key: "sound",
+            label: t("tab-alert-audio"),
+            children: [<SoundTab alert={alert} />],
+          },
+          {
+            key: "header",
+            label: t("tab-alert-title"),
+            children: [<HeaderTab alert={alert} />],
+          },
+          {
+            key: "message",
+            label: t("tab-alert-message"),
+            children: [<MessageTab alert={alert} />],
+          },
+          {
+            key: "voice",
+            label: t("tab-alert-voice"),
+            children: [<VoiceTab alert={alert} />],
+          },
+        ]}
+      />
+      <div onClick={() => alert.delete()} className="alert-delete-button">
         <span className="material-symbols-sharp">delete</span>
       </div>
     </div>

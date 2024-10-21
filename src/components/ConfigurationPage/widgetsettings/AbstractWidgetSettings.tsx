@@ -5,10 +5,8 @@ import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
 import {
   computed,
-  getObserverTree,
   makeObservable,
   observable,
-  observe,
   toJS,
 } from "mobx";
 
@@ -21,16 +19,25 @@ export interface SettingsSection {
 export class AbstractWidgetSettings {
   private _index: Map<string, WidgetProperty<any>> = new Map();
   private _sections: SettingsSection[];
-  private _initial: any;
+  // private _initial: any;
 
   constructor({ sections }: { sections: SettingsSection[] }) {
     this._sections = sections;
-    this._initial = this.prepareConfig();
+    // this._initial = this.prepareConfig();
     this.makeIndex();
     makeObservable(this, {
       _sections: observable,
       unsaved: computed,
     });
+  }
+
+  protected get sections(){
+    return this._sections;
+  }
+
+  protected set sections(section: SettingsSection[]) {
+    this._sections = section;
+    this.makeIndex();
   }
 
   public get unsaved(): boolean {
@@ -55,7 +62,7 @@ export class AbstractWidgetSettings {
     return prepared;
   }
 
-  private makeIndex() {
+  protected makeIndex() {
     this._sections
       .flatMap((section) => section.properties)
       .forEach((prop) => {

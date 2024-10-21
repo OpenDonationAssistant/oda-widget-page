@@ -1,38 +1,27 @@
 import { NumberProperty } from "../widgetproperties/NumberProperty";
-import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
-
-  constructor(widgetId: string, properties: WidgetProperty[]) {
-    const tabs  = new Map();
-    tabs.set("general", "Общие");
-    super(
-      widgetId,
-      properties,
-      [
-        new NumberProperty(
-          widgetId,
-          "playlistSongTitleFontSize",
-          "number",
-          "16",
-          "widget-media-title-font-size",
-          "general"
-        ),
-        new NumberProperty(
-          widgetId,
-          "playlistNicknameFontSize",
-          "number",
-          "16",
-          "widget-media-customer-font-size",
-          "general"
-        ),
+  constructor() {
+    super({
+      sections: [
+        {
+          key: "general",
+          title: "Общие",
+          properties: [
+            new NumberProperty({
+              name: "playlistSongTitleFontSize",
+              value: 16,
+              displayName: "widget-media-title-font-size",
+            }),
+            new NumberProperty({
+              name: "playlistNicknameFontSize",
+              value: 16,
+              displayName: "widget-media-customer-font-size",
+            }),
+          ],
+        },
       ],
-      tabs
-    );
-  }
-
-  copy() {
-    return new MediaWidgetSettings(this.widgetId, this.properties);
+    });
   }
 }

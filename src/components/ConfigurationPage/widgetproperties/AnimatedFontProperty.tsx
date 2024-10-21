@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import FontImport from "../../FontImport/FontImport";
-import AnimatedFontComponent from "./AnimatedFontComponent";
 import { produce } from "immer";
 import {
   ColorProperty,
@@ -10,6 +9,8 @@ import {
   DEFAULT_COLOR_PROPERTY_VALUE,
 } from "./ColorProperty";
 import { log } from "../../../logging";
+import { reaction } from "mobx";
+import { AnimatedFontComponent } from "./AnimatedFontComponent";
 
 export interface FontPropertyValue {
   family: string;

@@ -1,9 +1,7 @@
 import React, { useContext } from "react";
 import { Tabs as AntTabs, Input, InputNumber, Select, Slider } from "antd";
 import { useTranslation } from "react-i18next";
-import { PaymentAlertsWidgetSettingsContext } from "./PaymentAlertsWidgetSettings";
 import { observer } from "mobx-react-lite";
-import classes from "./PaymentAlertsWidgetSettingsComponent.module.css";
 
 export const APPEARANCE_ANIMATIONS = [
   "bounce",
@@ -65,7 +63,6 @@ export const APPEARANCE_ANIMATIONS = [
 ];
 
 export const PaymentAlertsWidgetSettingsComponent = observer(() => {
-  const settings = useContext(PaymentAlertsWidgetSettingsContext);
   const { t } = useTranslation();
 
   function addDefaultAlert(): void {
@@ -81,17 +78,6 @@ export const PaymentAlertsWidgetSettingsComponent = observer(() => {
           label: t("tab-alert-alerts"),
           children: (
             <>
-              <div className={`${classes.adddalertbutton}`}>
-                <button
-                  className="oda-btn-default"
-                  onClick={() => addDefaultAlert()}
-                >
-                  {t("button-add-alert")}
-                </button>
-              </div>
-              <div className={`${classes.preview}`}>
-                {settings.alerts.map((it) => it.markup())}
-              </div>
             </>
           ),
         },

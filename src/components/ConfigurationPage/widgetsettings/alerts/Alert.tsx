@@ -1,10 +1,12 @@
 import { uuidv7 } from "uuidv7";
 import { DEFAULT_PROPERTIES } from "./DefaultProperties";
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { InputNumber } from "antd";
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable, reaction } from "mobx";
 import { AlertComponent } from "./AlertComponent";
+import { PaymentAlertsProperty } from "./PaymentAlertsProperty";
+import { log } from "../../../../logging";
 
 export interface Amount {
   major: number;
@@ -100,6 +102,8 @@ export class Alert {
   private _video: string | null = null;
   private _triggers: Trigger[] = [DEFAULT_TRIGGER];
   private _properties: any[] = DEFAULT_PROPERTIES;
+  // TODO: use store
+  private _removeFn: Function;
 
   constructor({
     id,
@@ -108,6 +112,7 @@ export class Alert {
     video,
     triggers,
     properties,
+    removeFn,
   }: {
     id?: string;
     audio?: string;
@@ -115,6 +120,7 @@ export class Alert {
     video?: string;
     triggers?: Trigger[];
     properties?: any[];
+    removeFn: Function;
   }) {
     this._id = id || uuidv7();
     this.audio = audio || null;
@@ -122,7 +128,33 @@ export class Alert {
     this.video = video || null;
     this.triggers = triggers || [DEFAULT_TRIGGER];
     this.properties = this.mergeWithDefault(properties);
+    this._removeFn = removeFn;
     makeAutoObservable(this);
+  }
+
+  public config() {
+    return {
+      id: this._id,
+      audio: this._audio,
+      image: this._image,
+      video: this._video,
+      triggers: this._triggers,
+      properties: this._properties,
+    };
+  }
+
+  public property(name: string): any | null {
+    return this._properties.find((it) => it.name === name)?.value;
+  }
+
+  public update(name: string, value: any): void {
+    log.debug({name: name, value: value},"updating alert");
+    this._properties.map((it) => {
+      if (it.name === name) {
+        it.value = value;
+      }
+      return it;
+    });
   }
 
   public deleteImage(): void {
@@ -182,6 +214,10 @@ export class Alert {
     this._properties = value;
   }
 
+  public delete() {
+    this._removeFn(this._id);
+  }
+
   private mergeWithDefault(properties?: any[]): any[] {
     const props = new Map<string, any>();
     properties?.forEach((it) => {
@@ -193,12 +229,6 @@ export class Alert {
   }
 
   public markup(): ReactNode {
-    return (
-      <AlertContext.Provider value={this}>
-        <AlertComponent />
-      </AlertContext.Provider>
-    );
+    return <AlertComponent alert={this} />;
   }
 }
-
-export const AlertContext = createContext<Alert>(new Alert({}));

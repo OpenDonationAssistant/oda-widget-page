@@ -1,5 +1,4 @@
 import React from "react";
-import { WidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
 import { Tabs as AntTabs } from "antd";
 import { useTranslation } from "react-i18next";
 import { SettingsSection } from "../ConfigurationPage/widgetsettings/AbstractWidgetSettings";

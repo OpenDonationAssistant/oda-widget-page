@@ -1,47 +1,32 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import ModalButton from "../../ModalButton/ModalButton";
+import { observer } from "mobx-react-lite";
 
-export class TextProperty extends DefaultWidgetProperty {
-  constructor(
-    widgetId: string,
-    name: string,
-    type: string,
-    value: any,
-    displayName: string,
-    tab?: string | undefined,
-  ) {
-    super(widgetId, name, type, value, displayName, tab);
-  }
-
-  copy() {
-    return new TextProperty(
-      this.widgetId,
-      this.name,
-      this.type,
-      this.value,
-      this.displayName,
-      this.tab,
-    );
-  }
-
-  markup(updateConfig: Function): ReactNode {
+const TextPropertyComponent = observer(
+  ({ property }: { property: TextProperty }) => {
     return (
       <ModalButton
-        modalTitle={this.displayName}
+        modalTitle={property.displayName}
         buttonLabel="button-settings"
-        label={this.displayName}
+        label={property.displayName}
       >
         <div className="textarea-container">
           <textarea
             className="widget-settings-value"
-            value={this.value}
-            onChange={(e) =>
-              updateConfig(this.widgetId, this.name, e.target.value)
-            }
+            value={property.value}
+            onChange={(e) => {
+              property.value = e.target.value;
+            }}
           />
         </div>
       </ModalButton>
     );
+  },
+);
+
+export class TextProperty extends DefaultWidgetProperty<string> {
+  markup(): ReactNode {
+    return <TextPropertyComponent property={this} />;
   }
 }

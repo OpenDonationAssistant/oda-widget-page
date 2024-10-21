@@ -1,6 +1,6 @@
 import { Select } from "antd";
 
-const fonts = [
+export const Fonts = [
   "Alice",
   "Play",
   "Roboto",
@@ -58,7 +58,7 @@ export default function FontSelect({
       value={prop.value}
       onChange={onChange}
       className={className}
-      options={fonts.sort().map((font) => {
+      options={Fonts.sort().map((font) => {
         return { value: font, label: font };
       })}
     />

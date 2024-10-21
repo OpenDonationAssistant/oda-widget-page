@@ -3,6 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Segmented, Select } from "antd";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { observer } from "mobx-react-lite";
 
 export enum SELECTION_TYPE {
   DROPDOWN,
@@ -31,7 +32,7 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
     this._selectionType = selectionType ?? SELECTION_TYPE.DROPDOWN;
   }
 
-  segmentedSelect = () => {
+  SegmentedSelect = observer(() => {
     const { t } = useTranslation();
     return (
       <Segmented
@@ -46,9 +47,9 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
         }}
       />
     );
-  };
+  });
 
-  dropdownSelect = () => {
+  DropdownSelect = observer(() => {
     return (
       <Select
         value={this.value}
@@ -68,14 +69,14 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
         })}
       />
     );
-  };
+  });
 
   renderSelect() {
     switch (this._selectionType) {
       case SELECTION_TYPE.DROPDOWN:
-        return this.dropdownSelect();
+        return <this.DropdownSelect />;
       case SELECTION_TYPE.SEGMENTED:
-        return this.segmentedSelect();
+        return <this.SegmentedSelect />;
     }
   }
 

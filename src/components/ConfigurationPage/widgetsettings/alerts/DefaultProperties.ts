@@ -1,66 +1,46 @@
 export const DEFAULT_PROPERTIES = [
     {
-      tab: "image",
       name: "imageWidth",
       value: null,
-      displayName: "widget-alert-image-width",
     },
     {
-      tab: "image",
       name: "imageHeight",
       value: null,
-      displayName: "widget-alert-image-height",
     },
     {
-      tab: "image",
       name: "imageShowTime",
       value: null,
-      displayName: "widget-alert-image-show-time",
     },
     {
-      tab: "image",
       name: "appearance",
-      type: "custom",
       value: "none",
     },
     {
-      tab: "sound",
       name: "audio-volume",
-      type: "custom",
       value: 50,
     },
     {
-      tab: "header",
       name: "headerFont",
-      type: "fontselect",
       value: null,
-      displayName: "widget-alert-title-font-family",
     },
     {
-      tab: "header",
       name: "nicknameTextTemplate",
-      type: "text",
       value: "<username> - <amount>",
-      displayName: "widget-alert-title-template",
     },
     {
-      tab: "message",
       name: "font",
-      type: "fontselect",
       value: null,
-      displayName: "widget-alert-message-font-family",
     },
     {
-      tab: "voice",
+      name: "appearance",
+      value: "none",
+    },
+    {
       name: "enableVoiceForHeader",
-      type: "boolean",
       value: true,
-      displayName: "widget-alert-voice-for-header",
     },
     {
-      tab: "voice",
       name: "voiceTextTemplate",
-      type: "text",
       value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username> с фразой
 Щедрый донат в <amount> рублей от <username> со словами
@@ -96,19 +76,13 @@ export const DEFAULT_PROPERTIES = [
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-      displayName: "widget-alert-voice-title-phrase",
     },
     {
-      tab: "voice",
       name: "enableVoiceWhenMessageIsEmpty",
-      type: "boolean",
       value: true,
-      displayName: "widget-alert-voice-if-empty",
     },
     {
-      tab: "voice",
       name: "voiceEmptyTextTemplates",
-      type: "text",
       value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username>
 Щедрый донат в <amount> рублей от <username>
@@ -144,6 +118,13 @@ export const DEFAULT_PROPERTIES = [
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-      displayName: "widget-alert-voice-empty-alert-phrase",
+    },
+    {
+      name: "message-appearance",
+      value: "none",
+    },
+    {
+      name: "voiceForHeader",
+      value: true,
     },
 ]

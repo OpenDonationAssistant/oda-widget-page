@@ -2,17 +2,13 @@ import React from "react";
 import { ReactNode } from "react";
 import {
   action,
-  autorun,
   comparer,
   computed,
-  getObserverTree,
   makeObservable,
   observable,
-  reaction,
+  toJS,
 } from "mobx";
 import { log } from "../../../logging";
-import { produce } from "immer";
-import { deepEqual } from "assert";
 
 export interface WidgetProperty<Type> {
   name: string;
@@ -56,8 +52,9 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }
 
   public markSaved(): void {
+    const actualValue = toJS(this._value);
     this._initialValue =
-      typeof this._value === "object" ? { ...this._value } : this._value;
+      typeof actualValue === "object" ? { ...actualValue } : actualValue;
     log.debug({ initialValue: this._initialValue }, "markSaved");
   }
 
@@ -95,7 +92,8 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }
 
   public get changed(): boolean {
-    const result = !this.deepEqual(this._value, this._initialValue);
+    const result = !this.deepEqual(toJS(this._value), toJS(this._initialValue));
+    log.debug({ result: result, property: toJS(this)}, "calc changes");
     if (result) {
       log.debug(
         {

@@ -3,16 +3,15 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import axios from "axios";
 import classes from "./ReelItemBackgroundProperty.module.css";
 
-export class ReelItemBackgroundProperty extends DefaultWidgetProperty {
-  constructor(widgetId: string, value: string) {
-    super(
-      widgetId,
-      "backgroundImage",
-      "predefined",
-      value,
-      "Фон карточек",
-      "prizes",
-    );
+export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
+  string | null
+> {
+  constructor() {
+    super({
+      name: "backgroundImage",
+      value: null,
+      displayName: "Фон карточек",
+    });
   }
 
   uploadFile(file: File, name: string) {
@@ -27,24 +26,17 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty {
     );
   }
 
-  handleBackgroundImageChange(
-    e: ChangeEvent<HTMLInputElement>,
-    updateConfig: Function,
-  ) {
+  handleBackgroundImageChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, '');
-      this.uploadFile(file, name).then((ignore) => {
-        updateConfig(this.widgetId, "backgroundImage", name);
+      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
+      this.uploadFile(file, name).then(() => {
+        this.value = name;
       });
     }
   }
 
-  copy(): ReelItemBackgroundProperty {
-    return new ReelItemBackgroundProperty(this.widgetId, this.value);
-  }
-
-  markup(updateConfig: Function): ReactNode {
+  markup(): ReactNode {
     return (
       <>
         <div className={`${classes.itembackcontainer}`}>
@@ -52,9 +44,7 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty {
           <label className={`upload-button ${classes.itembackuploadbutton}`}>
             <input
               type="file"
-              onChange={(e) =>
-                this.handleBackgroundImageChange(e, updateConfig)
-              }
+              onChange={(e) => this.handleBackgroundImageChange(e)}
             />
             Загрузить изображение
           </label>

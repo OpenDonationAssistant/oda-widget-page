@@ -2,27 +2,20 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonatersTopListLayoutProperty.module.css";
 import { Trans } from "react-i18next";
+import { observer } from "mobx-react-lite";
 
-export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
-  constructor(widgetId: string, value: string) {
-    super(widgetId, "layout", "predefined", value, "Компоновка", "layout");
-  }
-
-  copy(): DonatersTopListLayoutProperty {
-    return new DonatersTopListLayoutProperty(this.widgetId, this.value);
-  }
-
-  markup(updateConfig: Function): ReactNode {
+const DonatersTopListLayoutPropertyComponent = observer(
+  ({ property }: { property: DonatersTopListLayoutProperty }) => {
     return (
       <>
-        <div key={this.name} className="widget-settings-item">
+        <div key={property.name} className="widget-settings-item">
           <div className="widget-settings-radiocontainer">
             <div
               className={`${classes.radiobutton} ${
-                this.value === "vertical" ? classes.selected : ""
+                property.value === "vertical" ? classes.selected : ""
               }`}
               onClick={() => {
-                updateConfig(this.widgetId, this.name, "vertical");
+                property.value = "vertical";
               }}
             >
               <img title="vertical" src={`/icons/vertical.jpg`} />
@@ -32,10 +25,10 @@ export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
             </div>
             <div
               className={`${classes.radiobutton} ${
-                this.value === "horizontal" ? classes.selected : ""
+                property.value === "horizontal" ? classes.selected : ""
               }`}
               onClick={() => {
-                updateConfig(this.widgetId, this.name, "horizontal");
+                property.value = "horizontal";
               }}
             >
               <img title="horizontal" src={`/icons/horizontal.jpg`} />
@@ -47,5 +40,15 @@ export class DonatersTopListLayoutProperty extends DefaultWidgetProperty {
         </div>
       </>
     );
+  },
+);
+
+export class DonatersTopListLayoutProperty extends DefaultWidgetProperty<string> {
+  constructor() {
+    super({ name: "layout", displayName: "Компоновка", value: "vertical" });
+  }
+
+  markup(): ReactNode {
+    return <DonatersTopListLayoutPropertyComponent property={this} />;
   }
 }

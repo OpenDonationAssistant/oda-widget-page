@@ -51,9 +51,9 @@ export default function ReelWidget({}) {
     subscribe(widgetId, conf.topic.reel, (message) => {
       log.info({ message: message }, "Received reel command");
       let json = JSON.parse(message.body);
-      // if (json.widgetId === widgetId ) {
-      handleSelection(json.selection);
-      // }
+      if (json.widgetId === widgetId ) {
+        handleSelection(json.selection);
+      }
       message.ack();
     });
     setupCommandListener(widgetId, () => navigate(0));

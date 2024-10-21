@@ -8,6 +8,9 @@ import { Collapse, InputNumber } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { observer } from "mobx-react-lite";
+import { toJS } from "mobx";
+import { produce } from "immer";
 
 export interface Amount {
   major: number;
@@ -23,13 +26,39 @@ export interface Goal {
   accumulatedAmount: Amount;
 }
 
-export class DonationGoalProperty extends DefaultWidgetProperty {
-  constructor(widgetId: string, value?: Goal[]) {
-    super(
-      widgetId,
-      "goal",
-      "predefined",
-      value ?? [
+const DonationGoalPropertyComponent = observer(
+  ({ property }: { property: DonationGoalProperty }) => {
+    return (
+      <>
+        <div style={{ marginTop: "10px", textAlign: "center" }}>
+          <button
+            className={`${classes.button} oda-btn-default`}
+            onClick={() => property.addGoal()}
+          >
+            <Trans i18nKey="button-add-goal" />
+          </button>
+        </div>
+        <Collapse
+          defaultActiveKey={["1"]}
+          items={property.value.map((goal: Goal, index: number) => {
+            return {
+              key: index,
+              label: goal.briefDescription,
+              children: property.item(goal, index),
+            };
+          })}
+        />
+      </>
+    );
+  },
+);
+
+// TODO: 18n
+export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
+  constructor() {
+    super({
+      name: "goal",
+      value: [
         {
           id: uuidv7(),
           briefDescription: "",
@@ -38,33 +67,25 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
           requiredAmount: { major: 100, currency: "RUB" },
         },
       ],
-      "Цель",
-      "goals",
-    );
+      displayName: "Цель",
+    });
   }
 
-  deleteGoal(updateConfig: Function, index: number) {
-    log.debug("deleting goal");
+  deleteGoal(index: number) {
     (this.value as Goal[]).splice(index, 1);
-    updateConfig(this.widgetId, "goal", this.value);
   }
 
-  updateGoal(updateConfig: Function, goal: Goal, index: number) {
-    log.debug(
-      { goals: this.value, updated: goal, index: index },
-      "goals before update",
-    );
+  updateGoal(goal: Goal, index: number) {
     const updated = (this.value as Goal[]).map((it) => {
       it.default = false;
       return it;
     });
     updated.splice(index, 1, goal);
-    log.debug({ goals: this.value }, "goals after update");
-    updateConfig(this.widgetId, "goal", updated);
+    this.value = updated;
   }
 
-  addGoal(updateConfig: Function) {
-    log.debug({ settings: this }, "adding goal to");
+  // TODO: 18n
+  addGoal() {
     (this.value as Goal[]).push({
       id: uuidv7(),
       briefDescription: "Название",
@@ -73,15 +94,10 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
       requiredAmount: { major: 100, currency: "RUB" },
       accumulatedAmount: { major: 0, currency: "RUB" },
     });
-    updateConfig(this.widgetId, "goal", this.value);
     log.debug({ settings: this }, "updated goals");
   }
 
-  copy(): DonationGoalProperty {
-    return new DonationGoalProperty(this.widgetId, this.value);
-  }
-
-  item(goal: Goal, index: number, updateConfig: Function) {
+  item(goal: Goal, index: number) {
     return (
       <div key={index} className={`${classes.goalcontainer}`}>
         <div className="settings-item">
@@ -91,9 +107,9 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
                 className="widget-settings-value"
                 value={goal.briefDescription}
                 onChange={(e) => {
-                  const updated = structuredClone(goal);
+                  const updated = toJS(goal);
                   updated.briefDescription = e.target.value;
-                  this.updateGoal(updateConfig, updated, index);
+                  this.updateGoal(updated, index);
                 }}
               />
             </TextPropertyModal>
@@ -106,9 +122,9 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
                 className="widget-settings-value"
                 value={goal.fullDescription}
                 onChange={(e) => {
-                  const updated = structuredClone(goal);
+                  const updated = toJS(goal);
                   updated.fullDescription = e.target.value;
-                  this.updateGoal(updateConfig, updated, index);
+                  this.updateGoal(updated, index);
                 }}
               />
             </TextPropertyModal>
@@ -120,9 +136,9 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
               value={goal.requiredAmount.major}
               addonAfter="руб."
               onChange={(value) => {
-                const updated = structuredClone(goal);
+                const updated = toJS(goal);
                 updated.requiredAmount.major = value ?? 0;
-                this.updateGoal(updateConfig, updated, index);
+                this.updateGoal(updated, index);
               }}
             />
           </LabeledContainer>
@@ -131,9 +147,9 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
           <LabeledContainer displayName="widget-goal-default">
             <BooleanPropertyInput
               onChange={() => {
-                const updated = structuredClone(goal);
+                const updated = toJS(goal);
                 updated.default = !updated.default;
-                this.updateGoal(updateConfig, updated, index);
+                this.updateGoal(updated, index);
               }}
               prop={{
                 value: goal.default,
@@ -141,11 +157,11 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
             />
           </LabeledContainer>
         </div>
-        <div style={{ textAlign: "right", marginBottom: "20px;" }}>
+        <div style={{ textAlign: "right" }}>
           <button
             className={`${classes.deletebutton}`}
             onClick={() => {
-              this.deleteGoal(updateConfig, index);
+              this.deleteGoal(index);
             }}
           >
             <Trans i18nKey="button-delete" />
@@ -155,28 +171,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty {
     );
   }
 
-  markup(updateConfig: Function): ReactNode {
-    return (
-      <>
-        <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <button
-            className={`${classes.button} oda-btn-default`}
-            onClick={() => this.addGoal(updateConfig)}
-          >
-            <Trans i18nKey="button-add-goal" />
-          </button>
-        </div>
-        <Collapse
-          defaultActiveKey={["1"]}
-          items={this.value.map((goal: Goal, index: number) => {
-            return {
-              key: index,
-              label: goal.briefDescription,
-              children: this.item(goal, index, updateConfig),
-            };
-          })}
-        />
-      </>
-    );
+  markup(): ReactNode {
+    return <DonationGoalPropertyComponent property={this} />;
   }
 }
