@@ -126,8 +126,8 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           key: "layout",
           title: "tab-donaters-list-style",
           properties: [
-            new DonatersTopListCarouselProperty(),
             new DonatersTopListLayoutProperty(),
+            new DonatersTopListCarouselProperty(),
             new BorderProperty({
               name: "widgetBorder",
             }),
