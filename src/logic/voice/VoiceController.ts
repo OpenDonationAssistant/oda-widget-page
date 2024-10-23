@@ -48,6 +48,7 @@ export class VoiceController {
       if (onEndHandler) {
         onEndHandler();
       }
+      log.debug({playTitle: playTitle},"skipping title playing");
       return;
     }
     const playIfMessageEmpty = this.findSetting(
@@ -192,6 +193,7 @@ export class VoiceController {
   }
 
   private findSetting(properties, key: string, defaultValue: any | null) {
+    log.debug({key: key, properties: properties},"searching property");
     const setting = properties.find((prop) => key === prop.name);
     if (setting) {
       return setting.value;

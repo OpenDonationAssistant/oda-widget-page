@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import {
   Alert,
   FixedDonationAmountTrigger,
@@ -7,7 +7,7 @@ import {
 } from "./Alert";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { Tabs as AntTabs, Input, InputNumber, Select, Slider } from "antd";
+import { Tabs as AntTabs, InputNumber, Select, Slider } from "antd";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import BooleanPropertyInput from "../../settings/properties/BooleanPropertyInput";
 import { observer } from "mobx-react-lite";
@@ -52,8 +52,27 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   });
 };
 
-const TriggerTab = observer(({ alert }: { alert: Alert }) => {
-  const [amount, setAmount] = useState<number>(10);
+const GeneralTab = observer(({ alert }: { alert: Alert }) => {
+  const [amount, setAmount] = useState<number>(() => {
+    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
+      return alert.triggers.at(0).amount;
+    }
+    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
+      return alert.triggers.at(0).min;
+    }
+    return 0;
+  });
+  const updateAmount = (amount: number) => {
+    log.debug({ triggers: alert.triggers }, "set amount");
+    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
+      alert.triggers.at(0).amount = amount;
+    }
+    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
+      alert.triggers.at(0).min = amount;
+    }
+    setAmount(amount);
+  };
+
   return (
     <>
       <div className="settings-item">
@@ -100,34 +119,30 @@ const TriggerTab = observer(({ alert }: { alert: Alert }) => {
         </LabeledContainer>
       </div>
       {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
-        <div className="settings-item">
-          <LabeledContainer displayName="">
-            <InputNumber
-              value={amount}
-              onChange={(newAmount) => {
-                if (!newAmount) {
-                  return;
-                }
-                setAmount(newAmount);
-              }}
-            />
-          </LabeledContainer>
-        </div>
+        <LabeledContainer displayName="">
+          <InputNumber
+            value={alert.triggers.at(0)?.amount}
+            onChange={(newAmount) => {
+              if (!newAmount) {
+                return;
+              }
+              updateAmount(newAmount);
+            }}
+          />
+        </LabeledContainer>
       )}
       {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
-        <div className="settings-item">
-          <LabeledContainer displayName="">
-            <InputNumber
-              value={amount}
-              onChange={(newAmount) => {
-                if (!newAmount) {
-                  return;
-                }
-                setAmount(newAmount);
-              }}
-            />
-          </LabeledContainer>
-        </div>
+        <LabeledContainer displayName="">
+          <InputNumber
+            value={alert.triggers.at(0)?.min}
+            onChange={(newAmount) => {
+              if (!newAmount) {
+                return;
+              }
+              updateAmount(newAmount);
+            }}
+          />
+        </LabeledContainer>
       )}
     </>
   );
@@ -387,8 +402,8 @@ const VoiceTab = observer(({ alert }: { alert: Alert }) => {
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-voice-for-header">
           <BooleanPropertyInput
-            prop={{ value: alert.property("voiceForHeader") }}
-            onChange={(e) => alert.update("voiceForHeader", e)}
+            prop={{ value: alert.property("enableVoiceForHeader") }}
+            onChange={(e) => alert.update("enableVoiceForHeader", e)}
           />
         </LabeledContainer>
       </div>
@@ -426,6 +441,14 @@ const VoiceTab = observer(({ alert }: { alert: Alert }) => {
           </TextPropertyModal>
         </LabeledContainer>
       </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-voice-for-message">
+          <BooleanPropertyInput
+            prop={{ value: alert.property("enableVoiceForMessage") }}
+            onChange={(e) => alert.update("enableVoiceForMessage", e)}
+          />
+        </LabeledContainer>
+      </div>
     </>
   );
 });
@@ -461,8 +484,8 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         items={[
           {
             key: "trigger",
-            label: t("tab-alert-trigger"),
-            children: [<TriggerTab alert={alert} />],
+            label: t("General"),
+            children: [<GeneralTab alert={alert} />],
           },
           {
             key: "image",

@@ -101,13 +101,15 @@ export class AlertController {
   }
 
   async handleSettings() {
-    const sorted = this.settings.config.alerts.sort(
-      (a, b) => a.trigger.amount - b.trigger.amount,
-    );
+    const alerts = this.settings.config.properties
+    .find(it => it.name === "alerts");
+    log.debug({ alerts: alerts }, "alerts properties");
+    const sorted =  alerts.value
+      .sort((a, b) => a.triggers.at(0).amount - b.triggers.at(0).amount);
     this.sortedAlerts = sorted;
     log.debug(`loading audio`);
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
-    log.debug(`alerts: ${JSON.stringify(this.sortedAlerts)}`);
+    log.debug({ alert: this.sortedAlerts}, "sorted alerts");
     this.preloadImages();
   }
 
@@ -134,9 +136,19 @@ export class AlertController {
   }
 
   findAlert(json) {
-    const index = this.sortedAlerts.findLastIndex(
-      (alert) => alert.trigger.amount <= json.amount.major,
-    );
+    const index = this.sortedAlerts.findLastIndex((alert) => {
+      const trigger = alert.triggers.at(0);
+      log.debug({ trigger: trigger }, "checking trigger");
+      if (!trigger) {
+        return false;
+      }
+      if (trigger.type === "fixed-donation-amount") {
+        return trigger.amount === json.amount.major;
+      }
+      if (trigger.type === "at-least-donation-amount") {
+        return trigger.min <= json.amount.major;
+      }
+    });
 
     log.debug(`choosen alert index: ${index}`);
     if (index === -1) {
@@ -176,7 +188,21 @@ export class AlertController {
       this.voiceController?.pronounceTitle(
         alert,
         data,
-        () =>
+        () => {
+          const voiceForMessage = this.findSetting(
+            alert.properties,
+            "enableVoiceForMessage",
+            true,
+          );
+          if (!voiceForMessage) {
+            // TODO: make common function
+            this.clear();
+            this.resumePlayer();
+            ackFunction();
+            this.sendEndNotification();
+            log.debug("skipping message playing");
+            return;
+          }
           this.voiceController?.pronounceMessage(alert, data, () => {
             const showTime = this.findSetting(
               alert.properties,
@@ -197,7 +223,8 @@ export class AlertController {
               ackFunction();
               this.sendEndNotification();
             }
-          }),
+          });
+        }
       );
     });
   }
@@ -220,11 +247,9 @@ export class AlertController {
     this.showing = false;
   }
 
-  
   private getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
   }
-
 
   private renderImage(alert: any) {
     log.debug(
@@ -246,12 +271,19 @@ export class AlertController {
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
         );
       }
-      if (appearance && appearance !== "none" && appearance  !== "random"){
-        renderer.setClassName(`animate__animated animate__slow animate__${appearance}`);
+      if (appearance && appearance !== "none" && appearance !== "random") {
+        renderer.setClassName(
+          `animate__animated animate__slow animate__${appearance}`,
+        );
       }
-      if (appearance  === "random"){
-        const choice = APPEARANCE_ANIMATIONS[this.getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)];
-        renderer.setClassName(`animate__animated animate__slow animate__${choice}`);
+      if (appearance === "random") {
+        const choice =
+          APPEARANCE_ANIMATIONS[
+            this.getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)
+          ];
+        renderer.setClassName(
+          `animate__animated animate__slow animate__${choice}`,
+        );
       }
       if (showTime) {
         setTimeout(() => {
@@ -300,7 +332,9 @@ export class AlertController {
       name: "font",
       value: this.findSetting(alert.properties, "font", null),
     });
-    this.fontLoaders.forEach((loader) => loader.addFont(messageFont.value.family));
+    this.fontLoaders.forEach((loader) =>
+      loader.addFont(messageFont.value.family),
+    );
     this.messageRenderers.forEach((renderer) => {
       renderer.setStyle(messageFont.calcStyle());
       renderer.setClassName(messageFont.calcClassName() ?? "");
@@ -318,7 +352,6 @@ export class AlertController {
           width: imageWidth + "px",
           height: imageHeight + "px",
         }
-      : {
-        };
+      : {};
   }
 }

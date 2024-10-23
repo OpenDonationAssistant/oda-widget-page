@@ -124,7 +124,7 @@ export const DEFAULT_PROPERTIES = [
       value: "none",
     },
     {
-      name: "voiceForHeader",
+      name: "enableVoiceForMessage",
       value: true,
     },
 ]

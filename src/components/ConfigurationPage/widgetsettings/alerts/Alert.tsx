@@ -3,9 +3,8 @@ import { DEFAULT_PROPERTIES } from "./DefaultProperties";
 import { ReactNode } from "react";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { InputNumber } from "antd";
-import { autorun, makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { AlertComponent } from "./AlertComponent";
-import { PaymentAlertsProperty } from "./PaymentAlertsProperty";
 import { log } from "../../../../logging";
 
 export interface Amount {
