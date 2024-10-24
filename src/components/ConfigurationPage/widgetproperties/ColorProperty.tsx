@@ -1,6 +1,8 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { ColorPropertyComponent } from "./ColorPropertyComponent";
+import { log } from "../../../logging";
+import { toJS } from "mobx";
 
 export enum GRADIENT_TYPE {
   LINEAR,
@@ -89,6 +91,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
   }
 
   calcRowColorValue(): string | undefined {
+    log.debug({ name: this.name, config: toJS(this.value)},"calculating row color value");
     const setting = this.value as ColorPropertyValue;
     let value = setting.colors.at(0)?.color;
     if (setting.gradient) {

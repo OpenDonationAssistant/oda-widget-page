@@ -28,8 +28,11 @@ let options: VideoJsPlayerOptions = {
 };
 
 enum PLAYER_STATE {
+  INITIALIZING,
   PLAYING,
   PAUSED,
+  SHOULD_BE_STOPED,
+  READY
 }
 
 interface Player {
@@ -52,10 +55,8 @@ export default function VideoJSComponent({
   const videoRef = useRef<HTMLDivElement>(null);
   const vkRef = useRef<HTMLDivElement>(null);
   const [hideVideo, setHideVideo] = useState(true);
-  const [playerState, setPlayerState] = useState<PLAYER_STATE>(
-    PLAYER_STATE.PAUSED,
-  );
-  const pausedByCommand = useRef<boolean>(false);
+  const [paused, setPaused] = useState<boolean>(false);
+  const playerState = useRef<PLAYER_STATE>(PLAYER_STATE.INITIALIZING);
   const [player, setPlayer] = useState<Player | null>(null);
   const commandHandler = useRef<Function | null>(null);
   const [volume, setVolume] = useState<number>(() => {
@@ -66,25 +67,35 @@ export default function VideoJSComponent({
     return 50;
   });
 
+  log.debug("Initing player component");
+
   function freeze() {
-    log.debug(`freezing player`);
-    if (player && !player.paused()) {
-      pausedByCommand.current = true;
-      player.pause();
+    log.debug(
+      { player: player, state: playerState.current },
+      `freezing player`,
+    );
+    if (playerState.current === PLAYER_STATE.PAUSED) {
+      log.debug(`cancel freezing because of paused player`);
+      return;
     }
+    playerState.current = PLAYER_STATE.SHOULD_BE_STOPED;
+    player && player.pause();
   }
 
   function unfreeze() {
-    log.debug(`unfreezing player`);
+    log.debug(
+      {
+        player: player,
+        playerState: playerState.current,
+      },
+      `unfreezing player`,
+    );
     if (!player) {
       log.debug(`cancel unfreeze because of missing player`);
       return;
     }
-    if (pausedByCommand.current) {
-      pausedByCommand.current = false;
-      log.debug(`calling player.play()`);
-      player.play();
-    }
+    log.debug(`calling player.play()`);
+    player && player.play();
   }
 
   function listenToggleVideoEvent() {
@@ -110,30 +121,37 @@ export default function VideoJSComponent({
     const player = VK.VideoPlayer(videoElement);
     player.on("started", () => {
       log.debug("start playing");
-      setPlayerState(PLAYER_STATE.PLAYING);
+      playerState.current = PLAYER_STATE.PLAYING;
+      setPaused(false);
       if (song) {
         sendAlert(song);
       }
     });
     player.on("resumed", () => {
       log.debug("start playing");
-      setPlayerState(PLAYER_STATE.PLAYING);
+      playerState.current = PLAYER_STATE.PLAYING;
+      setPaused(false);
       if (song) {
         sendAlert(song);
       }
     });
     player.on("paused", () => {
       log.debug("pause player");
-      setPlayerState(PLAYER_STATE.PAUSED);
+      playerState.current = PLAYER_STATE.PAUSED;
+      setPaused(true);
       sendAlert();
     });
     player.on("ended", () => {
       log.debug("song ended");
+      playerState.current=PLAYER_STATE.INITIALIZING;
       playlistController.finishSong();
+      setPaused(true);
       sendAlert();
     });
     player.on("error", function () {
       log.error(player.error());
+      playerState.current=PLAYER_STATE.INITIALIZING;
+      setPaused(true);
       playlistController.finishSong();
       sendAlert();
     });
@@ -161,12 +179,13 @@ export default function VideoJSComponent({
   useEffect(() => {
     commandHandler.current = (message) => {
       let json = JSON.parse(message.body);
-      if (player === null) {
-        message.ack();
-        return;
-      }
       if (json.command === "pause") {
         freeze();
+      }
+      if (player === null) {
+        log.debug("player is not ready yet");
+        message.ack();
+        return;
       }
       if (json.command === "resume") {
         unfreeze();
@@ -182,7 +201,7 @@ export default function VideoJSComponent({
       }
       if (json.command === "state") {
         if (song) {
-          if (playerState === PLAYER_STATE.PLAYING){
+          if (playerState.current === PLAYER_STATE.PLAYING) {
             sendAlert(song);
             playlistController.publishState();
           }
@@ -208,7 +227,7 @@ export default function VideoJSComponent({
     }
     log.debug(`sending song ${JSON.stringify(song)} to remote player`);
     publish(conf.topic.remoteplayer, { command: "play", song: song });
-    setPlayerState(PLAYER_STATE.PLAYING);
+    playerState.current = PLAYER_STATE.PLAYING;
     sendAlert(song);
   }, [isRemote, song]);
 
@@ -234,30 +253,40 @@ export default function VideoJSComponent({
     videoElement.classList.add("vjs-big-play-centered");
     videoRef.current?.appendChild(videoElement);
     options.sources = song;
-    log.debug({ options: options }, "creating player with  options");
+    options.autoplay = playerState.current !== PLAYER_STATE.SHOULD_BE_STOPED;
 
     const player = videojs(videoElement, options);
+    log.debug({ options: options }, "creating player with  options");
     player.src(song);
     player.volume(volume / 100);
     player.on("play", () => {
       log.debug("start playing");
-      setPlayerState(PLAYER_STATE.PLAYING);
+      setPaused(false);
+      if (playerState.current === PLAYER_STATE.SHOULD_BE_STOPED) {
+        player.pause();
+        return;
+      }
+      playerState.current = PLAYER_STATE.PLAYING;
       if (song) {
         sendAlert(song);
       }
     });
     player.on("pause", () => {
       log.debug("pause player");
-      setPlayerState(PLAYER_STATE.PAUSED);
+      setPaused(true);
+      playerState.current = PLAYER_STATE.PAUSED;
       sendAlert();
     });
     player.on("ended", () => {
       log.debug("song ended");
+      setPaused(true);
+      playerState.current = PLAYER_STATE.INITIALIZING;
       playlistController.finishSong();
       sendAlert();
     });
     player.on("error", function () {
       log.error(player.error());
+      setPaused(true);
       playlistController.finishSong();
       sendAlert();
     });
@@ -300,7 +329,7 @@ export default function VideoJSComponent({
             >
               <span className="material-symbols-sharp">skip_previous</span>
             </button>
-            {playerState == PLAYER_STATE.PAUSED && (
+            {paused && (
               <button
                 className="btn btn-outline-light"
                 disabled={song == null}
@@ -310,17 +339,17 @@ export default function VideoJSComponent({
                       command: "resume",
                     });
                     sendAlert(song ?? undefined);
-                    setPlayerState(PLAYER_STATE.PLAYING);
+                    playerState.current = PLAYER_STATE.PLAYING;
                   }
                   if (!isRemote) {
-                    player.play();
+                    player?.play();
                   }
                 }}
               >
                 <span className="material-symbols-sharp">play_arrow</span>
               </button>
             )}
-            {playerState == PLAYER_STATE.PLAYING && (
+            {!paused && (
               <button
                 className="btn btn-outline-light"
                 disabled={song == null}
@@ -330,10 +359,10 @@ export default function VideoJSComponent({
                       command: "pause",
                     });
                     sendAlert();
-                    setPlayerState(PLAYER_STATE.PAUSED);
+                    playerState.current = PLAYER_STATE.PAUSED;
                   }
                   if (!isRemote) {
-                    player.pause();
+                    player?.pause();
                   }
                 }}
               >

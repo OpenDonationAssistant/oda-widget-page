@@ -5,10 +5,11 @@ import "./css/Widget.css";
 import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
+import TestAlertButton from "./settings/TestAlertButton";
 
-import { socket } from "../../socket";
+import { publish, socket } from "../../socket";
 import { log } from "../../logging";
-import { Flex, Input, Modal } from "antd";
+import { Button, Flex, Input, Modal } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,11 @@ import { Widget } from "../../types/Widget";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
 import { makeAutoObservable } from "mobx";
 import { SelectionContext } from "./ConfigurationPage";
+import DonatersTopList from "../DonatersTopList/DonatersTopList";
+import DonationGoal from "../DonationGoal/DonationGoal";
+import DonationTimer from "../DonationTimer/DonationTimer";
+import PlayerInfo from "../PlayerInfo/PlayerInfo";
+import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -30,6 +36,14 @@ interface WidgetConfigurationProps {
 
 function getWidget(type: string) {
   switch (type) {
+    case "donaters-top-list":
+      return <DonatersTopList />;
+    case "donationgoal":
+      return <DonationGoal />;
+    case "donation-timer":
+      return <DonationTimer />;
+    case "player-info":
+      return <PlayerInfo />;
     default:
       return <div></div>;
   }
@@ -156,6 +170,24 @@ const Comp = observer(({ widget }: { widget: Widget }) => (
   <> {widget.config.markup()} </>
 ));
 
+function getProperty(config: AbstractWidgetSettings, name: string): any {
+  return config.get(name)?.value;
+}
+
+function getRndInteger(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function runReel(id: string, conf: any, config: AbstractWidgetSettings) {
+  const optionList = getProperty(config, "optionList");
+  const choosenIndex = getRndInteger(0, optionList.length - 1);
+  publish(conf.topic.reel, {
+    type: "trigger",
+    selection: optionList[choosenIndex],
+    widgetId: id,
+  });
+}
+
 export default function WidgetConfiguration({
   widget,
   open,
@@ -169,6 +201,15 @@ export default function WidgetConfiguration({
       <RenameModal state={renameModalState.current} />
       <div className="widget-header">
         <NameComponent widget={widget} />
+        {widget.type === "reel" && (
+          <Button
+            onClick={() => runReel(widget.id, conf, widget.config)}
+            className="oda-btn-default"
+          >
+            {t("button-spin")}
+          </Button>
+        )}
+        {widget.type === "payment-alerts" && <TestAlertButton config={conf} />}
         <SaveButtons widget={widget} />
         <Dropdown
           trigger={["click"]}
@@ -200,10 +241,7 @@ export default function WidgetConfiguration({
         </Dropdown>
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
-        {(widget.type === "donaters-top-list" ||
-          widget.type === "donationgoal" ||
-          widget.type === "player-info" ||
-          widget.type === "donation-timer") && (
+        {widget.type === "testtype" && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}

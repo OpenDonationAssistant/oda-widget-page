@@ -55,7 +55,10 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     const actualValue = toJS(this._value);
     this._initialValue =
       typeof actualValue === "object" ? { ...actualValue } : actualValue;
-    log.debug({ initialValue: this._initialValue }, "markSaved");
+    log.debug(
+      { name: this._name, initialValue: this._initialValue },
+      "markSaved",
+    );
   }
 
   markup(): ReactNode {
@@ -92,13 +95,17 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }
 
   public get changed(): boolean {
-    const result = !this.deepEqual(toJS(this._value), toJS(this._initialValue));
-    log.debug({ result: result, property: toJS(this)}, "calc changes");
+    const valueToCheck = this._value ?? {};
+    const result = !this.deepEqual(
+      toJS(valueToCheck),
+      toJS(this._initialValue),
+    );
+    log.debug({ result: result, property: toJS(this) }, "calc changes");
     if (result) {
       log.debug(
         {
           changed: this,
-          left: JSON.stringify(this._value),
+          left: JSON.stringify(valueToCheck),
           right: JSON.stringify(this._initialValue),
         },
         "change detected",

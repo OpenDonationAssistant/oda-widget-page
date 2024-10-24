@@ -14,6 +14,7 @@ import {
 import {
   ColorProperty,
   ColorPropertyTarget,
+  DEFAULT_COLOR_PROPERTY_VALUE,
 } from "../ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function DonatersTopList({}: {}) {
@@ -69,7 +70,7 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(
       settings,
       "titleBackgroundColor",
-      DEFAULT_BORDER_PROPERTY_VALUE
+      DEFAULT_COLOR_PROPERTY_VALUE
     ),
   }).calcCss();
   const backgroundStyle = new ColorProperty({
@@ -81,7 +82,7 @@ export default function DonatersTopList({}: {}) {
     value: findSetting(
       settings,
       "backgroundColor",
-      DEFAULT_BORDER_PROPERTY_VALUE
+      DEFAULT_COLOR_PROPERTY_VALUE
     ),
   }).calcCss();
   const headerFont = new AnimatedFontProperty({
