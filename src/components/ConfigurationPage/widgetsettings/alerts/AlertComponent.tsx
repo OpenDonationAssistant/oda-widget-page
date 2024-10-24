@@ -4,7 +4,7 @@ import {
   FixedDonationAmountTrigger,
   RangeDonationAmountTrigger,
   UnknownTrigger,
-} from "./Alert";
+} from "./Alerts";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { Tabs as AntTabs, InputNumber, Select, Slider } from "antd";
@@ -53,6 +53,7 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
 };
 
 const GeneralTab = observer(({ alert }: { alert: Alert }) => {
+  log.debug({ alerts: alert }, "render general tab");
   const [amount, setAmount] = useState<number>(() => {
     if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
       return alert.triggers.at(0).amount;

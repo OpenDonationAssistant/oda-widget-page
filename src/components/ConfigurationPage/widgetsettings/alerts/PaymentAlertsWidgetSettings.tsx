@@ -1,7 +1,7 @@
 import { toJS } from "mobx";
 import { AbstractWidgetSettings } from "../AbstractWidgetSettings";
 import { PaymentAlertsProperty } from "./PaymentAlertsProperty";
-import { Alert } from "./Alert";
+import { Alert } from "./Alerts";
 import { log } from "../../../../logging";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
-import { Alert } from "./Alert";
+import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";

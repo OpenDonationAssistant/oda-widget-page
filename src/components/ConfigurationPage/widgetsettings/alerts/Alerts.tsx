@@ -226,8 +226,4 @@ export class Alert {
       return props.get(prop.name) ?? prop;
     });
   }
-
-  public markup(): ReactNode {
-    return <AlertComponent alert={this} />;
-  }
 }
