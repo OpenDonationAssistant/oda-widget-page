@@ -133,6 +133,9 @@ export class PlaylistController {
     if (song?.id) {
       this.current.markListened(song?.id);
     }
+    if (song?.originId) {
+      this.current.markListened(song?.originId);
+    }
   }
 
   addPlaylistRenderer(renderer: IPlaylistRenderer): PlaylistController {
