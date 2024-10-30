@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import axios from "axios";
 
 import "./css/Widget.css";
@@ -28,6 +28,7 @@ import DonationGoal from "../DonationGoal/DonationGoal";
 import DonationTimer from "../DonationTimer/DonationTimer";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
+import WidgetUrlModal from "./WidgetUrlModal";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -195,6 +196,7 @@ export default function WidgetConfiguration({
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const { t } = useTranslation();
   const renameModalState = useRef(new RenameModalState(widget));
+  const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
 
   return (
     <div className={`widget ${open ? "extended" : "collapsed"}`}>
@@ -211,6 +213,12 @@ export default function WidgetConfiguration({
         )}
         {widget.type === "payment-alerts" && <TestAlertButton config={conf} />}
         <SaveButtons widget={widget} />
+        <WidgetUrlModal
+          open={showUrlModal}
+          type={widget.type}
+          id={widget.id}
+          onClose={() => setShowUrlModal(false)}
+        />
         <Dropdown
           trigger={["click"]}
           menu={{
@@ -218,7 +226,7 @@ export default function WidgetConfiguration({
               {
                 key: "copy-url",
                 label: t("button-copy-url"),
-                onClick: () => widget.url(),
+                onClick: () => setShowUrlModal(true)
               },
               {
                 key: "rename",
