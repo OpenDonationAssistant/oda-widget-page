@@ -125,7 +125,7 @@ export class AlertController {
         if (firstAmount === null || secondAmount === null) {
           return 0;
         }
-        return secondAmount - firstAmount;
+        return firstAmount - secondAmount;
       });
     this.sortedAlerts = sorted;
     log.debug(`loading audio`);
