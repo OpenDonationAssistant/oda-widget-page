@@ -1,11 +1,12 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Col, Flex, InputNumber, Row, Segmented } from "antd";
+import { Col, Flex, Row, Segmented } from "antd";
 import { produce } from "immer";
 import { Trans } from "react-i18next";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+import InputNumber from "../components/InputNumber";
 
 export interface PaddingPropertyValue {
   isSame: boolean | null;
@@ -62,10 +63,10 @@ const PaddingPropertyComponent = observer(
             <Col span={2} offset={8}>
               Отступ:
             </Col>
-            <Col span={3}>
+            <Col span={6}>
               <InputNumber
                 value={property.value.top}
-                addonAfter="px"
+                addon="px"
                 onChange={(value) => {
                   if (!value) {
                     return;
@@ -86,14 +87,11 @@ const PaddingPropertyComponent = observer(
           </Row>
         )}
         {property.value.isSame === false && (
-          <Row align="middle">
-            <Col span={2} offset={1}>
-              <Trans i18nKey="paddingproperty-label-top" />
-            </Col>
-            <Col span={3}>
+          <div style={{ paddingLeft: "40px", paddingRight: "40px" }}>
+            <LabeledContainer displayName="paddingproperty-label-top">
               <InputNumber
                 value={property.value.top}
-                addonAfter="px"
+                addon="px"
                 onChange={(value) => {
                   if (!value) {
                     return;
@@ -107,14 +105,11 @@ const PaddingPropertyComponent = observer(
                   property.value = updated;
                 }}
               />
-            </Col>
-            <Col span={2} offset={1}>
-              <Trans i18nKey="paddingproperty-label-right" />
-            </Col>
-            <Col span={3}>
+            </LabeledContainer>
+            <LabeledContainer displayName="paddingproperty-label-right">
               <InputNumber
                 value={property.value.right}
-                addonAfter="px"
+                addon="px"
                 onChange={(value) => {
                   if (!value) {
                     return;
@@ -128,14 +123,11 @@ const PaddingPropertyComponent = observer(
                   property.value = updated;
                 }}
               />
-            </Col>
-            <Col span={2} offset={1}>
-              <Trans i18nKey="paddingproperty-label-bottom" />
-            </Col>
-            <Col span={3}>
+            </LabeledContainer>
+            <LabeledContainer displayName="paddingproperty-label-bottom">
               <InputNumber
                 value={property.value.bottom}
-                addonAfter="px"
+                addon="px"
                 onChange={(value) => {
                   if (!value) {
                     return;
@@ -149,14 +141,11 @@ const PaddingPropertyComponent = observer(
                   property.value = updated;
                 }}
               />
-            </Col>
-            <Col span={2} offset={1}>
-              <Trans i18nKey="paddingproperty-label-left" />
-            </Col>
-            <Col span={3}>
+            </LabeledContainer>
+            <LabeledContainer displayName="paddingproperty-label-left">
               <InputNumber
                 value={property.value.left}
-                addonAfter="px"
+                addon="px"
                 onChange={(value) => {
                   if (!value) {
                     return;
@@ -170,8 +159,8 @@ const PaddingPropertyComponent = observer(
                   property.value = updated;
                 }}
               />
-            </Col>
-          </Row>
+            </LabeledContainer>
+          </div>
         )}
       </Flex>
     );

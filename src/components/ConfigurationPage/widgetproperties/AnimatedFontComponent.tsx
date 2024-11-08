@@ -1,13 +1,8 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  Tabs as AntTabs,
-  ColorPicker,
-  Flex,
-  InputNumber,
-  Select,
-  Switch,
-} from "antd";
+
+import { Tabs as AntTabs, ColorPicker, Flex, Select, Switch } from "antd";
+
 import { produce } from "immer";
 import { AnimatedFontProperty } from "./AnimatedFontProperty";
 import classes from "./AnimatedFontComponent.module.css";
@@ -19,6 +14,7 @@ import { observer } from "mobx-react-lite";
 import { Fonts } from "../settings/FontSelect";
 import { ColorPropertyComponent } from "./ColorPropertyComponent";
 import { log } from "../../../logging";
+import InputNumber from "../components/InputNumber";
 
 const animationType = ["entire", "by words", "by symbols"];
 
@@ -137,7 +133,7 @@ export const AnimatedFontComponent = observer(
                       <LabeledContainer displayName="button-font-size">
                         <InputNumber
                           value={property.value.size}
-                          className={`${classes.value} full-width`}
+                          addon="px"
                           onChange={(value) => {
                             if (!value) {
                               return;
@@ -187,10 +183,9 @@ export const AnimatedFontComponent = observer(
                       <LabeledContainer displayName="button-shadow-offset-x">
                         <InputNumber
                           value={property.value.shadowOffsetX}
-                          className="full-width"
-                          addonAfter="px"
+                          addon="px"
                           onChange={(value) => {
-                            if (!value) {
+                            if (value === undefined || value === null) {
                               return;
                             }
                             property.value = produce(
@@ -208,10 +203,9 @@ export const AnimatedFontComponent = observer(
                       <LabeledContainer displayName="button-shadow-offset-y">
                         <InputNumber
                           value={property.value.shadowOffsetY}
-                          className="full-width"
-                          addonAfter="px"
+                          addon="px"
                           onChange={(value) => {
-                            if (!value) {
+                            if (value === undefined || value === null) {
                               return;
                             }
                             property.value = produce(
@@ -229,10 +223,9 @@ export const AnimatedFontComponent = observer(
                       <LabeledContainer displayName="button-shadow-size">
                         <InputNumber
                           value={property.value.shadowWidth}
-                          addonAfter="px"
-                          className="full-width"
+                          addon="px"
                           onChange={(value) => {
-                            if (!value) {
+                            if (value === undefined || value === null) {
                               return;
                             }
                             property.value = produce(

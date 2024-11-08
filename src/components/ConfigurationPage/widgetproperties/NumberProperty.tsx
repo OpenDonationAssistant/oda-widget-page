@@ -1,22 +1,25 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import { InputNumber } from "antd";
-import classes from "./NumberProperty.module.css";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Notifier } from "../Notifier";
 import { observer } from "mobx-react-lite";
+import InputNumber from "../components/InputNumber";
 
 export class NumberProperty extends DefaultWidgetProperty<number> {
+  private _addon: ReactNode | undefined;
+
   constructor({
     name,
     value,
     displayName,
+    addon,
   }: {
     name: string;
-    value: any;
+    value: number;
     displayName: string;
+    addon?: ReactNode;
   }) {
-    super({ name, value, displayName});
+    super({ name, value, displayName });
+    this._addon = addon;
   }
 
   comp = observer(() => {
@@ -24,9 +27,12 @@ export class NumberProperty extends DefaultWidgetProperty<number> {
       <LabeledContainer displayName={this.displayName}>
         <InputNumber
           value={this.value}
-          className={`${classes.value} full-width`}
-          onChange={(value) => {
-            this.value = value ? value : 0;
+          addon={this._addon}
+          onChange={(newValue) => {
+            if (newValue === null) {
+              return;
+            }
+            this.value = newValue;
           }}
         />
       </LabeledContainer>
@@ -36,5 +42,4 @@ export class NumberProperty extends DefaultWidgetProperty<number> {
   markup(): ReactNode {
     return <this.comp />;
   }
-
 }

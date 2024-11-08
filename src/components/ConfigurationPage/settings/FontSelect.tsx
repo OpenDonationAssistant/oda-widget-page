@@ -41,6 +41,7 @@ export const Fonts = [
   "Philosopher",
   "Russo One",
   "Noto Serif",
+  "Press Start 2P",
 ];
 
 export default function FontSelect({

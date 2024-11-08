@@ -19,11 +19,9 @@ export interface SettingsSection {
 export class AbstractWidgetSettings {
   private _index: Map<string, WidgetProperty<any>> = new Map();
   private _sections: SettingsSection[];
-  // private _initial: any;
 
   constructor({ sections }: { sections: SettingsSection[] }) {
     this._sections = sections;
-    // this._initial = this.prepareConfig();
     this.makeIndex();
     makeObservable(this, {
       _sections: observable,
@@ -88,12 +86,12 @@ export class AbstractWidgetSettings {
     );
   }
 
-  public get(key: string): WidgetProperty<any> | undefined {
-    return this._index.get(key);
+  public help(): ReactNode {
+    return <div></div>;
   }
 
-  public markSaved(): void{
-    [...this._index.values()].forEach(prop => prop.markSaved());
+  public get(key: string): WidgetProperty<any> | undefined {
+    return this._index.get(key);
   }
 
   public set(key: string, value: any, asInitialValue = false): void {
@@ -104,5 +102,9 @@ export class AbstractWidgetSettings {
         prop.markSaved();
       }
     }
+  }
+
+  public markSaved(): void{
+    [...this._index.values()].forEach(prop => prop.markSaved());
   }
 }

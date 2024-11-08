@@ -6,24 +6,11 @@ import React, {
   useState,
 } from "react";
 import WidgetConfiguration from "./WidgetConfiguration";
-import { WidgetsContext } from "./WidgetsContext";
-import axios from "axios";
 import { useLoaderData } from "react-router";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
-import { PlayerPopupWidgetSettings } from "./widgetsettings/PlayerPopupWidgetSettings";
-import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
-import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
-import { DonationTimerWidgetSettings } from "./widgetsettings/DonationTimerWidgetSettings";
-import { MediaWidgetSettings } from "./widgetsettings/MediaWidgetSettings";
-import { PaymentsWidgetSettings } from "./widgetsettings/PaymentsWidgetSettings";
-import { PaymentAlertsWidgetSettings } from "./widgetsettings/alerts/PaymentAlertsWidgetSettings";
-import { PlayerInfoWidgetSettings } from "./widgetsettings/PlayerInfoWidgetSettings";
-import { ReelWidgetSettings } from "./widgetsettings/ReelWidgetSettings";
-import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
-import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-client";
 import { WIDGET_TYPES, Widget } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { WidgetStore } from "./WidgetStore";
@@ -67,6 +54,10 @@ const AddWidgetComponent = observer(
   ({ widgetStore }: { widgetStore: WidgetStore }) => {
     const { t } = useTranslation();
     const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
+
+    const addWidget = (type: string): void => {
+      widgetStore.addWidget(type).then(() => setShowAddWidgetPopup(false));
+    };
 
     return (
       <>

@@ -20,7 +20,7 @@
 }
 
 .player-container .rc-slider-track {
-  background-color: rgb(13,110,253);
+  background-color: #684aff;
 }
 
 .playlist {
@@ -36,11 +36,18 @@
 }
 
 .playlist-tabs .nav-link {
-  color: rgb(170, 170, 170);
+  color: var(--oda-secondary-text-color);
 }
 
 .playlist-tabs .nav-link.active {
   color: white;
+  border: none;
+  background-color: #684aff;
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 .playlist {
@@ -123,7 +130,6 @@
 .video-buttons {
   padding-left: 10px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.9);
 }
 
 .video-buttons button {
@@ -139,6 +145,7 @@
 
 .video-buttons button span {
   font-size: 40px;
+  color: var(--oda-main-text-color);
 }
 
 .item-buttons .btn:hover {
@@ -181,7 +188,7 @@
   flex: 1 1 150px;
   padding-left: 10px;
   padding-top: 10px;
-  color: rgb(13, 110, 253);
+  color: var(--oda-main-text-color);
   min-height: 50px;
   display: inline-block;
   overflow-x: hidden;
@@ -274,7 +281,7 @@
 
 .video-counter {
   flex: 0 0;
-  color: white;
+  color: var(--oda-main-text-color);
   white-space: nowrap;
   padding-left: 20px;
   padding-top: 15px;
@@ -307,7 +314,7 @@
 
 .playlist-controls {
   display: flex;
-  border-bottom: 0.5px solid rgb(170, 170, 170);
+  border-bottom: 0.5px solid #674afd;
   align-items: baseline;
 }
 

@@ -83,11 +83,13 @@ export default function DonationTimer({}: {}) {
     value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
   const style = {...titleFont.calcStyle(), ...borderStyle}
+  log.debug({ style: style }, "donation timer style");
 
   return (
     <>
-      {titleFont.createFontImport}
+      {titleFont.createFontImport()}
       <div
+        id="donationTimer"
         className={`${classes.timer} ${titleFont.calcClassName()}`}
         style={style}
       >

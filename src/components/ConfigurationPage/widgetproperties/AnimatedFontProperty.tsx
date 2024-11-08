@@ -102,14 +102,14 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
 
     const fontStyle = {
       fontSize: this.value.size,
-      fontFamily: this.value.family,
-      fontWeight: this.value.weight ? "bold" : "normal",
+      fontFamily: `"${this.value.family}"`,
+      fontWeight: this.value.weight ? "bolder" : "normal",
       textDecoration: this.value.underline ? "underline" : "none",
       fontStyle: this.value.italic ? "italic" : "normal",
     };
 
     const style = { ...fontColorStyle, ...fontStyle, ...shadowStyle };
-    console.log({ result: style });
+    log.debug({ font: style }, "calculated font style");
     return style;
   }
 

@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
@@ -15,6 +16,7 @@ import {
 } from "../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
+import classes from "./AbstractWidgetSettings.module.css";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -114,7 +116,8 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
             }),
             new NumberProperty({
               name: "gap",
-              value: 1,
+              value: 0,
+              addon: "px",
               displayName: "widget-donaterslist-gap",
             }),
             new BorderProperty({
@@ -135,5 +138,26 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         },
       ],
     });
+  }
+
+  public help(): ReactNode {
+    return (
+      <>
+        <h3 className={`${classes.helptitle}`}>Виджет "Список донатеров"</h3>
+        <div className={`${classes.helpdescription}`}>
+          Отображает информацию про донатеров - топ за выбранный период (день,
+          месяц) или последние
+        </div>
+        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <div className={`${classes.helpdescription}`}>
+          <ul>
+            <li>В меню этого виджета (Текущий трек) скопировать ссылку.</li>
+            <li>
+              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+            </li>
+          </ul>
+        </div>
+      </>
+    );
   }
 }

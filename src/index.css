@@ -24,6 +24,13 @@ code {
   direction: ltr;
 }
 
+button, div, span {
+  outline: none !important;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
 .vjs-control-bar,
 .vjs-poster,
 .vjs-modal-dialog,
@@ -34,14 +41,22 @@ code {
 
 .playlist .list-group {
   border-radius: 0px;
+  background-color: #151a33;
 }
 
 .playlist .list-group-item {
-  background-color: black;
   border-radius: 0px;
   color: white;
   border: none;
   position: relative;
+}
+
+.playlist .list-group-item:nth-child(odd) {
+  background-color: #151a33;
+}
+
+.playlist .list-group-item:nth-child(even) {
+  background-color: rgb(12, 18, 46, 0.35);
 }
 
 .add-button-container .add {

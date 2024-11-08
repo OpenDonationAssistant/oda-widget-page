@@ -12,6 +12,8 @@ import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { DonationGoalLabelProperty } from "../widgetproperties/DonationGoalLabelProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
+import classes from "./AbstractWidgetSettings.module.css";
+import { ReactNode } from "react";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -86,5 +88,34 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         },
       ],
     });
+  }
+  public help(): ReactNode {
+    return (
+      <>
+        <h3 className={`${classes.helptitle}`}>Виджет "Сбор средств"</h3>
+        <div className={`${classes.helpdescription}`}>
+          Позволяет создать цели сбора донатов и отслеживать их выполнение на
+          стриме.
+        </div>
+        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <div className={`${classes.helpdescription}`}>
+          <ul>
+            <li>
+              В настройках виджета создать цели с помощью кнопки "Добавить
+              цели", добавить им название и описание, задать сумму.
+            </li>
+            <li>
+              Чтобы какая-то цель выбиралась автоматически, в панели цели надо
+              включить опцию 'По умолчанию'.
+            </li>
+            <li>
+              Чтобы отобразить прогресс на стриме, в меню виджета скопируйте
+              ссылку и встатьте ссылку как Browser Source в OBS поверх картинки
+              стрима.
+            </li>
+          </ul>
+        </div>
+      </>
+    );
   }
 }

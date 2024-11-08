@@ -25,20 +25,24 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   protected _initialValue: Type;
   protected _displayName: string;
   protected _changed: boolean = false;
+  private _help: string | undefined;
 
   constructor({
     name,
     value,
     displayName,
+    help,
   }: {
     name: string;
     value: any;
     displayName: string;
+    help?: string;
   }) {
     this._name = name;
     this._displayName = displayName;
     this._initialValue = typeof value === "object" ? { ...value } : value;
     this._value = value;
+    this._help = help;
     makeObservable(
       this,
       {
@@ -65,18 +69,27 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     return React.createElement("div");
   }
 
+  protected get help(): string | undefined {
+    return this._help;
+  }
+  protected set help(value: string | undefined) {
+    this._help = value;
+  }
+
   public get name(): string {
     return this._name;
   }
   public set name(value: string) {
     this._name = value;
   }
+
   public get value(): Type {
     return this._value;
   }
   public set value(value: Type) {
     this._value = value;
   }
+
   public get displayName(): string {
     return this._displayName;
   }

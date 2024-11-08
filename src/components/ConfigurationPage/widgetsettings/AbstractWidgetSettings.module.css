@@ -1,9 +1,3 @@
-.preview {
-  background: var(--oda-main-background-color);
-  padding-top:10px;
-  padding-bottom:10px;
-}
-
 .helpbutton {
   background: none;
   border: none;
@@ -15,7 +9,6 @@
   }
 }
 
-/* TODO: cleanup */
 .helpmodal {
   & [class*="ant-modal-header"] {
     display: none;

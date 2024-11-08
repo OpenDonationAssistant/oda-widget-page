@@ -12,10 +12,13 @@ import { DonationTimerWidgetSettings } from "../components/ConfigurationPage/wid
 import { DonationGoalWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { ReelWidgetSettings } from "../components/ConfigurationPage/widgetsettings/ReelWidgetSettings";
 import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
+import { ReactNode } from "react";
+import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerControlWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
     name: "media",
+    title: "Media Player",
     description: "Music Player",
     create: () => new MediaWidgetSettings(),
   },
@@ -32,7 +35,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-control",
     description: "Music Player Remote Control",
-    create: () => new AbstractWidgetSettings({ sections: [] }),
+    create: () => new PlayerControlWidgetSettings(),
   },
   {
     name: "player-info",

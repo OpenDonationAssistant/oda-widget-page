@@ -1,11 +1,11 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
-import { InputNumber } from "antd";
 import { produce } from "immer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+import BooleanPropertyInput from "../components/BooleanPropertyInput";
+import InputNumber from "../components/InputNumber";
 
 interface DonatersTopListCarouselPropertyValue {
   enabled: boolean;
@@ -34,7 +34,7 @@ const DonatersTopListCarouselPropertyComponent = observer(
               <InputNumber
                 value={property.value.amount}
                 onChange={(amount) => {
-                  if (!amount) {
+                  if (amount === undefined || amount === null) {
                     return;
                   }
                   property.value = produce(toJS(property.value), (draft) => {
@@ -43,28 +43,30 @@ const DonatersTopListCarouselPropertyComponent = observer(
                 }}
               />
             </LabeledContainer>
-            <LabeledContainer displayName="widget-donaterslist-carousel-delay">
+            <LabeledContainer displayName="widget-donaterslist-carousel-animation-speed">
               <InputNumber
-                value={property.value.delay}
-                onChange={(delay) => {
-                  if (!delay) {
+                value={property.value.speed}
+                increment={0.1}
+                onChange={(speed) => {
+                  if (speed === undefined || speed === null) {
                     return;
                   }
                   property.value = produce(toJS(property.value), (draft) => {
-                    draft.delay = delay;
+                    draft.speed = Math.round(speed * 10) / 10;
                   });
                 }}
               />
             </LabeledContainer>
-            <LabeledContainer displayName="widget-donaterslist-carousel-animation-speed">
+            <LabeledContainer displayName="widget-donaterslist-carousel-delay">
               <InputNumber
-                value={property.value.speed}
-                onChange={(speed) => {
-                  if (!speed) {
+                value={property.value.delay}
+                addon="sec" // TODO: localize
+                onChange={(delay) => {
+                  if (delay === undefined || delay === null) {
                     return;
                   }
                   property.value = produce(toJS(property.value), (draft) => {
-                    draft.speed = speed;
+                    draft.delay = delay;
                   });
                 }}
               />

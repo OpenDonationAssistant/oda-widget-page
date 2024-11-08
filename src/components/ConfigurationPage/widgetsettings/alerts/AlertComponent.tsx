@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   Alert,
   FixedDonationAmountTrigger,
@@ -9,7 +9,6 @@ import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { Tabs as AntTabs, InputNumber, Select, Slider } from "antd";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
-import BooleanPropertyInput from "../../settings/properties/BooleanPropertyInput";
 import { observer } from "mobx-react-lite";
 import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
 import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
@@ -18,6 +17,7 @@ import TextArea from "antd/es/input/TextArea";
 import { log } from "../../../../logging";
 import { toJS } from "mobx";
 import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
+import BooleanPropertyInput from "../../components/BooleanPropertyInput";
 
 function playAudio(url: string | null) {
   if (!url) {

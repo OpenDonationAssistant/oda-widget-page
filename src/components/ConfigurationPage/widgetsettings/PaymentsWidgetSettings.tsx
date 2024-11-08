@@ -1,12 +1,11 @@
-import { log } from "../../../logging";
-import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import { produce } from "immer";
 import {
   AnimatedFontProperty,
   DEFAULT_FONT_PROPERTY_VALUE,
 } from "../widgetproperties/AnimatedFontProperty";
-import { WidgetProperty } from "../widgetproperties/WidgetProperty";
+import classes from "./AbstractWidgetSettings.module.css";
+import { ReactNode } from "react";
 
 export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -47,5 +46,29 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
         },
       ],
     });
+  }
+
+  public help(): ReactNode {
+    return (
+      <>
+        <h3 className={`${classes.helptitle}`}>
+          Виджет "События"
+        </h3>
+        <div className={`${classes.helpdescription}`}>
+          Отображает список донатов, обновляется автоматически реал-тайм.
+        </div>
+        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <div className={`${classes.helpdescription}`}>
+          <ul>
+            <li>
+              В меню этого виджета (События) скопировать ссылку.
+            </li>
+            <li>
+              Добавить как Dock в OBS Studio.
+            </li>
+          </ul>
+        </div>
+      </>
+    );
   }
 }

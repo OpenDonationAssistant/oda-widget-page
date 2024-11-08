@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
 import {
@@ -12,6 +13,7 @@ import {
   SingleChoiceProperty,
 } from "../widgetproperties/SingleChoiceProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
+import classes from "./AbstractWidgetSettings.module.css";
 
 export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -53,7 +55,7 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
         },
         {
           key: "title",
-          title: "Title",
+          title: "title",
           properties: [
             new AnimatedFontProperty({
               name: "titleFont",
@@ -80,7 +82,7 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
         },
         {
           key: "requester",
-          title: "Requester",
+          title: "requester",
           properties: [
             new SingleChoiceProperty({
               name: "showRequester",
@@ -117,7 +119,7 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
         },
         {
           key: "queue",
-          title: "Queue",
+          title: "queue",
           properties: [
             new SingleChoiceProperty({
               name: "showQueueSize",
@@ -154,5 +156,29 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
         },
       ],
     });
+  }
+
+  public help(): ReactNode {
+    return (
+      <>
+        <h3 className={`${classes.helptitle}`}>Виджет "Текущий трек"</h3>
+        <div className={`${classes.helpdescription}`}>
+          Отображает название текущего видео в плеере, кто заказал и сколько
+          треков в очереди.
+        </div>
+        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <div className={`${classes.helpdescription}`}>
+          <ul>
+            <li>В меню этого виджета (Текущий трек) скопировать ссылку.</li>
+            <li>
+              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+            </li>
+            <li>
+              Добавить видео в плеер, проверить что виджет отображается.
+            </li>
+          </ul>
+        </div>
+      </>
+    );
   }
 }

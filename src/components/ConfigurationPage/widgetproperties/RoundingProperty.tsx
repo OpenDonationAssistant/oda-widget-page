@@ -1,12 +1,13 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Col, Flex, InputNumber, Row, Segmented } from "antd";
+import { Col, Flex, Row, Segmented } from "antd";
 import { produce } from "immer";
 import classes from "./RoundingProperty.module.css";
 import { useTranslation } from "react-i18next";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+import InputNumber from "../components/InputNumber";
 
 export interface RoundingValue {
   isSame: boolean | null;
@@ -51,13 +52,13 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
       </LabeledContainer>
       {property.value.isSame === true && (
         <Row align="middle">
-          <Col span={2} offset={16}>
+          <Col span={2} offset={12}>
             <span>Радиус:</span>
           </Col>
-          <Col span={4}>
+          <Col span={6}>
             <InputNumber
               value={property.value.topLeft}
-              addonAfter="px"
+              addon="px"
               onChange={(newValue) => {
                 if (!newValue) {
                   return;
@@ -77,12 +78,12 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
       {property.value.isSame === false && (
         <Flex gap={10} vertical={true} className={`${classes.roundingvalues}`}>
           <Row>
-            <Col span={3} offset={5}>
+            <Col span={3} offset={2}>
               <span>TopLeft</span>
             </Col>
-            <Col span={2}>
+            <Col span={5}>
               <InputNumber
-                addonAfter="px"
+                addon="px"
                 value={property.value.topLeft}
                 onChange={(newValue) => {
                   if (!newValue) {
@@ -98,12 +99,12 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 }}
               />
             </Col>
-            <Col span={3} offset={4}>
+            <Col span={3} offset={2}>
               <span>TopRight</span>
             </Col>
-            <Col span={2}>
+            <Col span={5}>
               <InputNumber
-                addonAfter="px"
+                addon="px"
                 value={property.value.topRight}
                 onChange={(newValue) => {
                   if (!newValue) {
@@ -121,12 +122,12 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
             </Col>
           </Row>
           <Row>
-            <Col span={3} offset={5}>
+            <Col span={3} offset={2}>
               <span>BottomLeft</span>
             </Col>
-            <Col span={2}>
+            <Col span={5}>
               <InputNumber
-                addonAfter="px"
+                addon="px"
                 value={property.value.bottomLeft}
                 onChange={(newValue) => {
                   if (!newValue) {
@@ -142,12 +143,12 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 }}
               />
             </Col>
-            <Col span={3} offset={4}>
+            <Col span={3} offset={2}>
               <span>BottomRight</span>
             </Col>
-            <Col span={2}>
+            <Col span={5}>
               <InputNumber
-                addonAfter="px"
+                addon="px"
                 value={property.value.bottomRight}
                 onChange={(newValue) => {
                   if (!newValue) {

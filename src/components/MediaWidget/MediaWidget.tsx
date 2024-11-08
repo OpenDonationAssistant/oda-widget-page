@@ -82,19 +82,13 @@ export default function MediaWidget({}: {}) {
     <>
       <style
         dangerouslySetInnerHTML={{
-          __html: `html, body {background-color: black;height:100%;}`,
+          __html: `html, body {background-color: var(--oda-main-background-color);height:100%;}`,
         }}
       />
       <div className="video-container" data-vjs-player>
         <RequestsDisabledWarning />
         <div className="player-header">
           <div className="song-title-container">{song?.title ?? ""}</div>
-          <VideoPopupToggler
-            onChange={() => {
-              publish(conf.topic.remoteplayer, { command: "stop" });
-              setIsRemote((old) => !old);
-            }}
-          />
         </div>
         {playlistController.current && (
           <VideoJSComponent

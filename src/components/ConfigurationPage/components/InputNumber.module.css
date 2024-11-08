@@ -1,8 +1,3 @@
-.name {
-  font: var(--oda-label-font);
-  color: var(--oda-label-color);
-}
-
 .inputcontainer {
   width: 100%;
   justify-content: flex-end;
@@ -16,12 +11,22 @@
   color: var(--oda-secondary-text-color);
 }
 
+.valuewithaddon input {
+  text-align: right!important;
+}
+
+.valuewithoutaddon input {
+  text-align: center!important;
+}
+
 .value input {
-  font-family: 'Play';
+  font-family: 'Play'!important;
   font-weight: 900;
+  width: 90px!important;
   font-size: 20px!important;
   color: var(--oda-secondary-text-color)!important;
 }
+
 
 .value:focus,
 .value:focus-within,

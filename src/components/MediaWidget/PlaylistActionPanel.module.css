@@ -1,6 +1,7 @@
 .panelcontainer{
   margin-top: 5px;
   margin-bottom: 5px;
+  color: var(--oda-main-text-color);
 }
 
 .savedPlaylists {
@@ -28,7 +29,7 @@
 
   & button {
     background: none;
-    color: white;
+    color: var(--oda-main-text-color);
     border: none;
     & span {
       vertical-align: middle;

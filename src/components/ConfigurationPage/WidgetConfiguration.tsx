@@ -87,6 +87,32 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   );
 });
 
+export const HelpButton = observer(({ widget }: { widget: Widget }) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const toggleModal = () => {
+    setShowModal((old) => !old);
+  };
+
+  return (
+    <>
+      <Modal
+        className={`${classes.helpmodal}`}
+        title="Help"
+        open={showModal}
+        onCancel={toggleModal}
+        onClose={toggleModal}
+        onOk={toggleModal}
+      >
+        {widget.config.help()}
+      </Modal>
+      <button className={`${classes.helpbutton}`} onClick={toggleModal}>
+        <span className="material-symbols-sharp">help</span>
+      </button>
+    </>
+  );
+});
+
 const NameComponent = observer(({ widget }: { widget: Widget }) => {
   const selection = useContext(SelectionContext);
   return (
@@ -226,7 +252,7 @@ export default function WidgetConfiguration({
               {
                 key: "copy-url",
                 label: t("button-copy-url"),
-                onClick: () => setShowUrlModal(true)
+                onClick: () => setShowUrlModal(true),
               },
               {
                 key: "rename",
@@ -247,6 +273,7 @@ export default function WidgetConfiguration({
             <span className="material-symbols-sharp">more_vert</span>
           </button>
         </Dropdown>
+        <HelpButton widget={widget} />
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
         {widget.type === "testtype" && (

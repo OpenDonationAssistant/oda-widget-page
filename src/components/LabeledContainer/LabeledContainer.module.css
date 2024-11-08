@@ -7,8 +7,17 @@
 }
 
 .name {
+  position: relative;
   flex: 1 1;
   color: var(--oda-main-text-color);
+  & span{
+    font-size: 16px;
+    color: var(--oda-main-text-color);
+    margin-left: 5px;
+    &[class*="material-symbols-sharp"]{
+      color: rgba(251, 255, 241, 0.4);
+    }
+  }
 }
 
 .child {
@@ -18,4 +27,9 @@
   min-width: 200px;
   align-items: center;
   margin-right: 10px;
+}
+
+.helpmodal {
+  position: absolute;
+  top: 0;
 }

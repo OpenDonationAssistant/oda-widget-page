@@ -6,16 +6,22 @@ import classes from "./BooleanProperty.module.css";
 import { Switch } from "antd";
 
 export class BooleanProperty extends DefaultWidgetProperty<boolean> {
-  constructor(params: { name: string; value: boolean; displayName: string }) {
+  constructor(params: {
+    name: string;
+    value: boolean;
+    displayName: string;
+    help?: string;
+  }) {
     super({
       name: params.name,
       value: params.value,
       displayName: params.displayName,
+      help: params.help,
     });
   }
 
   comp = observer(() => (
-    <LabeledContainer displayName={this.displayName}>
+    <LabeledContainer help={this.help} displayName={this.displayName}>
       <div className={classes.checkboxwrapper}>
         <Switch
           checked={true === this.value}

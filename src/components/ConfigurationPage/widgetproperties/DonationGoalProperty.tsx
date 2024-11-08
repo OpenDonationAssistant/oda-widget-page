@@ -3,14 +3,14 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
-import BooleanPropertyInput from "../settings/properties/BooleanPropertyInput";
-import { Collapse, InputNumber } from "antd";
+import { Collapse } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
-import { produce } from "immer";
+import BooleanPropertyInput from "../components/BooleanPropertyInput";
+import InputNumber from "../components/InputNumber";
 
 export interface Amount {
   major: number;
@@ -134,7 +134,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
           <LabeledContainer displayName="widget-goal-amount">
             <InputNumber
               value={goal.requiredAmount.major}
-              addonAfter="руб."
+              addon="руб."
               onChange={(value) => {
                 const updated = toJS(goal);
                 updated.requiredAmount.major = value ?? 0;
