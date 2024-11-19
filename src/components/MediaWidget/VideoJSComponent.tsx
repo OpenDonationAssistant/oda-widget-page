@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
 import "videojs-youtube";
 import { Provider, Song } from "./types";
-import { VideoJsPlayer } from "video.js";
 import { VideoJsPlayerOptions } from "video.js";
 import { log } from "../../logging";
 import { useLoaderData } from "react-router";
@@ -13,8 +12,7 @@ import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
-// import "https://widgets.oda.digital/videplayer.js";
-import 'https://vk.com/js/api/videoplayer.js';
+import "https://widgets.oda.digital/videplayer.js";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
