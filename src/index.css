@@ -41,22 +41,18 @@ button, div, span {
 
 .playlist .list-group {
   border-radius: 0px;
-  background-color: #151a33;
+  background-color: rgb(43, 53, 102);
 }
 
 .playlist .list-group-item {
   border-radius: 0px;
-  color: white;
+  color: var(--oda-main-text-color);
   border: none;
   position: relative;
 }
 
-.playlist .list-group-item:nth-child(odd) {
-  background-color: #151a33;
-}
-
-.playlist .list-group-item:nth-child(even) {
-  background-color: rgb(12, 18, 46, 0.35);
+.playlist .list-group-item {
+  background-color: rgb(43, 53, 102);
 }
 
 .add-button-container .add {

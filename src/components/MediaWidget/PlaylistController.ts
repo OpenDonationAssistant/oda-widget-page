@@ -5,6 +5,7 @@ import { Provider, Song } from "./types";
 import { IPlaylistRenderer } from "./IPlaylist";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
 import { subscribe } from "../../socket";
+import { DefaultApiFactory as MediaService } from "@opendonationassistant/oda-media-service-client";
 
 export class PlaylistController {
   playlists = new Map<PLAYLIST_TYPE, Playlist>();
@@ -67,7 +68,7 @@ export class PlaylistController {
               originId: element.id,
               owner: element.owner,
               title: element.title,
-              provider: Provider.YOUTUBE
+              provider: Provider.YOUTUBE,
             };
           },
         );
@@ -107,6 +108,16 @@ export class PlaylistController {
         message.ack();
       },
     );
+  }
+
+  clearCurrentPlaylist() {
+    if (this.current.type() == PLAYLIST_TYPE.REQUESTED) {
+      MediaService(
+        undefined,
+        process.env.REACT_APP_MEDIA_API_ENDPOINT,
+      ).markAllListened({}, undefined);
+    }
+    this.current.clear();
   }
 
   handleNewRequestedSongEvent(playlist: PLAYLIST_TYPE, song: Song) {
@@ -156,7 +167,7 @@ export class PlaylistController {
     }
   }
 
-  publishState(){
+  publishState() {
     this.current.publishState();
   }
 

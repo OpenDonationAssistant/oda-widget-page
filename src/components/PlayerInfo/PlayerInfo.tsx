@@ -57,50 +57,40 @@ function PlayerInfo() {
   }, [widgetId]);
 
   const titleFontProperty = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
 
   const requesterFontProperty = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "requesterFont",
     value: findSetting(settings, "requesterFont", null),
   });
 
   const queueFontProperty = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "queueFont",
     value: findSetting(settings, "queueFont", undefined),
   });
 
   const borderStyle = new BorderProperty({
-    widgetId: widgetId,
     name: "widgetBorder",
     value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const background = new ColorProperty({
-    widgetId: widgetId,
     name: "background",
-    tab: "general",
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "background", DEFAULT_COLOR_PROPERTY_VALUE),
   }).calcCss();
 
   const rounding = new RoundingProperty({
-    widgetId: widgetId,
     name: "rounding",
-    tab: "general",
     displayName: "label-background",
     value: findSetting(settings, "rounding", DEFAULT_ROUNDING_PROPERTY_VALUE),
   }).calcCss();
 
   const padding = new PaddingProperty({
-    widgetId: widgetId,
     name: "padding",
-    tab: "general",
     value: findSetting(settings, "padding", DEFAULT_PADDING_PROPERTY_VALUE),
   }).calcCss();
 
@@ -111,24 +101,19 @@ function PlayerInfo() {
   const showQueueSize = findSetting(settings, "showQueueSize", "show");
 
   const titleBackground = new ColorProperty({
-    widgetId: widgetId,
     name: "titleBackground",
-    tab: "general",
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "titleBackground", null),
   }).calcCss();
 
   const titleBorder = new BorderProperty({
-    widgetId: widgetId,
     name: "titleBorder",
     value: findSetting(settings, "titleBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const titleRounding = new RoundingProperty({
-    widgetId: widgetId,
     name: "titleRounding",
-    tab: "general",
     displayName: "label-background",
     value: findSetting(
       settings,
@@ -138,9 +123,7 @@ function PlayerInfo() {
   }).calcCss();
 
   const titlePadding = new PaddingProperty({
-    widgetId: widgetId,
     name: "titlePadding",
-    tab: "general",
     value: findSetting(
       settings,
       "titlePadding",
@@ -149,24 +132,19 @@ function PlayerInfo() {
   }).calcCss();
 
   const requesterBackground = new ColorProperty({
-    widgetId: widgetId,
     name: "requesterBackground",
-    tab: "general",
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "requesterBackground", null),
   }).calcCss();
 
   const requesterBorder = new BorderProperty({
-    widgetId: widgetId,
     name: "requesterBorder",
     value: findSetting(settings, "requesterBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
 
   const requesterRounding = new RoundingProperty({
-    widgetId: widgetId,
     name: "requesterRounding",
-    tab: "general",
     displayName: "label-background",
     value: findSetting(
       settings,
@@ -176,9 +154,7 @@ function PlayerInfo() {
   }).calcCss();
 
   const requesterPadding = new PaddingProperty({
-    widgetId: widgetId,
     name: "requesterPadding",
-    tab: "general",
     value: findSetting(
       settings,
       "requesterPadding",
@@ -187,18 +163,14 @@ function PlayerInfo() {
   }).calcCss();
 
   const queueBackground = new ColorProperty({
-    widgetId: widgetId,
     name: "queueBackground",
-    tab: "general",
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(settings, "queueBackground", null),
   }).calcCss();
 
   const queueRounding = new RoundingProperty({
-    widgetId: widgetId,
     name: "queueRounding",
-    tab: "general",
     displayName: "label-background",
     value: findSetting(
       settings,
@@ -208,9 +180,7 @@ function PlayerInfo() {
   }).calcCss();
 
   const queuePadding = new PaddingProperty({
-    widgetId: widgetId,
     name: "queuePadding",
-    tab: "general",
     value: findSetting(
       settings,
       "queuePadding",
@@ -219,7 +189,6 @@ function PlayerInfo() {
   }).calcCss();
 
   const queueBorder = new BorderProperty({
-    widgetId: widgetId,
     name: "queueBorder",
     value: findSetting(settings, "queueBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();

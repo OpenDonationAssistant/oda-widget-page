@@ -13,6 +13,8 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
 import "https://widgets.oda.digital/videplayer.js";
+import { Flex } from "antd";
+import VideoPopupToggler from "./VideoPopupToggler";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -31,7 +33,7 @@ enum PLAYER_STATE {
   PLAYING,
   PAUSED,
   SHOULD_BE_STOPED,
-  READY
+  READY,
 }
 
 interface Player {
@@ -44,11 +46,9 @@ interface Player {
 export default function VideoJSComponent({
   song,
   playlistController,
-  isRemote,
 }: {
   song: Song | null;
   playlistController: PlaylistController;
-  isRemote: boolean;
 }) {
   const { conf, widgetId } = useLoaderData() as WidgetData;
   const videoRef = useRef<HTMLDivElement>(null);
@@ -58,6 +58,7 @@ export default function VideoJSComponent({
   const playerState = useRef<PLAYER_STATE>(PLAYER_STATE.INITIALIZING);
   const [player, setPlayer] = useState<Player | null>(null);
   const commandHandler = useRef<Function | null>(null);
+  const [isRemote, setIsRemote] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(() => {
     const vol = localStorage.getItem("volume");
     if (vol) {
@@ -142,14 +143,14 @@ export default function VideoJSComponent({
     });
     player.on("ended", () => {
       log.debug("song ended");
-      playerState.current=PLAYER_STATE.INITIALIZING;
+      playerState.current = PLAYER_STATE.INITIALIZING;
       playlistController.finishSong();
       setPaused(true);
       sendAlert();
     });
     player.on("error", function () {
       log.error(player.error());
-      playerState.current=PLAYER_STATE.INITIALIZING;
+      playerState.current = PLAYER_STATE.INITIALIZING;
       setPaused(true);
       playlistController.finishSong();
       sendAlert();
@@ -256,7 +257,6 @@ export default function VideoJSComponent({
 
     const player = videojs(videoElement, options);
     log.debug({ options: options }, "creating player with  options");
-    player.src(song);
     player.volume(volume / 100);
     player.on("play", () => {
       log.debug("start playing");
@@ -289,6 +289,7 @@ export default function VideoJSComponent({
       playlistController.finishSong();
       sendAlert();
     });
+    player.src(song);
     setPlayer(player);
     return () => {
       player.dispose();
@@ -314,81 +315,89 @@ export default function VideoJSComponent({
           <div ref={videoRef} />
         </div>
       )}
-      {!isRemote && song?.provider === Provider.YOUTUBE && (
+      {!isRemote && song?.provider !== Provider.VK && (
         <ProgressBar player={player} />
       )}
-      <div className="player-container">
-        <div className="video-controls">
-          <div className="video-buttons">
-            <button
-              className="btn btn-outline-light"
-              onClick={() => {
-                playlistController.previousSong();
-              }}
-            >
-              <span className="material-symbols-sharp">skip_previous</span>
-            </button>
-            {paused && (
+      <Flex dir="row" justify="space-between">
+        <div className="player-container">
+          <div className="video-controls">
+            <div className="video-buttons">
               <button
                 className="btn btn-outline-light"
-                disabled={song == null}
                 onClick={() => {
-                  if (isRemote) {
-                    publish(conf.topic.remoteplayer, {
-                      command: "resume",
-                    });
-                    sendAlert(song ?? undefined);
-                    playerState.current = PLAYER_STATE.PLAYING;
-                  }
-                  if (!isRemote) {
-                    player?.play();
-                  }
+                  playlistController.previousSong();
                 }}
               >
-                <span className="material-symbols-sharp">play_arrow</span>
+                <span className="material-symbols-sharp">skip_previous</span>
               </button>
-            )}
-            {!paused && (
+              {paused && (
+                <button
+                  className="btn btn-outline-light"
+                  disabled={song == null}
+                  onClick={() => {
+                    if (isRemote) {
+                      publish(conf.topic.remoteplayer, {
+                        command: "resume",
+                      });
+                      sendAlert(song ?? undefined);
+                      playerState.current = PLAYER_STATE.PLAYING;
+                    }
+                    if (!isRemote) {
+                      player?.play();
+                    }
+                  }}
+                >
+                  <span className="material-symbols-sharp">play_arrow</span>
+                </button>
+              )}
+              {!paused && (
+                <button
+                  className="btn btn-outline-light"
+                  disabled={song == null}
+                  onClick={() => {
+                    if (isRemote) {
+                      publish(conf.topic.remoteplayer, {
+                        command: "pause",
+                      });
+                      sendAlert();
+                      playerState.current = PLAYER_STATE.PAUSED;
+                    }
+                    if (!isRemote) {
+                      player?.pause();
+                    }
+                  }}
+                >
+                  <span className="material-symbols-sharp">pause</span>
+                </button>
+              )}
               <button
                 className="btn btn-outline-light"
-                disabled={song == null}
+                disabled={!song}
                 onClick={() => {
-                  if (isRemote) {
-                    publish(conf.topic.remoteplayer, {
-                      command: "pause",
-                    });
-                    sendAlert();
-                    playerState.current = PLAYER_STATE.PAUSED;
-                  }
-                  if (!isRemote) {
-                    player?.pause();
-                  }
+                  playlistController.finishSong();
                 }}
               >
-                <span className="material-symbols-sharp">pause</span>
+                <span className="material-symbols-sharp">skip_next</span>
               </button>
-            )}
-            <button
-              className="btn btn-outline-light"
-              disabled={!song}
-              onClick={() => {
-                playlistController.finishSong();
-              }}
-            >
-              <span className="material-symbols-sharp">skip_next</span>
-            </button>
-            {!isRemote && song?.provider === Provider.YOUTUBE && (
-              <VideoDuration player={player} />
-            )}
+              {!isRemote && song?.provider === Provider.YOUTUBE && (
+                <VideoDuration player={player} />
+              )}
+            </div>
           </div>
+          <Slider
+            value={volume}
+            onChange={(value) => {
+              setVolume(value);
+            }}
+          />
         </div>
-        <Slider
-          value={volume}
-          onChange={(value) => {
-            setVolume(value);
+        <VideoPopupToggler
+          onChange={() => {
+            publish(conf.topic.remoteplayer, { command: "stop" });
+            setIsRemote((old) => !old);
           }}
         />
-      </div>
+      </Flex>
     </>
   );
 }

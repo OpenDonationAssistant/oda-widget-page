@@ -5,9 +5,10 @@ import { findSetting } from "../utils";
 import { useLoaderData } from "react-router";
 import AddMediaPopup from "./AddMediaPopup";
 import { PLAYLIST_TYPE, Playlist } from "../../logic/playlist/Playlist";
-import { Song } from "./types";
+import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
+import classes from "./PlaylistComponent.module.css";
 
 export default function PlaylistComponent({
   playlist,
@@ -21,7 +22,7 @@ export default function PlaylistComponent({
   const [urlToCopy, setUrlToCopy] = useState<string>("");
   const { t } = useTranslation();
 
-  function onDragEnd(result:any) {
+  function onDragEnd(result: any) {
     if (!result.destination) {
       return;
     }
@@ -96,63 +97,81 @@ export default function PlaylistComponent({
                           {...draggable.dragHandleProps}
                           key={song.id}
                           className={`list-group-item ${
-                            index === current ? "active" : ""
-                          }`}
+                            index === current ? classes.current : ""
+                          } ${classes.listgroupitem}`}
                         >
-                          <div className="item-buttons">
-                            <button
-                              className="btn btn-outline-light play"
-                              onClick={() => {
-                                const id = playlist.song()?.id;
-                                if (id) {
-                                  playlist.markListened(id);
-                                }
-                                playlist.setIndex(index);
-                              }}
-                            >
-                              <span className="material-symbols-sharp">
-                                play_circle
-                              </span>
-                            </button>
-                            <button
-                              className="btn btn-outline-light share"
-                              onClick={() => {
-                                window.open(song.src, undefined, "popup=true");
-                              }}
-                            >
-                              <span className="material-symbols-sharp">
-                                share
-                              </span>
-                            </button>
-                            <button
-                              className="btn btn-outline-light delete"
-                              onClick={() => playlist.removeSong(index)}
-                            >
-                              <span className="material-symbols-sharp">
-                                delete
-                              </span>
-                            </button>
-                          </div>
-                          {index === current && (
-                            <div
-                              style={playlistSongTitleStyle}
-                              className="song-title"
-                              ref={activeRef}
-                            >
-                              {index + 1}. {song.title}
+                          <img
+                            src={`${
+                              song.provider === Provider.VK
+                                ? "/icons/vkontakte.png"
+                                : "/icons/youtube.png"
+                            }`}
+                            alt="youtube"
+                            className={`${classes.providericon}`}
+                          />
+                          <div>
+                            <div className="item-buttons">
+                              <button
+                                className="btn btn-outline-light play"
+                                onClick={() => {
+                                  const id = playlist.song()?.id;
+                                  if (id) {
+                                    playlist.markListened(id);
+                                  }
+                                  playlist.setIndex(index);
+                                }}
+                              >
+                                <span className="material-symbols-sharp">
+                                  play_circle
+                                </span>
+                              </button>
+                              <button
+                                className="btn btn-outline-light share"
+                                onClick={() => {
+                                  window.open(
+                                    song.src,
+                                    undefined,
+                                    "popup=true",
+                                  );
+                                }}
+                              >
+                                <span className="material-symbols-sharp">
+                                  share
+                                </span>
+                              </button>
+                              <button
+                                className="btn btn-outline-light delete"
+                                onClick={() => playlist.removeSong(index)}
+                              >
+                                <span className="material-symbols-sharp">
+                                  delete
+                                </span>
+                              </button>
                             </div>
-                          )}
-                          {index !== current && (
+                            {index === current && (
+                              <div
+                                style={playlistSongTitleStyle}
+                                className="song-title"
+                                ref={activeRef}
+                              >
+                                {index + 1}. {song.title}
+                              </div>
+                            )}
+                            {index !== current && (
+                              <div
+                                style={playlistSongTitleStyle}
+                                className="song-title"
+                              >
+                                {index + 1}. {song.title}
+                              </div>
+                            )}
                             <div
-                              style={playlistSongTitleStyle}
-                              className="song-title"
+                              style={playlistNicknameStyle}
+                              className="owner"
                             >
-                              {index + 1}. {song.title}
+                              {" "}
+                              Заказал: {song.owner}
                             </div>
-                          )}
-                          <div style={playlistNicknameStyle} className="owner">
-                            {" "}
-                            Заказал: {song.owner}
                           </div>
                         </li>
                       )}
