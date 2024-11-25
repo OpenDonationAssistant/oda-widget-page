@@ -9,7 +9,7 @@
 
 .widget-header {
   display: flex;
-  border-radius: 5px;
+  border-radius: 2px;
   justify-content: space-between;
   align-items: baseline;
   padding-left: 15px;

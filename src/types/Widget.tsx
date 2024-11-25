@@ -3,7 +3,7 @@ import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetse
 import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
 import { tokenRequest } from "../components/Login/Login";
-import { WidgetStore } from "../components/ConfigurationPage/WidgetStore";
+import { WidgetStore } from "../stores/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 import { MediaWidgetSettings } from "../components/ConfigurationPage/widgetsettings/MediaWidgetSettings";
 import { PlayerInfoWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerInfoWidgetSettings";
@@ -12,8 +12,8 @@ import { DonationTimerWidgetSettings } from "../components/ConfigurationPage/wid
 import { DonationGoalWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { ReelWidgetSettings } from "../components/ConfigurationPage/widgetsettings/ReelWidgetSettings";
 import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
-import { ReactNode } from "react";
 import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerControlWidgetSettings";
+import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -66,6 +66,11 @@ export const WIDGET_TYPES = [
     name: "payment-alerts",
     description: "Payment Alerts",
     create: () => new PaymentAlertsWidgetSettings(),
+  },
+  {
+    name: "donaton",
+    description: "Donaton",
+    create: () => new DonatonWidgetSettings(),
   },
 ];
 

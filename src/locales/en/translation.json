@@ -218,5 +218,9 @@
   "widget-payments-message-font": "Message font",
   "title":"Title",
   "requester":"Requester",
-  "queue":"Queue"
+  "queue":"Queue",
+  "widget-donaton-timer-text": "Text",
+  "timer-end": "End date of stream",
+  "widget-donation-price": "Price",
+  "background-color": "Background"
 }

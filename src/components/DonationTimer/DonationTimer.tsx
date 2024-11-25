@@ -73,12 +73,10 @@ export default function DonationTimer({}: {}) {
   const text = findSetting(settings, "text", "Без донатов уже <time>");
 
   const titleFont = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
   const borderStyle =  new BorderProperty({
-    widgetId: widgetId,
     name: "border",
     value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();

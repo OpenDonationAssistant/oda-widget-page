@@ -29,7 +29,7 @@ export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
 
   const [playlist, setPlaylist] = useState<Playlist>(
-    new Playlist(PLAYLIST_TYPE.REQUESTED),
+    new Playlist(PLAYLIST_TYPE.REQUESTED, conf.topic.player),
   );
   const [playlistSize, setPlaylistSize] = useState<number>(0);
   const [index, setIndex] = useState<number | null>(null);
@@ -94,7 +94,6 @@ export default function MediaWidget({}: {}) {
           <VideoJSComponent
             playlistController={playlistController.current}
             song={song}
-            isRemote={isRemote}
           />
         )}
         <div className="playlist-controls">

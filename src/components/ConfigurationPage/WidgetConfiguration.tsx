@@ -29,6 +29,11 @@ import DonationTimer from "../DonationTimer/DonationTimer";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import WidgetUrlModal from "./WidgetUrlModal";
+import DonatonWidget from "../../pages/Donaton/DonatonWidget";
+import {
+  DonatonWidgetSettings,
+  DonatonWidgetSettingsContext,
+} from "./widgetsettings/donaton/DonatonWidgetSettings";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -39,6 +44,8 @@ function getWidget(type: string) {
   switch (type) {
     case "donaters-top-list":
       return <DonatersTopList />;
+    case "donaton":
+      return <DonatonWidget />;
     case "donationgoal":
       return <DonationGoal />;
     case "donation-timer":
@@ -276,64 +283,29 @@ export default function WidgetConfiguration({
         <HelpButton widget={widget} />
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
-        {widget.type === "testtype" && (
+        {widget.type === "donaton" && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
               height={250}
               style={{
-                border: "1px solid black",
+                border: "var(--oda-main-border)",
+                borderRadius: "8px",
                 boxShadow: "0px 0px 4px 4px #111111",
                 marginBottom: "10px",
-                background: `url(${process.env.PUBLIC_URL}/opacity.png)`,
+                background: `url(https://api.oda.digital/public/commonback.jpg)`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
               axis="both"
               minConstraints={[650, 100]}
             >
-              <WidgetSettingsContext.Provider
-                value={{
-                  widgetId: widget.id,
-                  settings: {
-                    config: widget.config,
-                  },
-                  subscribe: (
-                    topic: string,
-                    onMessage: (params: {
-                      ack: () => void;
-                      body: string;
-                    }) => void,
-                  ) => {
-                    if (topic === conf.topic.player) {
-                      log.debug("sending mock message");
-                      onMessage({
-                        ack: () => {},
-                        body: JSON.stringify({
-                          title:
-                            "IZANAGI 【 イザナギ 】 ☯ Japanese Trap & Bass Type Beat ☯ Trapanese Lofi Hip Hop Mix",
-                          owner: "testuser",
-                          count: 11,
-                          number: 0,
-                        }),
-                      });
-                    }
-                  },
-                  unsubscribe: (topic: string) => {},
-                  publish: (topic: string, payload: any) => {},
-                }}
+              <DonatonWidgetSettingsContext.Provider
+                value={widget.config as DonatonWidgetSettings}
               >
-                <ApiContext.Provider
-                  value={{
-                    listDonaters: (period: string) =>
-                      axios
-                        .get(
-                          `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
-                        )
-                        .then((response) => response.data),
-                  }}
-                >
-                  {getWidget(widget.type)}
-                </ApiContext.Provider>
-              </WidgetSettingsContext.Provider>
+                <DonatonWidget />
+              </DonatonWidgetSettingsContext.Provider>
             </ResizableBox>
           </Flex>
         )}

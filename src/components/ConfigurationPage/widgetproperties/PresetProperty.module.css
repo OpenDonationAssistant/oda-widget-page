@@ -1,0 +1,17 @@
+.preview {
+  border: var(--oda-main-border);
+  border-radius: 8px;
+}
+
+.grid {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.guide {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  font-size: 18px;
+}

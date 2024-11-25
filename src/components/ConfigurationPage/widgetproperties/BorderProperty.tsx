@@ -29,7 +29,7 @@ export interface BorderPropertyValue {
   right: Border;
 }
 
-export const DEFAULT_BORDER_PROPERTY_VALUE = {
+export const DEFAULT_BORDER_PROPERTY_VALUE: BorderPropertyValue = {
   isSame: null,
   bottom: DEFAULT_BORDER,
   top: DEFAULT_BORDER,

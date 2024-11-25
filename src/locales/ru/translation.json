@@ -219,5 +219,9 @@
   "display-requester": "Никнейм заказчика",
   "title":"Название",
   "requester":"Заказчик",
-  "queue":"Очередь"
+  "queue":"Очередь",
+  "widget-donaton-timer-text": "Текст",
+  "timer-end": "Время окончания стрима",
+  "widget-donation-price": "Цена",
+  "background-color": "Фон"
 }

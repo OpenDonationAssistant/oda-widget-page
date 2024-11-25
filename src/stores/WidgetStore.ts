@@ -1,10 +1,9 @@
 import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-client";
-import { Widget } from "../../types/Widget";
+import { Widget } from "../types/Widget";
 import { makeAutoObservable } from "mobx";
-import { log } from "../../logging";
+import { log } from "../logging";
 
 export class WidgetStore {
-
   public list: Widget[] = [];
 
   constructor() {

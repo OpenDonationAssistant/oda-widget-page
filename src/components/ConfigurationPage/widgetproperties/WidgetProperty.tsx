@@ -100,7 +100,21 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   private deepEqual(x: any, y: any): boolean {
     const ok = Object.keys,
       tx = typeof x,
-      ty = typeof y;
+      ty = typeof y,
+      isDate = x instanceof Date && y instanceof Date;
+    log.debug(
+      {
+        tx: tx,
+        ty: ty,
+        x: x,
+        y: y,
+        isDate: isDate
+      },
+      "deepEqual",
+    );
+    if (isDate){
+      return x.getTime() === y.getTime();
+    }
     return x && y && tx === "object" && tx === ty
       ? ok(x).length === ok(y).length &&
           ok(x).every((key) => this.deepEqual(x[key], y[key]))

@@ -272,7 +272,6 @@ div.ant-layout-has-sider.ant-layout {
 }
 
 .ant-dropdown-menu-title-content {
-  /* color: #7885db */
   color: var(--oda-secondary-text-color);
 }
 
@@ -344,4 +343,41 @@ div.ant-layout-has-sider.ant-layout {
 
 .ant-segmented {
   font-family: "Play";
+}
+
+.ant-btn-sm {
+  height: 32px;
+}
+
+.ant-picker-now-btn {
+  color: var(--oda-secondary-text-color);
+}
+
+.ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+  background: var(--oda-btn-background-color);
+  color: var(--oda-main-text-color);
+}
+.ant-picker-outlined {
+  border: var(--oda-main-border);
+  background: unset;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0px;
+  border-width: 2px;
+
+  & .ant-picker-input > input {
+    color: var(--oda-secondary-text-color);
+    font-family: "Play";
+    font-weight: 900;
+    font-size: 20px;
+  }
+
+  & .ant-picker-clear {
+    color: var(--oda-secondary-text-color);
+  }
+
+  & .ant-picker-suffix {
+    color: var(--oda-secondary-text-color);
+  }
 }

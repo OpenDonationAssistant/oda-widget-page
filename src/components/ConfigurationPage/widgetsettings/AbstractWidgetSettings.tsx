@@ -3,12 +3,7 @@ import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
-import {
-  computed,
-  makeObservable,
-  observable,
-  toJS,
-} from "mobx";
+import { computed, makeObservable, observable, toJS } from "mobx";
 
 export interface SettingsSection {
   key: string;
@@ -29,12 +24,17 @@ export class AbstractWidgetSettings {
     });
   }
 
-  protected get sections(){
+  protected get sections() {
     return this._sections;
   }
 
   protected set sections(section: SettingsSection[]) {
     this._sections = section;
+    this.makeIndex();
+  }
+
+  protected addSection(section: SettingsSection) {
+    this._sections.push(section);
     this.makeIndex();
   }
 
@@ -53,10 +53,10 @@ export class AbstractWidgetSettings {
       .map((prop) => {
         return {
           name: prop.name,
-          value: toJS(prop.value)
+          value: toJS(prop.value),
         };
       });
-    log.debug({preparedConfig: prepared});
+    log.debug({ preparedConfig: prepared });
     return prepared;
   }
 
@@ -98,13 +98,13 @@ export class AbstractWidgetSettings {
     const prop = this._index.get(key);
     if (prop) {
       prop.value = value;
-      if( asInitialValue) {
+      if (asInitialValue) {
         prop.markSaved();
       }
     }
   }
 
-  public markSaved(): void{
-    [...this._index.values()].forEach(prop => prop.markSaved());
+  public markSaved(): void {
+    [...this._index.values()].forEach((prop) => prop.markSaved());
   }
 }

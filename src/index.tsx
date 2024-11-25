@@ -40,8 +40,8 @@ import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
 import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
-import { useTranslation } from "react-i18next";
 import NewsComponent from "./components/Payments/NewsComponent";
+import DonatonPage from "./pages/Donaton/DonatonPage";
 
 async function widgetSettingsLoader({
   params,
@@ -187,6 +187,11 @@ const router = createBrowserRouter([
   {
     path: "/player-popup/:widgetId",
     element: <PlayerPopup />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/donaton/:widgetId",
+    element: <DonatonPage/> ,
     loader: widgetSettingsLoader,
   },
   {

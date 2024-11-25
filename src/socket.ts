@@ -28,26 +28,28 @@ socket.onConnect = () => {
 function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
   log.info(`Creating subscription ${topic} for ${id}`);
   if (socket.connected) {
-		socket.subscribe(topic, onMessage, {
-			id: `${id}-${topic}`,
-			durable: "true",
-			"auto-delete": "false",
-			ack: "client",
-		});
+    socket.subscribe(topic, onMessage, {
+      id: `${id}-${topic}`,
+      durable: "true",
+      "auto-delete": "false",
+      ack: "client",
+    });
   }
-	listeners.push({
-		id: id,
-		topic: topic,
-		onMessage: onMessage
-	});
+  listeners.push({
+    id: id,
+    topic: topic,
+    onMessage: onMessage,
+  });
 
   log.info(`${id} connected`);
 }
 
-function unsubscribe(id: string, topic: string){
+function unsubscribe(id: string, topic: string) {
   log.info(`Deleting subscription ${id} with topic ${topic}`);
   socket.unsubscribe(`${id}-${topic}`);
-  const existingListenerIndex = listeners.findIndex(listener => listener.id === id && listener.topic === topic);
+  const existingListenerIndex = listeners.findIndex(
+    (listener) => listener.id === id && listener.topic === topic,
+  );
   listeners.splice(existingListenerIndex, 1);
 }
 
@@ -64,17 +66,23 @@ function setupCommandListener(widgetId: string, reloadFn: Function) {
   });
 }
 
-function cleanupCommandListener(widgetId: string){
+function cleanupCommandListener(widgetId: string) {
   unsubscribe(widgetId, "/topic/commands");
 }
 
-
 function publish(topic: string, payload: any) {
-  log.debug({payload: payload}, "sending payload");
+  log.debug({ payload: payload }, "sending payload");
   socket.publish({
     destination: topic,
     body: JSON.stringify(payload),
   });
 }
 
-export { socket, subscribe, unsubscribe, setupCommandListener, cleanupCommandListener, publish };
+export {
+  socket,
+  subscribe,
+  unsubscribe,
+  setupCommandListener,
+  cleanupCommandListener,
+  publish,
+};

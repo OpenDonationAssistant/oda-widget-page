@@ -60,7 +60,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
               value={property.value.topLeft}
               addon="px"
               onChange={(newValue) => {
-                if (!newValue) {
+                if (newValue === undefined || newValue === null) {
                   return;
                 }
                 const updated = produce(

@@ -13,7 +13,7 @@ import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES, Widget } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
-import { WidgetStore } from "./WidgetStore";
+import { WidgetStore } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 
 export class Selection {

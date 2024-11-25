@@ -16,7 +16,7 @@ export interface PaddingPropertyValue {
   right: number;
 }
 
-export const DEFAULT_PADDING_PROPERTY_VALUE = {
+export const DEFAULT_PADDING_PROPERTY_VALUE: PaddingPropertyValue = {
   isSame: true,
   bottom: 5,
   top: 5,

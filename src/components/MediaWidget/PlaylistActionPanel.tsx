@@ -37,7 +37,7 @@ export default function PlaylistActionPanel({
 
   const loadPlaylists: () => Promise<void> = async () => {
     return MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT)
-      .list1({ orderBy: [], size: 100, sort: { orderBy: [] } })
+      .playlists({ orderBy: [], size: 100, sort: { orderBy: [] } })
       .then((res) => res.data?.content)
       .then((data) => {
         setSavedPlaylists(
@@ -81,7 +81,7 @@ export default function PlaylistActionPanel({
   ) => {
     controller.current.clear();
     MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT)
-      .list2(playlistId)
+      .playlist(playlistId)
       .then((res) => {
         controller.current.clear();
         setPlaylistName(res.data.title);
@@ -116,7 +116,11 @@ export default function PlaylistActionPanel({
             <span className="material-symbols-sharp">playlist_add</span>
           </button>
           <button onClick={() => controller.clearCurrentPlaylist()}>
-            <img src="/icons/broom.png" alt="repeat" style={{ height: 24, filter:"invert(1)"}} />
+            <img
+              src="/icons/broom.png"
+              alt="repeat"
+              style={{ height: 24, filter: "invert(1)" }}
+            />
           </button>
           <button
             className="repeat-button"
