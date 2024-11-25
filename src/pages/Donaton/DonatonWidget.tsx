@@ -44,7 +44,7 @@ export default function DonatonWidget({}) {
     <>
       <style
         dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%; background-color: "rgba(0,0,0,0)";}`,
+          __html: `html, body {height: 100%; background-color: rgba(0,0,0,0);}`,
         }}
       />
       {titleFont.createFontImport()}
