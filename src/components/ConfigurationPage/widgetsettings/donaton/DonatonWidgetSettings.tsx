@@ -35,11 +35,13 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
           name: "text",
           value: "Стрим будет идти еще <time>",
           displayName: "widget-donaton-timer-text",
+          help: "Надпись на таймере"
         }),
         new DonatonPriceProperty(),
         new DateTimeProperty({
           name: "timer-end",
           displayName: "widget-donaton-timer-end",
+          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится."
         }),
       ],
     });

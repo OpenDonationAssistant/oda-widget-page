@@ -7,11 +7,13 @@ export default function ModalButton({
   label,
   buttonLabel,
   modalTitle,
+  help,
   children,
 }: {
   label: string;
   buttonLabel: string;
   modalTitle: string;
+  help?: string;
   children: ReactNode;
 }) {
   const [showModal, setShowModal] = useState<boolean>();
@@ -28,7 +30,7 @@ export default function ModalButton({
   }
 
   return (
-    <LabeledContainer displayName={label}>
+    <LabeledContainer help={help} displayName={label}>
       <button className={`full-width oda-btn-default`} onClick={toggleModal}>
         <Trans i18nKey={buttonLabel} />
       </button>

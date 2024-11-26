@@ -69,7 +69,7 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     return React.createElement("div");
   }
 
-  protected get help(): string | undefined {
+  public get help(): string | undefined {
     return this._help;
   }
   protected set help(value: string | undefined) {

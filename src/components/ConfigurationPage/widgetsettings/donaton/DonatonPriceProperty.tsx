@@ -12,7 +12,7 @@ const DonationPricePropertyComponent = observer(
   ({ property }: { property: DonatonPriceProperty }) => {
     return (
       <>
-        <LabeledContainer displayName="Соотношение">
+        <LabeledContainer displayName="Соотношение" help={property.help}>
           <Flex
             className="full-width"
             gap={10}
@@ -67,6 +67,7 @@ export class DonatonPriceProperty extends DefaultWidgetProperty<DonationPrice> {
         unit: "HOUR",
       },
       displayName: "widget-donation-price",
+      help: "Соотношение, исходя из которого будет добавляться время к таймеру. Например, если 1 час = 360 рублей, то в пересчете на один рубль, (60*60)/360=10 секунд за 1 рубль доната. Округление всегда вверх.",
     });
   }
 

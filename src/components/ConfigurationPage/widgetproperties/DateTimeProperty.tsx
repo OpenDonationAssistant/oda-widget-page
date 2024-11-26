@@ -11,7 +11,7 @@ export interface DateTimePropertyValue {
   timestamp?: Date;
 }
 
-const dateFormat = "HH:mm   DD/MM/YYYY";
+const dateFormat = "DD/MM/YYYY   HH:mm";
 
 export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValue> {
   constructor(params: {
@@ -50,7 +50,6 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
   });
 
   markup(): ReactNode {
-    log.debug({ value: this.value }, "value before render");
     return <this.DateTimePropertyComponent />;
   }
 }

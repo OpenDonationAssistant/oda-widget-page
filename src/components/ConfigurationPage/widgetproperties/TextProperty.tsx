@@ -10,6 +10,7 @@ const TextPropertyComponent = observer(
         modalTitle={property.displayName}
         buttonLabel="button-settings"
         label={property.displayName}
+        help={property.help}
       >
         <div className="textarea-container">
           <textarea
