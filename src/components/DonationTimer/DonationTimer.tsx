@@ -8,13 +8,29 @@ import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import { BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
+} from "../ConfigurationPage/widgetproperties/BorderProperty";
+import {
+  DEFAULT_PADDING_PROPERTY_VALUE,
+  PaddingProperty,
+} from "../ConfigurationPage/widgetproperties/PaddingProperty";
+import {
+  DEFAULT_ROUNDING_PROPERTY_VALUE,
+  RoundingProperty,
+} from "../ConfigurationPage/widgetproperties/RoundingProperty";
+import {
+  ColorProperty,
+  ColorPropertyTarget,
+  DEFAULT_COLOR_PROPERTY_VALUE,
+} from "../ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function DonationTimer({}: {}) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
-  const { widgetId, settings, subscribe, unsubscribe } = useContext(
+  const { settings, subscribe, unsubscribe } = useContext(
     WidgetSettingsContext,
   );
 
@@ -76,11 +92,41 @@ export default function DonationTimer({}: {}) {
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
-  const borderStyle =  new BorderProperty({
+
+  const backgroundStyle = new ColorProperty({
+    name: "backgroundColor",
+    target: ColorPropertyTarget.BACKGROUND,
+    displayName: "label-background",
+    value: findSetting(
+      settings,
+      "backgroundColor",
+      DEFAULT_COLOR_PROPERTY_VALUE,
+    ),
+  }).calcCss();
+
+  const borderStyle = new BorderProperty({
     name: "border",
     value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
-  const style = {...titleFont.calcStyle(), ...borderStyle}
+
+  const paddingStyle = new PaddingProperty({
+    name: "padding",
+    value: findSetting(settings, "padding", DEFAULT_PADDING_PROPERTY_VALUE),
+  }).calcCss();
+
+  const roundingStyle = new RoundingProperty({
+    name: "rounding",
+    value: findSetting(settings, "rounding", DEFAULT_ROUNDING_PROPERTY_VALUE),
+  }).calcCss();
+
+  const style = {
+    ...titleFont.calcStyle(),
+    ...backgroundStyle,
+    ...borderStyle,
+    ...paddingStyle,
+    ...roundingStyle,
+  };
+
   log.debug({ style: style }, "donation timer style");
 
   return (
