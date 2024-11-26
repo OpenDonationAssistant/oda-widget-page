@@ -143,8 +143,8 @@ export default function VideoJSComponent({
     });
     player.on("ended", () => {
       log.debug("song ended");
-      playerState.current = PLAYER_STATE.INITIALIZING;
       playlistController.finishSong();
+      playerState.current = PLAYER_STATE.INITIALIZING;
       setPaused(true);
       sendAlert();
     });
@@ -262,6 +262,7 @@ export default function VideoJSComponent({
       log.debug("start playing");
       setPaused(false);
       if (playerState.current === PLAYER_STATE.SHOULD_BE_STOPED) {
+        playerState.current = PLAYER_STATE.PAUSED;
         player.pause();
         return;
       }
@@ -286,6 +287,7 @@ export default function VideoJSComponent({
     player.on("error", function () {
       log.error(player.error());
       setPaused(true);
+      playerState.current = PLAYER_STATE.INITIALIZING;
       playlistController.finishSong();
       sendAlert();
     });
@@ -345,6 +347,7 @@ export default function VideoJSComponent({
                     if (!isRemote) {
                       player?.play();
                     }
+                    setPaused(false);
                   }}
                 >
                   <span className="material-symbols-sharp">play_arrow</span>
@@ -360,6 +363,7 @@ export default function VideoJSComponent({
                         command: "pause",
                       });
                       sendAlert();
+                      setPaused(true);
                       playerState.current = PLAYER_STATE.PAUSED;
                     }
                     if (!isRemote) {

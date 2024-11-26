@@ -144,9 +144,17 @@
   color: gray;
 }
 
+.video-buttons button:hover {
+  transform: translateY(-2px);
+  background: unset;
+  & span{
+    color: white;
+  }
+}
+
 .video-buttons button span {
   font-size: 40px;
-  color: var(--oda-main-text-color);
+  color: var(--oda-secondary-text-color);
 }
 
 .item-buttons .btn:hover {
