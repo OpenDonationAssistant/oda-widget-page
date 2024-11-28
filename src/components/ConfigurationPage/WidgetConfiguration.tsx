@@ -279,7 +279,7 @@ export default function WidgetConfiguration({
                 <DonationTimerWidgetSettingsContext.Provider
                   value={widget.config as DonationTimerWidgetSettings}
                 >
-                  <DonationTimer />;
+                  <DonationTimer />
                 </DonationTimerWidgetSettingsContext.Provider>
               )}
               {widget.type === "donaton" && (
