@@ -4,6 +4,7 @@ import { Segmented, Select } from "antd";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
+import { log } from "../../../logging";
 
 export enum SELECTION_TYPE {
   DROPDOWN,
@@ -27,17 +28,21 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
     options?: string[];
     selectionType?: SELECTION_TYPE;
   }) {
-    super({name: name, value: value, displayName: displayName});
+    super({ name: name, value: value, displayName: displayName });
     this._options = options ?? [];
     this._selectionType = selectionType ?? SELECTION_TYPE.DROPDOWN;
   }
 
   SegmentedSelect = observer(() => {
     const { t } = useTranslation();
+    log.debug(
+      { options: this._options, value: this.value },
+      "creating segmented selection",
+    );
     return (
       <Segmented
-        value={this.value}
         block
+        value={this.value}
         className="full-width"
         options={this._options.map((option) => {
           return { label: t(option), value: option };

@@ -24,9 +24,7 @@ import { log, setLoglevel } from "./logging";
 import auth from "./auth";
 import axios from "axios";
 import Login from "./components/Login/Login";
-import DonationTimer from "./components/DonationTimer/DonationTimer";
 import type { Params } from "react-router-dom";
-import PaymentPageConfigComponent from "./components/PaymentPageConfig/PaymentPageConfigComponent";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 import ReelWidget from "./pages/Reel/ReelWidget";
@@ -42,6 +40,9 @@ import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 import NewsComponent from "./components/Payments/NewsComponent";
 import DonatonPage from "./pages/Donaton/DonatonPage";
+import DonationTimer from "./pages/DonationTimer/DonationTimer";
+import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageConfigComponent";
+import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 
 async function widgetSettingsLoader({
   params,
@@ -151,11 +152,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/configuration/news",
-    element: <ConfigurationPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
     path: "/configuration/gateways",
     element: <PaymentGatewaysConfiguration />,
     loader: widgetSettingsLoader,
@@ -191,7 +187,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/donaton/:widgetId",
-    element: <DonatonPage/> ,
+    element: <DonatonPage />,
     loader: widgetSettingsLoader,
   },
   {
@@ -215,11 +211,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/donation-timer/:widgetId",
-    element: (
-      <WidgetWrapper>
-        <DonationTimer />
-      </WidgetWrapper>
-    ),
+    element: <DonationTimerPage />,
     loader: widgetSettingsLoader,
   },
   {

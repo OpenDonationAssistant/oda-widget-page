@@ -47,6 +47,7 @@ export const AnimatedFontComponent = observer(
     return (
       <>
         <ModalButton
+          className={classes.modal}
           label={t(property.label)}
           buttonLabel={"button-settings"}
           modalTitle="widget-font-settings"

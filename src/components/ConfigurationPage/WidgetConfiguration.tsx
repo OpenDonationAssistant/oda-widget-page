@@ -1,5 +1,4 @@
 import React, { useContext, useRef, useState } from "react";
-import axios from "axios";
 
 import "./css/Widget.css";
 import "./css/WidgetList.css";
@@ -8,14 +7,11 @@ import "./css/WidgetSettings.css";
 import TestAlertButton from "./settings/TestAlertButton";
 
 import { publish, socket } from "../../socket";
-import { log } from "../../logging";
 import { Button, Flex, Input, Modal } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
-import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import { ApiContext } from "../../contexts/ApiContext";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
 import { observer } from "mobx-react-lite";
@@ -25,7 +21,6 @@ import { makeAutoObservable } from "mobx";
 import { SelectionContext } from "./ConfigurationPage";
 import DonatersTopList from "../DonatersTopList/DonatersTopList";
 import DonationGoal from "../DonationGoal/DonationGoal";
-import DonationTimer from "../DonationTimer/DonationTimer";
 import PlayerInfo from "../PlayerInfo/PlayerInfo";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import WidgetUrlModal from "./WidgetUrlModal";
@@ -34,27 +29,15 @@ import {
   DonatonWidgetSettings,
   DonatonWidgetSettingsContext,
 } from "./widgetsettings/donaton/DonatonWidgetSettings";
+import DonationTimer from "../../pages/DonationTimer/DonationTimer";
+import {
+  DonationTimerWidgetSettings,
+  DonationTimerWidgetSettingsContext,
+} from "./widgetsettings/DonationTimerWidgetSettings";
 
 interface WidgetConfigurationProps {
   widget: Widget;
   open: boolean;
-}
-
-function getWidget(type: string) {
-  switch (type) {
-    case "donaters-top-list":
-      return <DonatersTopList />;
-    case "donaton":
-      return <DonatonWidget />;
-    case "donationgoal":
-      return <DonationGoal />;
-    case "donation-timer":
-      return <DonationTimer />;
-    case "player-info":
-      return <PlayerInfo />;
-    default:
-      return <div></div>;
-  }
 }
 
 export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
@@ -283,29 +266,29 @@ export default function WidgetConfiguration({
         <HelpButton widget={widget} />
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
-        {widget.type === "donaton" && (
+        {(widget.type === "donaton" || widget.type === "donation-timer") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
               height={250}
-              style={{
-                border: "var(--oda-main-border)",
-                borderRadius: "8px",
-                boxShadow: "0px 0px 4px 4px #111111",
-                marginBottom: "10px",
-                background: `url(https://api.oda.digital/public/commonback.jpg)`,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              className={`${classes.resizable}`}
               axis="both"
               minConstraints={[650, 100]}
             >
-              <DonatonWidgetSettingsContext.Provider
-                value={widget.config as DonatonWidgetSettings}
-              >
-                <DonatonWidget />
-              </DonatonWidgetSettingsContext.Provider>
+              {widget.type === "donation-timer" && (
+                <DonationTimerWidgetSettingsContext.Provider
+                  value={widget.config as DonationTimerWidgetSettings}
+                >
+                  <DonationTimer />;
+                </DonationTimerWidgetSettingsContext.Provider>
+              )}
+              {widget.type === "donaton" && (
+                <DonatonWidgetSettingsContext.Provider
+                  value={widget.config as DonatonWidgetSettings}
+                >
+                  <DonatonWidget />
+                </DonatonWidgetSettingsContext.Provider>
+              )}
             </ResizableBox>
           </Flex>
         )}

@@ -10,7 +10,8 @@ import { VideoJsPlayer } from "video.js";
 import { findSetting } from "../utils";
 import { WidgetData } from "../../types/WidgetData";
 import {
-  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 
 let options = {
@@ -27,8 +28,7 @@ export default function PlayerPopup({}) {
   const playerRef = useRef<VideoJsPlayer>(null);
   const videoRef = useRef(null);
   const [hideVideo, setHideVideo] = useState(false);
-  const { recipientId, settings, conf, widgetId } =
-    useLoaderData() as WidgetData;
+  const { settings, conf, widgetId } = useLoaderData() as WidgetData;
   const [song, setSong] = useState<Song | null>(null);
 
   useEffect(() => {
@@ -88,7 +88,6 @@ export default function PlayerPopup({}) {
   }, [widgetId]);
 
   const borderStyle = new BorderProperty({
-    widgetId: widgetId,
     name: "widgetBorder",
     value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();

@@ -9,31 +9,38 @@ import {
   ColorProperty,
   ColorPropertyTarget,
 } from "../widgetproperties/ColorProperty";
-import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
+import { PresetProperty } from "../widgetproperties/PresetProperty";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
-    super({
-      sections: [
-        {
-          key: "general",
-          title: "Общие",
-          properties: [
-            new BooleanProperty({
-              name: "resetOnLoad",
-              value: true,
-              displayName: "widget-donation-timer-refresh",
-            }),
-            new TextProperty({
-              name: "text",
-              value: "Без донатов уже <time>",
-              displayName: "widget-donation-timer-text",
-            }),
-          ],
-        },
+    super({ sections: [] });
+
+    this.addSection({
+      key: "preset",
+      title: "Готовые шаблоны",
+      properties: [
+        new PresetProperty({ type: "donation-timer", settings: this }),
       ],
     });
+
+    this.addSection({
+      key: "general",
+      title: "Общие",
+      properties: [
+        new BooleanProperty({
+          name: "resetOnLoad",
+          value: true,
+          displayName: "widget-donation-timer-refresh",
+        }),
+        new TextProperty({
+          name: "text",
+          value: "Без донатов уже <time>",
+          displayName: "widget-donation-timer-text",
+        }),
+      ],
+    });
+
     this.addSection({
       key: "style",
       title: "Стиль",
@@ -83,16 +90,6 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         }),
         new BorderProperty({
           name: "border",
-        }),
-        new PaddingProperty({
-          name: "padding",
-          value: {
-            isSame: null,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-          },
         }),
         new RoundingProperty({
           name: "rounding",

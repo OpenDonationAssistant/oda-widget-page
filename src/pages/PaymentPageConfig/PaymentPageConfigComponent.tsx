@@ -2,10 +2,10 @@ import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
-import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { WidgetData } from "../../types/WidgetData";
 import { File } from "buffer";
 import { Content } from "antd/es/layout/layout";
+import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -116,6 +116,15 @@ export default function PaymentPageConfigComponent({}: {}) {
   return (
     <Content>
       <div className={classes.paymentpageconfig}>
+        <div className={classes.widgetsettingsitem}>
+          <div className={classes.widgetsettingsname}>Адрес страницы</div>
+          <a
+            href={`https://${recipientId}.oda.digital/`}
+            className={classes.url}
+          >
+            https://{recipientId}.oda.digital/
+          </a>
+        </div>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>ФИО</div>
           <input

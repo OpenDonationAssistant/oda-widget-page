@@ -2,37 +2,21 @@ import React, { useContext } from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLoaderData } from "react-router";
-import { findSetting } from "../utils";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
-import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/BorderProperty";
-import {
-  DEFAULT_PADDING_PROPERTY_VALUE,
-  PaddingProperty,
-} from "../ConfigurationPage/widgetproperties/PaddingProperty";
-import {
-  DEFAULT_ROUNDING_PROPERTY_VALUE,
-  RoundingProperty,
-} from "../ConfigurationPage/widgetproperties/RoundingProperty";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-  DEFAULT_COLOR_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/ColorProperty";
+import { findSetting } from "../../components/utils";
+import { DonationTimerWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
+import { Flex } from "antd";
 
 export default function DonationTimer({}: {}) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
-  const { settings, subscribe, unsubscribe } = useContext(
-    WidgetSettingsContext,
-  );
+  const { subscribe, unsubscribe } = useContext(WidgetSettingsContext);
+
+  const settings = useContext(DonationTimerWidgetSettingsContext);
 
   useEffect(() => {
     updateDonationTime();
@@ -71,7 +55,7 @@ export default function DonationTimer({}: {}) {
   }, [lastDonationTime]);
 
   function updateDonationTime() {
-    if (findSetting(settings, "resetOnLoad", false)) {
+    if (findSetting(settings, "resetOnLoad", true)) {
       setLastDonationTime(Date.now());
       return;
     }
@@ -86,59 +70,39 @@ export default function DonationTimer({}: {}) {
       });
   }
 
-  const text = findSetting(settings, "text", "Без донатов уже <time>");
+  const text = settings.textProperty;
 
-  const titleFont = new AnimatedFontProperty({
-    name: "titleFont",
-    value: findSetting(settings, "titleFont", null),
-  });
+  const titleFont = settings.titleFontProperty;
 
-  const backgroundStyle = new ColorProperty({
-    name: "backgroundColor",
-    target: ColorPropertyTarget.BACKGROUND,
-    displayName: "label-background",
-    value: findSetting(
-      settings,
-      "backgroundColor",
-      DEFAULT_COLOR_PROPERTY_VALUE,
-    ),
-  }).calcCss();
+  const backgroundStyle = settings.backgroundColorProperty.calcCss();
 
-  const borderStyle = new BorderProperty({
-    name: "border",
-    value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
-  }).calcCss();
+  const borderStyle = settings.borderProperty.calcCss();
 
-  const paddingStyle = new PaddingProperty({
-    name: "padding",
-    value: findSetting(settings, "padding", DEFAULT_PADDING_PROPERTY_VALUE),
-  }).calcCss();
-
-  const roundingStyle = new RoundingProperty({
-    name: "rounding",
-    value: findSetting(settings, "rounding", DEFAULT_ROUNDING_PROPERTY_VALUE),
-  }).calcCss();
+  const roundingStyle = settings.roundingProperty.calcCss();
 
   const style = {
     ...titleFont.calcStyle(),
     ...backgroundStyle,
     ...borderStyle,
-    ...paddingStyle,
     ...roundingStyle,
   };
-
-  log.debug({ style: style }, "donation timer style");
 
   return (
     <>
       {titleFont.createFontImport()}
-      <div
-        id="donationTimer"
-        className={`${classes.timer} ${titleFont.calcClassName()}`}
-        style={style}
-      >
-        {text ? text.replace("<time>", time) : "Без донатов уже " + time}
-      </div>
+      {time && (
+        <Flex
+          align="center"
+          justify="center"
+          id="donationTimer"
+          className={`${classes.timer}`}
+          style={style}
+        >
+          <div className={`${titleFont.calcClassName()}`}>
+            {text.replace("<time>", `${time}`)}
+          </div>
+        </Flex>
+      )}
     </>
   );
 }

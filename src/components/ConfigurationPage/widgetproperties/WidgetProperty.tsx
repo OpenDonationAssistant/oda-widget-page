@@ -102,16 +102,6 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
       tx = typeof x,
       ty = typeof y,
       isDate = x instanceof Date && y instanceof Date;
-    log.debug(
-      {
-        tx: tx,
-        ty: ty,
-        x: x,
-        y: y,
-        isDate: isDate
-      },
-      "deepEqual",
-    );
     if (isDate){
       return x.getTime() === y.getTime();
     }

@@ -35,5 +35,20 @@
   background-color: var(--oda-main-background-color);
   padding-left: 20px;
   padding-right: 20px;
-  box-shadow: inset 0 0 5px 0px rgba(0, 0, 0, 0.6);
+}
+
+.modal {
+  &[class*="ant-modal"] {
+    & [class*="ant-modal-content"] {
+      background-color: var(--oda-main-background-color);
+      & [class*="ant-modal-header"] {
+        background-color: var(--oda-main-background-color);
+        & [class*="ant-modal-title"] {
+          background-color: var(--oda-main-background-color);
+          margin-bottom: 5px;
+          text-align: center;
+        }
+      }
+    }
+  }
 }

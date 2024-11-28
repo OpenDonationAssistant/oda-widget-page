@@ -8,12 +8,14 @@ export default function ModalButton({
   buttonLabel,
   modalTitle,
   help,
+  className,
   children,
 }: {
   label: string;
   buttonLabel: string;
   modalTitle: string;
   help?: string;
+  className?: string;
   children: ReactNode;
 }) {
   const [showModal, setShowModal] = useState<boolean>();
@@ -37,6 +39,7 @@ export default function ModalButton({
       <Modal
         title={t(modalTitle)}
         open={showModal}
+        className={className}
         onCancel={toggleModal}
         onClose={toggleModal}
         onOk={toggleModal}

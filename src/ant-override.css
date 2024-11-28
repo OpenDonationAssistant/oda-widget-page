@@ -146,6 +146,10 @@
 .ant-modal {
   & .ant-modal-header {
     margin-left: 10px;
+    background-color: var(--oda-panel-backgroun-color);
+    margin-bottom: 0px;
+    padding-left: 10px;
+    font-weight: 900;
   }
 
 
@@ -153,16 +157,18 @@
     padding-left: 0px;
     padding-right: 0px;
     padding-bottom: 0px;
-    background-color: var(--oda-main-background-color);
+    background-color: var(--oda-panel-backgroun-color);
     border: 2px solid #674afd;
     margin-bottom: 0px;
     min-width: 800px;
 
 
     & .ant-modal-title {
-      background-color: var(--oda-main-background-color);
       color: var(--oda-main-text-color);
-      text-align: center;
+      text-align: left;
+      background-color: var(--oda-panel-backgroun-color);
+      font-weight: 900;
+      font-size: 20px;
     }
 
     & .ant-modal-body {

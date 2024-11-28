@@ -3,6 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import { Flex, Select } from "antd";
 import ModalButton from "../../ModalButton/ModalButton";
 import { toJS } from "mobx";
+import classes from "./DonationGoalLabelProperty.module.css";
 
 const DonationGoalPropertyComponent = ({
   displayName,
@@ -16,13 +17,19 @@ const DonationGoalPropertyComponent = ({
   const [template, setTemplate] = useState<string | null>(
     "<collected> / <required> <currency>",
   );
+
   return (
     <ModalButton
       label={displayName}
       buttonLabel="button-settings"
       modalTitle={displayName}
     >
-      <Flex justify="space-between">
+      <Flex
+        justify="space-between"
+        gap={10}
+        align="center"
+        className={`${classes.template}`}
+      >
         <span>Готовый шаблон:</span>
         <Select
           value={template}
@@ -75,7 +82,7 @@ export class DonationGoalLabelProperty extends DefaultWidgetProperty<string> {
   constructor() {
     super({
       name: "labelTemplate",
-      value:  "<collected> / <required> <currency>",
+      value: "<collected> / <required> <currency>",
       displayName: "widget-donationgoal-label-template",
     });
   }
@@ -86,7 +93,7 @@ export class DonationGoalLabelProperty extends DefaultWidgetProperty<string> {
       <DonationGoalPropertyComponent
         displayName={this.displayName}
         value={this.value}
-        onChange={(text) => this.value = toJS(text)}
+        onChange={(text) => (this.value = toJS(text))}
       />
     );
   }
