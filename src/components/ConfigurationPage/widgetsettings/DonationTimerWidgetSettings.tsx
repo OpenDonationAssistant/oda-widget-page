@@ -11,6 +11,7 @@ import {
 } from "../widgetproperties/ColorProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { PresetProperty } from "../widgetproperties/PresetProperty";
+import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -142,6 +143,15 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
       (this.get("rounding") as RoundingProperty) ||
       new RoundingProperty({ name: "rounding" })
     );
+  }
+
+  public get resetOnLoad(): boolean {
+    const resetOnLoad = this.get("resetOnLoad") ?? new BooleanProperty({
+      name: "resetOnLoad",
+      value: true,
+      displayName: "widget-donation-timer-refresh",
+    });
+    return resetOnLoad.value;
   }
 
   public help(): ReactNode {

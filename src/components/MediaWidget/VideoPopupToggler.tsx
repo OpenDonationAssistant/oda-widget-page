@@ -2,13 +2,19 @@ import React, { useState } from "react";
 import Toggle from "react-toggle";
 import "react-toggle/style.css";
 
-enum VIDEO_IMPL {
+export enum VIDEO_IMPL {
   EMBEDDED,
   REMOTE,
 }
 
-export default function VideoPopupToggler({ onChange }: { onChange: Function}) {
-  const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(VIDEO_IMPL.EMBEDDED);
+export default function VideoPopupToggler({
+  state,
+  onChange,
+}: {
+  state: VIDEO_IMPL;
+  onChange: Function;
+}) {
+  const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(state);
   return (
     <>
       <div className="videoImplToggler">
@@ -25,9 +31,11 @@ export default function VideoPopupToggler({ onChange }: { onChange: Function}) {
               onChange();
             }}
           />
-          <span className="videoImpl">{videoImpl === VIDEO_IMPL.REMOTE ? "Remote" : "Embedded"}</span>
+          <span className="videoImpl">
+            {videoImpl === VIDEO_IMPL.REMOTE ? "Remote" : "Embedded"}
+          </span>
         </label>
-        </div>
+      </div>
     </>
   );
 }

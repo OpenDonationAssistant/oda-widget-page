@@ -94,7 +94,7 @@ export default function PlaylistActionPanel({
               originId: null,
               owner: "",
               type: "video/youtube",
-              provider: item.src.includes("vk.com")
+              provider: item.src.includes("vkvideo")
                 ? Provider.VK
                 : Provider.YOUTUBE,
             };

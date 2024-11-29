@@ -55,7 +55,7 @@ export default function DonationTimer({}: {}) {
   }, [lastDonationTime]);
 
   function updateDonationTime() {
-    if (findSetting(settings, "resetOnLoad", true)) {
+    if (settings.resetOnLoad) {
       setLastDonationTime(Date.now());
       return;
     }

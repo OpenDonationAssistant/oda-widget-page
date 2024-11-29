@@ -45,8 +45,8 @@ export default function PlayerControl({}: {}) {
         });
     } else {
       let id = uuidv4();
-      if (url.includes("vk.com")) {
-        const originId = url.replace("https://vk.com/video-", "");
+      if (url.includes("vkvideo")){
+        const originId = url.replace("https://vkvideo.ru/video","");
         publish(conf.topic.media, {
           id: id,
           url: url,

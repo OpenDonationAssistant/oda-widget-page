@@ -14,7 +14,7 @@ import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
 import "https://widgets.oda.digital/videplayer.js";
 import { Flex } from "antd";
-import VideoPopupToggler from "./VideoPopupToggler";
+import VideoPopupToggler, { VIDEO_IMPL } from "./VideoPopupToggler";
 
 let options: VideoJsPlayerOptions = {
   autoplay: true,
@@ -58,7 +58,15 @@ export default function VideoJSComponent({
   const playerState = useRef<PLAYER_STATE>(PLAYER_STATE.INITIALIZING);
   const [player, setPlayer] = useState<Player | null>(null);
   const commandHandler = useRef<Function | null>(null);
-  const [isRemote, setIsRemote] = useState<boolean>(false);
+
+  const [isRemote, setIsRemote] = useState<boolean>(() => {
+    const remote = localStorage.getItem("isRemote");
+    if (remote) {
+      return JSON.parse(remote);
+    }
+    return false;
+  });
+
   const [volume, setVolume] = useState<number>(() => {
     const vol = localStorage.getItem("volume");
     if (vol) {
@@ -68,6 +76,11 @@ export default function VideoJSComponent({
   });
 
   log.debug("Initing player component");
+
+  function setRemote(newValue: boolean) {
+    setIsRemote(newValue);
+    localStorage.setItem("isRemote", JSON.stringify(newValue));
+  }
 
   function freeze() {
     log.debug(
@@ -396,9 +409,10 @@ export default function VideoJSComponent({
           />
         </div>
         <VideoPopupToggler
+          state={isRemote ? VIDEO_IMPL.REMOTE : VIDEO_IMPL.EMBEDDED}
           onChange={() => {
             publish(conf.topic.remoteplayer, { command: "stop" });
-            setIsRemote((old) => !old);
+            setRemote(!isRemote);
           }}
         />
       </Flex>
