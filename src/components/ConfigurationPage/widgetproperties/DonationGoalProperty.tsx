@@ -89,7 +89,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
     (this.value as Goal[]).push({
       id: uuidv7(),
       briefDescription: "Название",
-      fullDescription: "Полное описание",
+      fullDescription: "",
       default: false,
       requiredAmount: { major: 100, currency: "RUB" },
       accumulatedAmount: { major: 0, currency: "RUB" },
