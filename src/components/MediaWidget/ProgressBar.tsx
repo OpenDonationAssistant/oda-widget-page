@@ -1,8 +1,9 @@
 import { Slider } from "antd";
 import React, { useEffect, useState } from "react";
 import { VideoJsPlayer } from "video.js";
+import { Player } from "./VideoJSComponent";
 
-export default function ProgressBar({ player }: { player: VideoJsPlayer }) {
+export default function ProgressBar({ player }: { player: Player }) {
   const [position, setPosition] = useState<number>(0);
 
   useEffect(() => {

@@ -36,11 +36,13 @@ enum PLAYER_STATE {
   READY,
 }
 
-interface Player {
+export interface Player {
   play(): void;
   pause(): void;
   paused(): boolean;
   volume(value: number): void;
+  duration(): number;
+  currentTime(): number;
 }
 
 export default function VideoJSComponent({
@@ -135,6 +137,9 @@ export default function VideoJSComponent({
     player.on("started", () => {
       log.debug("start playing");
       playerState.current = PLAYER_STATE.PLAYING;
+      if (vkRef.current) {
+        vkRef.current.hidden = true;
+      }
       setPaused(false);
       if (song) {
         sendAlert(song);
@@ -176,6 +181,14 @@ export default function VideoJSComponent({
       volume: (value: number) => {
         player.setVolume(value);
       },
+      currentTime: (time: number | undefined) => {
+        if (!time) {
+          return player.getCurrentTime();
+        }
+        player.seek(time);
+        return time;
+      },
+      duration: () => player.getDuration(),
     };
     setPlayer(playerAdapter);
     return () => {
@@ -320,19 +333,19 @@ export default function VideoJSComponent({
 
   return (
     <>
-      <div ref={vkRef} />
       {!isRemote && song && (
-        <div
-          className="video-player"
-          data-vjs-player
-          style={hideVideo ? { visibility: "hidden", height: "1px" } : {}}
-        >
-          <div ref={videoRef} />
-        </div>
+        <>
+          <div ref={vkRef} />
+          <div
+            className="video-player"
+            data-vjs-player
+            style={hideVideo ? { visibility: "hidden", height: "1px" } : {}}
+          >
+            <div ref={videoRef} />
+          </div>
+        </>
       )}
-      {!isRemote && song?.provider !== Provider.VK && (
-        <ProgressBar player={player} />
-      )}
+      {!isRemote && player && <ProgressBar player={player} />}
       <Flex dir="row" justify="space-between">
         <div className="player-container">
           <div className="video-controls">
@@ -396,9 +409,7 @@ export default function VideoJSComponent({
               >
                 <span className="material-symbols-sharp">skip_next</span>
               </button>
-              {!isRemote && song?.provider === Provider.YOUTUBE && (
-                <VideoDuration player={player} />
-              )}
+              {!isRemote && player && <VideoDuration player={player} />}
             </div>
           </div>
           <Slider

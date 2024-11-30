@@ -6,7 +6,6 @@ import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import { findSetting } from "../../components/utils";
 import { DonationTimerWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { Flex } from "antd";
 
@@ -36,11 +35,8 @@ export default function DonationTimer({}: {}) {
         return;
       }
       const now = Date.now();
-      console.log(now);
       const paymentDate = new Date(lastDonationTime);
-      console.log(paymentDate);
       const difference = now - paymentDate.getTime();
-      console.log(difference);
       const days = Math.floor(difference / (24 * 36e5));
       const hours = Math.floor((difference % (24 * 36e5)) / 36e5);
       const minutes = Math.floor((difference % 36e5) / 60000);

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
+import { Player } from "./VideoJSComponent";
 
-export default function VideoDuration({ player }: { player: videojs.VideoJsPlayer }) {
+export default function VideoDuration({ player }: { player: Player }) {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
