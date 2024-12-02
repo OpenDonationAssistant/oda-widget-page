@@ -95,6 +95,9 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           name: "rounding",
         }),
+        new PaddingProperty({
+          name: "padding",
+        }),
       ],
     });
   }

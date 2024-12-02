@@ -76,11 +76,14 @@ export default function DonationTimer({}: {}) {
 
   const roundingStyle = settings.roundingProperty.calcCss();
 
+  const paddingStyle = settings.paddingProperty.calcCss();
+
   const style = {
     ...titleFont.calcStyle(),
     ...backgroundStyle,
     ...borderStyle,
     ...roundingStyle,
+    ...paddingStyle
   };
 
   return (

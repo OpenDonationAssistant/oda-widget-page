@@ -18,10 +18,10 @@ export interface PaddingPropertyValue {
 
 export const DEFAULT_PADDING_PROPERTY_VALUE: PaddingPropertyValue = {
   isSame: true,
-  bottom: 5,
-  top: 5,
-  left: 5,
-  right: 5,
+  bottom: 0,
+  top: 0,
+  left: 0,
+  right: 0,
 };
 
 const PaddingPropertyComponent = observer(
