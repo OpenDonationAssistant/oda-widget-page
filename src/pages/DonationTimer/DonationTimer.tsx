@@ -89,7 +89,7 @@ export default function DonationTimer({}: {}) {
       {time && (
         <Flex
           align="center"
-          justify="center"
+          justify="flex-start"
           id="donationTimer"
           className={`${classes.timer}`}
           style={style}
