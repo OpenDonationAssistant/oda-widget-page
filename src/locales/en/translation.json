@@ -222,5 +222,6 @@
   "widget-donaton-timer-text": "Text",
   "timer-end": "End date of stream",
   "widget-donation-price": "Price",
-  "background-color": "Background"
+  "background-color": "Background",
+  "blur":"Blur"
 }

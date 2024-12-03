@@ -41,7 +41,7 @@ const ColorStopComponent = observer(
             <InputNumber
               value={color.stop.value}
               onChange={(value) => {
-                if (value  === undefined || value === null) return;
+                if (value === undefined || value === null) return;
                 const updated = produce(
                   toJS(property.value),
                   (draft: ColorPropertyValue) => {

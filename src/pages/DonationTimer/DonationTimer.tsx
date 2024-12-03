@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { CSSProperties, useContext } from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLoaderData } from "react-router";
@@ -78,13 +78,11 @@ export default function DonationTimer({}: {}) {
 
   const paddingStyle = settings.paddingProperty.calcCss();
 
-  const style = {
-    ...titleFont.calcStyle(),
-    ...backgroundStyle,
-    ...borderStyle,
-    ...roundingStyle,
-    ...paddingStyle
-  };
+  const filterStyle = settings.blurProperty.calcCss();
+
+  const boxShadowStyle = settings.boxShadowProperty.calcCss();
+
+  log.debug({ boxShadowStyle: boxShadowStyle }, "boxShadowStyle");
 
   return (
     <>
@@ -94,10 +92,26 @@ export default function DonationTimer({}: {}) {
           align="center"
           justify="flex-start"
           id="donationTimer"
+          style={{
+            ...paddingStyle,
+            ...borderStyle,
+            ...roundingStyle,
+            ...boxShadowStyle
+          }}
           className={`${classes.timer}`}
-          style={style}
         >
-          <div className={`${titleFont.calcClassName()}`}>
+          <div
+            style={{
+              ...backgroundStyle,
+              ...filterStyle,
+              ...roundingStyle,
+            }}
+            className={`${classes.background}`}
+          ></div>
+          <div
+            style={titleFont.calcStyle()}
+            className={`${titleFont.calcClassName()}`}
+          >
             {text.replace("<time>", `${time}`)}
           </div>
         </Flex>

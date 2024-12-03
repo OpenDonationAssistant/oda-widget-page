@@ -223,5 +223,6 @@
   "widget-donaton-timer-text": "Текст",
   "timer-end": "Время окончания стрима",
   "widget-donation-price": "Цена",
-  "background-color": "Фон"
+  "background-color": "Фон",
+  "blur":"Блюр"
 }

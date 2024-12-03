@@ -29,7 +29,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
   const { t } = useTranslation();
   return (
     <Flex vertical={true} gap={10}>
-      <LabeledContainer displayName={property.displayName}>
+      <LabeledContainer displayName={property.displayName} help={property.help}>
         <Segmented
           block
           className="full-width"
@@ -44,6 +44,17 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
               toJS(property.value),
               (draft: RoundingValue) => {
                 draft.isSame = selected;
+                if (draft.isSame){
+                  draft.topRight = draft.topLeft;
+                  draft.bottomRight = draft.topLeft;
+                  draft.bottomLeft = draft.topLeft;
+                }
+                if (draft.isSame === null){
+                  draft.topLeft = 0;
+                  draft.topRight = 0;
+                  draft.bottomRight = 0;
+                  draft.bottomLeft = 0;
+                }
               },
             );
             property.value = updated;
@@ -67,6 +78,9 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                   toJS(property.value),
                   (draft: RoundingValue) => {
                     draft.topLeft = newValue;
+                    draft.topRight = newValue;
+                    draft.bottomLeft = newValue;
+                    draft.bottomRight = newValue;
                   },
                 );
                 property.value = updated;
@@ -86,7 +100,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 addon="px"
                 value={property.value.topLeft}
                 onChange={(newValue) => {
-                  if (!newValue) {
+                  if (newValue === undefined || newValue === null) {
                     return;
                   }
                   const updated = produce(
@@ -107,7 +121,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 addon="px"
                 value={property.value.topRight}
                 onChange={(newValue) => {
-                  if (!newValue) {
+                  if (newValue === undefined || newValue === null) {
                     return;
                   }
                   const updated = produce(
@@ -130,7 +144,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 addon="px"
                 value={property.value.bottomLeft}
                 onChange={(newValue) => {
-                  if (!newValue) {
+                  if (newValue === undefined || newValue === null) {
                     return;
                   }
                   const updated = produce(
@@ -151,7 +165,7 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                 addon="px"
                 value={property.value.bottomRight}
                 onChange={(newValue) => {
-                  if (!newValue) {
+                  if (newValue === undefined || newValue === null) {
                     return;
                   }
                   const updated = produce(
@@ -176,27 +190,33 @@ export class RoundingProperty extends DefaultWidgetProperty<RoundingValue> {
     name,
     displayName,
     value,
+    help,
   }: {
     name: string;
     displayName?: string;
     value?: RoundingValue;
+    help?: string;
   }) {
     super({
       name: name,
       value: value ?? DEFAULT_ROUNDING_PROPERTY_VALUE,
       displayName: displayName ?? "rounding",
+      help: help,
     });
   }
 
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
     if (this.value.isSame) {
-      style.borderRadius = this.value.topLeft;
+      style.borderTopRightRadius = this.value.topLeft + "px";
+      style.borderBottomRightRadius = this.value.topLeft + "px";
+      style.borderBottomLeftRadius = this.value.topLeft + "px";
+      style.borderTopLeftRadius = this.value.topLeft + "px";
     } else {
-      style.borderTopRightRadius = this.value.topRight;
-      style.borderBottomRightRadius = this.value.bottomRight;
-      style.borderBottomLeftRadius = this.value.bottomLeft;
-      style.borderTopLeftRadius = this.value.topLeft;
+      style.borderTopRightRadius = this.value.topRight + "px";
+      style.borderBottomRightRadius = this.value.bottomRight + "px";
+      style.borderBottomLeftRadius = this.value.bottomLeft + "px";
+      style.borderTopLeftRadius = this.value.topLeft + "px";
     }
     return style;
   }

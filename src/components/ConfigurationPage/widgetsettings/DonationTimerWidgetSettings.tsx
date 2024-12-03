@@ -12,6 +12,8 @@ import {
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
+import { BlurProperty } from "../widgetproperties/BlurProperty";
+import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -98,9 +100,42 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         new PaddingProperty({
           name: "padding",
         }),
+        new BoxShadowProperty({
+          name: "boxShadow",
+          displayName: "Тени виджета",
+          help: "Устанавливает тени виджета.",
+        }),
+      ],
+    });
+
+    this.addSection({
+      key: "effects",
+      title: "Эффекты",
+      properties: [
+        new BlurProperty({
+          name: "blur",
+        }),
       ],
     });
   }
+
+  public get boxShadowProperty(): BoxShadowProperty {
+    return (
+      (this.get("boxShadow") as BoxShadowProperty) ||
+      new BoxShadowProperty({
+        name: "boxShadow",
+        displayName: "Тени виджета",
+        help: "Устанавливает тени виджета.",
+      })
+    );
+  }
+
+  public get blurProperty(): BlurProperty {
+    return (
+      (this.get("blur") as BlurProperty) || new BlurProperty({ name: "blur" })
+    );
+  }
+
   public get textProperty(): string {
     return this.get("text")?.value || "Стрим будет идти еще <time>";
   }
@@ -149,11 +184,13 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   }
 
   public get resetOnLoad(): boolean {
-    const resetOnLoad = this.get("resetOnLoad") ?? new BooleanProperty({
-      name: "resetOnLoad",
-      value: true,
-      displayName: "widget-donation-timer-refresh",
-    });
+    const resetOnLoad =
+      this.get("resetOnLoad") ??
+      new BooleanProperty({
+        name: "resetOnLoad",
+        value: true,
+        displayName: "widget-donation-timer-refresh",
+      });
     return resetOnLoad.value;
   }
 
