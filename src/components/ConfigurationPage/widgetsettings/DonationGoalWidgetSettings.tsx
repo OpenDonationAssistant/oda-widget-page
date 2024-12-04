@@ -13,8 +13,6 @@ import { DonationGoalLabelProperty } from "../widgetproperties/DonationGoalLabel
 import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import classes from "./AbstractWidgetSettings.module.css";
-import { ReactNode } from "react";
-
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({

@@ -86,8 +86,13 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   public get value(): Type {
     return this._value;
   }
+
   public set value(value: Type) {
-    this._value = value;
+    if (typeof value === "object" && !Array.isArray(value) && value !== null) {
+      this._value = { ...toJS(this._value), ...value };
+    } else {
+      this._value = value;
+    }
   }
 
   public get displayName(): string {
@@ -102,7 +107,7 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
       tx = typeof x,
       ty = typeof y,
       isDate = x instanceof Date && y instanceof Date;
-    if (isDate){
+    if (isDate) {
       return x.getTime() === y.getTime();
     }
     return x && y && tx === "object" && tx === ty

@@ -115,7 +115,7 @@
       }
 
       & .ant-tabs-tab {
-        border: 1px solid #684aff;
+        border: none;
         color: #7885bd;
         font-family: "Play";
         font-weight: 900;

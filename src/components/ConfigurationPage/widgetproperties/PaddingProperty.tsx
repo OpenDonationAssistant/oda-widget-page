@@ -3,7 +3,6 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { Col, Flex, Row, Segmented } from "antd";
 import { produce } from "immer";
-import { Trans } from "react-i18next";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
@@ -68,7 +67,7 @@ const PaddingPropertyComponent = observer(
                 value={property.value.top}
                 addon="px"
                 onChange={(value) => {
-                  if (!value) {
+                  if (value === null || value === undefined) {
                     return;
                   }
                   const updated = produce(
@@ -93,7 +92,7 @@ const PaddingPropertyComponent = observer(
                 value={property.value.top}
                 addon="px"
                 onChange={(value) => {
-                  if (!value) {
+                  if (value === null || value === undefined) {
                     return;
                   }
                   const updated = produce(
@@ -111,7 +110,7 @@ const PaddingPropertyComponent = observer(
                 value={property.value.right}
                 addon="px"
                 onChange={(value) => {
-                  if (!value) {
+                  if (value === null || value === undefined) {
                     return;
                   }
                   const updated = produce(
@@ -129,7 +128,7 @@ const PaddingPropertyComponent = observer(
                 value={property.value.bottom}
                 addon="px"
                 onChange={(value) => {
-                  if (!value) {
+                  if (value === null || value === undefined) {
                     return;
                   }
                   const updated = produce(
@@ -147,7 +146,7 @@ const PaddingPropertyComponent = observer(
                 value={property.value.left}
                 addon="px"
                 onChange={(value) => {
-                  if (!value) {
+                  if (value === null || value === undefined) {
                     return;
                   }
                   const updated = produce(
@@ -187,7 +186,10 @@ export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue>
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
     if (this.value.isSame === true) {
-      style.padding = `${this.value.top}px`;
+      style.paddingTop = `${this.value.top}px`;
+      style.paddingRight = `${this.value.top}px`;
+      style.paddingLeft = `${this.value.top}px`;
+      style.paddingBottom = `${this.value.top}px`;
     }
     if (this.value.isSame === false) {
       style.paddingTop = `${this.value.top}px`;

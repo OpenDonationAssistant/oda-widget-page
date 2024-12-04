@@ -9,13 +9,19 @@ import {
   DEFAULT_COLOR_PROPERTY_VALUE,
 } from "./ColorProperty";
 import { log } from "../../../logging";
-import { reaction } from "mobx";
 import { AnimatedFontComponent } from "./AnimatedFontComponent";
+
+export interface TextOutline {
+  enabled: boolean;
+  width: number;
+  color: string;
+}
 
 export interface FontPropertyValue {
   family: string;
   size: number;
   color: ColorPropertyValue;
+  outline: TextOutline;
   weight: boolean;
   italic: boolean;
   underline: boolean;
@@ -33,6 +39,11 @@ export const DEFAULT_FONT_PROPERTY_VALUE = {
   color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {
     draft.colors[0].color = "#684aff";
   }),
+  outline: {
+    enabled: false,
+    width: 0,
+    color: "#000000",
+  },
   weight: false,
   italic: false,
   underline: false,
@@ -54,7 +65,10 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
   }) {
     super({
       name: params.name,
-      value: params.value ?? DEFAULT_FONT_PROPERTY_VALUE,
+      value: {
+        ...DEFAULT_FONT_PROPERTY_VALUE,
+        ...(params.value ?? {}),
+      },
       displayName: "animatedfont",
     });
     this._label = params.label ?? "widget-font-label";
@@ -108,7 +122,19 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
       fontStyle: this.value.italic ? "italic" : "normal",
     };
 
-    const style = { ...fontColorStyle, ...fontStyle, ...shadowStyle };
+    const strokeStyle = !this.value.outline.enabled
+      ? {}
+      : {
+          WebkitTextStrokeWidth: this.value.outline.width,
+          WebkitTextStrokeColor: this.value.outline.color,
+        };
+
+    const style = {
+      ...fontColorStyle,
+      ...fontStyle,
+      ...shadowStyle,
+      ...strokeStyle,
+    };
     log.debug({ font: style }, "calculated font style");
     return style;
   }

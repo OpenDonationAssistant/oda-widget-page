@@ -14,6 +14,11 @@ import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
+import {
+  SELECTION_TYPE,
+  SingleChoiceProperty,
+} from "../widgetproperties/SingleChoiceProperty";
+import { toJS } from "mobx";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -75,6 +80,13 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
             shadowOffsetY: 0,
           },
         }),
+        new SingleChoiceProperty({
+          name: "textAlign",
+          value: "left",
+          displayName: "text-alignment",
+          options: ["left", "center", "right"],
+          selectionType: SELECTION_TYPE.SEGMENTED,
+        }),
         new ColorProperty({
           name: "backgroundColor",
           displayName: "background-color",
@@ -128,6 +140,10 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         help: "Устанавливает тени виджета.",
       })
     );
+  }
+
+  public get textAlign(): "left" | "center" | "right" {
+    return this.get("textAlign")?.value || "left";
   }
 
   public get blurProperty(): BlurProperty {

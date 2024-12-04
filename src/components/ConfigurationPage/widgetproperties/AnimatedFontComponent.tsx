@@ -136,7 +136,7 @@ export const AnimatedFontComponent = observer(
                           value={property.value.size}
                           addon="px"
                           onChange={(value) => {
-                            if (!value) {
+                            if (value === null || value === undefined) {
                               return;
                             }
                             property.value = produce(
@@ -171,6 +171,58 @@ export const AnimatedFontComponent = observer(
                           })
                         }
                       />
+                    </div>
+                    <div className="settings-item">
+                      <LabeledContainer displayName="button-outline">
+                        <Flex align="center" gap={60}>
+                          <Flex gap={5}>
+                            <Switch
+                              value={property.value.outline.enabled}
+                              onChange={(checked) => {
+                                property.value = produce(
+                                  toJS(property.value),
+                                  (draft) => {
+                                    draft.outline.enabled = checked;
+                                  },
+                                );
+                              }}
+                            />
+                            <div>
+                              {property.value.outline.enabled ? "On" : "Off"}
+                            </div>
+                          </Flex>
+                          <Flex gap={5}>
+                            <InputNumber
+                              value={property.value.outline.width}
+                              addon="px"
+                              onChange={(value) => {
+                                if (value === null || value === undefined) {
+                                  return;
+                                }
+                                property.value = produce(
+                                  toJS(property.value),
+                                  (draft) => {
+                                    draft.outline.width = value;
+                                  },
+                                );
+                                if (onChange) onChange(property);
+                              }}
+                            />
+                            <ColorPicker
+                              showText
+                              value={property.value.outline.color}
+                              onChange={(color) => {
+                                property.value = produce(
+                                  toJS(property.value),
+                                  (draft) => {
+                                    draft.outline.color = color.toRgbString();
+                                  },
+                                );
+                              }}
+                            />
+                          </Flex>
+                        </Flex>
+                      </LabeledContainer>
                     </div>
                   </>
                 ),
