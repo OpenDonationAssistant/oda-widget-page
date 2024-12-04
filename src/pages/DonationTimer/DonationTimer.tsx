@@ -82,7 +82,15 @@ export default function DonationTimer({}: {}) {
 
   const boxShadowStyle = settings.boxShadowProperty.calcCss();
 
-  log.debug({ boxShadowStyle: boxShadowStyle }, "boxShadowStyle");
+  const heightStyle: CSSProperties = {
+    height: `calc(100% - ${2 * settings.boxShadowProperty.requiredHeight}px)`,
+    marginTop: `${settings.boxShadowProperty.requiredHeight}px`,
+  };
+
+  const widthStyle: CSSProperties = {
+    width: `calc(100% - ${2 * settings.boxShadowProperty.requiredWidth}px)`,
+    marginLeft: `${settings.boxShadowProperty.requiredWidth}px`,
+  };
 
   return (
     <>
@@ -96,7 +104,9 @@ export default function DonationTimer({}: {}) {
             ...paddingStyle,
             ...borderStyle,
             ...roundingStyle,
-            ...boxShadowStyle
+            ...boxShadowStyle,
+            ...heightStyle,
+            ...widthStyle
           }}
           className={`${classes.timer}`}
         >
@@ -109,8 +119,11 @@ export default function DonationTimer({}: {}) {
             className={`${classes.background}`}
           ></div>
           <div
-            style={titleFont.calcStyle()}
-            className={`${titleFont.calcClassName()}`}
+            style={{
+              ...titleFont.calcStyle(),
+              ...{ textAlign: settings.textAlign },
+            }}
+            className={`${classes.text} ${titleFont.calcClassName()}`}
           >
             {text.replace("<time>", `${time}`)}
           </div>

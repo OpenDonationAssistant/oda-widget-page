@@ -223,5 +223,7 @@
   "timer-end": "End date of stream",
   "widget-donation-price": "Price",
   "background-color": "Background",
-  "blur":"Blur"
+  "blur":"Background blur",
+  "text-alignment": "Text alignment",
+  "button-outline": "Text outline"
 }

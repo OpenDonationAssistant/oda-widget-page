@@ -224,5 +224,7 @@
   "timer-end": "Время окончания стрима",
   "widget-donation-price": "Цена",
   "background-color": "Фон",
-  "blur":"Блюр"
+  "blur":"Блюр фона",
+  "text-alignment": "Выравнивание текста",
+  "button-outline": "Обводка текста"
 }

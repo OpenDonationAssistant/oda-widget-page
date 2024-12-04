@@ -38,6 +38,20 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
     });
   }
 
+  public get requiredHeight(): number {
+    const heights = this.value.shadows.flatMap((shadow) => {
+      return [Math.abs(shadow.y) + shadow.blur, Math.abs(shadow.y) + shadow.spread];
+    });
+    return Math.max(...heights);
+  }
+
+  public get requiredWidth(): number {
+    const widths = this.value.shadows.flatMap((shadow) => {
+      return [Math.abs(shadow.x) + shadow.blur, Math.abs(shadow.x) + shadow.spread];
+    });
+    return Math.max(...widths);
+  }
+
   private addShadow() {
     this.value = produce(toJS(this.value), (draft) => {
       draft.shadows.push({
