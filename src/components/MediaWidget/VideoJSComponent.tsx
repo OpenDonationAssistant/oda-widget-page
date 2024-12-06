@@ -36,6 +36,21 @@ enum PLAYER_STATE {
   READY,
 }
 
+function toString(state: PLAYER_STATE) {
+  switch (state) {
+    case PLAYER_STATE.INITIALIZING:
+      return "INITIALIZING";
+    case PLAYER_STATE.PLAYING:
+      return "PLAYING";
+    case PLAYER_STATE.PAUSED:
+      return "PAUSED";
+    case PLAYER_STATE.READY:
+      return "READY";
+    case PLAYER_STATE.SHOULD_BE_STOPED:
+      return "SHOULD_BE_STOPED";
+  }
+}
+
 export interface Player {
   play(): void;
   pause(): void;
@@ -77,8 +92,6 @@ export default function VideoJSComponent({
     return 50;
   });
 
-  log.debug("Initing player component");
-
   function setRemote(newValue: boolean) {
     setIsRemote(newValue);
     localStorage.setItem("isRemote", JSON.stringify(newValue));
@@ -86,7 +99,7 @@ export default function VideoJSComponent({
 
   function freeze() {
     log.debug(
-      { player: player, state: playerState.current },
+      { player: player, state: toString(playerState.current) },
       `freezing player`,
     );
     if (playerState.current === PLAYER_STATE.PAUSED) {
@@ -95,22 +108,33 @@ export default function VideoJSComponent({
     }
     playerState.current = PLAYER_STATE.SHOULD_BE_STOPED;
     player && player.pause();
+    if (isRemote) {
+      publish(conf.topic.remoteplayer, {
+        command: "pause",
+      });
+      sendAlert();
+      setPaused(true);
+      playerState.current = PLAYER_STATE.PAUSED;
+    }
   }
 
   function unfreeze() {
     log.debug(
       {
         player: player,
-        playerState: playerState.current,
+        playerState: toString(playerState.current),
       },
       `unfreezing player`,
     );
-    if (!player) {
-      log.debug(`cancel unfreeze because of missing player`);
-      return;
-    }
     log.debug(`calling player.play()`);
     player && player.play();
+    if (isRemote) {
+      publish(conf.topic.remoteplayer, {
+        command: "resume",
+      });
+      sendAlert(song ?? undefined);
+      playerState.current = PLAYER_STATE.PLAYING;
+    }
   }
 
   function listenToggleVideoEvent() {
@@ -204,17 +228,21 @@ export default function VideoJSComponent({
 
   useEffect(() => {
     commandHandler.current = (message) => {
+      log.debug(
+        { state: toString(playerState.current), remote: isRemote },
+        "state when received player command",
+      );
       let json = JSON.parse(message.body);
       if (json.command === "pause") {
         freeze();
+      }
+      if (json.command === "resume") {
+        unfreeze();
       }
       if (player === null) {
         log.debug("player is not ready yet");
         message.ack();
         return;
-      }
-      if (json.command === "resume") {
-        unfreeze();
       }
       if (json.command === "play") {
         player.play();
@@ -280,6 +308,7 @@ export default function VideoJSComponent({
     videoRef.current?.appendChild(videoElement);
     options.sources = song;
     options.autoplay = playerState.current !== PLAYER_STATE.SHOULD_BE_STOPED;
+    log.debug({ options: options }, "creating player with  options");
 
     const player = videojs(videoElement, options);
     log.debug({ options: options }, "creating player with  options");
@@ -328,6 +357,12 @@ export default function VideoJSComponent({
     if (player) {
       player.volume(volume / 100);
       localStorage.setItem("volume", JSON.stringify(volume));
+    }
+    if (isRemote) {
+      publish(conf.topic.remoteplayer, {
+        command: "volume",
+        volume: volume / 100,
+      });
     }
   }, [volume]);
 

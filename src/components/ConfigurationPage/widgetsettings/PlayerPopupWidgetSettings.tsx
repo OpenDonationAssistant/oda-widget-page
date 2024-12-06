@@ -1,10 +1,11 @@
-import { ReactNode } from "react";
+import { ReactNode, createContext } from "react";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
+import { log } from "../../../logging";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -47,6 +48,36 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
+  public get widgetBorderProperty() {
+    return (
+      (this.get("widgetBorder") as BorderProperty) ||
+      new BorderProperty({
+        name: "widgetBorder",
+      })
+    );
+  }
+
+  public get roundingProperty() {
+    return (
+      (this.get("rounding") as RoundingProperty) ||
+      new BorderProperty({
+        name: "rounding",
+      })
+    );
+  }
+
+  public get audioOnlyProperty() {
+    log.debug({ audioOnly: this.get("audioOnly") }, "got audioOnly");
+    return (
+      (this.get("audioOnly") as BooleanProperty) ||
+      new BooleanProperty({
+        name: "audioOnly",
+        value: false,
+        displayName: "widget-player-popup-sound-only",
+      })
+    );
+  }
+
   public help(): ReactNode {
     return (
       <>
@@ -75,3 +106,7 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
     );
   }
 }
+
+export const PlayerPopupWidgetSettingsContext = createContext(
+  new PlayerPopupWidgetSettings(),
+);

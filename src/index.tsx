@@ -43,6 +43,7 @@ import DonatonPage from "./pages/Donaton/DonatonPage";
 import DonationTimer from "./pages/DonationTimer/DonationTimer";
 import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageConfigComponent";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
+import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
 
 async function widgetSettingsLoader({
   params,
@@ -182,7 +183,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/player-popup/:widgetId",
-    element: <PlayerPopup />,
+    element: <PlayerPopupPage />,
     loader: widgetSettingsLoader,
   },
   {

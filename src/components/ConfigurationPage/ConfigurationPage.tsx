@@ -11,7 +11,7 @@ import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
-import { WIDGET_TYPES, Widget } from "../../types/Widget";
+import { WIDGET_TYPES } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { WidgetStore } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";

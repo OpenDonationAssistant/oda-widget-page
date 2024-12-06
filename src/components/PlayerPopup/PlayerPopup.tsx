@@ -1,108 +1,33 @@
-import { useRef, useEffect, useState, CSSProperties } from "react";
-import videojs from "video.js";
+import { useRef, CSSProperties, useContext, useState, useEffect } from "react";
 import "videojs-youtube";
-import { v4 as uuidv4 } from "uuid";
-import { publish, subscribe } from "../../socket";
-import { useLoaderData } from "react-router";
+import { PlayerPopupWidgetSettingsContext } from "../ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
+import { Player } from "./Player";
 import { log } from "../../logging";
-import { Song } from "../MediaWidget/types";
-import { VideoJsPlayer } from "video.js";
-import { findSetting } from "../utils";
-import { WidgetData } from "../../types/WidgetData";
-import {
-  BorderProperty,
-  DEFAULT_BORDER_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/BorderProperty";
 
-let options = {
-  autoplay: true,
-  controls: false,
-  responsive: false,
-  fluid: false,
-  preload: "none",
-  techOrder: ["youtube"],
-  youtube: { ytControls: 0, rel: 0 },
-};
-
-export default function PlayerPopup({}) {
-  const playerRef = useRef<VideoJsPlayer>(null);
+export default function PlayerPopup({ player }: { player: Player }) {
   const videoRef = useRef(null);
-  const [hideVideo, setHideVideo] = useState(false);
-  const { settings, conf, widgetId } = useLoaderData() as WidgetData;
-  const [song, setSong] = useState<Song | null>(null);
 
-  useEffect(() => {
-    const audioOnly = findSetting(settings, "audioOnly", false);
-    setHideVideo(audioOnly);
-  }, [conf]);
-
-  function createPlayer(song: Song) {
-    if (playerRef.current) {
-      playerRef.current.dispose();
-      playerRef.current = null;
+  const [volume, setVolume] = useState<number>(() => {
+    const vol = localStorage.getItem("volume");
+    log.debug({volume: vol}, "volume from local storage");
+    if (vol) {
+      return JSON.parse(vol) / 100;
     }
-    log.debug("Creating player");
-
-    const videoElement = document.createElement("video-js");
-    videoElement.setAttribute("id", "mediaplayer");
-
-    videoElement.classList.add("vjs-big-play-centered");
-    videoRef?.current?.appendChild(videoElement);
-    options.sources = [song];
-
-    playerRef.current = videojs(videoElement, options);
-    playerRef.current.uuid = uuidv4();
-    playerRef.current.on("ended", () => {
-      log.debug(`finished playing song`);
-      publish(conf.topic.remoteplayerfeedback, {
-        state: "finished",
-        song: song,
-      });
-      playerRef.current?.dispose();
-      playerRef.current = null;
-    });
-    log.debug("Player has been created");
-  }
+    return 0.5;
+  });
 
   useEffect(() => {
-    subscribe(widgetId, conf.topic.remoteplayer, (message) => {
-      let json = JSON.parse(message.body);
-      log.debug(`playing ${JSON.stringify(json.song)}`);
-      if (json.command === "play") {
-        setSong(json.song);
-      }
-      if (json.command === "stop") {
-        log.debug(`disposing player by stop command`);
-        playerRef.current?.dispose();
-        playerRef.current = null;
-        setSong(null);
-      }
-      if (json.command === "pause") {
-        playerRef.current?.pause();
-      }
-      if (json.command === "resume") {
-        playerRef.current?.play();
-      }
-      message.ack();
-    });
-  }, [widgetId]);
+    player.volume = volume;
+  },[volume]);
 
-  const borderStyle = new BorderProperty({
-    name: "widgetBorder",
-    value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
-  }).calcCss();
+  player.videoRef = videoRef;
 
-  const widgetStyle: CSSProperties = hideVideo
+  const settings = useContext(PlayerPopupWidgetSettingsContext);
+  const borderStyle = settings.widgetBorderProperty.calcCss();
+  const roundingStyle = settings.roundingProperty.calcCss();
+  const widgetStyle: CSSProperties = settings.audioOnlyProperty.value
     ? { visibility: "hidden", height: "1px" }
     : borderStyle;
-
-  useEffect(() => {
-    if (!song) {
-      return;
-    }
-    log.debug(`create player for new song`);
-    createPlayer(song);
-  }, [song]);
 
   const borderCss = (
     <style
@@ -114,15 +39,21 @@ export default function PlayerPopup({}) {
             border-bottom: ${widgetStyle.borderBottom};
             border-right: ${widgetStyle.borderRight};
             border-left: ${widgetStyle.borderLeft};
+            border-top-left-radius: ${roundingStyle.borderTopLeftRadius};
+            border-top-right-radius: ${roundingStyle.borderTopRightRadius};
+            border-bottom-right-radius: ${roundingStyle.borderBottomRightRadius};
+            border-bottom-left-radius: ${roundingStyle.borderBottomLeftRadius};
           }`,
       }}
     />
   );
 
   return (
-    <div className="video-player" data-vjs-player>
+    <>
       {borderCss}
-      <div ref={videoRef} />
-    </div>
+      <div className="video-player">
+        <div ref={videoRef} />
+      </div>
+    </>
   );
 }
