@@ -28,7 +28,8 @@
   &[class*="selected"] {
     color: var(--oda-main-text-color);
     box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
-    border: 1px solid #674afd;
+    background: var(--oda-panel-backgroun-color);
+    border-radius: 5px;
   }
 }
 

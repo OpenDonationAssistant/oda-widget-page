@@ -1,15 +1,14 @@
 .widget {
   background-color: #2b3566;
-  border-radius: 3px;
+  border-radius: 4px;
   margin-top: 10px;
-  border: 1px solid #674afd;
   position: relative;
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 3px 7px rgba(0, 0, 0, 0.2);
 }
 
 .widget-header {
   display: flex;
-  border-radius: 2px;
+  border-radius: 4px;
   justify-content: space-between;
   align-items: baseline;
   padding-left: 15px;
@@ -34,10 +33,27 @@
   background-image: linear-gradient(180deg, #2b3566, #5d4cb4, #2b3566);
 }
 
+.widget.extended {
+    border-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.8);
+    & .ant-tabs.ant-tabs-card {
+      & .ant-tabs-content-holder {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+}
+
 .widget.extended .widget-header{
   background-color: #0c122e;
+  border-radius: 10px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+
 }
 
 .widget.extended .widget-header:hover {
