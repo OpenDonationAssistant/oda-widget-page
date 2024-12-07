@@ -60,12 +60,13 @@ export class PlaylistController {
             id: string;
             title: string;
             owner: string;
+            originId: string;
           }) => {
             return {
               src: element.url,
               type: "video/youtube",
-              id: uuidv4(),
-              originId: element.id,
+              id: element.id,
+              originId: element.originId,
               owner: element.owner,
               title: element.title,
               provider: Provider.YOUTUBE,
@@ -85,7 +86,7 @@ export class PlaylistController {
       let song = {
         src: json.url,
         type: "video/youtube",
-        id: uuidv4(),
+        id: json.id ?? uuidv4(),
         originId: json.originId,
         owner: json.owner,
         title: json.title,
@@ -140,12 +141,9 @@ export class PlaylistController {
 
   finishSong() {
     const song = this.current.song();
-    log.debug(`finishing song: ${JSON.stringify(song)}`);
+    log.debug({song: song}, `finishing song`);
     if (song?.id) {
       this.current.markListened(song?.id);
-    }
-    if (song?.originId) {
-      this.current.markListened(song?.originId);
     }
   }
 

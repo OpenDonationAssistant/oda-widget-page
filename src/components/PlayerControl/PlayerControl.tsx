@@ -36,6 +36,7 @@ export default function PlayerControl({}: {}) {
             let id = uuidv4();
             publish(conf.topic.media, {
               id: id,
+              originId: video.id,
               url: `https://www.youtube.com/watch?v=${video.id}`,
               recipientId: recipientId,
               title: video.snippet.title,
