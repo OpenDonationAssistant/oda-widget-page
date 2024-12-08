@@ -14,7 +14,6 @@ export default function DonationTimer({}: {}) {
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
   const { subscribe, unsubscribe } = useContext(WidgetSettingsContext);
-
   const settings = useContext(DonationTimerWidgetSettingsContext);
 
   useEffect(() => {
@@ -68,7 +67,7 @@ export default function DonationTimer({}: {}) {
 
   const text = settings.textProperty;
 
-  const titleFont = settings.titleFontProperty;
+  const fontStyle = settings.titleFontProperty.calcStyle();
 
   const backgroundStyle = settings.backgroundColorProperty.calcCss();
 
@@ -94,7 +93,7 @@ export default function DonationTimer({}: {}) {
 
   return (
     <>
-      {titleFont.createFontImport()}
+      {settings.titleFontProperty.createFontImport()}
       {time && (
         <Flex
           align="center"
@@ -120,10 +119,10 @@ export default function DonationTimer({}: {}) {
           ></div>
           <div
             style={{
-              ...titleFont.calcStyle(),
+              ...fontStyle,
               ...{ textAlign: settings.textAlign },
             }}
-            className={`${classes.text} ${titleFont.calcClassName()}`}
+            className={`${classes.text} ${settings.titleFontProperty.calcClassName()}`}
           >
             {text.replace("<time>", `${time}`)}
           </div>

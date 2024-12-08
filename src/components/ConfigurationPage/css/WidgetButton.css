@@ -85,9 +85,9 @@ button.ant-btn {
 .widget-button.widget-button-accept {
   color: #00FF00;
   height: unset;
-  /* text-decoration: underline; */
   font-weight: 900;
   font-size: 14px;
+  margin-left: 10px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 15px;

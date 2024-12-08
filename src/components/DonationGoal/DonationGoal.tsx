@@ -214,6 +214,9 @@ export default function DonationGoal({}) {
               className={`${classes.goalfilled}`}
             ></div>
             <div
+              className={`${classes.goalunfilled}`}
+            ></div>
+            <div
               style={filledTextStyle}
               className={`${classes.goalamount} ${amountFont.calcClassName()}`}
             >

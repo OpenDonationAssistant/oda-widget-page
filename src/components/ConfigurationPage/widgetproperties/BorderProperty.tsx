@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { produce } from "immer";
 import InputNumber from "../components/InputNumber";
 import { Color } from "antd/es/color-picker";
+import { log } from "../../../logging";
 
 export interface Border {
   width: number;
@@ -130,7 +131,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
       name: params.name,
       value: params.value ?? DEFAULT_BORDER_PROPERTY_VALUE,
       displayName: params.displayName ?? "border",
-      help: params.help
+      help: params.help,
     });
   }
 
@@ -301,8 +302,16 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
 
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
+    style.borderTop = "none";
+    style.borderRight = "none";
+    style.borderLeft = "none";
+    style.borderBottom = "none";
     if (this.value.isSame === true) {
-      style.border = this.createRule(this.value.top);
+      const rule = this.createRule(this.value.top);
+      style.borderTop = rule;
+      style.borderRight = rule;
+      style.borderLeft = rule;
+      style.borderBottom = rule;
     }
     if (this.value.isSame === false) {
       style.borderTop = this.createRule(this.value.top);
@@ -314,6 +323,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
   }
 
   private createRule(border: Border) {
+    log.debug({ borderProperty: border }, "create css for border");
     return `${border.width}px ${border.type} ${border.color}`;
   }
 

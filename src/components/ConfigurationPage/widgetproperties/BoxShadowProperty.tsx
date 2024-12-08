@@ -7,6 +7,7 @@ import { produce } from "immer";
 import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
 import classes from "./BoxShadowProperty.module.css";
+import { log } from "../../../logging";
 
 interface BoxShadow {
   inset: boolean;
@@ -39,17 +40,31 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
   }
 
   public get requiredHeight(): number {
+    log.debug(
+      { shadows: toJS(this.value.shadows) },
+      "calculating requiredHeight",
+    );
     const heights = this.value.shadows.flatMap((shadow) => {
-      return [Math.abs(shadow.y) + shadow.blur, Math.abs(shadow.y) + shadow.spread];
+      return [
+        Math.abs(shadow.y) + shadow.blur,
+        Math.abs(shadow.y) + shadow.spread,
+      ];
     });
-    return Math.max(...heights);
+    return heights.length === 0 ? 0 : Math.max(...heights);
   }
 
   public get requiredWidth(): number {
+    log.debug(
+      { shadows: toJS(this.value.shadows) },
+      "calculating requiredWidth",
+    );
     const widths = this.value.shadows.flatMap((shadow) => {
-      return [Math.abs(shadow.x) + shadow.blur, Math.abs(shadow.x) + shadow.spread];
+      return [
+        Math.abs(shadow.x) + shadow.blur,
+        Math.abs(shadow.x) + shadow.spread,
+      ];
     });
-    return Math.max(...widths);
+    return widths.length === 0 ? 0 : Math.max(...widths);
   }
 
   private addShadow() {
@@ -179,6 +194,9 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
         shadow.blur
       }px ${shadow.spread}px ${shadow.color}`;
     });
+    if (result.length === 0) {
+      result = "none";
+    }
     return { boxShadow: result };
   }
 

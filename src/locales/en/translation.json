@@ -225,5 +225,7 @@
   "background-color": "Background",
   "blur":"Background blur",
   "text-alignment": "Text alignment",
-  "button-outline": "Text outline"
+  "button-outline": "Text outline",
+  "tab-style": "Style",
+  "tab-requests": "Requests"
 }

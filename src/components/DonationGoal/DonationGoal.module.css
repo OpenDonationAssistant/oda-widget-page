@@ -26,8 +26,13 @@
 .goalfilled {
   grid-row: 2;
   grid-column: 1;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+  min-height: 50px;
+}
+
+.goalunfilled {
+  grid-row: 2;
+  grid-column: 1;
+  justify-self: flex-end;
   min-height: 50px;
 }
 

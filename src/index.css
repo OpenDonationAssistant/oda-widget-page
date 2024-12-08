@@ -141,6 +141,10 @@ input[type="file"] {
   width: 100%;
 }
 
+.full-height {
+  height: 100%;
+}
+
 
 /* resize styles */
 .react-resizable {

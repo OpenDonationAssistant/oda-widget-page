@@ -67,13 +67,21 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   }
 
   public get audioOnlyProperty() {
-    log.debug({ audioOnly: this.get("audioOnly") }, "got audioOnly");
     return (
       (this.get("audioOnly") as BooleanProperty) ||
       new BooleanProperty({
         name: "audioOnly",
         value: false,
         displayName: "widget-player-popup-sound-only",
+      })
+    );
+  }
+
+  public get shadowProperty() {
+    return (
+      (this.get("boxShadow") as BoxShadowProperty) ||
+      new BoxShadowProperty({
+        name: "boxShadow",
       })
     );
   }

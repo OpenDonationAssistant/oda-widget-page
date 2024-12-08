@@ -31,6 +31,12 @@ import {
   DonationTimerWidgetSettings,
   DonationTimerWidgetSettingsContext,
 } from "./widgetsettings/DonationTimerWidgetSettings";
+import {
+  PlayerPopupWidgetSettings,
+  PlayerPopupWidgetSettingsContext,
+} from "./widgetsettings/PlayerPopupWidgetSettings";
+import PlayerPopup from "../PlayerPopup/PlayerPopup";
+import { DemoPlayerStore } from "../PlayerPopup/DemoPlayer";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -263,7 +269,9 @@ export default function WidgetConfiguration({
         <HelpButton widget={widget} />
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
-        {(widget.type === "donaton" || widget.type === "donation-timer") && (
+        {(widget.type === "donaton" ||
+          widget.type === "donation-timer" ||
+          widget.type === "player-popup") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
@@ -285,6 +293,13 @@ export default function WidgetConfiguration({
                 >
                   <DonatonWidget />
                 </DonatonWidgetSettingsContext.Provider>
+              )}
+              {widget.type === "player-popup" && (
+                <PlayerPopupWidgetSettingsContext.Provider
+                  value={widget.config as PlayerPopupWidgetSettings}
+                >
+                  <PlayerPopup player={new DemoPlayerStore()} />
+                </PlayerPopupWidgetSettingsContext.Provider>
               )}
             </ResizableBox>
           </Flex>

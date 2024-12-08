@@ -226,5 +226,7 @@
   "background-color": "Фон",
   "blur":"Блюр фона",
   "text-alignment": "Выравнивание текста",
-  "button-outline": "Обводка текста"
+  "button-outline": "Обводка текста",
+  "tab-style": "Стиль",
+  "tab-requests": "Реквесты"
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import WidgetWrapper from "../../WidgetWrapper";
@@ -8,12 +8,12 @@ import {
   PlayerPopupWidgetSettingsContext,
 } from "../../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 import PlayerPopup from "../../components/PlayerPopup/PlayerPopup";
-import { Player } from "../../components/PlayerPopup/Player";
+import { PlayerStore } from "../../components/PlayerPopup/Player";
 
 export default function PlayerPopupPage({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
 
-  const player = new Player({ widgetId: widgetId, conf: conf.topic });
+  const player = new PlayerStore({ widgetId: widgetId, conf: conf.topic });
 
   return (
     <>
