@@ -228,5 +228,7 @@
   "text-alignment": "Выравнивание текста",
   "button-outline": "Обводка текста",
   "tab-style": "Стиль",
-  "tab-requests": "Реквесты"
+  "tab-requests": "Реквесты",
+  "Inset": "Внутрь",
+  "Outset": "Наружу"
 }

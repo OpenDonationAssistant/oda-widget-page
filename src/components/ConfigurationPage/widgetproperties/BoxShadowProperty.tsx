@@ -8,6 +8,7 @@ import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
 import classes from "./BoxShadowProperty.module.css";
 import { log } from "../../../logging";
+import { t } from "i18next";
 
 interface BoxShadow {
   inset: boolean;
@@ -99,8 +100,8 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
               <Segmented
                 value={shadow.inset}
                 options={[
-                  { label: "Inset", value: true },
-                  { label: "Outset", value: false },
+                  { label: t("Inset"), value: true },
+                  { label: t("Outset"), value: false },
                 ]}
                 onChange={(value) =>
                   (this.value = produce(toJS(this.value), (draft) => {

@@ -227,5 +227,7 @@
   "text-alignment": "Text alignment",
   "button-outline": "Text outline",
   "tab-style": "Style",
-  "tab-requests": "Requests"
+  "tab-requests": "Requests",
+  "Inset": "Inset",
+  "Outset": "Outset"
 }

@@ -80,7 +80,6 @@
   padding-right: 10px;
   border: 1px solid #674afd;
   border-radius: 3px;
-  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
   height: unset;
   min-height: 28px;
   & .ant-color-picker-color-block {
@@ -136,6 +135,7 @@
   & .ant-tabs-content-holder {
     background: var(--oda-panel-backgroun-color);
     border-radius: 3px;
+    border: none;
   }
 
   & .ant-tabs-tab-btn {
@@ -232,7 +232,7 @@
 
   & .ant-layout-header {
     background: none !important;
-    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -296,7 +296,6 @@ div.ant-layout-has-sider.ant-layout {
     & .ant-select-selector {
       background-color: #684aff;
       color: white !important;
-      box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
       border: 1px solid #674afd;
       border-radius: 3px;
     }

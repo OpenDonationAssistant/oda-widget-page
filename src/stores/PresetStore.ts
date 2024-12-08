@@ -1341,6 +1341,185 @@ export class PresetStore {
         }),
       ];
     }
+    if (type === "player-popup") {
+      return [
+        new Preset({
+          name: "player-popup-1",
+          showcase: "https://api.oda.digital/presets/player-popup-1.gif",
+          properties: [
+            {
+              name: "widgetBorder",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "rgb(190, 75, 30)",
+                  width: 2,
+                },
+                left: {
+                  type: "solid",
+                  color: "rgb(190, 75, 30)",
+                  width: 2,
+                },
+                right: {
+                  type: "solid",
+                  color: "rgb(190, 75, 30)",
+                  width: 2,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "rgb(190, 75, 30)",
+                  width: 2,
+                },
+                isSame: true,
+              },
+            },
+            {
+              name: "rounding",
+              value: {
+                isSame: true,
+                topLeft: 30,
+                topRight: 30,
+                bottomLeft: 30,
+                bottomRight: 30,
+              },
+            },
+            {
+              name: "boxShadow",
+              value: {
+                shadows: [
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 8,
+                    color: "rgba(84, 8, 15, 0.5)",
+                    inset: false,
+                    spread: 16,
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+        new Preset({
+          name: "player-popup-2",
+          showcase: "https://api.oda.digital/presets/player-popup-2.gif",
+          properties: [
+            {
+              name: "widgetBorder",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "#000000",
+                  width: 1,
+                },
+                left: {
+                  type: "solid",
+                  color: "#000000",
+                  width: 1,
+                },
+                right: {
+                  type: "solid",
+                  color: "#000000",
+                  width: 1,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "#000000",
+                  width: 1,
+                },
+                isSame: null,
+              },
+            },
+            {
+              name: "rounding",
+              value: {
+                isSame: true,
+                topLeft: 40,
+                topRight: 40,
+                bottomLeft: 40,
+                bottomRight: 40,
+              },
+            },
+            {
+              name: "boxShadow",
+              value: {
+                shadows: [
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 8,
+                    color: "#000000",
+                    inset: false,
+                    spread: 16,
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+        new Preset({
+          name: "player-popup-3",
+          showcase: "https://api.oda.digital/presets/player-popup-3.gif",
+          properties: [
+            {
+                "name": "audioOnly",
+                "value": false
+            },
+            {
+                "name": "widgetBorder",
+                "value": {
+                    "top": {
+                        "type": "double",
+                        "color": "rgb(255, 0, 0)",
+                        "width": 4
+                    },
+                    "left": {
+                        "type": "double",
+                        "color": "rgb(255, 0, 0)",
+                        "width": 4
+                    },
+                    "right": {
+                        "type": "double",
+                        "color": "rgb(255, 0, 0)",
+                        "width": 4
+                    },
+                    "bottom": {
+                        "type": "double",
+                        "color": "rgb(255, 0, 0)",
+                        "width": 4
+                    },
+                    "isSame": true
+                }
+            },
+            {
+                "name": "rounding",
+                "value": {
+                    "isSame": null,
+                    "topLeft": 0,
+                    "topRight": 0,
+                    "bottomLeft": 0,
+                    "bottomRight": 0
+                }
+            },
+            {
+                "name": "boxShadow",
+                "value": {
+                    "shadows": [
+                        {
+                            "x": 10,
+                            "y": 10,
+                            "blur": 10,
+                            "color": "#000000",
+                            "inset": false,
+                            "spread": 4
+                        }
+                    ]
+                }
+            }
+          ]
+        })
+      ];
+    }
     return [];
   }
 }
