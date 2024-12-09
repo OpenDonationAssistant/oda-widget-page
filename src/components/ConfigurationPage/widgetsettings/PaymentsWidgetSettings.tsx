@@ -51,20 +51,24 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>
-          Виджет "События"
-        </h3>
+        <h3 className={`${classes.helptitle}`}>Виджет "События"</h3>
         <div className={`${classes.helpdescription}`}>
           Отображает список донатов, обновляется автоматически реал-тайм.
         </div>
         <h3 className={`${classes.helptitle}`}>Как подключить</h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
+            <li>В меню этого виджета (События) скопировать ссылку.</li>
+            <li>Добавить как Dock в OBS Studio.</li>
+          </ul>
+        </div>
+        <h3 className={`${classes.helptitle}`}>Гайды</h3>
+        <div className={`${classes.helpdescription}`}>
+          <ul>
             <li>
-              В меню этого виджета (События) скопировать ссылку.
-            </li>
-            <li>
-              Добавить как Dock в OBS Studio.
+              <a href="https://youtu.be/qTiTGXbQEk4">
+                Подключение док-панели со списком донатов
+              </a>
             </li>
           </ul>
         </div>
