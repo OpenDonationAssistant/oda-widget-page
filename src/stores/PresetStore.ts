@@ -8,6 +8,10 @@ export class PresetStore {
           name: "donaton-1",
           properties: [
             {
+              name: "preset",
+              value: "donaton",
+            },
+            {
               name: "text",
               value: "Стрим будет идти еще <time>",
             },
@@ -116,7 +120,7 @@ export class PresetStore {
             },
             {
               name: "preset",
-              value: "",
+              value: "donaton",
             },
             {
               name: "titleFont",
@@ -211,6 +215,10 @@ export class PresetStore {
         new Preset({
           name: "donaton-3",
           properties: [
+            {
+              name: "preset",
+              value: "donaton",
+            },
             {
               name: "text",
               value: "!Донатон <time>",
@@ -310,6 +318,10 @@ export class PresetStore {
           showcase: "https://api.oda.digital/presets/donaton-4.gif",
           properties: [
             {
+              name: "preset",
+              value: "donaton",
+            },
+            {
               name: "text",
               value: " <time>",
             },
@@ -407,6 +419,10 @@ export class PresetStore {
           showcase: "https://api.oda.digital/presets/donaton-5.gif",
           properties: [
             {
+              name: "preset",
+              value: "donaton",
+            },
+            {
               name: "text",
               value: " <time>",
             },
@@ -503,6 +519,10 @@ export class PresetStore {
           name: "donaton-6",
           showcase: "https://api.oda.digital/presets/donaton-6.gif",
           properties: [
+            {
+              name: "preset",
+              value: "donaton",
+            },
             {
               name: "text",
               value: " <time>",
@@ -609,6 +629,10 @@ export class PresetStore {
         new Preset({
           name: "donation-timer-1",
           properties: [
+            {
+              name: "preset",
+              value: "donation-timer",
+            },
             {
               name: "resetOnLoad",
               value: true,
@@ -1348,6 +1372,10 @@ export class PresetStore {
           showcase: "https://api.oda.digital/presets/player-popup-1.gif",
           properties: [
             {
+              name: "preset",
+              value: "player-popup",
+            },
+            {
               name: "widgetBorder",
               value: {
                 top: {
@@ -1404,6 +1432,10 @@ export class PresetStore {
           name: "player-popup-2",
           showcase: "https://api.oda.digital/presets/player-popup-2.gif",
           properties: [
+            {
+              name: "preset",
+              value: "player-popup",
+            },
             {
               name: "widgetBorder",
               value: {
@@ -1462,8 +1494,8 @@ export class PresetStore {
           showcase: "https://api.oda.digital/presets/player-popup-3.gif",
           properties: [
             {
-                "name": "audioOnly",
-                "value": false
+              name: "preset",
+              value: "player-popup",
             },
             {
                 "name": "widgetBorder",
