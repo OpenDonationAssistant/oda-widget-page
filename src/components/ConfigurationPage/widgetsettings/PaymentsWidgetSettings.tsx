@@ -66,7 +66,7 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
         <div className={`${classes.helpdescription}`}>
           <ul>
             <li>
-              <a href="https://youtu.be/qTiTGXbQEk4">
+              <a href="https://youtu.be/nvqJ3bjTlEE">
                 Подключение док-панели со списком донатов
               </a>
             </li>
