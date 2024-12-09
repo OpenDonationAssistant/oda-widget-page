@@ -17,6 +17,10 @@ export default function DonatonWidget({}) {
       const now = Date.now();
       const end = Date.parse(`${settings.timerEndProperty.timestamp}`);
       const difference = end - now;
+      if (difference < 0) {
+        setTime("00:00:00");
+        return;
+      }
       log.debug({ now: now, end: end, diff: difference });
       const hours = Math.floor(difference / 36e5);
       const minutes = Math.floor((difference % 36e5) / 60000);
