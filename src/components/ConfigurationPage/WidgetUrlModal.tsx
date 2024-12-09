@@ -39,12 +39,12 @@ export default function WidgetUrlModal({
   open,
   type,
   id,
-  onClose
+  onClose,
 }: {
   open: boolean;
   type: string;
   id: string;
-  onClose: Function
+  onClose: Function;
 }) {
   const { data, loading } = useRequest(
     () => {
@@ -69,23 +69,39 @@ export default function WidgetUrlModal({
         onCancel={() => onClose()}
         destroyOnClose={true}
       >
-        {loading && <Spin />}
+        {loading && (
+          <Flex
+            className={`${classes.spin} full-width`}
+            justify="center"
+            align="center"
+          >
+            <Spin size="large" />
+          </Flex>
+        )}
         {data && (
           <Flex vertical gap={20} className={`${classes.modal}`}>
-            <Flex justify="center">
-              <QRCode size={320} value={data} />
-            </Flex>
+            <div>
+              Виджет можно добавить в OBS Studio как Browser source (чтобы
+              отобразить на стриме) или как Dock-panel (чтобы держать под рукой)
+              используя эту ссылку:
+            </div>
             <Flex gap={5}>
-              <Input value={data} />
+              <Input className={`${classes.url}`} value={data} />
               <Button className="oda-btn-default" onClick={() => copyUrl(data)}>
                 <span className="material-symbols-sharp">content_copy</span>
               </Button>
-              <Button
-                className="oda-btn-default"
-                onClick={() => openUrl(data)}
-              >
+              <Button className="oda-btn-default" onClick={() => openUrl(data)}>
                 <span className="material-symbols-sharp">open_in_new</span>
               </Button>
+            </Flex>
+            <div>
+              Если хотите воспользоваться виджетом на телефоне или добавить его
+              в Prisma Live или его аналоги, воспользуйтесь QR кодом - виджет
+              откроется в браузере телефона, там же можно скопировать ссылку на
+              него для Prisma Live
+            </div>
+            <Flex justify="center">
+              <QRCode size={320} value={data} />
             </Flex>
           </Flex>
         )}

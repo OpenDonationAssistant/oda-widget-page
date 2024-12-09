@@ -8,6 +8,8 @@
 
 .ant-input {
   border: var(--oda-main-border);
+  font-family: 'Play';
+  font-size: 18px;
   background-color: var(--oda-control-background-color);
   padding-top: 3px;
   padding-bottom: 3px;
@@ -144,6 +146,7 @@
 }
 
 .ant-modal {
+  font-family: 'Play';
   & .ant-modal-header {
     margin-left: 10px;
     background-color: var(--oda-panel-backgroun-color);
@@ -174,6 +177,7 @@
     & .ant-modal-body {
       background-color: var(--oda-panel-backgroun-color);
       border-radius: 10px;
+      font-size: 18px;
     }
   }
 
@@ -385,4 +389,8 @@ div.ant-layout-has-sider.ant-layout {
   & .ant-picker-suffix {
     color: var(--oda-secondary-text-color);
   }
+}
+
+.ant-spin .ant-spin-dot-item {
+  background-color: #674afd;
 }
