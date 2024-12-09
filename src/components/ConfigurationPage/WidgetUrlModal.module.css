@@ -12,17 +12,19 @@
   }
 }
 
-.url {
-  border: none;
-  box-shadow: none;
-  background: unset;
-  border-radius: 0px;
-  font-weight: 900;
-  color: white;
-  border-bottom: 1px solid #674afd;
-  &:focus {
-    outline: none;
-    border-bottom: 2px solid #674afd;
+.window .url {
+  &[class*="ant-input"] {
+    border: none;
+    box-shadow: none;
+    background: unset;
+    border-radius: 0px;
+    font-weight: 900;
+    color: white;
+    border-bottom: 1px solid #674afd;
+    &:focus {
+      outline: none;
+      border-bottom: 2px solid #674afd;
+    }
   }
 }
 
