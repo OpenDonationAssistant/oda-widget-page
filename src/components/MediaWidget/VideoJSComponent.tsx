@@ -17,7 +17,7 @@ import { Flex } from "antd";
 import VideoPopupToggler, { VIDEO_IMPL } from "./VideoPopupToggler";
 
 let options: VideoJsPlayerOptions = {
-  autoplay: true,
+  autoplay: false,
   controls: false,
   responsive: false,
   fluid: false,
@@ -347,6 +347,7 @@ export default function VideoJSComponent({
       sendAlert();
     });
     player.src(song);
+    player.play();
     setPlayer(player);
     return () => {
       player.dispose();
