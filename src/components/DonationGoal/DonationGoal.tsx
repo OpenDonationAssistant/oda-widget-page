@@ -5,7 +5,6 @@ import { produce } from "immer";
 import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import {
   AbstractDonationGoalState,
-  DonationGoalState,
 } from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
@@ -84,6 +83,7 @@ export const DonationGoal = observer(
         ...filledPaddingStyle,
         ...filledBoxShadowStyle,
         ...filledImageStyle,
+        zIndex: 1,
       };
       return result;
     }
@@ -167,6 +167,7 @@ export const DonationGoal = observer(
                     ...outerRoundingStyle,
                     ...outerBoxShadowStyle,
                     ...outerImageStyle,
+                    zIndex: 0,
                   }}
                   className={`${classes.goalprogressbar}`}
                 ></div>
@@ -179,7 +180,8 @@ export const DonationGoal = observer(
                   <div
                     style={{
                       ...filledTextStyle,
-                      ...filledTextPlacement
+                      ...filledTextPlacement,
+                      zIndex: 3,
                     }}
                     className={`${
                       classes.goalamount

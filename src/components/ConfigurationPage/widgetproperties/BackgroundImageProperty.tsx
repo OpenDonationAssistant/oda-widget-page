@@ -6,6 +6,7 @@ import axios from "axios";
 import { Trans } from "react-i18next";
 import { Button, Flex, Image, Select, Switch, Upload } from "antd";
 import classes from "./BackgroundImageProperty.module.css";
+import InputNumber from "../components/InputNumber";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -34,6 +35,7 @@ export interface ImagePropertyValue {
   url: string | null;
   size: string;
   repeat: boolean;
+  opacity: number;
 }
 
 const ImagePropertyComponent = observer(
@@ -61,6 +63,18 @@ const ImagePropertyComponent = observer(
           {property.value.url && (
             <Flex gap={10}>
               <Flex vertical={true} justify="space-around">
+                <Flex gap={10} align="center">
+                  <span>Прозрачность</span>
+                  <InputNumber
+                    value={property.value.opacity}
+                    onChange={(value) => {
+                      if (value === null || value === undefined) {
+                        return;
+                      }
+                      property.value = { ...property.value, opacity: value };
+                    }}
+                  />
+                </Flex>
                 <Flex gap={10} align="center">
                   <span>Размер</span>
                   <Select
@@ -128,24 +142,28 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
   }) {
     super({
       name: params.name,
-      value: params.value ?? {
-        url: null,
-        size: "auto",
-        repeat: false,
+      value: {
+        ...{
+          url: null,
+          size: "auto",
+          repeat: false,
+          opacity: 1,
+        },
+        ...params.value,
       },
       displayName: params.displayName ?? "background-image",
       help: params.help,
     });
   }
 
-  private fullUri(): string | null{
+  private fullUri(): string | null {
     if (!this.value.url) {
       return null;
     }
-    if (this.value.url &&  this.value.url.startsWith("http")) {
+    if (this.value.url && this.value.url.startsWith("http")) {
       return this.value.url;
     }
-    if (this.value.url &&  !this.value.url.startsWith("http")) {
+    if (this.value.url && !this.value.url.startsWith("http")) {
       return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url}`;
     }
     return null;
@@ -157,6 +175,7 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
         backgroundImage: `url(${this.fullUri()})`,
         backgroundSize: this.value.size,
         backgroundRepeat: this.value.repeat ? "repeat" : "no-repeat",
+        opacity: this.value.opacity,
       };
     }
     return {};
