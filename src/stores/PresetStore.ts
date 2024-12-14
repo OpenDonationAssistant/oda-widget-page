@@ -1588,6 +1588,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -1648,6 +1649,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -1758,6 +1760,7 @@ export class PresetStore {
                 url: "https://api.oda.digital/assets/kosmos_fon_sinij_73340_1920x1080-4215646997.jpg",
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -1889,6 +1892,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2015,6 +2019,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2075,6 +2080,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2185,6 +2191,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2316,6 +2323,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2433,6 +2441,7 @@ export class PresetStore {
                 url: "https://api.oda.digital/assets/kosmos_fon_sinij_73340_1920x1080-4215646997.jpg",
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2502,6 +2511,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2612,6 +2622,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2743,6 +2754,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2860,6 +2872,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -2920,6 +2933,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3030,6 +3044,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3144,6 +3159,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3262,6 +3278,7 @@ export class PresetStore {
                 size: "auto",
 
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3331,6 +3348,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3441,6 +3459,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3555,6 +3574,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3691,6 +3711,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3755,6 +3776,7 @@ export class PresetStore {
                 url: null,
                 size: "auto",
                 repeat: false,
+                opacity: 1,
               },
             },
             {
@@ -3865,6 +3887,7 @@ export class PresetStore {
                 url: "https://api.oda.digital/assets/bw_gzhel.png",
                 size: "contain",
                 repeat: true,
+                opacity: 0.5,
               },
             },
             {
@@ -4004,6 +4027,7 @@ export class PresetStore {
                 url: "https://api.oda.digital/assets/2024-12-14_21-12-1734202337.png",
                 size: "contain",
                 repeat: true,
+                opacity: 1,
               },
             },
             {

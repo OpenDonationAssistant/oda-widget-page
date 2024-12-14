@@ -3,9 +3,7 @@ import classes from "./DonationGoal.module.css";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
 import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
-import {
-  AbstractDonationGoalState,
-} from "./DonationGoalState";
+import { AbstractDonationGoalState } from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 
@@ -162,15 +160,23 @@ export const DonationGoal = observer(
               >
                 <div
                   style={{
-                    ...backgroundColor,
                     ...progressBarBorderStyle,
                     ...outerRoundingStyle,
-                    ...outerBoxShadowStyle,
-                    ...outerImageStyle,
                     zIndex: 0,
                   }}
                   className={`${classes.goalprogressbar}`}
-                ></div>
+                >
+                  <div
+                    style={{
+                      zIndex: 0,
+                      ...{ width: "100%", height: "100%" },
+                      ...outerRoundingStyle,
+                      ...backgroundColor,
+                      ...outerBoxShadowStyle,
+                      ...outerImageStyle,
+                    }}
+                  />
+                </div>
                 <div
                   style={calcBarStyle(goal)}
                   className={`${classes.goalfilled}`}

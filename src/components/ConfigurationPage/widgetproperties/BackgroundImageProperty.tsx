@@ -108,7 +108,7 @@ const ImagePropertyComponent = observer(
                   width={200}
                   height={120}
                   className={`${classes.preview}`}
-                  src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${property.value.url}`}
+                  src={`${property.fullUri()}`}
                 />
               </Image.PreviewGroup>
               <Flex vertical={true} justify="flex-start" align="flex-start">
@@ -156,7 +156,7 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
     });
   }
 
-  private fullUri(): string | null {
+  public fullUri(): string | null {
     if (!this.value.url) {
       return null;
     }
