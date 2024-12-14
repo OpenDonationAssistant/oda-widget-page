@@ -235,6 +235,9 @@
   "Outset": "Наружу",
   "background-image": "Фоновое изображение",
   "tab-donationgoal-fulfillment": "Заполнение",
-  "widget-alert-limit-image-size":"Ограничить размер изображения"
-
+  "widget-alert-limit-image-size":"Ограничить размер изображения",
+  "widget-donationgoal-show-title": "Показывать название",
+  "widget-donationgoal-show-description": "Показывать надпись",
+  "top":"Сверху",
+  "bottom":"Снизу"
 }

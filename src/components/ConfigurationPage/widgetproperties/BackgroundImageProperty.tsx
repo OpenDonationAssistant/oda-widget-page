@@ -138,10 +138,23 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
     });
   }
 
+  private fullUri(): string | null{
+    if (!this.value.url) {
+      return null;
+    }
+    if (this.value.url &&  this.value.url.startsWith("http")) {
+      return this.value.url;
+    }
+    if (this.value.url &&  !this.value.url.startsWith("http")) {
+      return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url}`;
+    }
+    return null;
+  }
+
   public calcCss(): CSSProperties {
     if (this.value.url) {
       return {
-        backgroundImage: `url(${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url})`,
+        backgroundImage: `url(${this.fullUri()})`,
         backgroundSize: this.value.size,
         backgroundRepeat: this.value.repeat ? "repeat" : "no-repeat",
       };

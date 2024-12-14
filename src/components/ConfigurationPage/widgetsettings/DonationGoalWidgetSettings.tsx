@@ -23,6 +23,7 @@ import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
+import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -82,6 +83,11 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "header",
       title: "tab-donationgoal-header",
       properties: [
+        new BooleanProperty({
+          name: "showTitle",
+          value: true,
+          displayName: "widget-donationgoal-show-title",
+        }),
         new BackgroundImageProperty({
           name: "titleBackgroundImage",
         }),
@@ -133,10 +139,22 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new BackgroundImageProperty({
           name: "outerImage"
         }),
+        new BooleanProperty({
+          name: "showLabel",
+          value: true,
+          displayName: "widget-donationgoal-show-description",
+        }),
         new DonationGoalLabelProperty(),
         new AnimatedFontProperty({
           name: "amountFont",
           label: "widget-donationgoal-amount-font-family",
+        }),
+        new SingleChoiceProperty({
+          name: "filledTextPlacement",
+          value: "center",
+          displayName: "Расположение надписи",
+          options: ["top", "center", "bottom"],
+          selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new SingleChoiceProperty({
           name: "filledTextAlign",
@@ -246,6 +264,14 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
+  public get showLabel(): boolean {
+    return this.get("showLabel")?.value ?? true;
+  }
+
+  public get showTitle(): boolean {
+    return this.get("showTitle")?.value ?? true;
+  }
+
   public get titleFontProperty(): AnimatedFontProperty {
     return this.get("descriptionFont") as AnimatedFontProperty;
   }
@@ -334,6 +360,10 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public get filledTextAlign(): "left" | "center" | "right" {
     return this.get("filledTextAlign")?.value || "left";
+  }
+
+  public get filledTextPlacement(): "top" | "center" | "bottom" {
+    return this.get("filledTextPlacement")?.value || "center";
   }
 
   public get innerBorderProperty(): BorderProperty {

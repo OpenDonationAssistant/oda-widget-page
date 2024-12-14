@@ -3,7 +3,10 @@ import classes from "./DonationGoal.module.css";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
 import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
-import { AbstractDonationGoalState, DonationGoalState } from "./DonationGoalState";
+import {
+  AbstractDonationGoalState,
+  DonationGoalState,
+} from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 
@@ -46,6 +49,15 @@ export const DonationGoal = observer(
         break;
       case "right":
         filledTextAlign = "flex-end";
+        break;
+    }
+    let filledTextPlacement: CSSProperties = { gridRow: "2" };
+    switch (settings.filledTextPlacement) {
+      case "top":
+        filledTextPlacement = { gridRow: "1" };
+        break;
+      case "bottom":
+        filledTextPlacement = { gridRow: "3" };
         break;
     }
     const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
@@ -122,24 +134,26 @@ export const DonationGoal = observer(
         {state.goals.map((goal) => (
           <>
             <div className={`${classes.goalitem}`}>
-              <Flex className="full-width" style={titleTextAlign}>
-                <div
-                  style={{
-                    ...titleTextStyle,
-                    ...titleBorderStyle,
-                    ...titlePaddingStyle,
-                    ...titleRoundingStyle,
-                    ...titleBoxShadowStyle,
-                    ...titleBackgroundColorStyle,
-                    ...titleBackgroundImageStyle,
-                  }}
-                  className={`${classes.goaldescription}}`}
-                >
-                  <div className={`${titleFont.calcClassName()}`}>
-                    {goal.briefDescription}
+              {settings.showTitle && (
+                <Flex className="full-width" style={titleTextAlign}>
+                  <div
+                    style={{
+                      ...titleTextStyle,
+                      ...titleBorderStyle,
+                      ...titlePaddingStyle,
+                      ...titleRoundingStyle,
+                      ...titleBoxShadowStyle,
+                      ...titleBackgroundColorStyle,
+                      ...titleBackgroundImageStyle,
+                    }}
+                    className={`${classes.goaldescription}}`}
+                  >
+                    <div className={`${titleFont.calcClassName()}`}>
+                      {goal.briefDescription}
+                    </div>
                   </div>
-                </div>
-              </Flex>
+                </Flex>
+              )}
               <div
                 style={{
                   ...{ display: "grid" },
@@ -161,28 +175,33 @@ export const DonationGoal = observer(
                   className={`${classes.goalfilled}`}
                 ></div>
                 <div className={`${classes.goalunfilled}`}></div>
-                <div
-                  style={filledTextStyle}
-                  className={`${
-                    classes.goalamount
-                  } ${amountFont.calcClassName()}`}
-                >
-                  {labelTemplate
-                    .replaceAll(
-                      "<collected>",
-                      `${goal.accumulatedAmount.major}`,
-                    )
-                    .replaceAll("<required>", `${goal.requiredAmount.major}`)
-                    .replaceAll("<currency>", "RUB")
-                    .replaceAll(
-                      "<proportion>",
-                      `${Math.trunc(
-                        (goal.accumulatedAmount.major /
-                          goal.requiredAmount.major) *
-                          100,
-                      )}`,
-                    )}
-                </div>
+                {settings.showLabel && (
+                  <div
+                    style={{
+                      ...filledTextStyle,
+                      ...filledTextPlacement
+                    }}
+                    className={`${
+                      classes.goalamount
+                    } ${amountFont.calcClassName()}`}
+                  >
+                    {labelTemplate
+                      .replaceAll(
+                        "<collected>",
+                        `${goal.accumulatedAmount.major}`,
+                      )
+                      .replaceAll("<required>", `${goal.requiredAmount.major}`)
+                      .replaceAll("<currency>", "RUB")
+                      .replaceAll(
+                        "<proportion>",
+                        `${Math.trunc(
+                          (goal.accumulatedAmount.major /
+                            goal.requiredAmount.major) *
+                            100,
+                        )}`,
+                      )}
+                  </div>
+                )}
               </div>
             </div>
           </>
