@@ -15,6 +15,7 @@ import { WIDGET_TYPES } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { WidgetStore } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
+import { Flex } from "antd";
 
 export class Selection {
   private _id: string | null = null;
@@ -55,10 +56,6 @@ const AddWidgetComponent = observer(
     const { t } = useTranslation();
     const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
 
-    const addWidget = (type: string): void => {
-      widgetStore.addWidget(type).then(() => setShowAddWidgetPopup(false));
-    };
-
     return (
       <>
         {!showAddWidgetPopup && (
@@ -72,7 +69,10 @@ const AddWidgetComponent = observer(
               marginRight: "auto",
             }}
           >
-            {t("button-addwidget")}
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">add</span>
+              <div>{t("button-addwidget")}</div>
+            </Flex>
           </div>
         )}
         {showAddWidgetPopup && (

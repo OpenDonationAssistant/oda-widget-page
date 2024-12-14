@@ -65,7 +65,7 @@
 }
 
 button.ant-btn {
-  border-radius: 20px;
+  border-radius: 5px;
   font-weight: 900;
   border: 1px solid #684aff;
   background-color: #151a33;
@@ -83,18 +83,19 @@ button.ant-btn {
 }
 
 .widget-button.widget-button-accept {
-  color: #00FF00;
-  height: unset;
+  color: white;
+  height: 32px;
   font-weight: 900;
   font-size: 14px;
   margin-left: 10px;
+  margin-right: 10px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 15px;
+  padding-right: 15px;
+  background: #674afd;
   border: 1px solid #674afd;
-  border-radius: 20px;
-  border-bottom-right-radius: 0px;
-  border-top-right-radius: 0px;
+  border-radius: 5px;
 }
 
 .blinker {
@@ -116,16 +117,14 @@ button.ant-btn {
 }
 
 .widget-button.widget-button-decline {
-  margin-right: 50px;
-  height: unset;
+  height: 32px;
   border: 1px solid #674afd;
-  border-radius: 20px;
-  border-bottom-left-radius: 0px;
-  border-top-left-radius: 0px;
-  color: #FF0000;
+  border-radius: 5px;
+  color: var(--oda-secondary-text-color);
   padding-top: 4px;
   padding-bottom: 4px;
   padding-right: 15px;
+  padding-left: 15px;
   font-weight: 900;
   font-size: 14px;
 }

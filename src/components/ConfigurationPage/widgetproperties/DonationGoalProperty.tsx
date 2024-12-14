@@ -3,7 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
-import { Collapse } from "antd";
+import { Collapse, Flex } from "antd";
 import TextPropertyModal from "./TextPropertyModal";
 import { Trans } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -35,7 +35,12 @@ const DonationGoalPropertyComponent = observer(
             className={`${classes.button} oda-btn-default`}
             onClick={() => property.addGoal()}
           >
-            <Trans i18nKey="button-add-goal" />
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">add</span>
+              <div>
+                <Trans i18nKey="button-add-goal" />
+              </div>
+            </Flex>
           </button>
         </div>
         <Collapse
@@ -164,7 +169,12 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
               this.deleteGoal(index);
             }}
           >
-            <Trans i18nKey="button-delete" />
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">delete</span>
+              <div>
+                <Trans i18nKey="button-delete" />
+              </div>
+            </Flex>
           </button>
         </div>
       </div>

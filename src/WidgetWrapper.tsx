@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "./types/WidgetData";
 import { WidgetSettingsContext } from "./contexts/WidgetSettingsContext";
@@ -24,7 +24,7 @@ const overflowHiddenForRootElement = (
 const fullHeight = (
   <style
     dangerouslySetInnerHTML={{
-      __html: `html, body { height: 100%; }`,
+      __html: `html, body { height: 100%; background-color: rgba(0,0,0,0); }`,
     }}
   />
 );
@@ -54,7 +54,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           unsubscribe: (topic: string) => {
             unsubscribe(widgetId, topic);
           },
-          publish: (topic: string, payload:  any)  => {
+          publish: (topic: string, payload: any) => {
             publish(topic, payload);
           },
         }}

@@ -73,6 +73,11 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
             weight: true,
             animation: "none",
             underline: false,
+            outline: {
+              enabled: false,
+              width: 0,
+              color: "#000000",
+            },
             shadowColor: "rgb(255, 255, 255)",
             shadowWidth: 0,
             animationType: "entire",

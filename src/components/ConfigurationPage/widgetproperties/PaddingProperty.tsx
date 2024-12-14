@@ -16,7 +16,7 @@ export interface PaddingPropertyValue {
 }
 
 export const DEFAULT_PADDING_PROPERTY_VALUE: PaddingPropertyValue = {
-  isSame: true,
+  isSame: null,
   bottom: 0,
   top: 0,
   left: 0,
@@ -27,7 +27,7 @@ const PaddingPropertyComponent = observer(
   ({ property }: { property: PaddingProperty }) => {
     return (
       <Flex vertical={true} gap={10}>
-        <LabeledContainer displayName={property.name}>
+        <LabeledContainer displayName={property.displayName}>
           <Segmented
             block
             className="full-width"
@@ -167,23 +167,36 @@ const PaddingPropertyComponent = observer(
 );
 
 export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue> {
+  private _target: "padding" | "margin";
+
   constructor({
     name,
     value,
     displayName,
+    target,
   }: {
     name: string;
     value?: PaddingPropertyValue;
     displayName?: string;
+    target?: "padding" | "margin";
   }) {
     super({
       name: name,
       value: value ?? DEFAULT_PADDING_PROPERTY_VALUE,
       displayName: displayName ?? "padding",
     });
+    this._target = target ?? "padding";
   }
 
   calcCss(): CSSProperties {
+    if (this._target === "padding") {
+      return this.calcPadding();
+    } else {
+      return this.calcMargin();
+    }
+  }
+
+  calcPadding(): CSSProperties {
     const style: CSSProperties = {};
     if (this.value.isSame === true) {
       style.paddingTop = `${this.value.top}px`;
@@ -196,6 +209,23 @@ export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue>
       style.paddingRight = `${this.value.right}px`;
       style.paddingLeft = `${this.value.left}px`;
       style.paddingBottom = `${this.value.bottom}px`;
+    }
+    return style;
+  }
+
+  calcMargin(): CSSProperties {
+    const style: CSSProperties = {};
+    if (this.value.isSame === true) {
+      style.marginTop = `${this.value.top}px`;
+      style.marginRight = `${this.value.top}px`;
+      style.marginLeft = `${this.value.top}px`;
+      style.marginBottom = `${this.value.top}px`;
+    }
+    if (this.value.isSame === false) {
+      style.marginTop = `${this.value.top}px`;
+      style.marginRight = `${this.value.right}px`;
+      style.marginLeft = `${this.value.left}px`;
+      style.marginBottom = `${this.value.bottom}px`;
     }
     return style;
   }

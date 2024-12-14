@@ -1,4 +1,4 @@
-import { Client, IFrame, messageCallbackType } from "@stomp/stompjs";
+import { Client, messageCallbackType } from "@stomp/stompjs";
 import { log } from "./logging";
 
 interface Listener {

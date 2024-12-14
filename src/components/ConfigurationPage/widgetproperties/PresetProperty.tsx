@@ -5,6 +5,7 @@ import { PresetStore } from "../../../stores/PresetStore";
 import { Button, Flex } from "antd";
 import { Image } from "antd";
 import classes from "./PresetProperty.module.css";
+import { Trans } from "react-i18next";
 
 export class PresetProperty implements WidgetProperty<string> {
   private _settings: AbstractWidgetSettings;
@@ -53,7 +54,11 @@ export class PresetProperty implements WidgetProperty<string> {
                 }}
                 className="oda-btn-default"
               >
-                Применить
+                              <Flex justify="center" align="center" gap={3}>
+                <span className="material-symbols-sharp">check</span>
+                <div><Trans i18nKey="button-apply"/></div>
+              </Flex>
+
               </Button>
             </Flex>
           ))}

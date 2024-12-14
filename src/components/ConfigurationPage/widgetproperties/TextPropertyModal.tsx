@@ -1,11 +1,11 @@
-import { Modal } from "antd";
+import { Flex, Modal } from "antd";
 import React, { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function TextPropertyModal({
   title,
   children,
-  className
+  className,
 }: {
   title: string;
   children: ReactNode;
@@ -37,7 +37,10 @@ export default function TextPropertyModal({
   return (
     <>
       <button className={`oda-btn-default`} onClick={toggleModal}>
-        {t("button-edit")}
+        <Flex justify="center" align="center" gap={3}>
+          <span className="material-symbols-sharp">edit</span>
+          <div>{t("button-edit")}</div>
+        </Flex>
       </button>
       <Modal
         className={className}

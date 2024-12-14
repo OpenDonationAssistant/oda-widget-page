@@ -8,7 +8,6 @@
 
 .goalitem{
   display: grid;
-  margin-top: 20px;
 }
 .goaldescription{
   grid-row: 1;

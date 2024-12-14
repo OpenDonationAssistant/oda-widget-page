@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classes from "./PopupComponent.module.css";
+import { Flex } from "antd";
 
 export default function PopupComponent({
   children,
@@ -16,7 +17,10 @@ export default function PopupComponent({
         className={`oda-btn-default`}
         onClick={() => setShowPopup(!showPopup)}
       >
-        {buttonText}
+        <Flex justify="center" align="center" gap={3}>
+          <span className="material-symbols-sharp">notifications_active</span>
+          <div>{buttonText}</div>
+        </Flex>
       </button>
       <div
         className={`${classes.popup} ${showPopup ? "" : "visually-hidden"}`}

@@ -81,12 +81,16 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
     });
   }
 
+  // TODO: 18n
   BoxShadowPropertyComponent = observer(() => {
     return (
       <>
         <LabeledContainer help={this.help} displayName={this.displayName}>
           <Button className="oda-btn-default" onClick={() => this.addShadow()}>
-            Добавить тень
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">add</span>
+              <div>Добавить тень</div>
+            </Flex>
           </Button>
         </LabeledContainer>
         <Flex vertical={true} gap={10}>
@@ -176,7 +180,10 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
                   }))
                 }
               >
-                Удалить тень
+                <Flex justify="center" align="center" gap={3}>
+                  <span className="material-symbols-sharp">delete</span>
+                  <div>Удалить тень</div>
+                </Flex>
               </Button>
             </Flex>
           ))}

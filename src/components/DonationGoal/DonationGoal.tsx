@@ -1,240 +1,193 @@
-import React, {
-  CSSProperties,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { useLoaderData } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
-import { log } from "../../logging";
+import { CSSProperties } from "react";
 import classes from "./DonationGoal.module.css";
-import { findSetting } from "../utils";
-import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
-import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import {
-  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/BorderProperty";
-import {
-    DEFAULT_ROUNDING_PROPERTY_VALUE,
-  RoundingProperty,
-} from "../ConfigurationPage/widgetproperties/RoundingProperty";
-import { ColorProperty, ColorPropertyTarget, DEFAULT_COLOR_PROPERTY_VALUE } from "../ConfigurationPage/widgetproperties/ColorProperty";
+import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
+import { AbstractDonationGoalState, DonationGoalState } from "./DonationGoalState";
+import { observer } from "mobx-react-lite";
+import { Flex } from "antd";
 
-export default function DonationGoal({}) {
-  const { recipientId, conf } = useLoaderData() as WidgetData;
-  const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const { widgetId, settings, subscribe, unsubscribe } = useContext(
-    WidgetSettingsContext,
-  );
-
-  useEffect(() => {
-    subscribe(conf.topic.goal, (message) => {
-      log.debug({ goalCommand: message }, "received goals command");
-      const updatedGoal = JSON.parse(message.body) as any;
-      setGoals((actualGoals) => {
-        const updatedGoals = actualGoals.map((goal) => {
-          if (goal.id === updatedGoal.goalId) {
-            const update = produce(goal, (draft) => {
-              draft.accumulatedAmount.major =
-                updatedGoal.accumulatedAmount.major;
-            });
-            return update;
-          }
-          return goal;
-        });
-        return updatedGoals;
-      });
-      message.ack();
-    });
-    return () => {
-      unsubscribe(conf.topic.goal);
-    };
-  }, [recipientId]);
-
-  useEffect(() => {
-    paymentPageConfig.current = new PaymentPageConfig(recipientId);
-  }, [recipientId]);
-
-  function listenPaymentPageConfigUpdated() {
-    const goals = paymentPageConfig.current?.goals ?? [];
-    setGoals(goals);
-    log.debug({ goals: goals });
-  }
-
-  useEffect(() => {
-    document.addEventListener(
-      "paymentPageUpdated",
-      listenPaymentPageConfigUpdated,
-    );
-    return () =>
-      document.removeEventListener(
-        "paymentPageUpdated",
-        listenPaymentPageConfigUpdated,
-      );
-  }, [recipientId]);
-
-  const titleFont = new AnimatedFontProperty({
-    widgetId: widgetId,
-    name: "descriptionFont",
-    value: findSetting(settings, "descriptionFont", null),
-  });
-  const amountFont = new AnimatedFontProperty({
-    widgetId: widgetId,
-    name: "amountFont",
-    value: findSetting(settings, "amountFont", null),
-  });
-  const titleTextAlign = findSetting(settings, "titleTextAlign", "left");
-  const labelTemplate = findSetting(
+export const DonationGoal = observer(
+  ({
+    state,
     settings,
-    "labelTemplate",
-    "<collected> / <required> <currency>",
-  );
-  const textStyle = produce(titleFont.calcStyle(), (draft) => {
-    draft.textAlign = titleTextAlign;
-  });
+  }: {
+    state: AbstractDonationGoalState;
+    settings: DonationGoalWidgetSettings;
+  }) => {
+    const titleFont = settings.titleFontProperty;
+    const titleTextStyle = titleFont.calcStyle();
 
-  const backgroundColor = new ColorProperty({
-    widgetId: widgetId,
-    name: "backgroundColor",
-    value: findSetting(
-      settings,
-      "backgroundColor",
-      DEFAULT_COLOR_PROPERTY_VALUE,
-    ),
-    displayName: "",
-    target: ColorPropertyTarget.BACKGROUND
-  }).calcCss();
+    let titleTextAlign = { justifyContent: "center" };
+    switch (settings.titleTextAlign) {
+      case "left":
+        titleTextAlign = { justifyContent: "flex-start" };
+        break;
+      case "right":
+        titleTextAlign = { justifyContent: "flex-end" };
+        break;
+    }
 
-  const progressBarBorderStyle = new BorderProperty({
-    widgetId: widgetId,
-    name: "outerBorder",
-    value: findSetting(settings, "outerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
-  }).calcCss();
+    const backgroundColor = settings.backgroundColor.calcCss();
+    const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
-  const outerRoundingStyle = new RoundingProperty({
-    widgetId: widgetId,
-    name: "outerRounding",
-    value: findSetting(
-      settings,
-      "outerRounding",
-      DEFAULT_ROUNDING_PROPERTY_VALUE,
-    ),
-  }).calcCss();
+    const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
+    const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
+    const outerImageStyle = settings.outerImageProperty.calcCss();
 
-  const progressbarStyle = {
-    ...backgroundColor,
-    ...progressBarBorderStyle,
-    ...outerRoundingStyle,
-  };
+    const labelTemplate = settings.labelTemplate;
+    const amountFont = settings.amountFontProperty;
 
-  const filledColor = new ColorProperty({
-    widgetId: widgetId,
-    name: "filledColor",
-    value: findSetting(settings, "filledColor", DEFAULT_COLOR_PROPERTY_VALUE),
-    displayName: "",
-    target: ColorPropertyTarget.BACKGROUND,
-  }).calcCss();
+    const filledColor = settings.filledColorProperty.calcCss();
+    let filledTextAlign = "center";
+    switch (settings.filledTextAlign) {
+      case "left":
+        filledTextAlign = "flex-start";
+        break;
+      case "right":
+        filledTextAlign = "flex-end";
+        break;
+    }
+    const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
+      draft.justifyContent = filledTextAlign;
+    });
+    const filledBorderStyle = settings.innerBorderProperty.calcCss();
+    const filledRoundingStyle = settings.innerRoundingProperty.calcCss();
+    const filledPaddingStyle = settings.innerPaddingProperty.calcCss();
+    const filledBoxShadowStyle = settings.innerBoxShadowProperty.calcCss();
+    const filledImageStyle = settings.innerImageProperty.calcCss();
 
-  let filledTextAlign = findSetting(settings, "filledTextAlign", "left");
-  switch (filledTextAlign) {
-    case "left":
-      filledTextAlign = "flex-start";
-      break;
-    case "right":
-      filledTextAlign = "flex-end";
-      break;
-  }
-  const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
-    draft.justifyContent = filledTextAlign;
-  });
+    function calcBarStyle(goal: Goal) {
+      const filment = Math.floor(
+        (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100,
+      );
+      const style: CSSProperties = {
+        width: `${filment < 100 ? filment + "%" : "unset"}`,
+      };
+      const result = {
+        ...style,
+        ...filledBorderStyle,
+        ...filledRoundingStyle,
+        ...filledColor,
+        ...filledPaddingStyle,
+        ...filledBoxShadowStyle,
+        ...filledImageStyle,
+      };
+      return result;
+    }
 
-  const filledBorderStyle = new BorderProperty({
-    widgetId: widgetId,
-    name: "innerBorder",
-    value: findSetting(settings, "innerBorder", DEFAULT_BORDER_PROPERTY_VALUE),
-  }).calcCss();
+    const widgetBorderStyle = settings.borderProperty.calcCss();
+    const widgetBackgroundColorStyle = settings.widgetBackgroundColor.calcCss();
+    const widgetPaddingStyle = settings.paddingProperty.calcCss();
+    const widgetRoundingStyle = settings.roundingProperty.calcCss();
+    const widgetBoxShadowStyle = settings.boxShadowProperty.calcCss();
+    const widgetMarginTopAndBottomStyle =
+      settings.boxShadowProperty.requiredHeight;
+    const widgetMarginLeftAndRightStyle =
+      settings.boxShadowProperty.requiredWidth;
 
-  const filledRoundingStyle = new RoundingProperty({
-    widgetId: widgetId,
-    name: "innerRounding",
-    value: findSetting(
-      settings,
-      "innerRounding",
-      DEFAULT_BORDER_PROPERTY_VALUE
-    ),
-  }).calcCss();
+    const titleBorderStyle = settings.titleBorderProperty.calcCss();
+    const titlePaddingStyle = settings.titlePaddingProperty.calcCss();
+    const titleRoundingStyle = settings.titleRoundingProperty.calcCss();
+    const titleBoxShadowStyle = settings.titleBoxShadowProperty.calcCss();
+    const titleBackgroundColorStyle =
+      settings.titleBackgroundColorProperty.calcCss();
+    const titleBackgroundImageStyle =
+      settings.titleBackgroundImageProperty.calcCss();
 
-  function calcBarStyle(goal: Goal) {
-    const style: CSSProperties = {
-      width: `${
-        (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100
-      }%`,
-    };
-    const result = {
-      ...style,
-      ...filledBorderStyle,
-      ...filledRoundingStyle,
-      ...filledColor,
-    };
-    return result;
-  }
+    const barPadding = settings.barPadding.calcCss();
+    const backgroundImage = settings.backgroundImage.calcCss();
 
-  const widgetBorderStyle = new BorderProperty({
-    widgetId: widgetId,
-    name: "border",
-    value: findSetting(settings, "border", DEFAULT_BORDER_PROPERTY_VALUE),
-  }).calcCss();
-
-  return (
-    <div style={widgetBorderStyle}>
-      {amountFont.createFontImport()}
-      {titleFont.createFontImport()}
-      {goals.map((goal) => (
-        <>
-          <div className={`${classes.goalitem}`}>
-            <div
-              style={textStyle}
-              className={`${
-                classes.goaldescription
-              } ${titleFont.calcClassName()}`}
-            >
-              {goal.briefDescription}
+    return (
+      <div
+        style={{
+          ...widgetBorderStyle,
+          ...widgetBackgroundColorStyle,
+          ...widgetPaddingStyle,
+          ...widgetRoundingStyle,
+          ...widgetBoxShadowStyle,
+          ...backgroundImage,
+          ...{
+            marginTop: `${widgetMarginTopAndBottomStyle}px`,
+            marginBottom: `${widgetMarginTopAndBottomStyle}px`,
+            marginLeft: `${widgetMarginLeftAndRightStyle}px`,
+            marginRight: `${widgetMarginLeftAndRightStyle}px`,
+          },
+          height: `calc(100% - ${widgetMarginTopAndBottomStyle * 2}px)`,
+          width: `calc(100% - ${widgetMarginLeftAndRightStyle * 2}px)`,
+        }}
+      >
+        {amountFont.createFontImport()}
+        {titleFont.createFontImport()}
+        {state.goals.map((goal) => (
+          <>
+            <div className={`${classes.goalitem}`}>
+              <Flex className="full-width" style={titleTextAlign}>
+                <div
+                  style={{
+                    ...titleTextStyle,
+                    ...titleBorderStyle,
+                    ...titlePaddingStyle,
+                    ...titleRoundingStyle,
+                    ...titleBoxShadowStyle,
+                    ...titleBackgroundColorStyle,
+                    ...titleBackgroundImageStyle,
+                  }}
+                  className={`${classes.goaldescription}}`}
+                >
+                  <div className={`${titleFont.calcClassName()}`}>
+                    {goal.briefDescription}
+                  </div>
+                </div>
+              </Flex>
+              <div
+                style={{
+                  ...{ display: "grid" },
+                  ...barPadding,
+                }}
+              >
+                <div
+                  style={{
+                    ...backgroundColor,
+                    ...progressBarBorderStyle,
+                    ...outerRoundingStyle,
+                    ...outerBoxShadowStyle,
+                    ...outerImageStyle,
+                  }}
+                  className={`${classes.goalprogressbar}`}
+                ></div>
+                <div
+                  style={calcBarStyle(goal)}
+                  className={`${classes.goalfilled}`}
+                ></div>
+                <div className={`${classes.goalunfilled}`}></div>
+                <div
+                  style={filledTextStyle}
+                  className={`${
+                    classes.goalamount
+                  } ${amountFont.calcClassName()}`}
+                >
+                  {labelTemplate
+                    .replaceAll(
+                      "<collected>",
+                      `${goal.accumulatedAmount.major}`,
+                    )
+                    .replaceAll("<required>", `${goal.requiredAmount.major}`)
+                    .replaceAll("<currency>", "RUB")
+                    .replaceAll(
+                      "<proportion>",
+                      `${Math.trunc(
+                        (goal.accumulatedAmount.major /
+                          goal.requiredAmount.major) *
+                          100,
+                      )}`,
+                    )}
+                </div>
+              </div>
             </div>
-            <div
-              style={progressbarStyle}
-              className={`${classes.goalprogressbar}`}
-            ></div>
-            <div
-              style={calcBarStyle(goal)}
-              className={`${classes.goalfilled}`}
-            ></div>
-            <div
-              className={`${classes.goalunfilled}`}
-            ></div>
-            <div
-              style={filledTextStyle}
-              className={`${classes.goalamount} ${amountFont.calcClassName()}`}
-            >
-              {labelTemplate
-                .replaceAll("<collected>", goal.accumulatedAmount.major)
-                .replaceAll("<required>", goal.requiredAmount.major)
-                .replaceAll("<currency>", "RUB")
-                .replaceAll(
-                  "<proportion>",
-                  Math.trunc(
-                    (goal.accumulatedAmount.major / goal.requiredAmount.major) *
-                      100,
-                  ),
-                )}
-            </div>
-          </div>
-        </>
-      ))}
-    </div>
-  );
-}
+          </>
+        ))}
+      </div>
+    );
+  },
+);

@@ -1,4 +1,3 @@
-import React from "react";
 import WidgetWrapper from "../../WidgetWrapper";
 import DonatonWidget from "./DonatonWidget";
 import { useLoaderData } from "react-router";

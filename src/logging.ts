@@ -15,7 +15,7 @@ function valueOf(level: string):number {
   }
 }
 
-const send = async function (level: string, logEvent) {
+const send = async function (level: string, logEvent: any) {
   if (valueOf(level) > valueOf(loglevel)) {
     return;
   }

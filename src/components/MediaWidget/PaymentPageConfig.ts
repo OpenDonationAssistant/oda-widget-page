@@ -1,8 +1,9 @@
 import axios from "axios";
-import { log } from "../../logging";
+import { log as parent } from "../../logging";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 
 export class PaymentPageConfig {
+  private _log = parent.child({ module: "PaymentPageConfig" });
   config: any = {};
   email: string = "";
   fio: string = "";
@@ -11,7 +12,7 @@ export class PaymentPageConfig {
   requestsEnabled = true;
   requestsDisabledPermanently = false;
   requestCost = 100;
-  private _minimalAmount: Number = 40;
+  private _minimalAmount: number = 40;
   private _goals: Goal[] = [];
   private _recipientId: string = "";
   private _payButtonText: string = "";
@@ -19,7 +20,7 @@ export class PaymentPageConfig {
   private _tooltip: string = "";
 
   constructor(recipientId: string) {
-    log.debug("Loading PaymentPageConfig");
+    this._log.debug("Loading PaymentPageConfig");
     this._recipientId = recipientId;
     axios
       .get(
@@ -43,11 +44,14 @@ export class PaymentPageConfig {
         this._tooltip = json.value["tooltip"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
+        this._log.debug({ config: this}, "PaymentPageConfig loaded");
       });
   }
 
   sendMediaRequestsEnabledState() {
-    log.debug(`send media-requests-enabled state: ${this.requestsEnabled}`);
+    this._log.debug(
+      `send media-requests-enabled state: ${this.requestsEnabled}`,
+    );
     document.dispatchEvent(
       new CustomEvent("toggleMediaRequests", {
         detail: this.requestsEnabled,
@@ -56,7 +60,9 @@ export class PaymentPageConfig {
   }
 
   sendEventPaymentPageUpdated() {
-    log.debug(`send media-requests-enabled state: ${this.requestsEnabled}`);
+    this._log.debug(
+      `send media-requests-enabled state: ${this.requestsEnabled}`,
+    );
     document.dispatchEvent(new CustomEvent("paymentPageUpdated"));
   }
 
@@ -120,7 +126,7 @@ export class PaymentPageConfig {
   public set goals(value: Goal[]) {
     this._goals = value;
   }
-  public get minimalAmount() {
+  public get minimalAmount(): number {
     return this._minimalAmount;
   }
   public set minimalAmount(value) {
@@ -149,8 +155,13 @@ export class PaymentPageConfig {
     this.config.value["tooltip"] = value;
     this.sendEventPaymentPageUpdated();
   }
+
   public get tooltip(): string {
     return this._tooltip;
+  }
+
+  public get recipientId(): string {
+    return this._recipientId;
   }
 
   async reloadConfig(): Promise<void> {

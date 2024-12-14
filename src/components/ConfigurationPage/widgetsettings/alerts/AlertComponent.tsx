@@ -1,13 +1,10 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import {
   Alert,
-  FixedDonationAmountTrigger,
-  RangeDonationAmountTrigger,
-  UnknownTrigger,
 } from "./Alerts";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { Tabs as AntTabs, InputNumber, Select, Slider } from "antd";
+import { Tabs as AntTabs, Flex, Select, Slider } from "antd";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import { observer } from "mobx-react-lite";
 import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
@@ -18,6 +15,8 @@ import { log } from "../../../../logging";
 import { toJS } from "mobx";
 import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
 import BooleanPropertyInput from "../../components/BooleanPropertyInput";
+import ImageTab from "./ImageTab";
+import GeneralTab from "./GeneralTab";
 
 function playAudio(url: string | null) {
   if (!url) {
@@ -51,103 +50,6 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return name;
   });
 };
-
-const GeneralTab = observer(({ alert }: { alert: Alert }) => {
-  log.debug({ alerts: alert }, "render general tab");
-  const [amount, setAmount] = useState<number>(() => {
-    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      return alert.triggers.at(0).amount;
-    }
-    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      return alert.triggers.at(0).min;
-    }
-    return 0;
-  });
-  const updateAmount = (amount: number) => {
-    log.debug({ triggers: alert.triggers }, "set amount");
-    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      alert.triggers.at(0).amount = amount;
-    }
-    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      alert.triggers.at(0).min = amount;
-    }
-    setAmount(amount);
-  };
-
-  return (
-    <>
-      <div className="settings-item">
-        <LabeledContainer displayName="tab-alert-trigger">
-          <Select
-            value={alert.triggers.at(0)?.type}
-            className="full-width"
-            onChange={(e) => {
-              switch (e) {
-                case "fixed-donation-amount":
-                  alert.triggers.splice(
-                    0,
-                    1,
-                    new FixedDonationAmountTrigger({ amount: amount }),
-                  );
-                  break;
-                case "at-least-donation-amount":
-                  alert.triggers.splice(
-                    0,
-                    1,
-                    new RangeDonationAmountTrigger({ min: amount, max: null }),
-                  );
-                  break;
-                default:
-                  alert.triggers.splice(0, 1, new UnknownTrigger());
-                  break;
-              }
-            }}
-            options={[
-              {
-                value: "fixed-donation-amount",
-                label: <Trans i18nKey={"Сумма доната равна"} />,
-              },
-              {
-                value: "at-least-donation-amount",
-                label: <Trans i18nKey={"Сумма доната больше"} />,
-              },
-              {
-                value: "never",
-                label: <Trans i18nKey={"Никогда"} />,
-              },
-            ]}
-          />
-        </LabeledContainer>
-      </div>
-      {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
-        <LabeledContainer displayName="">
-          <InputNumber
-            value={alert.triggers.at(0)?.amount}
-            onChange={(newAmount) => {
-              if (!newAmount) {
-                return;
-              }
-              updateAmount(newAmount);
-            }}
-          />
-        </LabeledContainer>
-      )}
-      {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
-        <LabeledContainer displayName="">
-          <InputNumber
-            value={alert.triggers.at(0)?.min}
-            onChange={(newAmount) => {
-              if (!newAmount) {
-                return;
-              }
-              updateAmount(newAmount);
-            }}
-          />
-        </LabeledContainer>
-      )}
-    </>
-  );
-});
 
 const MessageTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -228,116 +130,6 @@ const HeaderTab = observer(({ alert }: { alert: Alert }) => {
   );
 });
 
-const ImageTab = observer(({ alert }: { alert: Alert }) => {
-  const { t } = useTranslation();
-  return (
-    <>
-      <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-image-width">
-          <InputNumber
-            className="full-width"
-            value={alert.property("imageWidth")}
-            onChange={(newValue) => {
-              alert.update("imageWidth", newValue);
-            }}
-          />
-        </LabeledContainer>
-      </div>
-      <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-image-height">
-          <InputNumber
-            className="full-width"
-            value={alert.property("imageHeight")}
-            onChange={(newValue) => {
-              alert.update("imageHeight", newValue);
-            }}
-          />
-        </LabeledContainer>
-      </div>
-      <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-image-show-time">
-          <InputNumber
-            className="full-width"
-            value={alert.property("imageShowTime")}
-            onChange={(newValue) => {
-              alert.update("imageShowTime", newValue);
-            }}
-          />
-        </LabeledContainer>
-      </div>
-      <div className="settings-item">
-        <LabeledContainer displayName="alert-appearance-label">
-          <Select
-            className="full-width"
-            value={alert.property("appearance")}
-            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
-              (option) => {
-                return { label: t(option), value: option };
-              },
-            )}
-            onChange={(selected) => {
-              alert.update("appearance", selected);
-            }}
-          />
-        </LabeledContainer>
-      </div>
-      <div className="upload-button-container">
-        {!alert.video && !alert.image && (
-          <div
-            style={{
-              marginBottom: "10px",
-              marginTop: "10px",
-              marginRight: "10px",
-            }}
-          >
-            <label className="oda-btn-default" style={{ marginRight: "10px" }}>
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    alert.video = name;
-                  })
-                }
-              />
-              {t("button-upload-video")}
-            </label>
-            <label className="oda-btn-default">
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    alert.image = name;
-                  })
-                }
-              />
-              {t("button-upload-image")}
-            </label>
-          </div>
-        )}
-        {(alert.video || alert.image) && (
-          <div
-            style={{
-              marginTop: "10px",
-              marginBottom: "10px",
-              marginRight: "40px",
-            }}
-          >
-            <label
-              className="oda-btn-default"
-              onClick={() => {
-                alert.image = null;
-                alert.video = null;
-              }}
-            >
-              {t("button-delete")}
-            </label>
-          </div>
-        )}
-      </div>
-    </>
-  );
-});
-
 const SoundTab = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
   return (
@@ -388,7 +180,10 @@ const SoundTab = observer(({ alert }: { alert: Alert }) => {
                   handleFileUpload(e).then((name) => (alert.audio = name))
                 }
               />
-              {t("button-upload-audio")}
+              <Flex justify="center" align="center" gap={3}>
+                <span className="material-symbols-sharp">upload</span>
+                <div>{t("button-upload-audio")}</div>
+              </Flex>
             </label>
           </div>
         )}

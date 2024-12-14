@@ -13,10 +13,12 @@
   "button-delete": "Delete",
   "button-logout": "Logout",
   "button-edit": "Edit",
+  "button-apply": "Apply",
   "button-settings": "Settings",
   "button-add-goal": "Add goal",
   "button-add-alert": "Add alert",
   "button-add-historyitem": "Add donation",
+  "button-upload": "Upload",
   "button-upload-video": "Upload video",
   "button-upload-audio": "Upload audio",
   "button-upload-image": "Upload image",
@@ -229,5 +231,8 @@
   "tab-style": "Style",
   "tab-requests": "Requests",
   "Inset": "Inset",
-  "Outset": "Outset"
+  "Outset": "Outset",
+  "background-image": "Background Image",
+  "tab-donationgoal-fulfillment": "Fulfillment",
+  "widget-alert-limit-image-size":"Limit image size"
 }

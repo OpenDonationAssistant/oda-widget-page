@@ -61,27 +61,3 @@ export const APPEARANCE_ANIMATIONS = [
   "slideInRight",
   "slideInUp",
 ];
-
-export const PaymentAlertsWidgetSettingsComponent = observer(() => {
-  const { t } = useTranslation();
-
-  function addDefaultAlert(): void {
-    settings.addAlert();
-  }
-
-  return (
-    <AntTabs
-      type="card"
-      items={[
-        {
-          key: "1",
-          label: t("tab-alert-alerts"),
-          children: (
-            <>
-            </>
-          ),
-        },
-      ]}
-    />
-  );
-});

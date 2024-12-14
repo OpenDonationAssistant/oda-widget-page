@@ -51,6 +51,7 @@ export const AnimatedFontComponent = observer(
           label={t(property.label)}
           buttonLabel={"button-settings"}
           modalTitle="widget-font-settings"
+          icon="settings"
         >
           <div className={`${classes.democontainer}`}>
             {property.createFontImport()}

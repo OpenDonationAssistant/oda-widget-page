@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import Payments from "./components/Payments/Payments";
 import PlayerInfo from "./components/PlayerInfo/PlayerInfo";
@@ -26,10 +25,8 @@ import axios from "axios";
 import Login from "./components/Login/Login";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
-import PlayerPopup from "./components/PlayerPopup/PlayerPopup";
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
-import DonationGoal from "./components/DonationGoal/DonationGoal";
 import HistoryPage from "./pages/History/HistoryPage";
 import { ConfigProvider, Flex, Layout, theme } from "antd";
 import "./i18n";
@@ -40,10 +37,10 @@ import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 import NewsComponent from "./components/Payments/NewsComponent";
 import DonatonPage from "./pages/Donaton/DonatonPage";
-import DonationTimer from "./pages/DonationTimer/DonationTimer";
 import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageConfigComponent";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
+import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
 
 async function widgetSettingsLoader({
   params,
@@ -217,11 +214,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/donationgoal/:widgetId",
-    element: (
-      <WidgetWrapper>
-        <DonationGoal />
-      </WidgetWrapper>
-    ),
+    element: <DonationGoalPage />,
     loader: widgetSettingsLoader,
   },
   {

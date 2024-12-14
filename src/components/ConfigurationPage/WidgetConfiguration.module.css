@@ -8,11 +8,15 @@
   border: var(--oda-main-border);
   border-radius: 8px;
   margin-bottom: 10px;
-  padding: 80px;
   background: url(https://api.oda.digital/public/commonback.jpg);
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.spacearound{
+  padding: 80px;
 }
 
 .helpbutton {
@@ -20,6 +24,8 @@
   border: none;
   color: var(--oda-secondary-text-color);
   height: 100%;
+  line-height: 28px;
+  padding-right: 0px;
 
   & span {
     vertical-align: bottom;

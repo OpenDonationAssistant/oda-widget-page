@@ -4,9 +4,8 @@ import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
-import { reaction } from "mobx";
-import { log } from "../../../../logging";
 import { AlertComponent } from "./AlertComponent";
+import { Flex } from "antd";
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
@@ -19,7 +18,10 @@ const PaymentAlertsPropertyComponent = observer(
             className="oda-btn-default"
             onClick={() => property.addAlert()}
           >
-            {t("button-add-alert")}
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">add</span>
+              <div>{t("button-add-alert")}</div>
+            </Flex>
           </button>
         </div>
         <div className={`${classes.preview}`}>

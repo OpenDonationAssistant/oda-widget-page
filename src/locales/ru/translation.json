@@ -22,10 +22,12 @@
   "button-delete": "Удалить",
   "button-logout": "Выйти",
   "button-edit": "Редактировать",
+  "button-apply": "Применить",
   "button-settings": "Настройки",
   "button-add-goal": "Добавить цель",
   "button-add-alert": "Добавить оповещение",
   "button-add-historyitem": "Добавить донат",
+  "button-upload": "Загрузить",
   "button-upload-video": "Загрузить видео",
   "button-upload-audio": "Загрузить аудио",
   "button-upload-image": "Загрузить изображение",
@@ -230,5 +232,9 @@
   "tab-style": "Стиль",
   "tab-requests": "Реквесты",
   "Inset": "Внутрь",
-  "Outset": "Наружу"
+  "Outset": "Наружу",
+  "background-image": "Фоновое изображение",
+  "tab-donationgoal-fulfillment": "Заполнение",
+  "widget-alert-limit-image-size":"Ограничить размер изображения"
+
 }

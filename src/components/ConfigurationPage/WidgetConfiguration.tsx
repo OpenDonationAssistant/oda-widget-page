@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 
 import "./css/Widget.css";
 import "./css/WidgetList.css";
@@ -37,6 +37,9 @@ import {
 } from "./widgetsettings/PlayerPopupWidgetSettings";
 import PlayerPopup from "../PlayerPopup/PlayerPopup";
 import { DemoPlayerStore } from "../PlayerPopup/DemoPlayer";
+import { DonationGoal } from "../DonationGoal/DonationGoal";
+import { DemoDonationGoalState } from "../DonationGoal/DemoDonationGoalState";
+import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -64,7 +67,10 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
               });
             }}
           >
-            <div className="blinker">{t("button-save")}</div>
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">save</span>
+              <div className="blinker">{t("button-save")}</div>
+            </Flex>
           </button>
           <button
             className="widget-button widget-button-decline"
@@ -72,7 +78,10 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
               widget.reload();
             }}
           >
-            <div className="blinker">{t("button-cancel")}</div>
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">cancel</span>
+              <div className="blinker">{t("button-cancel")}</div>
+            </Flex>
           </button>
         </>
       )}
@@ -208,6 +217,20 @@ function runReel(id: string, conf: any, config: AbstractWidgetSettings) {
   });
 }
 
+function onDragEnd(result: any) {
+  if (!result.destination) {
+    return;
+  }
+  const { destination, source } = result;
+  if (
+    destination.droppableId === source.droppableId &&
+    destination.index === source.index
+  ) {
+    return;
+  }
+  // playlist.moveSong(source.index, destination.index);
+}
+
 export default function WidgetConfiguration({
   widget,
   open,
@@ -227,7 +250,10 @@ export default function WidgetConfiguration({
             onClick={() => runReel(widget.id, conf, widget.config)}
             className="oda-btn-default"
           >
-            {t("button-spin")}
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">poker_chip</span>
+              <div>{t("button-spin")}</div>
+            </Flex>
           </Button>
         )}
         {widget.type === "payment-alerts" && <TestAlertButton config={conf} />}
@@ -238,25 +264,41 @@ export default function WidgetConfiguration({
           id={widget.id}
           onClose={() => setShowUrlModal(false)}
         />
+        <HelpButton widget={widget} />
         <Dropdown
           trigger={["click"]}
           menu={{
             items: [
               {
                 key: "copy-url",
-                label: t("button-copy-url"),
+                label: (
+                  <Flex gap={5}>
+                    <span className="material-symbols-sharp">link</span>
+                    <span>{t("button-copy-url")}</span>
+                  </Flex>
+                ),
                 onClick: () => setShowUrlModal(true),
               },
               {
                 key: "rename",
-                label: t("button-rename"),
+                label: (
+                  <Flex gap={5}>
+                    <span className="material-symbols-sharp">stylus</span>
+                    <span>{t("button-rename")}</span>
+                  </Flex>
+                ),
                 onClick: () => {
                   renameModalState.current.show();
                 },
               },
               {
                 key: "delete",
-                label: t("button-delete"),
+                label: (
+                  <Flex gap={5}>
+                    <span className="material-symbols-sharp">delete</span>
+                    <span>{t("button-delete")}</span>
+                  </Flex>
+                ),
                 onClick: () => widget.delete(),
               },
             ],
@@ -266,11 +308,11 @@ export default function WidgetConfiguration({
             <span className="material-symbols-sharp">more_vert</span>
           </button>
         </Dropdown>
-        <HelpButton widget={widget} />
       </div>
       <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
         {(widget.type === "donaton" ||
           widget.type === "donation-timer" ||
+          widget.type === "donationgoal" ||
           widget.type === "player-popup") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
@@ -280,27 +322,35 @@ export default function WidgetConfiguration({
               axis="both"
               minConstraints={[650, 100]}
             >
-              {widget.type === "donation-timer" && (
-                <DonationTimerWidgetSettingsContext.Provider
-                  value={widget.config as DonationTimerWidgetSettings}
-                >
-                  <DonationTimer />
-                </DonationTimerWidgetSettingsContext.Provider>
-              )}
-              {widget.type === "donaton" && (
-                <DonatonWidgetSettingsContext.Provider
-                  value={widget.config as DonatonWidgetSettings}
-                >
-                  <DonatonWidget />
-                </DonatonWidgetSettingsContext.Provider>
-              )}
-              {widget.type === "player-popup" && (
-                <PlayerPopupWidgetSettingsContext.Provider
-                  value={widget.config as PlayerPopupWidgetSettings}
-                >
-                  <PlayerPopup player={new DemoPlayerStore()} />
-                </PlayerPopupWidgetSettingsContext.Provider>
-              )}
+              <div>
+                {widget.type === "donation-timer" && (
+                  <DonationTimerWidgetSettingsContext.Provider
+                    value={widget.config as DonationTimerWidgetSettings}
+                  >
+                    <DonationTimer />
+                  </DonationTimerWidgetSettingsContext.Provider>
+                )}
+                {widget.type === "donaton" && (
+                  <DonatonWidgetSettingsContext.Provider
+                    value={widget.config as DonatonWidgetSettings}
+                  >
+                    <DonatonWidget />
+                  </DonatonWidgetSettingsContext.Provider>
+                )}
+                {widget.type === "player-popup" && (
+                  <PlayerPopupWidgetSettingsContext.Provider
+                    value={widget.config as PlayerPopupWidgetSettings}
+                  >
+                    <PlayerPopup player={new DemoPlayerStore()} />
+                  </PlayerPopupWidgetSettingsContext.Provider>
+                )}
+                {widget.type === "donationgoal" && (
+                  <DonationGoal
+                    settings={widget.config as DonationGoalWidgetSettings}
+                    state={new DemoDonationGoalState()}
+                  />
+                )}
+              </div>
             </ResizableBox>
           </Flex>
         )}

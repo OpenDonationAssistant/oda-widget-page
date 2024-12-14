@@ -21,8 +21,9 @@ const DonationGoalPropertyComponent = ({
   return (
     <ModalButton
       label={displayName}
-      buttonLabel="button-settings"
+      buttonLabel="button-edit"
       modalTitle={displayName}
+      icon="edit"
     >
       <Flex
         justify="space-between"

@@ -1,0 +1,28 @@
+.preview {
+  border: var(--oda-main-border);
+  border-radius: 8px;
+}
+
+.size {
+  min-width: 100px;
+}
+
+.deletebutton {
+  border: none!important;
+  background-color: unset!important;
+  padding: 0px!important;
+}
+
+.upload{
+  color: var(--oda-secondary-text-color);
+  width: 200px;
+  height: 120px;
+  line-height: 106px;
+  border: 3px dashed var(--oda-control-background-color);
+  text-align: center;
+  & [class*="material-symbols-sharp"] {
+    vertical-align: middle;
+    margin-bottom: 3px;
+    margin-right: 5px;
+  }
+}

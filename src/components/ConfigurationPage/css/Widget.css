@@ -10,7 +10,7 @@
   display: flex;
   border-radius: 4px;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   padding-left: 15px;
   padding-right: 15px;
   user-select: none;
