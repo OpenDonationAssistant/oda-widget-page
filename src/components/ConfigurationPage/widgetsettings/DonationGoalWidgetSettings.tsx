@@ -4,6 +4,7 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import {
   ColorProperty,
   ColorPropertyTarget,
+  GRADIENT_TYPE,
 } from "../widgetproperties/ColorProperty";
 
 import {
@@ -48,6 +49,13 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new ColorProperty({
           name: "widgetBackgroundColor",
           displayName: "background-color",
+          value: {
+            gradient: false,
+            angle: 0,
+            repeating: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            colors: [{ color: "#FFFFFF00" }],
+          },
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new BackgroundImageProperty({
@@ -102,6 +110,13 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "titleBackgroundColor",
           displayName: "background-color",
           target: ColorPropertyTarget.BACKGROUND,
+          value: {
+            gradient: false,
+            angle: 0,
+            repeating: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            colors: [{ color: "#FFFFFF00" }],
+          },
         }),
         new BoxShadowProperty({
           name: "titleBoxShadow",
@@ -163,6 +178,13 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "filledColor",
           displayName: "widget-donationgoal-filled-color",
           target: ColorPropertyTarget.BACKGROUND,
+          value: {
+            gradient: false,
+            angle: 0,
+            repeating: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            colors: [{ color: "#00FF00" }],
+          },
         }),
         new BorderProperty({
           name: "innerBorder",
