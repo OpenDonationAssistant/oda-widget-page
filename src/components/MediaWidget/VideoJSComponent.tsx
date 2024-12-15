@@ -114,7 +114,7 @@ export default function VideoJSComponent({
       });
       sendAlert();
       setPaused(true);
-      playerState.current = PLAYER_STATE.PAUSED;
+      playerState.current = PLAYER_STATE.SHOULD_BE_STOPED;
     }
   }
 
@@ -126,7 +126,14 @@ export default function VideoJSComponent({
       },
       `unfreezing player`,
     );
+    if (playerState.current === PLAYER_STATE.PAUSED) {
+      log.debug(`cancel unfreezing because of not-stopped player`);
+      return;
+    }
     log.debug(`calling player.play()`);
+    if (playerState.current === PLAYER_STATE.SHOULD_BE_STOPED) {
+      playerState.current = PLAYER_STATE.PLAYING;
+    }
     player && player.play();
     if (isRemote) {
       publish(conf.topic.remoteplayer, {
@@ -179,7 +186,9 @@ export default function VideoJSComponent({
     });
     player.on("paused", () => {
       log.debug("pause player");
-      playerState.current = PLAYER_STATE.PAUSED;
+      if (playerState.current !== PLAYER_STATE.SHOULD_BE_STOPED) {
+        playerState.current = PLAYER_STATE.PAUSED;
+      }
       setPaused(true);
       sendAlert();
     });
@@ -310,7 +319,7 @@ export default function VideoJSComponent({
     options.autoplay = playerState.current !== PLAYER_STATE.SHOULD_BE_STOPED;
     log.debug({ options: options }, "creating player with  options");
 
-    const player = videojs(videoElement, options, function(){
+    const player = videojs(videoElement, options, function () {
       this.volume(volume / 100);
     });
     log.debug({ options: options }, "creating player with  options");
@@ -318,7 +327,6 @@ export default function VideoJSComponent({
       log.debug("start playing");
       setPaused(false);
       if (playerState.current === PLAYER_STATE.SHOULD_BE_STOPED) {
-        playerState.current = PLAYER_STATE.PAUSED;
         player.pause();
         return;
       }
@@ -330,7 +338,9 @@ export default function VideoJSComponent({
     player.on("pause", () => {
       log.debug("pause player");
       setPaused(true);
-      playerState.current = PLAYER_STATE.PAUSED;
+      if (playerState.current !== PLAYER_STATE.SHOULD_BE_STOPED) {
+        playerState.current = PLAYER_STATE.PAUSED;
+      }
       sendAlert();
     });
     player.on("ended", () => {
@@ -399,6 +409,9 @@ export default function VideoJSComponent({
                   className="btn btn-outline-light"
                   disabled={song == null}
                   onClick={() => {
+                    if (playerState.current === PLAYER_STATE.SHOULD_BE_STOPED) {
+                      playerState.current = PLAYER_STATE.PAUSED;
+                    }
                     if (isRemote) {
                       publish(conf.topic.remoteplayer, {
                         command: "resume",
