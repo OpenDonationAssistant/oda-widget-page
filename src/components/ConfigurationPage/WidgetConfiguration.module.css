@@ -1,11 +1,10 @@
 .preview {
   background: var(--oda-main-background-color);
-  padding-top:10px;
   padding-bottom:10px;
 }
 
 .resizable {
-  border: var(--oda-main-border);
+  box-shadow: inset 0 0 12px 6px rgba(0, 0, 0, 0.8), 0 0 12px 6px rgba(0, 0, 0, 0.8);
   border-radius: 8px;
   margin-bottom: 10px;
   background: url(https://api.oda.digital/public/commonback.jpg);
@@ -26,6 +25,7 @@
   height: 100%;
   line-height: 28px;
   padding-right: 0px;
+  margin-left: 10px;
 
   & span {
     vertical-align: bottom;

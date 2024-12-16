@@ -146,7 +146,10 @@ export const DonationGoal = observer(
                     }}
                     className={`${classes.goaldescription}}`}
                   >
-                    <div className={`${titleFont.calcClassName()}`}>
+                    <div
+                      style={{ zIndex: 2, opacity: 1 }}
+                      className={`${titleFont.calcClassName()}`}
+                    >
                       {goal.briefDescription}
                     </div>
                   </div>

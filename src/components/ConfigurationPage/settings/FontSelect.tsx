@@ -4,6 +4,7 @@ export const Fonts = [
   "Alice",
   "Play",
   "Roboto",
+  "Fascinate",
   "Ruslan Display",
   "Cuprum",
   "Anonymous Pro",

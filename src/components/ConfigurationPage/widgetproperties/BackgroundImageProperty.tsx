@@ -84,6 +84,7 @@ const ImagePropertyComponent = observer(
                       { label: "original", value: "auto" },
                       { label: "cover", value: "cover" },
                       { label: "contain", value: "contain" },
+                      { label: "fit", value: "100% 100%" },
                     ]}
                     onChange={(value) => {
                       property.value = { ...property.value, size: value };

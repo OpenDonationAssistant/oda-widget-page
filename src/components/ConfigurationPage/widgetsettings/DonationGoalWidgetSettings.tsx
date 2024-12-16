@@ -1,3 +1,4 @@
+// TODO: позиционирование контента вертикально чтобы поместиться в рамку
 import { DonationGoalProperty } from "../widgetproperties/DonationGoalProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
