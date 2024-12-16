@@ -5161,7 +5161,7 @@ export class PresetStore {
             {
               name: "outerImage",
               value: {
-                url: "https://api.oda.digital/assets/bwgarland1.png",
+                url: "https://api.oda.digital/assets/bw_garland1.png",
                 size: "cover",
                 repeat: false,
                 opacity: 0.5,
