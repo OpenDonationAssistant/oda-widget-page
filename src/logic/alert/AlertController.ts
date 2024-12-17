@@ -101,36 +101,36 @@ export class AlertController {
   }
 
   async handleSettings() {
-    const alerts = this.settings.config.properties
-    .find(it => it.name === "alerts");
+    const alerts = this.settings.config.properties.find(
+      (it) => it.name === "alerts",
+    );
     log.debug({ alerts: alerts }, "alerts properties");
-    const sorted =  alerts.value
-      .sort((a, b) => {
-        const first = a.triggers.at(0);
-        let firstAmount: number|null = null;
-        if (first.type === "fixed-donation-amount") {
-          firstAmount = first.amount;
-        }
-        if (first.type === "at-least-donation-amount") {
-          firstAmount = first.min;
-        }
-        const second = b.triggers.at(0);
-        let secondAmount: number|null = null;
-        if (second.type === "fixed-donation-amount") {
-          secondAmount = second.amount;
-        }
-        if (second.type === "at-least-donation-amount") {
-          secondAmount = second.min;
-        }
-        if (firstAmount === null || secondAmount === null) {
-          return 0;
-        }
-        return firstAmount - secondAmount;
-      });
+    const sorted = alerts.value.sort((a, b) => {
+      const first = a.triggers.at(0);
+      let firstAmount: number | null = null;
+      if (first.type === "fixed-donation-amount") {
+        firstAmount = first.amount;
+      }
+      if (first.type === "at-least-donation-amount") {
+        firstAmount = first.min;
+      }
+      const second = b.triggers.at(0);
+      let secondAmount: number | null = null;
+      if (second.type === "fixed-donation-amount") {
+        secondAmount = second.amount;
+      }
+      if (second.type === "at-least-donation-amount") {
+        secondAmount = second.min;
+      }
+      if (firstAmount === null || secondAmount === null) {
+        return 0;
+      }
+      return firstAmount - secondAmount;
+    });
     this.sortedAlerts = sorted;
     log.debug(`loading audio`);
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
-    log.debug({ alert: this.sortedAlerts}, "sorted alerts");
+    log.debug({ alert: this.sortedAlerts }, "sorted alerts");
     this.preloadImages();
   }
 
@@ -194,7 +194,7 @@ export class AlertController {
     this.showing = true;
     this.ackFunction = ackFunction;
 
-    this.renderImage(alert);
+    this.renderImage(alert, data);
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
     if (alert.video) {
@@ -206,47 +206,43 @@ export class AlertController {
 
   playAudio(alert: any, data: any, ackFunction: Function) {
     this.voiceController?.playAudio(alert, () => {
-      this.voiceController?.pronounceTitle(
-        alert,
-        data,
-        () => {
-          const voiceForMessage = this.findSetting(
+      this.voiceController?.pronounceTitle(alert, data, () => {
+        const voiceForMessage = this.findSetting(
+          alert.properties,
+          "enableVoiceForMessage",
+          true,
+        );
+        if (!voiceForMessage) {
+          // TODO: make common function
+          this.clear();
+          this.resumePlayer();
+          ackFunction();
+          this.sendEndNotification();
+          log.debug("skipping message playing");
+          return;
+        }
+        this.voiceController?.pronounceMessage(alert, data, () => {
+          const showTime = this.findSetting(
             alert.properties,
-            "enableVoiceForMessage",
-            true,
+            "imageShowTime",
+            null,
           );
-          if (!voiceForMessage) {
-            // TODO: make common function
-            this.clear();
-            this.resumePlayer();
-            ackFunction();
-            this.sendEndNotification();
-            log.debug("skipping message playing");
-            return;
-          }
-          this.voiceController?.pronounceMessage(alert, data, () => {
-            const showTime = this.findSetting(
-              alert.properties,
-              "imageShowTime",
-              null,
-            );
-            log.debug("clearing alert");
-            if (showTime) {
-              setTimeout(() => {
-                this.clear();
-                this.resumePlayer();
-                ackFunction();
-                this.sendEndNotification();
-              }, showTime * 1000);
-            } else {
+          log.debug("clearing alert");
+          if (showTime) {
+            setTimeout(() => {
               this.clear();
               this.resumePlayer();
               ackFunction();
               this.sendEndNotification();
-            }
-          });
-        }
-      );
+            }, showTime * 1000);
+          } else {
+            this.clear();
+            this.resumePlayer();
+            ackFunction();
+            this.sendEndNotification();
+          }
+        });
+      });
     });
   }
 
@@ -272,7 +268,7 @@ export class AlertController {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  private renderImage(alert: any) {
+  private renderImage(alert: any, data: any) {
     log.debug(
       `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
     );
@@ -280,13 +276,17 @@ export class AlertController {
     const appearance = this.findSetting(alert.properties, "appearance", "none");
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
-      if (alert.image) {
+      if (data.media?.url) {
+        log.debug({ image: data.media.url }, "rendering generated image");
+        renderer.setImage(
+          `${process.env.REACT_APP_FILE_API_ENDPOINT}/${data.media.url}`,
+        );
+      } else if (alert.image) {
         log.debug({ image: alert.image }, "rendering image");
         renderer.setImage(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
         );
-      }
-      if (alert.video) {
+      } else if (alert.video) {
         log.debug({ video: alert.video }, "rendering video");
         renderer.setVideo(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
