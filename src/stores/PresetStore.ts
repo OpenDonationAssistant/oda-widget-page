@@ -5368,6 +5368,458 @@ export class PresetStore {
             },
           ],
         }),
+        new Preset({
+          name: "donation-goal-10",
+          showcase: "https://api.oda.digital/presets/donation-goal-10.png",
+          properties: [
+            {
+              name: "preset",
+              value: "donation-goal",
+            },
+            {
+              name: "widgetBackgroundColor",
+              value: {
+                angle: 60,
+                colors: [
+                  {
+                    color: "rgba(255, 255, 255, 0)",
+                  },
+                  {
+                    color: "rgb(35, 169, 199)",
+                  },
+                  {
+                    color: "#FFFFFF",
+                  },
+                ],
+                gradient: false,
+                repeating: false,
+                gradientType: 0,
+              },
+            },
+            {
+              name: "backgroundImage",
+              value: {
+                url: null,
+                size: "auto",
+                repeat: false,
+                opacity: 1,
+              },
+            },
+            {
+              name: "border",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                left: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                right: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                isSame: null,
+              },
+            },
+            {
+              name: "padding",
+              value: {
+                top: 30,
+                left: 15,
+                right: 15,
+                bottom: 30,
+                isSame: false,
+              },
+            },
+            {
+              name: "rounding",
+              value: {
+                isSame: true,
+                topLeft: 0,
+                topRight: 0,
+                bottomLeft: 0,
+                bottomRight: 0,
+              },
+            },
+            {
+              name: "boxShadow",
+              value: {
+                shadows: [
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 0,
+                    color: "#000000",
+                    inset: false,
+                    spread: 0,
+                  },
+                ],
+              },
+            },
+            {
+              name: "showTitle",
+              value: true,
+            },
+            {
+              name: "titleBackgroundImage",
+              value: {
+                url: null,
+                size: "auto",
+                repeat: false,
+                opacity: 1,
+              },
+            },
+            {
+              name: "descriptionFont",
+              value: {
+                size: 40,
+                color: {
+                  angle: 0,
+                  colors: [
+                    {
+                      color: "rgba(231, 222, 22, 0)",
+                    },
+                  ],
+                  gradient: false,
+                  repeating: false,
+                  gradientType: 0,
+                },
+                family: "Jura",
+                italic: false,
+                weight: true,
+                outline: {
+                  color: "rgb(239, 233, 233)",
+                  width: 1,
+                  enabled: true,
+                },
+                animation: "none",
+                underline: false,
+                shadowColor: "#000000",
+                shadowWidth: 1,
+                animationType: "entire",
+                shadowOffsetX: 1,
+                shadowOffsetY: 1,
+              },
+            },
+            {
+              name: "titleTextAlign",
+              value: "center",
+            },
+            {
+              name: "titleBorder",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "rgb(236, 5, 5)",
+                  width: 2,
+                },
+                left: {
+                  type: "solid",
+                  color: "rgb(236, 5, 5)",
+                  width: 2,
+                },
+                right: {
+                  type: "solid",
+                  color: "rgb(236, 5, 5)",
+                  width: 2,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "rgb(236, 5, 5)",
+                  width: 2,
+                },
+                isSame: null,
+              },
+            },
+            {
+              name: "titlePadding",
+              value: {
+                top: 5,
+                left: 45,
+                right: 45,
+                bottom: 5,
+                isSame: false,
+              },
+            },
+            {
+              name: "titleRounding",
+              value: {
+                isSame: true,
+                topLeft: 0,
+                topRight: 0,
+                bottomLeft: 0,
+                bottomRight: 0,
+              },
+            },
+            {
+              name: "titleBackgroundColor",
+              value: {
+                angle: 0,
+                colors: [
+                  {
+                    color: "rgba(43, 186, 35, 0)",
+                  },
+                ],
+                gradient: false,
+                repeating: false,
+                gradientType: 0,
+              },
+            },
+            {
+              name: "titleBoxShadow",
+              value: {
+                shadows: [],
+              },
+            },
+            {
+              name: "outerImage",
+              value: {
+                url: null,
+                size: "auto",
+                repeat: false,
+                opacity: 1,
+              },
+            },
+            {
+              name: "showLabel",
+              value: true,
+            },
+            {
+              name: "labelTemplate",
+              value: "<collected>/<required>   ",
+            },
+            {
+              name: "amountFont",
+              value: {
+                size: 30,
+                color: {
+                  angle: 0,
+                  colors: [
+                    {
+                      color: "rgb(255, 255, 255)",
+                    },
+                  ],
+                  gradient: false,
+                  repeating: false,
+                  gradientType: 0,
+                },
+                family: "Montserrat",
+                italic: false,
+                weight: true,
+                outline: {
+                  color: "rgb(5, 156, 183)",
+                  width: 1,
+                  enabled: false,
+                },
+                animation: "none",
+                underline: false,
+                shadowColor: "#000000",
+                shadowWidth: 3,
+                animationType: "entire",
+                shadowOffsetX: 0,
+                shadowOffsetY: 0,
+              },
+            },
+            {
+              name: "filledTextPlacement",
+              value: "center",
+            },
+            {
+              name: "filledTextAlign",
+              value: "center",
+            },
+            {
+              name: "backgroundColor",
+              value: {
+                angle: 0,
+                colors: [
+                  {
+                    color: "rgba(0, 0, 0, 0.2)",
+                  },
+                ],
+                gradient: false,
+                repeating: false,
+                gradientType: 0,
+              },
+            },
+            {
+              name: "outerBorder",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "rgba(0, 0, 0, 0)",
+                  width: 2,
+                },
+                left: {
+                  type: "solid",
+                  color: "rgba(0, 0, 0, 0)",
+                  width: 2,
+                },
+                right: {
+                  type: "solid",
+                  color: "rgba(0, 0, 0, 0)",
+                  width: 2,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "rgba(0, 0, 0, 0)",
+                  width: 2,
+                },
+                isSame: true,
+              },
+            },
+            {
+              name: "outerRounding",
+              value: {
+                isSame: true,
+                topLeft: 15,
+                topRight: 15,
+                bottomLeft: 15,
+                bottomRight: 15,
+              },
+            },
+            {
+              name: "barPadding",
+              value: {
+                top: 10,
+                left: 10,
+                right: 10,
+                bottom: 10,
+                isSame: true,
+              },
+            },
+            {
+              name: "outerBoxShadow",
+              value: {
+                shadows: [
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 10,
+                    color: "rgb(0, 0, 0)",
+                    inset: true,
+                    spread: 10,
+                  },
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 3,
+                    color: "rgba(231, 222, 22, 0)",
+                    inset: false,
+                    spread: 3,
+                  },
+                ],
+              },
+            },
+            {
+              name: "innerImage",
+              value: {
+                url: null,
+                size: "auto",
+                repeat: false,
+                opacity: 1,
+              },
+            },
+            {
+              name: "filledColor",
+              value: {
+                angle: 90,
+                colors: [
+                  {
+                    color: "rgb(0, 163, 125)",
+                  },
+                  {
+                    color: "rgb(196, 189, 40)",
+                  },
+                  {
+                    color: "rgb(36, 150, 12)",
+                  },
+                ],
+                gradient: false,
+                repeating: false,
+                gradientType: 0,
+              },
+            },
+            {
+              name: "innerBorder",
+              value: {
+                top: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                left: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                right: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 0,
+                },
+                bottom: {
+                  type: "solid",
+                  color: "rgb(0, 0, 0)",
+                  width: 2,
+                },
+                isSame: null,
+              },
+            },
+            {
+              name: "innerRounding",
+              value: {
+                isSame: true,
+                topLeft: 12,
+                topRight: 12,
+                bottomLeft: 12,
+                bottomRight: 12,
+              },
+            },
+            {
+              name: "innerPadding",
+              value: {
+                top: 5,
+                left: 5,
+                right: 5,
+                bottom: 5,
+                isSame: true,
+              },
+            },
+            {
+              name: "innerBoxShadow",
+              value: {
+                shadows: [
+                  {
+                    x: 0,
+                    y: 0,
+                    blur: 10,
+                    color: "rgba(0, 255, 237, 0.6)",
+                    inset: true,
+                    spread: 10,
+                  },
+                ],
+              },
+            },
+            {
+              name: "blur",
+              value: {
+                blur: 10,
+                enabled: false,
+              },
+            },
+          ],
+        }),
       ];
     }
     return [];
