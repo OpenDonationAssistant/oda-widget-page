@@ -279,7 +279,7 @@ export class AlertController {
       if (data.media?.url) {
         log.debug({ image: data.media.url }, "rendering generated image");
         renderer.setImage(
-          `${process.env.REACT_APP_FILE_API_ENDPOINT}/${data.media.url}`,
+          `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`,
         );
       } else if (alert.image) {
         log.debug({ image: alert.image }, "rendering image");
