@@ -274,6 +274,14 @@ export class AlertController {
     );
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     const appearance = this.findSetting(alert.properties, "appearance", "none");
+    const delay = (ms: number) => {
+       var start = new Date().getTime();
+       var end = start;
+       while(end < start + ms) {
+         end = new Date().getTime();
+      }
+    }
+
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
       if (data.media?.url) {
@@ -281,6 +289,7 @@ export class AlertController {
         renderer.setImage(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`,
         );
+        delay(5000);
       } else if (alert.image) {
         log.debug({ image: alert.image }, "rendering image");
         renderer.setImage(
