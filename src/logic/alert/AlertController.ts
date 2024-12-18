@@ -12,6 +12,7 @@ export class AlertController {
   private showing: boolean = false;
   private ackFunction: Function | null = null;
   private sortedAlerts: any = [];
+  private wait = 0;
 
   private messageRenderers: IMessageRenderer[] = [];
   private titleRenderers: ITitleRenderer[] = [];
@@ -184,6 +185,9 @@ export class AlertController {
         alert.audio
       }, image: ${alert.image}`,
     );
+    if (data.media?.url) {
+      this.wait = 10000;
+    }
     this.sendStartNotification(data.id);
     this.pausePlayer();
     if (this.showing == true) {
@@ -257,6 +261,10 @@ export class AlertController {
   }
 
   private clear() {
+    if (this.wait > 0) {
+      this.delay(this.wait);
+      this.wait = 0;
+    }
     this.messageRenderers.forEach((renderer) => renderer.setMessage(""));
     this.titleRenderers.forEach((renderer) => renderer.setTitle(""));
     this.alertImageRenderers.forEach((renderer) => renderer.setImage(null));
@@ -268,19 +276,20 @@ export class AlertController {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
+  delay = (ms: number) => {
+    var start = new Date().getTime();
+    var end = start;
+    while (end < start + ms) {
+      end = new Date().getTime();
+    }
+  };
+
   private renderImage(alert: any, data: any) {
     log.debug(
       `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
     );
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     const appearance = this.findSetting(alert.properties, "appearance", "none");
-    const delay = (ms: number) => {
-       var start = new Date().getTime();
-       var end = start;
-       while(end < start + ms) {
-         end = new Date().getTime();
-      }
-    }
 
     this.alertImageRenderers.forEach((renderer) => {
       console.log(alert.properties);
@@ -289,7 +298,6 @@ export class AlertController {
         renderer.setImage(
           `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`,
         );
-        delay(5000);
       } else if (alert.image) {
         log.debug({ image: alert.image }, "rendering image");
         renderer.setImage(
