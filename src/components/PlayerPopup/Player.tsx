@@ -6,6 +6,7 @@ import {
   PlayerAdapterEvent,
   createPlayerAdapter,
 } from "./PlayerAdapter";
+import { PLAYER_STATE } from "../MediaWidget/VideoJSComponent";
 
 export interface AbstractPlayerStore {
   play(song?: Song): void;
@@ -19,6 +20,7 @@ export interface PlayerConfiguration {
 
 export class PlayerStore implements AbstractPlayerStore {
   player: PlayerAdapter | null = null;
+  state: PLAYER_STATE = PLAYER_STATE.INITIALIZING;
   song: Song | null = null;
   widgetId: string;
   conf: PlayerConfiguration;
@@ -65,6 +67,13 @@ export class PlayerStore implements AbstractPlayerStore {
       "create with volume",
     );
     this.player?.volume(this._volume);
+    this.player?.on(PlayerAdapterEvent.PLAY, () => {
+      if (PLAYER_STATE.SHOULD_BE_STOPED === this.state){
+        this.player?.pause();
+        return;
+      }
+      this.state = PLAYER_STATE.PLAYING;
+    })
     this.player?.on(PlayerAdapterEvent.ENDED, () => {
       log.debug(`finished playing song`);
       publish(this.conf.remoteplayerfeedback, {
@@ -93,9 +102,11 @@ export class PlayerStore implements AbstractPlayerStore {
         this.player = null;
       }
       if (json.command === "pause") {
+        this.state = PLAYER_STATE.SHOULD_BE_STOPED;
         this.player?.pause();
       }
       if (json.command === "resume") {
+        this.state = PLAYER_STATE.PLAYING;
         this.player?.play();
       }
       if (json.command === "volume") {

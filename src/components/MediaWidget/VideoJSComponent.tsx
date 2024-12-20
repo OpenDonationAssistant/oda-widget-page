@@ -28,7 +28,7 @@ let options: VideoJsPlayerOptions = {
   youtube: { ytControls: 0, rel: 0 },
 };
 
-enum PLAYER_STATE {
+export enum PLAYER_STATE {
   INITIALIZING,
   PLAYING,
   PAUSED,

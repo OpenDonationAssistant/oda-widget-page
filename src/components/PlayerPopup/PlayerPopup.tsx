@@ -52,7 +52,6 @@ const PlayerPopup = observer(({ player }: { player: AbstractPlayerStore }) => {
       <div id="mediaplayer" className="full-height vjs-big-play-centered" />
     </>
   );
-
 });
 
 export default PlayerPopup;
