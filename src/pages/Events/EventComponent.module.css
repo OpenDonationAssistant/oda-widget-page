@@ -51,6 +51,7 @@
   border-top: var(--oda-main-border);
   background-color: rgb(43, 53, 102);
   box-shadow: 0 -10px 10px 1px rgba(0, 0, 0, 0.5);
+  user-select: text;
 }
 
 .paymentinfo {
@@ -78,6 +79,7 @@
   height: min-content;
 
   button&[class*="oda-btn-default"] {
+    margin-top: 4px;
     border: none;
     box-shadow: none;
     padding-left: 0px;

@@ -20,6 +20,8 @@
 .paymentdatebuttonclosed {
     background: rgb(43, 53, 102);
     border: var(--oda-main-border);
+    border-left: none;
+    border-right: none;
     width: 100%;
     color: white;
     text-align: left;

@@ -1,11 +1,10 @@
-import React from "react";
 import { log } from "../../logging";
-import { findSetting } from "../utils";
+import { findSetting } from "../../components/utils";
 import classes from "./EventComponent.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
-import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { Flex } from "antd";
 
 export default function EventComponent({
@@ -21,20 +20,17 @@ export default function EventComponent({
     useLoaderData() as WidgetData;
 
   const musicFont = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "musicFont",
     value: findSetting(settings, "musicFont", {}),
   });
   const musicStyle = musicFont.calcStyle();
   musicStyle.textDecoration = undefined;
   const messageFont = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "messageFont",
     value: findSetting(settings, "messageFont", {}),
   });
   const messageStyle = messageFont.calcStyle();
   const headerFont = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "nicknameFont",
     value: findSetting(settings, "nicknameFont", {}),
   });

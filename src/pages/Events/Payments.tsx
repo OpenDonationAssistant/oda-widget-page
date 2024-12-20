@@ -1,10 +1,8 @@
-import React from "react";
 import "./Payments.css";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import Menu from "../Menu/Menu";
 import {
   cleanupCommandListener,
   setupCommandListener,
@@ -12,12 +10,13 @@ import {
   unsubscribe,
 } from "../../socket";
 import { log } from "../../logging";
-import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
-import MenuEventButton from "../Menu/MenuEventButton";
 import NewsComponent from "./NewsComponent";
 import EventComponent from "./EventComponent";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./Payments.module.css";
+import Menu from "../../components/Menu/Menu";
+import TestAlertPopup from "../../components/TestAlertPopup/TestAlertPopup";
+import MenuEventButton from "../../components/Menu/MenuEventButton";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",

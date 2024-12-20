@@ -1,5 +1,4 @@
 import ReactDOM from "react-dom/client";
-import Payments from "./components/Payments/Payments";
 import PlayerInfo from "./components/PlayerInfo/PlayerInfo";
 import PaymentAlerts from "./components/PaymentAlerts/PaymentAlerts";
 import MediaWidget from "./components/MediaWidget/MediaWidget";
@@ -35,12 +34,13 @@ import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
 import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
-import NewsComponent from "./components/Payments/NewsComponent";
+import NewsComponent from "./pages/Events/NewsComponent";
 import DonatonPage from "./pages/Donaton/DonatonPage";
 import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageConfigComponent";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
 import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
+import EventsPage from "./pages/Events/EventsPage";
 
 async function widgetSettingsLoader({
   params,
@@ -166,7 +166,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/payments/:widgetId",
-    element: <Payments />,
+    element: <EventsPage />,
     loader: widgetSettingsLoader,
   },
   {
