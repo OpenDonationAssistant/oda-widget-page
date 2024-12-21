@@ -37,7 +37,6 @@ export default function DonatonWidget({}) {
   const titleFont = settings.titleFontProperty;
 
   const style = {
-    ...titleFont.calcStyle(),
     ...settings.borderProperty.calcCss(),
     ...settings.backgroundColorProperty.calcCss(),
     ...settings.paddingProperty.calcCss(),
@@ -53,7 +52,10 @@ export default function DonatonWidget({}) {
       />
       {titleFont.createFontImport()}
       <div id="donatonTimer" className={`${classes.textholder}`} style={style}>
-        <div className={`${titleFont.calcClassName()}`}>
+        <div
+          style={titleFont.calcStyle()}
+          className={`${titleFont.calcClassName()}`}
+        >
           {settings.textProperty.replace("<time>", `${time}`)}
         </div>
       </div>
