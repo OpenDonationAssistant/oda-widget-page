@@ -1,11 +1,11 @@
 import { log } from "../../logging";
-import { findSetting } from "../../components/utils";
 import classes from "./EventComponent.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
-import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { Flex } from "antd";
+import { useContext } from "react";
+import { PaymentsWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
 
 export default function EventComponent({
   active,
@@ -16,24 +16,15 @@ export default function EventComponent({
   data: any;
   attachmentTitles: Map<string, any>;
 }) {
-  const { recipientId, settings, conf, widgetId } =
-    useLoaderData() as WidgetData;
+  const { conf } = useLoaderData() as WidgetData;
+  const settings = useContext(PaymentsWidgetSettingsContext);
 
-  const musicFont = new AnimatedFontProperty({
-    name: "musicFont",
-    value: findSetting(settings, "musicFont", {}),
-  });
+  const musicFont = settings.musicFontProperty;
   const musicStyle = musicFont.calcStyle();
   musicStyle.textDecoration = undefined;
-  const messageFont = new AnimatedFontProperty({
-    name: "messageFont",
-    value: findSetting(settings, "messageFont", {}),
-  });
+  const messageFont = settings.messageFontProperty;
   const messageStyle = messageFont.calcStyle();
-  const headerFont = new AnimatedFontProperty({
-    name: "nicknameFont",
-    value: findSetting(settings, "nicknameFont", {}),
-  });
+  const headerFont = settings.nicknameFontProperty;
   const nicknameStyle = headerFont.calcStyle();
   const amountStyle = headerFont.calcStyle();
   amountStyle.color = undefined;
