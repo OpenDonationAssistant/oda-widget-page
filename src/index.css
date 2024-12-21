@@ -223,6 +223,7 @@ input[type="file"] {
 
 .backgroundClipText{
   background-clip: text;
+  -webkit-background-clip: text;
 }
 
 ::-webkit-scrollbar {

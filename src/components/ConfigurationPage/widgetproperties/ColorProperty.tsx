@@ -74,6 +74,7 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
     if (this._target === ColorPropertyTarget.TEXT) {
       if (setting.gradient) {
         style.color = "transparent";
+        style.WebkitTextFillColor = "transparent";
         style.backgroundImage = this.calcRowColorValue();
       } else {
         style.color = this.calcRowColorValue();
