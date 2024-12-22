@@ -82,7 +82,7 @@ export default function Payments({}: {}) {
   const [todayPayments, setTodayPayments] = useState([]);
   const [attachmentTitles, setAttachmentTitles] = useState(new Map());
   const [paymentDates, setPaymentDates] = useState<any[]>([]);
-  const { recipientId, settings, conf, widgetId } =
+  const { recipientId, conf, widgetId } =
     useLoaderData() as WidgetData;
 
   useEffect(() => {
@@ -94,7 +94,9 @@ export default function Payments({}: {}) {
 
   useEffect(() => {
     updatePayments();
+    log.debug("create subscriptions");
     subscribe(widgetId, conf.topic.alerts, (message) => {
+      log.debug(`events widgets received: ${message.body}`);
       updatePayments();
       message.ack();
     });
@@ -109,11 +111,9 @@ export default function Payments({}: {}) {
       }
       message.ack();
     });
-    setupCommandListener(widgetId, () => navigate(0));
     return () => {
       unsubscribe(widgetId, conf.topic.alertStatus);
       unsubscribe(widgetId, conf.topic.alerts);
-      cleanupCommandListener(widgetId);
     };
   }, [recipientId]);
 
@@ -186,7 +186,7 @@ export default function Payments({}: {}) {
           updatedDateToPaymentsMap.set(date, paymentsInThatDate);
         });
 
-        log.debug({updatedDateToPaymentsMap: updatedDateToPaymentsMap});
+        log.debug({ updatedDateToPaymentsMap: updatedDateToPaymentsMap });
         setDateToPaymentsMap((prev) => updatedDateToPaymentsMap);
         setTodayPayments((prev) =>
           setDisplayedTimeForTodayPayments(updatedDateToPaymentsMap.get(today)),
@@ -221,7 +221,15 @@ body::before {
     background-color: #0c122e;
     width: 100%;
     height: 100%;
-`,
+}`,
+        }}
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+#root {
+  overflow-y: scroll;
+}`,
         }}
       />
 

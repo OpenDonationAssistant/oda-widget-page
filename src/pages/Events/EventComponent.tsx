@@ -2,10 +2,10 @@ import { log } from "../../logging";
 import classes from "./EventComponent.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { publish } from "../../socket";
 import { Flex } from "antd";
 import { useContext } from "react";
 import { PaymentsWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 
 export default function EventComponent({
   active,
@@ -18,6 +18,7 @@ export default function EventComponent({
 }) {
   const { conf } = useLoaderData() as WidgetData;
   const settings = useContext(PaymentsWidgetSettingsContext);
+  const { publish, subscribe } = useContext(WidgetSettingsContext);
 
   const musicFont = settings.musicFontProperty;
   const musicStyle = musicFont.calcStyle();

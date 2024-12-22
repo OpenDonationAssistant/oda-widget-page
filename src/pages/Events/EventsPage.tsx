@@ -7,19 +7,20 @@ import {
   DonatonWidgetSettingsContext,
 } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import Payments from "./Payments";
+import { PaymentsWidgetSettings, PaymentsWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
 
 export default function EventsPage({}) {
   const { settings } = useLoaderData() as WidgetData;
 
   return (
     <>
-      <DonatonWidgetSettingsContext.Provider
-        value={Widget.configFromJson(settings) as DonatonWidgetSettings}
+      <PaymentsWidgetSettingsContext.Provider
+        value={Widget.configFromJson(settings) as PaymentsWidgetSettings}
       >
         <WidgetWrapper>
           <Payments />
         </WidgetWrapper>
-      </DonatonWidgetSettingsContext.Provider>
+      </PaymentsWidgetSettingsContext.Provider>
     </>
   );
 }

@@ -22,6 +22,7 @@ socket.onConnect = () => {
       "auto-delete": "false",
       ack: "client",
     });
+    log.debug(`Subscribed to ${listener.topic} for ${listener.id}`);
   });
 };
 
@@ -41,7 +42,7 @@ function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
     onMessage: onMessage,
   });
 
-  log.info(`${id} connected`);
+  log.info(`${id} connected to ${topic}`);
 }
 
 function unsubscribe(id: string, topic: string) {
