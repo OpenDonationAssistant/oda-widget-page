@@ -73,13 +73,13 @@ export default function EventComponent({
               {data.displayedTime}
             </div>
             <button
-              className={`${classes.stopbutton} oda-btn-default`}
+              className={`${classes.stopbutton}`}
               onClick={() => interruptAlert()}
             >
               <span className="material-symbols-sharp">block</span>
             </button>
             <button
-              className={`${classes.replaybutton} oda-btn-default`}
+              className={`${classes.replaybutton}`}
               onClick={() => resendAlert(data)}
             >
               <span className="material-symbols-sharp">replay</span>

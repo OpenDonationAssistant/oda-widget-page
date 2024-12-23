@@ -74,17 +74,18 @@
   }
 }
 
-.replaybutton {
+button.replaybutton {
   line-height: 0px;
   height: min-content;
-
-  button&[class*="oda-btn-default"] {
-    color: var(--oda-secondary-text-color);
-    margin-top: 4px;
-    border: none;
-    box-shadow: none;
-    padding-left: 0px;
-    padding-right: 0px;
+  color: var(--oda-secondary-text-color);
+  background: transparent!important;
+  padding-top: 7px;
+  border: none;
+  box-shadow: none;
+  padding-left: 0px;
+  padding-right: 0px;
+  &:hover{
+    background: transparent!important;
   }
 
   [class*="active"] & {
@@ -96,18 +97,17 @@
   }
 }
 
-.stopbutton {
+button.stopbutton {
   color: red!important;
   display: none;
   line-height: 0px;
   height: min-content;
-
-  button&[class*="oda-btn-default"] {
-    border: none;
-    box-shadow: none;
-    padding-left: 0px;
-    padding-right: 0px;
-  }
+  background: transparent!important;
+  border: none;
+  box-shadow: none;
+  padding-top: 7px;
+  padding-left: 0px;
+  padding-right: 0px;
 
   [class*="active"] & {
     display: initial;
