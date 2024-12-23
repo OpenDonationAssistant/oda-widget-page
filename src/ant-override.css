@@ -119,6 +119,7 @@
 
       &::before{
         border-bottom: 1px solid #674afd;
+        z-index: 0;
       }
 
       & .ant-tabs-tab {
