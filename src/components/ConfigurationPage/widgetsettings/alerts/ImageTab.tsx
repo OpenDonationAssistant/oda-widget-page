@@ -8,6 +8,17 @@ import { Flex, Select, Switch } from "antd";
 import { ChangeEvent } from "react";
 import axios from "axios";
 
+// <div className="settings-item">
+//   <LabeledContainer displayName="widget-alert-image-show-time">
+//     <InputNumber
+//       value={alert.property("imageShowTime")}
+//       onChange={(newValue) => {
+//         alert.update("imageShowTime", newValue);
+//       }}
+//     />
+//   </LabeledContainer>
+// </div>
+
 function uploadFile(file: File, name: string) {
   return axios.put(
     `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
@@ -74,16 +85,6 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           </div>
         </>
       )}
-      <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-image-show-time">
-          <InputNumber
-            value={alert.property("imageShowTime")}
-            onChange={(newValue) => {
-              alert.update("imageShowTime", newValue);
-            }}
-          />
-        </LabeledContainer>
-      </div>
       <div className="settings-item">
         <LabeledContainer displayName="alert-appearance-label">
           <Select
@@ -154,7 +155,6 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
                 alert.video = null;
               }}
             >
-              
               <Flex justify="center" align="center" gap={3}>
                 <span className="material-symbols-sharp">delete</span>
                 <div>{t("button-delete")}</div>

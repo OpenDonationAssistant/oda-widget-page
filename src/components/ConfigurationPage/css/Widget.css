@@ -1,6 +1,8 @@
 .widget {
   background-color: #2b3566;
   border-radius: 4px;
+  /* border-top: 1px solid rgb(43, 53, 102); */
+  /* border-radius: 10px; */
   margin-top: 10px;
   position: relative;
   box-shadow: 0 0 3px 7px rgba(0, 0, 0, 0.2);
@@ -34,6 +36,7 @@
 }
 
 .widget.extended {
+    /* border: 1px solid rgb(43, 53, 102); */
     border-radius: 10px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -178,6 +181,14 @@
   padding-top: 5px;
   vertical-align: middle;
   margin-bottom: 10px;
+  & .material-symbols-sharp {
+    color: var(--oda-secondary-text-color);
+    &:hover {
+      cursor: pointer;
+      transform: translateY(-2px);
+      color: var(--oda-main-text-color);
+    }
+  }
 }
 
 .current-sound:hover {
@@ -190,7 +201,7 @@
 }
 
 .ant-slider .ant-slider-track {
-  background-color: var(--oda-control-background-color);
+  background-color: var(--oda-secondary-text-color);
 }
 .ant-slider .ant-slider-handle::after {
   background-color: white;

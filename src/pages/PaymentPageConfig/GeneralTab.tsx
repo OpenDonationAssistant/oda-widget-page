@@ -1,4 +1,3 @@
-import React from "react";
 import classes from "./common.module.css";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";

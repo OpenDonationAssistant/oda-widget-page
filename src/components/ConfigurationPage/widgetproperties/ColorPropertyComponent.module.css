@@ -27,3 +27,7 @@
 .angleinput{
   max-width: 100px;
 }
+
+.selectarrow {
+    border: none!important;
+}

@@ -34,6 +34,7 @@ const DonationPricePropertyComponent = observer(
                 { label: "Сутки", value: "DAY" },
               ]}
             />
+            <span className={`${classes.equalsign}`}>=</span>
             <div>
               <InputNumber
                 value={property.value.price}

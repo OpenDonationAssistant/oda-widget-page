@@ -60,15 +60,15 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
             options={[
               {
                 value: "fixed-donation-amount",
-                label: <Trans i18nKey={"Сумма доната равна"} />,
+                label: <Trans i18nKey={"когда сумма доната равна"} />,
               },
               {
                 value: "at-least-donation-amount",
-                label: <Trans i18nKey={"Сумма доната больше"} />,
+                label: <Trans i18nKey={"когда сумма доната больше"} />,
               },
               {
                 value: "never",
-                label: <Trans i18nKey={"Никогда"} />,
+                label: <Trans i18nKey={"никогда"} />,
               },
             ]}
           />
@@ -78,6 +78,7 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
         <LabeledContainer displayName="">
           <InputNumber
             value={alert.triggers.at(0)?.amount}
+            addon="руб."
             onChange={(newAmount) => {
               if (!newAmount) {
                 return;
@@ -91,6 +92,7 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
         <LabeledContainer displayName="">
           <InputNumber
             value={alert.triggers.at(0)?.min}
+            addon="руб."
             onChange={(newAmount) => {
               if (!newAmount) {
                 return;

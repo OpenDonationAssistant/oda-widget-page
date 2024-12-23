@@ -83,18 +83,17 @@ button.ant-btn {
 }
 
 .widget-button.widget-button-accept {
-  color: white;
-  height: 32px;
+  color: var(--oda-label-background-color);
+  height: 36px;
   font-weight: 900;
   font-size: 14px;
   margin-left: 10px;
-  margin-right: 10px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 15px;
   padding-right: 15px;
-  background: #674afd;
-  border: 1px solid #674afd;
+  background: var(--oda-secondary-text-color);
+  border: none;
   border-radius: 5px;
 }
 
@@ -117,14 +116,15 @@ button.ant-btn {
 }
 
 .widget-button.widget-button-decline {
-  height: 32px;
-  border: 1px solid #674afd;
+  height: 38px;
+  border: 1px solid var(--oda-panel-backgroun-color);
   border-radius: 5px;
   color: var(--oda-secondary-text-color);
   padding-top: 4px;
   padding-bottom: 4px;
   padding-right: 15px;
   padding-left: 15px;
+  margin-left: 10px;
   font-weight: 900;
   font-size: 14px;
 }

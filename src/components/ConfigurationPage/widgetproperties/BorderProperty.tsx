@@ -57,13 +57,10 @@ const BorderSideComponent = ({
 }) => {
   return (
     <Row align="middle">
-      <Col span={2} offset={1}>
+      <Col span={4} offset={2}>
         {label && <Trans i18nKey={label} />}
       </Col>
-      <Col span={1} offset={1}>
-        Топ
-      </Col>
-      <Col span={2}>
+      <Col span={4}>
         <Select
           className="full-width"
           value={type}
@@ -104,14 +101,8 @@ const BorderSideComponent = ({
           ]}
         />
       </Col>
-      <Col span={1} offset={2}>
-        Цвет
-      </Col>
-      <Col span={3}>
+      <Col span={5}>
         <ColorPicker showText value={color} onChange={onColorChange} />
-      </Col>
-      <Col span={1} offset={2}>
-        Ширина
       </Col>
       <Col span={6}>
         <InputNumber value={width} addon="px" onChange={onWidthChange} />

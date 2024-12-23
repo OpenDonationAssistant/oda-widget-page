@@ -13,24 +13,39 @@
 }
 
 .widget-settings button.oda-btn-default,
-.oda-btn-default {
+.oda-btn-default,
+button.ant-btn.ant-btn-default,
+button.ant-btn.ant-btn-primary {
+  min-height: 36px;
   color: var(--oda-main-text-color);
   background-color: var(--oda-btn-background-color);
-  border: var(--oda-main-border);
-  font-family: var(--oda-main-font-family);
+  border: none;
+  background: var(--oda-secondary-text-color);
+  color: var(--oda-label-background-color);
+
+  font-family: var(--oda-main-font-FAMILY);
   font-size: 14px;
   border-radius: 5px;
   font-weight: 900;
-  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.6);
-  padding: 4px 15px;
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
+  padding: 6px 15px;
 }
 
-.oda-btn-default:hover {
-  cursor: pointer;
-  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
-  color: #3c89e8;
-  border-color: #3c89e8;
-  transform: translateY(-2px);
+.ant-modal-content .ant-modal-footer .ant-btn.ant-btn-default{
+  display: none;
+}
+
+#root button.oda-btn-default:hover,
+.oda-btn-default:hover,
+.ant-btn-default:hover,
+#root button.ant-btn.ant-btn-default:hover,
+button.ant-btn.ant-btn-primary:hover {
+  cursor: pointer!important;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0!important;
+  border-color: #3c89e8!important;
+  color: var(--oda-label-background-color)!important;
+  background-color: var(--oda-secondary-text-color)!important;
+  transform: translateY(-2px)!important;
 }
 
 .configuration-container {
@@ -172,7 +187,7 @@ textarea.widget-settings-value {
   font-size: 18px;
   background-color: var(--oda-main-background-color);
   box-shadow: inset 0 0 10px 0px rgba(0, 0, 0, 0.9);
-  border-radius: 12px;
+  border-radius: 5px;
 }
 
 .widget-settings-value.select {

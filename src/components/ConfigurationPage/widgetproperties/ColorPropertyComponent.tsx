@@ -59,6 +59,7 @@ const ColorStopComponent = observer(
               addon={
                 <Select
                   value={color.stop.unit}
+                  className={`${classes.selectarrow}`}
                   options={[
                     {
                       value: COLOR_STOP_UNIT.PIXEL,
@@ -119,7 +120,9 @@ const AddColorToGradient = observer(
             }
           }}
         >
-          Добавить цвет
+          <Flex>
+            <span className={`material-symbols-sharp`}>add</span>Добавить цвет
+          </Flex>
         </Button>
       </Flex>
     );
@@ -239,10 +242,10 @@ const GradientColors = observer(
         <GradientSettings property={property} />
         {property.value.colors.map((color: ColorStop, index: number) => (
           <Row align="middle" className="full-width">
-            <Col span={2} offset={2}>
-              Цвет #{index + 1}
+            <Col span={1} offset={2}>
+              #{index + 1}
             </Col>
-            <Col span={3}>
+            <Col span={4} offset={1}>
               <ColorPicker
                 key={index}
                 showText
@@ -332,7 +335,6 @@ export const ColorPropertyComponent = observer(
               <Col span={8} offset={4}>
                 <ColorPicker
                   value={property.value.colors[0].color}
-                  style={{ width: "50%" }}
                   showText
                   onChange={(value) => {
                     const updated = produce(
