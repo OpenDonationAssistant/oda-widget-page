@@ -6,6 +6,7 @@ import { WidgetData } from "../../types/WidgetData";
 import { File } from "buffer";
 import { Content } from "antd/es/layout/layout";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
+import { Flex, QRCode } from "antd";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -125,6 +126,9 @@ export default function PaymentPageConfigComponent({}: {}) {
             https://{recipientId}.oda.digital/
           </a>
         </div>
+        <Flex justify="flex-end">
+          <QRCode size={320} value={`https://${recipientId}.oda.digital/`} />
+        </Flex>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>ФИО</div>
           <input
