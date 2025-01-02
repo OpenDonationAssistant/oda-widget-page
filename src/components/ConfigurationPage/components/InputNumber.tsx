@@ -19,9 +19,9 @@ export default function InputNumber({
       <Flex vertical={false} gap={5} className={`${classes.inputcontainer}`}>
         <button
           className={classes.button}
-          onClick={() => onChange(value - 1 + 1 + (increment ? increment : 1))}
+          onClick={() => onChange(value - (increment ? increment : 1))}
         >
-          <span className="material-symbols-sharp">add</span>
+          <span className="material-symbols-sharp">remove</span>
         </button>
         <AndInputNumber
           value={value}
@@ -36,9 +36,9 @@ export default function InputNumber({
         />
         <button
           className={classes.button}
-          onClick={() => onChange(value - (increment ? increment : 1))}
+          onClick={() => onChange(value - 1 + 1 + (increment ? increment : 1))}
         >
-          <span className="material-symbols-sharp">remove</span>
+          <span className="material-symbols-sharp">add</span>
         </button>
       </Flex>
     </>
