@@ -21,16 +21,16 @@ export default function MessageBody({
     });
   }, [alertController]);
 
-  useEffect(() => {
-    const typed = new Typed(el.current, {
-      strings: [message],
-      typeSpeed: 120,
-    });
-
-    return () => {
-      typed.destroy();
-    };
-  }, [message]);
+  // useEffect(() => {
+  //   const typed = new Typed(el.current, {
+  //     strings: [message],
+  //     typeSpeed: 120,
+  //   });
+  //
+  //   return () => {
+  //     typed.destroy();
+  //   };
+  // }, [message]);
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function MessageBody({
         style={messageStyle}
         className={`${classes.messagebody} ${className}`}
       >
-        <span ref={el} />
+        {message != undefined && message != null ? message : null}
       </div>
     </>
   );
