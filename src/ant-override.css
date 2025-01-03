@@ -105,6 +105,7 @@
     &.ant-tabs-top {
         & .ant-tabs-nav {
           background: none;
+          height: 37px;
         }
     }
   }
@@ -126,6 +127,7 @@
         color: #7885bd;
         font-family: "Play";
         font-weight: 900;
+        height: 44px;
 
         &.ant-tabs-tab-active {
           background-color: var(--oda-panel-backgroun-color);
