@@ -75,13 +75,12 @@
 
 .ant-color-picker-trigger {
   width: 100%;
-  min-width: 140px;
+  min-width: 170px;
   justify-content: flex-start;
   flex-flow: row-reverse;
   padding-right: 10px;
   background-color: transparent;
   border: none;
-  /* border-bottom: 1px solid var(--oda-secondary-text-color); */
   border-radius: 0px;
   height: unset;
   min-height: 28px;

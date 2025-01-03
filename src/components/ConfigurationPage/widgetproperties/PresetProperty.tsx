@@ -2,14 +2,13 @@ import { ReactNode } from "react";
 import { WidgetProperty } from "./WidgetProperty";
 import { AbstractWidgetSettings } from "../widgetsettings/AbstractWidgetSettings";
 import { PresetStore } from "../../../stores/PresetStore";
-import { Button, Flex } from "antd";
-import { Image } from "antd";
-import classes from "./PresetProperty.module.css";
-import { Trans } from "react-i18next";
+import PresetPropertyComponent from "./PresetPropertyComponent";
+import { Preset } from "../../../types/Preset";
+import { log } from "../../../logging";
 
 export class PresetProperty implements WidgetProperty<string> {
   private _settings: AbstractWidgetSettings;
-  private _store: PresetStore = new PresetStore();
+  private _store: PresetStore;
   public name: string = "preset";
   public value: string = "";
   public displayName: string = "widget-preset";
@@ -24,53 +23,22 @@ export class PresetProperty implements WidgetProperty<string> {
   }) {
     this.value = type;
     this._settings = settings;
+    this._store = new PresetStore();
   }
 
   markSaved: () => void = () => {};
 
+  load(): Promise<Preset[]> {
+    log.debug({ property: this}, "load presets");
+    return this._store.for(this.value);
+  }
+
+  apply(preset: Preset){
+    // log.debug({ types: WIDGET_TYPES}, "apply preset", preset);
+    preset.applyTo(this._settings, this.value);
+  }
+
   markup(): ReactNode {
-    return (
-      <>
-        <div className={`${classes.guide}`}>
-          Нажмите кнопку "Применить" под понравившимся шаблоном, чтобы
-          скопировать все настройки с него в этот виджет. <br />
-          Все настройки можно поменять в соседних вкладках, а если хотите
-          вернуть обратно, как было в шаблоне, - просто снова нажмите
-          "Применить".
-        </div>
-        <Flex className={`${classes.grid}`} gap={10} wrap={true}>
-          {this._store.for(this.value).map((preset) => (
-            <Flex vertical={true} gap={10}>
-              <Image.PreviewGroup>
-                <Image
-                  width={200}
-                  height={120}
-                  className={`${classes.preview}`}
-                  src={preset.showcase}
-                />
-              </Image.PreviewGroup>
-              <Button
-                onClick={() => {
-                  preset.applyTo(this._settings);
-                }}
-                className="oda-btn-default"
-              >
-                <Flex
-                  className="full-height"
-                  justify="center"
-                  align="center"
-                  gap={3}
-                >
-                  <span className="material-symbols-sharp">check</span>
-                  <div>
-                    <Trans i18nKey="button-apply" />
-                  </div>
-                </Flex>
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      </>
-    );
+    return <PresetPropertyComponent property={this} />;
   }
 }

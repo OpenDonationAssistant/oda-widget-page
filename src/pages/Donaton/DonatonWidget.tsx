@@ -1,10 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { log } from "../../logging";
 import classes from "./DonatonWidget.module.css";
-import { DonatonWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
+import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 
-export default function DonatonWidget({}) {
-  const settings = useContext(DonatonWidgetSettingsContext);
+export default function DonatonWidget({
+  settings,
+}: {
+  settings: DonatonWidgetSettings;
+}) {
   const [time, setTime] = useState<String>("");
 
   // TODO: or ahooks?
@@ -13,7 +16,7 @@ export default function DonatonWidget({}) {
       if (!settings.timerEndProperty.timestamp) {
         return;
       }
-      console.log(settings.timerEndProperty.timestamp);
+      log.debug({ endTime: settings.timerEndProperty.timestamp });
       const now = Date.now();
       const end = Date.parse(`${settings.timerEndProperty.timestamp}`);
       const difference = end - now;

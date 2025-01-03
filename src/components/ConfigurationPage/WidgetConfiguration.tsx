@@ -22,24 +22,18 @@ import { SelectionContext } from "./ConfigurationPage";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import WidgetUrlModal from "./WidgetUrlModal";
 import DonatonWidget from "../../pages/Donaton/DonatonWidget";
-import {
-  DonatonWidgetSettings,
-  DonatonWidgetSettingsContext,
-} from "./widgetsettings/donaton/DonatonWidgetSettings";
+import { DonatonWidgetSettings } from "./widgetsettings/donaton/DonatonWidgetSettings";
 import DonationTimer from "../../pages/DonationTimer/DonationTimer";
-import {
-  DonationTimerWidgetSettings,
-  DonationTimerWidgetSettingsContext,
-} from "./widgetsettings/DonationTimerWidgetSettings";
-import {
-  PlayerPopupWidgetSettings,
-  PlayerPopupWidgetSettingsContext,
-} from "./widgetsettings/PlayerPopupWidgetSettings";
+import { DonationTimerWidgetSettings } from "./widgetsettings/DonationTimerWidgetSettings";
+import { PlayerPopupWidgetSettings } from "./widgetsettings/PlayerPopupWidgetSettings";
 import PlayerPopup from "../PlayerPopup/PlayerPopup";
 import { DemoPlayerStore } from "../PlayerPopup/DemoPlayer";
 import { DonationGoal } from "../DonationGoal/DonationGoal";
 import { DemoDonationGoalState } from "../DonationGoal/DemoDonationGoalState";
 import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetSettings";
+import { DonatersTopList } from "../../pages/DonatersTopList/DonatersTopList";
+import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
+import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -313,7 +307,8 @@ export default function WidgetConfiguration({
         {(widget.type === "donaton" ||
           widget.type === "donation-timer" ||
           widget.type === "donationgoal" ||
-          widget.type === "player-popup") && (
+          widget.type === "player-popup" ||
+          widget.type === "donaters-top-list") && (
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox
               width={800}
@@ -324,30 +319,31 @@ export default function WidgetConfiguration({
             >
               <div>
                 {widget.type === "donation-timer" && (
-                  <DonationTimerWidgetSettingsContext.Provider
-                    value={widget.config as DonationTimerWidgetSettings}
-                  >
-                    <DonationTimer />
-                  </DonationTimerWidgetSettingsContext.Provider>
+                  <DonationTimer
+                    settings={widget.config as DonationTimerWidgetSettings}
+                  />
                 )}
                 {widget.type === "donaton" && (
-                  <DonatonWidgetSettingsContext.Provider
-                    value={widget.config as DonatonWidgetSettings}
-                  >
-                    <DonatonWidget />
-                  </DonatonWidgetSettingsContext.Provider>
+                  <DonatonWidget
+                    settings={widget.config as DonatonWidgetSettings}
+                  />
                 )}
                 {widget.type === "player-popup" && (
-                  <PlayerPopupWidgetSettingsContext.Provider
-                    value={widget.config as PlayerPopupWidgetSettings}
-                  >
-                    <PlayerPopup player={new DemoPlayerStore()} />
-                  </PlayerPopupWidgetSettingsContext.Provider>
+                  <PlayerPopup
+                    player={new DemoPlayerStore()}
+                    settings={widget.config as PlayerPopupWidgetSettings}
+                  />
                 )}
                 {widget.type === "donationgoal" && (
                   <DonationGoal
                     settings={widget.config as DonationGoalWidgetSettings}
                     state={new DemoDonationGoalState()}
+                  />
+                )}
+                {widget.type === "donaters-top-list" && (
+                  <DonatersTopList
+                    settings={widget.config as DonatersTopListWidgetSettings}
+                    store={new DemoListStore()}
                   />
                 )}
               </div>

@@ -70,6 +70,7 @@ export class PlayerStore implements AbstractPlayerStore {
     this.player?.on(PlayerAdapterEvent.PLAY, () => {
       if (PLAYER_STATE.SHOULD_BE_STOPED === this.state){
         this.player?.pause();
+        this.player?.show(false);
         return;
       }
       this.state = PLAYER_STATE.PLAYING;
@@ -104,10 +105,12 @@ export class PlayerStore implements AbstractPlayerStore {
       if (json.command === "pause") {
         this.state = PLAYER_STATE.SHOULD_BE_STOPED;
         this.player?.pause();
+        this.player?.show(false);
       }
       if (json.command === "resume") {
         this.state = PLAYER_STATE.PLAYING;
         this.player?.play();
+        this.player?.show(true);
       }
       if (json.command === "volume") {
         this.player?.volume(json.volume);

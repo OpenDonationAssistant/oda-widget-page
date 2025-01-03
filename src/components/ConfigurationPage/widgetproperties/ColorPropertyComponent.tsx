@@ -332,7 +332,7 @@ export const ColorPropertyComponent = observer(
         <LabeledContainer displayName={property.displayName}>
           <Row align="middle" className="full-width">
             {!property.value.gradient && (
-              <Col span={8} offset={4}>
+              <Col span={10} offset={2}>
                 <ColorPicker
                   value={property.value.colors[0].color}
                   showText
@@ -381,5 +381,5 @@ export const ColorPropertyComponent = observer(
         )}
       </Flex>
     );
-  },
+  }
 );

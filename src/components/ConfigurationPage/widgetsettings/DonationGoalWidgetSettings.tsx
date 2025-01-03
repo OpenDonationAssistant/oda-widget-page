@@ -89,6 +89,18 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           value: true,
           displayName: "widget-donationgoal-show-title",
         }),
+        new ColorProperty({
+          name: "titleBackgroundColor",
+          displayName: "background-color",
+          target: ColorPropertyTarget.BACKGROUND,
+          value: {
+            gradient: false,
+            angle: 0,
+            repeating: false,
+            gradientType: GRADIENT_TYPE.LINEAR,
+            colors: [{ color: "#FFFFFF00" }],
+          },
+        }),
         new BackgroundImageProperty({
           name: "titleBackgroundImage",
         }),
@@ -113,18 +125,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           name: "titleRounding",
         }),
-        new ColorProperty({
-          name: "titleBackgroundColor",
-          displayName: "background-color",
-          target: ColorPropertyTarget.BACKGROUND,
-          value: {
-            gradient: false,
-            angle: 0,
-            repeating: false,
-            gradientType: GRADIENT_TYPE.LINEAR,
-            colors: [{ color: "#FFFFFF00" }],
-          },
-        }),
         new BoxShadowProperty({
           name: "titleBoxShadow",
           displayName: "Тени",
@@ -138,7 +138,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       title: "tab-donationgoal-bar",
       properties: [
         new BackgroundImageProperty({
-          name: "outerImage"
+          name: "outerImage",
         }),
         new BooleanProperty({
           name: "showLabel",
@@ -182,7 +182,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new BoxShadowProperty({
           name: "outerBoxShadow",
           displayName: "Тени",
-        })
+        }),
       ],
     });
 
@@ -191,7 +191,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       title: "tab-donationgoal-fulfillment",
       properties: [
         new BackgroundImageProperty({
-          name: "innerImage"
+          name: "innerImage",
         }),
         new ColorProperty({
           name: "filledColor",
@@ -395,7 +395,3 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     return this.get("backgroundImage") as BackgroundImageProperty;
   }
 }
-
-export const DonationGoalWidgetSettingsContext = createContext(
-  new DonationGoalWidgetSettings(),
-);

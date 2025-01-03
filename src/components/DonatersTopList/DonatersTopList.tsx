@@ -1,9 +1,9 @@
-import React, { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 import { useState } from "react";
 import "./DonatersTopList.css";
 import { useLoaderData } from "react-router";
-import { findSetting } from "../utils";
-import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { findSetting } from "../../components/utils";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { WidgetData } from "../../types/WidgetData";
 import { Carousel, Flex } from "antd";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
@@ -11,12 +11,12 @@ import { ApiContext } from "../../contexts/ApiContext";
 import {
   BorderProperty,
   DEFAULT_BORDER_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/BorderProperty";
+} from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
   ColorPropertyTarget,
   DEFAULT_COLOR_PROPERTY_VALUE,
-} from "../ConfigurationPage/widgetproperties/ColorProperty";
+} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 
 export default function DonatersTopList({}: {}) {
   const [donaters, setDonaters] = useState(new Map());

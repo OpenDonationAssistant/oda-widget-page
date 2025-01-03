@@ -11,7 +11,6 @@ import {
 } from "react-router-dom";
 import { Header as AntHeader } from "antd/es/layout/layout";
 import PlayerControl from "./components/PlayerControl/PlayerControl";
-import DonatersTopList from "./components/DonatersTopList/DonatersTopList";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
 import "./ant-override.css";
@@ -41,6 +40,7 @@ import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
 import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
 import EventsPage from "./pages/Events/EventsPage";
+import DonatersTopListPage from "./pages/DonatersTopList/DonatersTopListPage";
 
 async function widgetSettingsLoader({
   params,
@@ -195,11 +195,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/donaters-top-list/:widgetId",
-    element: (
-      <WidgetWrapper>
-        <DonatersTopList />
-      </WidgetWrapper>
-    ),
+    element: <DonatersTopListPage />,
     loader: widgetSettingsLoader,
   },
   {

@@ -129,7 +129,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
   Comp = observer(({}) => {
     return (
       <Flex vertical={true} gap={10}>
-        <LabeledContainer help={this.help} displayName={this.name}>
+        <LabeledContainer help={this.help} displayName={this.displayName}>
           <Segmented
             block
             className="full-width"

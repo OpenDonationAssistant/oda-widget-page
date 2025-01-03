@@ -118,7 +118,3 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
     );
   }
 }
-
-export const PlayerPopupWidgetSettingsContext = createContext(
-  new PlayerPopupWidgetSettings(),
-);

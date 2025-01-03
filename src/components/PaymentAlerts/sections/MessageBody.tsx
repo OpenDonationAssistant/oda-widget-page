@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AlertController } from "../../../logic/alert/AlertController";
 import classes from "./MessageBody.module.css";
+import Typed from "typed.js";
 
 export default function MessageBody({
   alertController,
@@ -10,6 +11,7 @@ export default function MessageBody({
   const [message, setMessage] = useState<string>("");
   const [messageStyle, setMessageStyle] = useState<any>({});
   const [className, setClassName] = useState<string>("");
+  const el = React.useRef(null);
 
   useEffect(() => {
     alertController.addMessageRenderer({
@@ -19,13 +21,24 @@ export default function MessageBody({
     });
   }, [alertController]);
 
+  useEffect(() => {
+    const typed = new Typed(el.current, {
+      strings: [message],
+      typeSpeed: 120,
+    });
+
+    return () => {
+      typed.destroy();
+    };
+  }, [message]);
+
   return (
     <>
       <div
         style={messageStyle}
         className={`${classes.messagebody} ${className}`}
       >
-        {message != undefined && message != null ? message : null}
+        <span ref={el} />
       </div>
     </>
   );

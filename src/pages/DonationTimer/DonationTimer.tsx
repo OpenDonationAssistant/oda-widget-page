@@ -6,15 +6,14 @@ import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import { DonationTimerWidgetSettingsContext } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
+import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { Flex } from "antd";
 
-export default function DonationTimer({}: {}) {
+export default function DonationTimer({ settings }: { settings: DonationTimerWidgetSettings }) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
   const { subscribe, unsubscribe } = useContext(WidgetSettingsContext);
-  const settings = useContext(DonationTimerWidgetSettingsContext);
 
   useEffect(() => {
     updateDonationTime();

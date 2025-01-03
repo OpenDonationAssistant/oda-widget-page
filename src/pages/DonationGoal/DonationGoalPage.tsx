@@ -15,20 +15,15 @@ export default function DonatonPage({}) {
     settings,
   ) as DonationGoalWidgetSettings;
 
+  const state = new DonationGoalState({
+    widgetId: widgetId,
+    conf: conf,
+    paymentPageConfig: new PaymentPageConfig(recipientId),
+  });
+
   return (
-    <>
-      <WidgetWrapper>
-        <DonationGoal
-          settings={donationGoalSettings}
-          state={
-            new DonationGoalState({
-              widgetId: widgetId,
-              conf: conf,
-              paymentPageConfig: new PaymentPageConfig(recipientId),
-            })
-          }
-        />
-      </WidgetWrapper>
-    </>
+    <WidgetWrapper>
+      <DonationGoal settings={donationGoalSettings} state={state} />
+    </WidgetWrapper>
   );
 }

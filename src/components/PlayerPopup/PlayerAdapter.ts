@@ -14,6 +14,7 @@ export interface PlayerAdapter {
   play(): void;
   pause(): void;
   paused(): boolean;
+  show(show: boolean): void;
   volume(value: number): void;
   duration(): number | undefined;
   currentTime(): number | undefined;
@@ -47,6 +48,9 @@ const vkplayer = (
     play: () => player.play(),
     pause: () => player.pause(),
     paused: () => player.getState() !== "playing",
+    show: (show: boolean) => {
+      videoElement.hidden = show;
+    },
     volume: (value: number) => {
       player.setVolume(value);
     },
@@ -105,6 +109,9 @@ const youtube = (
     play: () => player.play(),
     pause: () => player.pause(),
     paused: () => player.paused(),
+    show: (show: boolean) => {
+      holder.hidden = show;
+    },
     volume: (value: number) => player.volume(value),
     currentTime: () => player.currentTime(),
     duration: () => player.duration(),

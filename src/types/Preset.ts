@@ -1,4 +1,5 @@
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
+import { Widget } from "../types/Widget";
 
 interface PresetProperty {
   name: string;
@@ -24,7 +25,12 @@ export class Preset {
     this._showcase = showcase;
   }
 
-  public applyTo(settings: AbstractWidgetSettings) {
+  public applyTo(settings: AbstractWidgetSettings, type: string) {
+    Widget.createDefault(type)
+      ?.prepareConfig()
+      .forEach((prop) => {
+        settings.set(prop.name, prop.value, false);
+      });
     this._properties.forEach((prop) => {
       settings.set(prop.name, prop.value, false);
     });

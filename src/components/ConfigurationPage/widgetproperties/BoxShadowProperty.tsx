@@ -35,7 +35,7 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
       value: params.value ?? {
         shadows: [],
       },
-      displayName: params.displayName ?? "box shadow",
+      displayName: params.displayName ?? "box-shadow",
       help: params.help,
     });
   }

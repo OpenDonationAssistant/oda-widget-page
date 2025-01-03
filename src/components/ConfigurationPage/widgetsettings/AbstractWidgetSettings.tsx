@@ -18,7 +18,7 @@ export class AbstractWidgetSettings {
   constructor({ sections }: { sections: SettingsSection[] }) {
     this._sections = sections;
     this.makeIndex();
-    makeObservable(this, {
+    makeObservable<AbstractWidgetSettings, "_sections">(this, {
       _sections: observable,
       unsaved: computed,
     });
@@ -36,6 +36,11 @@ export class AbstractWidgetSettings {
   protected addSection(section: SettingsSection) {
     this._sections.push(section);
     this.makeIndex();
+  }
+
+  public reset():void {
+    this._sections=[];
+    this._index.clear();
   }
 
   public get unsaved(): boolean {

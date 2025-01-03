@@ -1,4 +1,4 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
 import { BorderProperty } from "../../widgetproperties/BorderProperty";
 import { TextProperty } from "../../widgetproperties/TextProperty";
@@ -178,7 +178,3 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
     );
   }
 }
-
-export const DonatonWidgetSettingsContext = createContext(
-  new DonatonWidgetSettings(),
-);

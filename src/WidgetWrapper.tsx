@@ -10,8 +10,6 @@ import {
   unsubscribe,
 } from "./socket";
 import { messageCallbackType } from "@stomp/stompjs";
-import { ApiContext } from "./contexts/ApiContext";
-import axios from "axios";
 import { log } from "./logging";
 
 const overflowHiddenForRootElement = (
@@ -31,7 +29,7 @@ const fullHeight = (
 );
 
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
-  const { recipientId, settings, widgetId } = useLoaderData() as WidgetData;
+  const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
 
   log.debug("creating widget wrapper");
@@ -62,18 +60,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           },
         }}
       >
-        <ApiContext.Provider
-          value={{
-            listDonaters: (period: string) =>
-              axios
-                .get(
-                  `${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/recipients/${recipientId}/donaters?period=${period}`,
-                )
-                .then((response) => response.data),
-          }}
-        >
-          {children}
-        </ApiContext.Provider>
+        {children}
       </WidgetSettingsContext.Provider>
     </>
   );

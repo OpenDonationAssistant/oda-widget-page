@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import classes from "./LabeledContainer.module.css";
 import { Trans } from "react-i18next";
 import { Tooltip } from "antd";

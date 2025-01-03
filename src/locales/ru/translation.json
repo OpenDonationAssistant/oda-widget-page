@@ -60,6 +60,8 @@
   "tab-donaters-list-title": "Заголовок",
   "tab-donaters-list-list": "Список",
   "tab-donaters-list-style": "Стиль",
+  "tab-donaters-list-global": "Общий вид",
+  "tab-donaters-list-item": "Элемент списка",
   "tab-alert-alerts": "Оповещения",
   "tab-alert-default": "По умолчанию",
   "tab-alert-trigger": "Срабатывает",
@@ -239,5 +241,9 @@
   "widget-donationgoal-show-title": "Показывать название",
   "widget-donationgoal-show-description": "Показывать надпись",
   "top":"Сверху",
-  "bottom":"Снизу"
+  "bottom":"Снизу",
+  "box-shadow":"Тень",
+  "max-width":"Ширина",
+  "max-height":"Высота",
+  "widget-donaterslist-show-header": "Показывать заголовок"
 }

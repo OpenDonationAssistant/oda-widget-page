@@ -1,30 +1,35 @@
-import { CSSProperties, useContext, useEffect } from "react";
+import { CSSProperties, useEffect } from "react";
 import "videojs-youtube";
-import { PlayerPopupWidgetSettingsContext } from "../ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
+import { PlayerPopupWidgetSettings } from "../ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 import { AbstractPlayerStore } from "./Player";
 import { observer } from "mobx-react-lite";
 
-const PlayerPopup = observer(({ player }: { player: AbstractPlayerStore }) => {
-  const settings = useContext(PlayerPopupWidgetSettingsContext);
+const PlayerPopup = observer(
+  ({
+    settings,
+    player,
+  }: {
+    settings: PlayerPopupWidgetSettings;
+    player: AbstractPlayerStore;
+  }) => {
+    useEffect(() => {
+      const vol = JSON.parse(localStorage.getItem("volume") ?? "50");
+      player.volume = vol / 100;
+    }, [player]);
 
-  useEffect(() => {
-    const vol = JSON.parse(localStorage.getItem("volume") ?? "50");
-    player.volume = vol / 100;
-  }, [player]);
+    const borderStyle = settings.widgetBorderProperty.calcCss();
+    const roundingStyle = settings.roundingProperty.calcCss();
+    const shadowProperty = settings.shadowProperty;
+    const widgetStyle: CSSProperties = settings.audioOnlyProperty.value
+      ? { visibility: "hidden", height: "1px" }
+      : borderStyle;
+    const heightStyle = `calc(100% - ${2 * shadowProperty.requiredHeight}px)`;
+    const widthStyle = `calc(100% - ${2 * shadowProperty.requiredWidth}px)`;
 
-  const borderStyle = settings.widgetBorderProperty.calcCss();
-  const roundingStyle = settings.roundingProperty.calcCss();
-  const shadowProperty = settings.shadowProperty;
-  const widgetStyle: CSSProperties = settings.audioOnlyProperty.value
-    ? { visibility: "hidden", height: "1px" }
-    : borderStyle;
-  const heightStyle = `calc(100% - ${2 * shadowProperty.requiredHeight}px)`;
-  const widthStyle = `calc(100% - ${2 * shadowProperty.requiredWidth}px)`;
-
-  const borderCss = (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: `
+    const borderCss = (
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           iframe {
             height: ${heightStyle}!important;
             width: ${widthStyle}!important;
@@ -42,16 +47,17 @@ const PlayerPopup = observer(({ player }: { player: AbstractPlayerStore }) => {
             };
             border-bottom-left-radius: ${roundingStyle.borderBottomLeftRadius};
           }`,
-      }}
-    />
-  );
+        }}
+      />
+    );
 
-  return (
-    <>
-      {borderCss}
-      <div id="mediaplayer" className="full-height vjs-big-play-centered" />
-    </>
-  );
-});
+    return (
+      <>
+        {borderCss}
+        <div id="mediaplayer" className="full-height vjs-big-play-centered" />
+      </>
+    );
+  },
+);
 
 export default PlayerPopup;

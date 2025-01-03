@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Tokens, tokenRequest } from "../Login/Login";
 import { useRequest } from "ahooks";
 import { Button, Flex, Input, Modal, QRCode, Spin } from "antd";
@@ -47,9 +46,10 @@ export default function WidgetUrlModal({
   onClose: Function;
 }) {
   const { data, loading } = useRequest(
-    () => {
+    async () => {
       if (open) {
-        return createOtp(id).then((data) => url(type, id, data));
+        const data = await createOtp(id);
+        return url(type, id, data);
       }
       return Promise.reject();
     },
@@ -94,7 +94,7 @@ export default function WidgetUrlModal({
                 <span className="material-symbols-sharp">open_in_new</span>
               </Button>
             </Flex>
-            <div>
+            <div className={`${classes.qrcodedescription}`}>
               Если хотите воспользоваться виджетом на телефоне или добавить его
               в Prisma Live или его аналоги, воспользуйтесь QR кодом - виджет
               откроется в браузере телефона, там же можно скопировать ссылку на

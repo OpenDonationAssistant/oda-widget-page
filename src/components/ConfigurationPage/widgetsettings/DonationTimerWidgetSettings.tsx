@@ -18,7 +18,6 @@ import {
   SELECTION_TYPE,
   SingleChoiceProperty,
 } from "../widgetproperties/SingleChoiceProperty";
-import { toJS } from "mobx";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -236,7 +235,3 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
     );
   }
 }
-
-export const DonationTimerWidgetSettingsContext = createContext(
-  new DonationTimerWidgetSettings(),
-);

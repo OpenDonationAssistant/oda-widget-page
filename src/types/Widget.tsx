@@ -20,12 +20,9 @@ export const WIDGET_TYPES = [
     name: "media",
     title: "Media Player",
     description: "Music Player",
-    create: () => new MediaWidgetSettings(),
-  },
-  {
-    name: "player-popup",
-    description: "Video Popup",
-    create: () => new PlayerPopupWidgetSettings(),
+    create: () => {
+      return new MediaWidgetSettings();
+    },
   },
   {
     name: "payments",
@@ -72,6 +69,13 @@ export const WIDGET_TYPES = [
     description: "Donaton",
     create: () => new DonatonWidgetSettings(),
   },
+  {
+    name: "player-popup",
+    description: "Video Popup",
+    create: () => {
+      return new PlayerPopupWidgetSettings();
+    },
+  },
 ];
 
 interface SavedProperty {
@@ -105,24 +109,34 @@ export class Widget {
     this._ownerId = params.ownerId;
     this._config = params.config;
     this._store = params.store;
-    makeObservable(this, {
+    makeObservable<Widget, "_name" | "_config">(this, {
       _name: observable,
       _config: observable,
-      setConfig: action,
       reload: action,
     });
   }
 
+  public static createDefault(
+    type: string,
+  ): AbstractWidgetSettings | undefined {
+    return WIDGET_TYPES.find((t) => t.name === type)?.create();
+  }
+
   public static configFromJson(json: any): AbstractWidgetSettings | null {
-    const settings = WIDGET_TYPES.find((t) => t.name === json.type)?.create();
+    return this.config(json.type, json.config.properties);
+  }
+
+  public static config(
+    type: string,
+    properties: SavedProperty[],
+  ): AbstractWidgetSettings | null {
+    const settings = this.createDefault(type);
     if (settings === undefined) {
       return null;
     }
-    (json.config as { properties: SavedProperty[] }).properties.forEach(
-      (prop) => {
-        settings.set(prop.name, prop.value, true);
-      },
-    );
+    properties.forEach((prop) => {
+      settings.set(prop.name, prop.value, true);
+    });
     return settings;
   }
 
