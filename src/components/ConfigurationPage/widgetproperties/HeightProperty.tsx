@@ -52,7 +52,7 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
                 }
               }}
             />
-            <div className={`${classes.label}`}>Задать высоту</div>
+            <div className={`${classes.label}`}>Зафиксировать высоту</div>
           </Flex>
         </LabeledContainer>
       </>

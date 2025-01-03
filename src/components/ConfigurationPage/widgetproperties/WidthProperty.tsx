@@ -52,7 +52,7 @@ export class WidthProperty extends DefaultWidgetProperty<number> {
                 }
               }}
             />
-            <div className={`${classes.label}`}>Задать ширину</div>
+            <div className={`${classes.label}`}>Зафиксировать ширину</div>
           </Flex>
         </LabeledContainer>
       </>

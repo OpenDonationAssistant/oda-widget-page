@@ -317,7 +317,7 @@ export default function WidgetConfiguration({
               axis="both"
               minConstraints={[650, 100]}
             >
-              <div>
+              <div style={{ maxWidth: "100%" }}>
                 {widget.type === "donation-timer" && (
                   <DonationTimer
                     settings={widget.config as DonationTimerWidgetSettings}
