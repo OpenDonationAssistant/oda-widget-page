@@ -1,4 +1,3 @@
-import React from "react";
 import ODALogo from "../ODALogo/ODALogo";
 import { Dropdown } from "antd";
 import { useLoaderData } from "react-router";
@@ -7,7 +6,7 @@ import classes from "./Header.module.css";
 import { useTranslation } from "react-i18next";
 import { log } from "../../logging";
 
-function logout(){
+function logout() {
   localStorage.removeItem("login");
   localStorage.removeItem("password");
   localStorage.removeItem("access-token");
@@ -19,59 +18,59 @@ export default function Header({}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { t, i18n } = useTranslation();
 
-  log.debug({language: i18n.resolvedLanguage});
+  log.debug({ language: i18n.resolvedLanguage });
 
   const changeLang = (l: string) => {
     i18n.changeLanguage(l);
   };
 
   return (
-    <>
-      <div className={`${classes.headercontainer}`}>
-        <ODALogo />
-        <div className={`${classes.buttons}`}>
-          <Dropdown
-            trigger={["click"]}
-            menu={{
-              items: [
-                {
-                  key: "en",
-                  label: "En",
-                  onClick: () => changeLang("en"),
-                },
-                {
-                  key: "ru",
-                  label: "Ru",
-                  onClick: () => changeLang("ru"),
-                },
-              ],
-            }}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <span className="material-symbols-sharp">language</span>
-              <span>{i18n.resolvedLanguage === "en" ? "En" : "Ru"}</span>
-            </a>
-          </Dropdown>
-          <Dropdown
-            trigger={["click"]}
-            className={`${classes.account}`}
-            menu={{
-              items: [
-                {
-                  key: "logout",
-                  label: t("button-logout"),
-                  onClick: logout
-                },
-              ],
-            }}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <span className="material-symbols-sharp">person</span>
-              {recipientId}
-            </a>
-          </Dropdown>
-        </div>
+    <div className={`${classes.headercontainer}`}>
+      <ODALogo />
+      <div className={`${classes.buttons}`}>
+        <a href="https://oda.digital/news" onClick={(e) => e.preventDefault()}>
+          <span className="material-symbols-sharp">news</span>
+        </a>
+        <Dropdown
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "en",
+                label: "En",
+                onClick: () => changeLang("en"),
+              },
+              {
+                key: "ru",
+                label: "Ru",
+                onClick: () => changeLang("ru"),
+              },
+            ],
+          }}
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            <span className="material-symbols-sharp">language</span>
+          </a>
+        </Dropdown>
+        <Dropdown
+          trigger={["click"]}
+          className={`${classes.account}`}
+          menu={{
+            items: [
+              {
+                key: "logout",
+                label: t("button-logout"),
+                onClick: logout,
+              },
+            ],
+          }}
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            <span className="material-symbols-sharp">person</span>
+            {recipientId}
+          </a>
+        </Dropdown>
       </div>
-    </>
+    </div>
   );
 }
