@@ -28,7 +28,7 @@ export default function Header({}) {
     <div className={`${classes.headercontainer}`}>
       <ODALogo />
       <div className={`${classes.buttons}`}>
-        <a href="https://oda.digital/news" onClick={(e) => e.preventDefault()}>
+        <a href="https://oda.digital/news">
           <span className="material-symbols-sharp">news</span>
         </a>
         <Dropdown
