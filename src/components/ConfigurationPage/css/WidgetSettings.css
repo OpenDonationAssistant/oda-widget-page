@@ -455,6 +455,7 @@ div.payment-alert-image-preview {
 .menu-button {
   border: none;
   background: none;
+  color: var(--oda-secondary-text-color);
 }
 
 .menu-button:hover {

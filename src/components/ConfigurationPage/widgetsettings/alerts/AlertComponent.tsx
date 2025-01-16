@@ -1,7 +1,5 @@
 import { ChangeEvent } from "react";
-import {
-  Alert,
-} from "./Alerts";
+import { Alert } from "./Alerts";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { Tabs as AntTabs, Flex, Select, Slider } from "antd";
@@ -17,6 +15,7 @@ import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontCompon
 import BooleanPropertyInput from "../../components/BooleanPropertyInput";
 import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
+import classes from "./AlertComponent.module.css";
 
 function playAudio(url: string | null) {
   if (!url) {
@@ -38,6 +37,10 @@ function uploadFile(file: File, name: string) {
       },
     },
   );
+}
+
+function copyAlert(alert: Alert) {
+  alert.copy();
 }
 
 const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -255,6 +258,14 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
+      <Flex className={`${classes.alertbuttons}`}>
+        <button className="menu-button" onClick={() => copyAlert(alert)}>
+          <span className="material-symbols-sharp">content_copy</span>
+        </button>
+        <button className="menu-button" onClick={() => alert.delete()}>
+          <span className="material-symbols-sharp">delete</span>
+        </button>
+      </Flex>
       <div className="image-preview-container">
         {alert.image && (
           <img
@@ -310,9 +321,6 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
           },
         ]}
       />
-      <div onClick={() => alert.delete()} className="alert-delete-button">
-        <span className="material-symbols-sharp">delete</span>
-      </div>
     </div>
   );
 });
