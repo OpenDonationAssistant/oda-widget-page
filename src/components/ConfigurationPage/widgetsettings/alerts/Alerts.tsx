@@ -3,9 +3,11 @@ import { DEFAULT_PROPERTIES } from "./DefaultProperties";
 import { ReactNode } from "react";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { InputNumber } from "antd";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, toJS } from "mobx";
 import { AlertComponent } from "./AlertComponent";
 import { log } from "../../../../logging";
+import { produce } from "immer";
+
 
 export interface Amount {
   major: number;
@@ -103,6 +105,7 @@ export class Alert {
   private _properties: any[] = DEFAULT_PROPERTIES;
   // TODO: use store
   private _removeFn: Function;
+  private _addFn: Function;
 
   constructor({
     id,
@@ -112,6 +115,7 @@ export class Alert {
     triggers,
     properties,
     removeFn,
+    addFn
   }: {
     id?: string;
     audio?: string;
@@ -120,6 +124,7 @@ export class Alert {
     triggers?: Trigger[];
     properties?: any[];
     removeFn: Function;
+    addFn: Function
   }) {
     this._id = id || uuidv7();
     this.audio = audio || null;
@@ -128,6 +133,7 @@ export class Alert {
     this.triggers = triggers || [DEFAULT_TRIGGER];
     this.properties = this.mergeWithDefault(properties);
     this._removeFn = removeFn;
+    this._addFn = addFn;
     makeAutoObservable(this);
   }
 
@@ -146,6 +152,20 @@ export class Alert {
     return this._properties.find((it) => it.name === name)?.value;
   }
 
+  public copy(): Alert{
+    const alert = new Alert({
+      id: undefined,
+      audio: produce(toJS(this._audio), (draft) => draft) || undefined,
+      image: produce(toJS(this._image), (draft) => draft) || undefined,
+      video: produce(toJS(this._video), (draft) => draft) || undefined,
+      triggers: produce(toJS(this._triggers), (draft) => draft),
+      properties: produce(toJS(this._properties), (draft) => draft),
+      removeFn: this._removeFn,
+      addFn: this._addFn
+    })
+    this._addFn(alert);
+    return alert;
+  }
   public update(name: string, value: any): void {
     log.debug({name: name, value: value},"updating alert");
     this._properties.map((it) => {

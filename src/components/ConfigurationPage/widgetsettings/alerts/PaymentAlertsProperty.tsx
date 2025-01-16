@@ -49,7 +49,10 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
       (it: any) =>
         new Alert({
           ...it,
-          ...{ removeFn: (id: string) => property.removeAlert(id) },
+          ...{
+            removeFn: (id: string) => property.removeAlert(id),
+            addFn: (alert: Alert) => property.addAlert(alert),
+          },
         }),
     );
     return property;
@@ -59,10 +62,15 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
     return this.value.map((it) => it.config());
   }
 
-  addAlert(): void {
+  addAlert(alert?: Alert): void {
     this._value = [
       ...this._value,
-      new Alert({ removeFn: (id: string) => this.removeAlert(id) }),
+      alert
+        ? alert
+        : new Alert({
+            removeFn: (id: string) => this.removeAlert(id),
+            addFn: (alert: Alert) => this.addAlert(),
+          }),
     ];
   }
 
