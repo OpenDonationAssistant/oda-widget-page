@@ -16,6 +16,10 @@ import BooleanPropertyInput from "../../components/BooleanPropertyInput";
 import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
 import classes from "./AlertComponent.module.css";
+import { publish } from "../../../../socket";
+import { WidgetData } from "../../../../types/WidgetData";
+import { useLoaderData } from "react-router";
+import { uuidv7 } from "uuidv7";
 
 function playAudio(url: string | null) {
   if (!url) {
@@ -37,6 +41,21 @@ function uploadFile(file: File, name: string) {
       },
     },
   );
+}
+
+function testAlert(topic: string, alert: Alert) {
+  publish(topic, {
+    id: uuidv7(), // TODO: сделать опциональным
+    alertId: alert.id,
+    nickname: "Тестовый алерт",
+    message: "Тестовое сообщение",
+    amount: {
+      major: 100,
+      minor: 0,
+      currency: "RUB",
+    },
+  });
+  log.debug("Send test alert");
 }
 
 function copyAlert(alert: Alert) {
@@ -254,11 +273,18 @@ const VoiceTab = observer(({ alert }: { alert: Alert }) => {
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
+  const { conf } = useLoaderData() as WidgetData;
   log.debug({ alert: toJS(alert) }, "render alert");
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
       <Flex className={`${classes.alertbuttons}`}>
+        <button
+          className="menu-button"
+          onClick={() => testAlert(conf.topic.alerts, alert)}
+        >
+          <span className="material-symbols-sharp">play_circle</span>
+        </button>
         <button className="menu-button" onClick={() => copyAlert(alert)}>
           <span className="material-symbols-sharp">content_copy</span>
         </button>

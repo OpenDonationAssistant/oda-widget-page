@@ -245,5 +245,7 @@
   "max-width":"Max width",
   "max-height":"Max height",
   "button-news": "News",
-  "widget-donaterslist-show-header": "Show Header"
+  "widget-donaterslist-show-header": "Show Header",
+  "unsaved-notification-title": "Unsaved changes",
+  "unsaved-notification-description": "You have unsaved changes in widget settings"
 }

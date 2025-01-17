@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import "./css/Widget.css";
 import "./css/WidgetList.css";
@@ -7,17 +7,17 @@ import "./css/WidgetSettings.css";
 import TestAlertButton from "./settings/TestAlertButton";
 
 import { publish, socket } from "../../socket";
-import { Button, Flex, Input, Modal } from "antd";
+import { Button, Flex, Input, Modal, notification } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
 import { observer } from "mobx-react-lite";
 import { Widget } from "../../types/Widget";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { SelectionContext } from "./ConfigurationPage";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import WidgetUrlModal from "./WidgetUrlModal";
@@ -34,6 +34,7 @@ import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetS
 import { DonatersTopList } from "../../pages/DonatersTopList/DonatersTopList";
 import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
 import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
+import { NotificationPlacement } from "antd/es/notification/interface";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -229,13 +230,34 @@ export default function WidgetConfiguration({
   widget,
   open,
 }: WidgetConfigurationProps) {
-  const { recipientId, conf } = useLoaderData() as WidgetData;
+  const { conf } = useLoaderData() as WidgetData;
   const { t } = useTranslation();
   const renameModalState = useRef(new RenameModalState(widget));
   const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
+  const [api, context] = notification.useNotification();
+
+  useEffect(() => {
+    reaction(
+      () => widget.config.unsaved,
+      (unsaved) => {
+        if (unsaved) {
+          api.warning({
+            message: <Trans i18nKey="unsaved-notification-title"/>,
+            description: <Trans i18nKey="unsaved-notification-description"/>,
+            placement: "bottomRight",
+            duration: 0,
+            closeIcon: <div></div>
+          });
+        } else {
+          api.destroy();
+        }
+      },
+    );
+  }, [widget]);
 
   return (
     <div className={`widget ${open ? "extended" : "collapsed"}`}>
+      {context}
       <RenameModal state={renameModalState.current} />
       <div className="widget-header">
         <NameComponent widget={widget} />

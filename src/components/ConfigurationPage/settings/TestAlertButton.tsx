@@ -27,6 +27,7 @@ export default function TestAlertButton({ config }: { config: Config }) {
     });
     log.debug("Send test alert");
   }
+
   return (
     <>
       <PopupComponent buttonText={t("button-testalert")}>

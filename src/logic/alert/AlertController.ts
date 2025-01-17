@@ -162,42 +162,63 @@ export class AlertController {
   }
 
   findAlert(json) {
-    const index = this.sortedAlerts.findLastIndex((alert) => {
-      const trigger = alert.triggers.at(0);
-      log.debug({ trigger: trigger }, "checking trigger");
-      if (!trigger) {
-        return false;
-      }
-      if (trigger.type === "fixed-donation-amount") {
-        return trigger.amount === json.amount.major;
-      }
-      if (trigger.type === "at-least-donation-amount") {
-        return trigger.min <= json.amount.major;
-      }
-    });
+    let index = -1;
+    if (json.alertId) {
+      index = this.sortedAlerts.findIndex((alert) => alert.id === json.alertId);
+    } else {
+      index = this.sortedAlerts.findLastIndex((alert) => {
+        const trigger = alert.triggers.at(0);
+        log.debug({ trigger: trigger }, "checking trigger");
+        if (!trigger) {
+          return false;
+        }
+        if (trigger.type === "fixed-donation-amount") {
+          return trigger.amount === json.amount.major;
+        }
+        if (trigger.type === "at-least-donation-amount") {
+          return trigger.min <= json.amount.major;
+        }
+      });
 
-    log.debug(`choosen alert index: ${index}`);
+      log.debug(`choosen alert index: ${index}`);
+    }
     if (index === -1) {
       return null;
     }
     const choosenAlert = this.sortedAlerts[index];
     if (choosenAlert.triggers.at(0).type === "fixed-donation-amount") {
       const choosenAlertPool = this.sortedAlerts
-        .filter((alert) => alert.triggers.at(0).type === "fixed-donation-amount" )
-        .filter((alert) => alert.triggers.at(0).amount === choosenAlert.triggers.at(0).amount);
+        .filter(
+          (alert) => alert.triggers.at(0).type === "fixed-donation-amount",
+        )
+        .filter(
+          (alert) =>
+            alert.triggers.at(0).amount === choosenAlert.triggers.at(0).amount,
+        );
       if (choosenAlertPool.length > 0) {
         const selected = getRndInteger(0, choosenAlertPool.length);
-        log.debug({ index: selected, pool: choosenAlertPool }, "choosen alert pool");
+        log.debug(
+          { index: selected, pool: choosenAlertPool },
+          "choosen alert pool",
+        );
         return choosenAlertPool[selected];
       }
     }
     if (choosenAlert.triggers.at(0).type === "at-least-donation-amount") {
       const choosenAlertPool = this.sortedAlerts
-        .filter((alert) => alert.triggers.at(0).type === "at-least-donation-amount" )
-        .filter((alert) => alert.triggers.at(0).min === choosenAlert.triggers.at(0).min);
+        .filter(
+          (alert) => alert.triggers.at(0).type === "at-least-donation-amount",
+        )
+        .filter(
+          (alert) =>
+            alert.triggers.at(0).min === choosenAlert.triggers.at(0).min,
+        );
       if (choosenAlertPool.length > 0) {
         const selected = getRndInteger(0, choosenAlertPool.length);
-        log.debug({ index: selected, pool: choosenAlertPool }, "choosen alert pool");
+        log.debug(
+          { index: selected, pool: choosenAlertPool },
+          "choosen alert pool",
+        );
         return choosenAlertPool[selected];
       }
     }

@@ -246,5 +246,7 @@
   "max-width":"Ширина",
   "max-height":"Высота",
   "button-news": "Новости",
-  "widget-donaterslist-show-header": "Показывать заголовок"
+  "widget-donaterslist-show-header": "Показывать заголовок",
+  "unsaved-notification-title": "Несохраненные изменения",
+  "unsaved-notification-description": "У вас есть несохраненные изменения в настройках виджетов"
 }
