@@ -191,6 +191,16 @@ export class AlertController {
         return choosenAlertPool[selected];
       }
     }
+    if (choosenAlert.triggers.at(0).type === "at-least-donation-amount") {
+      const choosenAlertPool = this.sortedAlerts
+        .filter((alert) => alert.triggers.at(0).type === "at-least-donation-amount" )
+        .filter((alert) => alert.triggers.at(0).min === choosenAlert.triggers.at(0).min);
+      if (choosenAlertPool.length > 0) {
+        const selected = getRndInteger(0, choosenAlertPool.length);
+        log.debug({ index: selected, pool: choosenAlertPool }, "choosen alert pool");
+        return choosenAlertPool[selected];
+      }
+    }
     return this.sortedAlerts[index];
   }
 
