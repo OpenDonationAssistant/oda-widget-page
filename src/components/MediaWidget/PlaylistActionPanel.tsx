@@ -1,6 +1,6 @@
-import { Flex, Input, Modal } from "antd";
-import React, { useEffect, useState } from "react";
 import classes from "./PlaylistActionPanel.module.css";
+import { Flex, Input, Modal } from "antd";
+import { useEffect, useState } from "react";
 import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
 import { PlaylistController } from "./PlaylistController";
 import {
@@ -74,6 +74,16 @@ export default function PlaylistActionPanel({
         items: items,
       });
     }
+  };
+
+  const deletePlaylist: (playlistId: string) => Promise<void> = async (
+    playlistId: string,
+  ) => {
+    MediaService(undefined, process.env.REACT_APP_MEDIA_API_ENDPOINT)
+      .deletePlaylist({
+        id: playlistId,
+      })
+      .then(() => loadPlaylists());
   };
 
   const loadPlaylist: (playlistId: string) => Promise<void> = async (
@@ -161,12 +171,21 @@ export default function PlaylistActionPanel({
                   className={`${classes.savedPlaylists}`}
                 >
                   {savedPlaylists.map((playlist) => (
-                    <button
-                      className="oda-btn-default"
-                      onClick={() => loadPlaylist(playlist.id)}
-                    >
-                      {playlist.name}
-                    </button>
+                    <Flex className="full-width">
+                      <button
+                        className="oda-btn-default"
+                        style={{ flex: "1 1 auto" }}
+                        onClick={() => loadPlaylist(playlist.id)}
+                      >
+                        {playlist.name}
+                      </button>
+                      <button
+                        className={`${classes.deletebutton}`}
+                        onClick={() => deletePlaylist(playlist.id)}
+                      >
+                        <span className="material-symbols-sharp">delete</span>
+                      </button>
+                    </Flex>
                   ))}
                 </Flex>
               </Modal>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useRef, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useLoaderData, useNavigate } from "react-router";
@@ -6,7 +5,6 @@ import "./MediaWidget.css";
 import { PlaylistController } from "./PlaylistController";
 import {
   cleanupCommandListener,
-  publish,
   setupCommandListener,
 } from "../../socket";
 import Menu from "../Menu/Menu";
@@ -19,9 +17,7 @@ import PlaylistComponent from "./PlaylistComponent";
 import VideoJSComponent from "./VideoJSComponent";
 import { Song } from "./types";
 import { log } from "../../logging";
-import VideoPopupToggler from "./VideoPopupToggler";
 import { WidgetData } from "../../types/WidgetData";
-import { Dropdown } from "antd";
 import { useTranslation } from "react-i18next";
 import PlaylistActionPanel from "./PlaylistActionPanel";
 

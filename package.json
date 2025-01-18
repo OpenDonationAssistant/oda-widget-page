@@ -9,7 +9,7 @@
     "@glidejs/glide": "^3.6.0",
     "@google-cloud/text-to-speech": "^5.0.0",
     "@opendonationassistant/oda-history-service-client": "^0.3.0",
-    "@opendonationassistant/oda-media-service-client": "^0.3.0",
+    "@opendonationassistant/oda-media-service-client": "^0.5.0",
     "@opendonationassistant/oda-news-service-client": "^0.2.0",
     "@opendonationassistant/oda-widget-service-client": "^0.4.1",
     "@stomp/stompjs": "^7.0.0",

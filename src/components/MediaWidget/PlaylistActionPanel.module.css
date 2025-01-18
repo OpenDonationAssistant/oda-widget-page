@@ -1,4 +1,4 @@
-.panelcontainer{
+.panelcontainer {
   margin-top: 5px;
   margin-bottom: 5px;
   color: var(--oda-main-text-color);
@@ -11,12 +11,17 @@
   padding-right: 10px;
 }
 
-.editPlaylistNameInput{
+.editPlaylistNameInput {
   padding-top: 15px;
   padding-bottom: 15px;
 }
 
 .modal {
+  height: 1000px;
+
+  & div[class*="ant-modal-body"] {
+    min-height: 50px;
+  }
   & div[class*="ant-modal-content"] {
     min-width: unset;
   }
@@ -45,3 +50,20 @@
   }
 }
 
+.deletebutton {
+  background: none;
+  border: none;
+  color: var(--oda-secondary-text-color);
+  height: 100%;
+  line-height: 28px;
+  padding-right: 0px;
+  margin-left: 10px;
+
+  & span {
+    vertical-align: bottom;
+  }
+  &:hover {
+    transform: translateY(-2px);
+    color: white;
+  }
+}
