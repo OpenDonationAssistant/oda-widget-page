@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useEffect,
@@ -35,9 +35,23 @@ export class Selection {
 
 export const SelectionContext = createContext<Selection>(new Selection());
 
+function onDragEnd(result: any) {
+  if (!result.destination) {
+    return;
+  }
+  const { destination, source } = result;
+  if (
+    destination.droppableId === source.droppableId &&
+    destination.index === source.index
+  ) {
+    return;
+  }
+  // playlist.moveSong(source.index, destination.index);
+}
+
 const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectionContext);
-  log.debug({ widgets: widgetStore.list }, "calling widget list");
+  log.debug({ widgets: widgetStore.list }, "rendering widget list");
   return (
     <>
       {widgetStore.list.map((data) => (

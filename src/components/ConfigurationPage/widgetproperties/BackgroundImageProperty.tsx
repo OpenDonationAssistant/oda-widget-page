@@ -25,7 +25,7 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return Promise.reject();
   }
   const file = e.target.files[0];
-  const name = file.name.replace(/[^0-9a-z\.]/gi, "");
+  const name = encodeURIComponent(file.name);
   return uploadFile(file, name).then((ignore: any) => {
     return name;
   });

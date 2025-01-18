@@ -34,7 +34,6 @@ import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetS
 import { DonatersTopList } from "../../pages/DonatersTopList/DonatersTopList";
 import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
 import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
-import { NotificationPlacement } from "antd/es/notification/interface";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -210,20 +209,6 @@ function runReel(id: string, conf: any, config: AbstractWidgetSettings) {
     selection: optionList[choosenIndex],
     widgetId: id,
   });
-}
-
-function onDragEnd(result: any) {
-  if (!result.destination) {
-    return;
-  }
-  const { destination, source } = result;
-  if (
-    destination.droppableId === source.droppableId &&
-    destination.index === source.index
-  ) {
-    return;
-  }
-  // playlist.moveSong(source.index, destination.index);
 }
 
 export default function WidgetConfiguration({

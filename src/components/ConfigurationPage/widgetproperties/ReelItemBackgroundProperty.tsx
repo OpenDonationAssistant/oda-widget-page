@@ -29,7 +29,7 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
   handleBackgroundImageChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = file.name.replace(/[^0-9a-z\.]/gi, "");
+      const name = encodeURIComponent(file.name);
       this.uploadFile(file, name).then(() => {
         this.value = name;
       });
