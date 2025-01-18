@@ -28,6 +28,9 @@ export default function Header({}) {
     <div className={`${classes.headercontainer}`}>
       <ODALogo />
       <div className={`${classes.buttons}`}>
+        <a href="https://t.me/opendonationassistant">
+          <img width={25} height={25} src="/icons/telegram.png" />
+        </a>
         <a href="https://oda.digital/news">
           <span className="material-symbols-sharp">news</span>
         </a>

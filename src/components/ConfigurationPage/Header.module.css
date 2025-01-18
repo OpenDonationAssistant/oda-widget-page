@@ -38,4 +38,8 @@
     color: var(--oda-secondary-text-color);
     margin-right: 5px;
   }
+  & a:hover {
+    transform: translateY(-2px);
+    filter: brightness(100);
+  }
 }
