@@ -148,6 +148,7 @@
   "widget-goal-title": "Title",
   "widget-goal-description": "Description",
   "widget-goal-amount": "Amount",
+  "widget-goal-accumulated-amount": "Accumulated amount",
   "widget-goal-default": "Default",
   "widget-alert-amount": "Amount",
   "widget-alert-image-width": "Image width (px)",
@@ -247,5 +248,6 @@
   "button-news": "News",
   "widget-donaterslist-show-header": "Show Header",
   "unsaved-notification-title": "Unsaved changes",
-  "unsaved-notification-description": "You have unsaved changes in widget settings"
+  "unsaved-notification-description": "You have unsaved changes in widget settings",
+  "font-select-help": "Font name. ODA uses fontsource.org so you can preview and choose fonts there."
 }

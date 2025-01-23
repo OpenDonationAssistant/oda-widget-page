@@ -98,9 +98,6 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
   }
 
   calcStyle(): React.CSSProperties {
-    log.debug({
-      value: this.value,
-    });
     const fontColorStyle = new ColorProperty({
       name: "color",
       value: this.value.color,

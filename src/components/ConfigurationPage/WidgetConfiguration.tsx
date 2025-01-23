@@ -37,7 +37,6 @@ import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
 
 interface WidgetConfigurationProps {
   widget: Widget;
-  open: boolean;
 }
 
 export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
@@ -211,154 +210,160 @@ function runReel(id: string, conf: any, config: AbstractWidgetSettings) {
   });
 }
 
-export default function WidgetConfiguration({
-  widget,
-  open,
-}: WidgetConfigurationProps) {
-  const { conf } = useLoaderData() as WidgetData;
-  const { t } = useTranslation();
-  const renameModalState = useRef(new RenameModalState(widget));
-  const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
-  const [api, context] = notification.useNotification();
+export const WidgetConfiguration = observer(
+  ({ widget }: WidgetConfigurationProps) => {
+    const selection = useContext(SelectionContext);
+    const { conf } = useLoaderData() as WidgetData;
+    const { t } = useTranslation();
+    const renameModalState = useRef(new RenameModalState(widget));
+    const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
+    const [api, context] = notification.useNotification();
 
-  useEffect(() => {
-    reaction(
-      () => widget.config.unsaved,
-      (unsaved) => {
-        if (unsaved) {
-          api.warning({
-            message: <Trans i18nKey="unsaved-notification-title"/>,
-            description: <Trans i18nKey="unsaved-notification-description"/>,
-            placement: "bottomRight",
-            duration: 0,
-            closeIcon: <div></div>
-          });
-        } else {
-          api.destroy();
-        }
-      },
-    );
-  }, [widget]);
+    useEffect(() => {
+      reaction(
+        () => widget.config.unsaved,
+        (unsaved) => {
+          if (unsaved) {
+            api.warning({
+              message: <Trans i18nKey="unsaved-notification-title" />,
+              description: <Trans i18nKey="unsaved-notification-description" />,
+              placement: "bottomRight",
+              duration: 0,
+              closeIcon: <div></div>,
+            });
+          } else {
+            api.destroy();
+          }
+        },
+      );
+    }, [widget]);
 
-  return (
-    <div className={`widget ${open ? "extended" : "collapsed"}`}>
-      {context}
-      <RenameModal state={renameModalState.current} />
-      <div className="widget-header">
-        <NameComponent widget={widget} />
-        {widget.type === "reel" && (
-          <Button
-            onClick={() => runReel(widget.id, conf, widget.config)}
-            className="oda-btn-default"
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">poker_chip</span>
-              <div>{t("button-spin")}</div>
-            </Flex>
-          </Button>
-        )}
-        {widget.type === "payment-alerts" && <TestAlertButton config={conf} />}
-        <SaveButtons widget={widget} />
-        <WidgetUrlModal
-          open={showUrlModal}
-          type={widget.type}
-          id={widget.id}
-          onClose={() => setShowUrlModal(false)}
-        />
-        <HelpButton widget={widget} />
-        <Dropdown
-          trigger={["click"]}
-          menu={{
-            items: [
-              {
-                key: "copy-url",
-                label: (
-                  <Flex gap={5}>
-                    <span className="material-symbols-sharp">link</span>
-                    <span>{t("button-copy-url")}</span>
-                  </Flex>
-                ),
-                onClick: () => setShowUrlModal(true),
-              },
-              {
-                key: "rename",
-                label: (
-                  <Flex gap={5}>
-                    <span className="material-symbols-sharp">stylus</span>
-                    <span>{t("button-rename")}</span>
-                  </Flex>
-                ),
-                onClick: () => {
-                  renameModalState.current.show();
-                },
-              },
-              {
-                key: "delete",
-                label: (
-                  <Flex gap={5}>
-                    <span className="material-symbols-sharp">delete</span>
-                    <span>{t("button-delete")}</span>
-                  </Flex>
-                ),
-                onClick: () => widget.delete(),
-              },
-            ],
-          }}
-        >
-          <button onClick={(e) => e.preventDefault()} className="menu-button">
-            <span className="material-symbols-sharp">more_vert</span>
-          </button>
-        </Dropdown>
-      </div>
-      <div className={`widget-settings ${open ? "" : "visually-hidden"}`}>
-        {(widget.type === "donaton" ||
-          widget.type === "donation-timer" ||
-          widget.type === "donationgoal" ||
-          widget.type === "player-popup" ||
-          widget.type === "donaters-top-list") && (
-          <Flex justify="space-around" className={`${classes.preview}`}>
-            <ResizableBox
-              width={800}
-              height={250}
-              className={`${classes.resizable}`}
-              axis="both"
-              minConstraints={[650, 100]}
+    return (
+      <div
+        className={`widget ${selection.id === widget.id ? "extended" : "collapsed"}`}
+      >
+        {context}
+        <RenameModal state={renameModalState.current} />
+        <div className="widget-header">
+          <NameComponent widget={widget} />
+          {widget.type === "reel" && (
+            <Button
+              onClick={() => runReel(widget.id, conf, widget.config)}
+              className="oda-btn-default"
             >
-              <div style={{ maxWidth: "100%" }}>
-                {widget.type === "donation-timer" && (
-                  <DonationTimer
-                    settings={widget.config as DonationTimerWidgetSettings}
-                  />
-                )}
-                {widget.type === "donaton" && (
-                  <DonatonWidget
-                    settings={widget.config as DonatonWidgetSettings}
-                  />
-                )}
-                {widget.type === "player-popup" && (
-                  <PlayerPopup
-                    player={new DemoPlayerStore()}
-                    settings={widget.config as PlayerPopupWidgetSettings}
-                  />
-                )}
-                {widget.type === "donationgoal" && (
-                  <DonationGoal
-                    settings={widget.config as DonationGoalWidgetSettings}
-                    state={new DemoDonationGoalState()}
-                  />
-                )}
-                {widget.type === "donaters-top-list" && (
-                  <DonatersTopList
-                    settings={widget.config as DonatersTopListWidgetSettings}
-                    store={new DemoListStore()}
-                  />
-                )}
-              </div>
-            </ResizableBox>
-          </Flex>
-        )}
-        <Comp widget={widget} />
+              <Flex justify="center" align="center" gap={3}>
+                <span className="material-symbols-sharp">poker_chip</span>
+                <div>{t("button-spin")}</div>
+              </Flex>
+            </Button>
+          )}
+          {widget.type === "payment-alerts" && (
+            <TestAlertButton config={conf} />
+          )}
+          <SaveButtons widget={widget} />
+          <WidgetUrlModal
+            open={showUrlModal}
+            type={widget.type}
+            id={widget.id}
+            onClose={() => setShowUrlModal(false)}
+          />
+          <HelpButton widget={widget} />
+          <Dropdown
+            trigger={["click"]}
+            menu={{
+              items: [
+                {
+                  key: "copy-url",
+                  label: (
+                    <Flex gap={5}>
+                      <span className="material-symbols-sharp">link</span>
+                      <span>{t("button-copy-url")}</span>
+                    </Flex>
+                  ),
+                  onClick: () => setShowUrlModal(true),
+                },
+                {
+                  key: "rename",
+                  label: (
+                    <Flex gap={5}>
+                      <span className="material-symbols-sharp">stylus</span>
+                      <span>{t("button-rename")}</span>
+                    </Flex>
+                  ),
+                  onClick: () => {
+                    renameModalState.current.show();
+                  },
+                },
+                {
+                  key: "delete",
+                  label: (
+                    <Flex gap={5}>
+                      <span className="material-symbols-sharp">delete</span>
+                      <span>{t("button-delete")}</span>
+                    </Flex>
+                  ),
+                  onClick: () => widget.delete(),
+                },
+              ],
+            }}
+          >
+            <button onClick={(e) => e.preventDefault()} className="menu-button">
+              <span className="material-symbols-sharp">more_vert</span>
+            </button>
+          </Dropdown>
+        </div>
+        <div
+          className={`widget-settings ${selection.id === widget.id ? "" : "visually-hidden"}`}
+        >
+          {(widget.type === "donaton" ||
+            widget.type === "donation-timer" ||
+            widget.type === "donationgoal" ||
+            widget.type === "player-popup" ||
+            widget.type === "donaters-top-list") && (
+            <Flex justify="space-around" className={`${classes.preview}`}>
+              <ResizableBox
+                width={800}
+                height={250}
+                className={`${classes.resizable}`}
+                axis="both"
+                minConstraints={[650, 100]}
+              >
+                <div style={{ maxWidth: "100%" }}>
+                  {widget.type === "donation-timer" && (
+                    <DonationTimer
+                      settings={widget.config as DonationTimerWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "donaton" && (
+                    <DonatonWidget
+                      settings={widget.config as DonatonWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "player-popup" && (
+                    <PlayerPopup
+                      player={new DemoPlayerStore()}
+                      settings={widget.config as PlayerPopupWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "donationgoal" && (
+                    <DonationGoal
+                      settings={widget.config as DonationGoalWidgetSettings}
+                      state={new DemoDonationGoalState()}
+                    />
+                  )}
+                  {widget.type === "donaters-top-list" && (
+                    <DonatersTopList
+                      settings={widget.config as DonatersTopListWidgetSettings}
+                      store={new DemoListStore()}
+                    />
+                  )}
+                </div>
+              </ResizableBox>
+            </Flex>
+          )}
+          <Comp widget={widget} />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  },
+);

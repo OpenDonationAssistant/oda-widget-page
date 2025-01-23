@@ -1,4 +1,3 @@
-import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { Tabs as AntTabs, ColorPicker, Flex, Select, Switch } from "antd";
@@ -11,10 +10,11 @@ import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { ColorProperty, ColorPropertyTarget } from "./ColorProperty";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { Fonts } from "../settings/FontSelect";
 import { ColorPropertyComponent } from "./ColorPropertyComponent";
 import { log } from "../../../logging";
 import InputNumber from "../components/InputNumber";
+import { FontContext } from "../../../stores/FontStore";
+import { useContext } from "react";
 
 const animationType = ["entire", "by words", "by symbols"];
 
@@ -43,6 +43,7 @@ export const AnimatedFontComponent = observer(
     onChange?: (property: AnimatedFontProperty) => void;
   }) => {
     const { t } = useTranslation();
+    const fonts = useContext(FontContext);
 
     return (
       <>
@@ -59,7 +60,7 @@ export const AnimatedFontComponent = observer(
               className={`${classes.demo} ${property.calcClassName()}`}
               style={property.calcStyle()}
             >
-              Это текст для демонстрации
+              The quick brown fox jumps over the lazy dog
             </div>
             <div
               className={`${classes.background}`}
@@ -77,7 +78,7 @@ export const AnimatedFontComponent = observer(
                 children: (
                   <>
                     <div className="settings-item">
-                      <LabeledContainer displayName="button-font">
+                      <LabeledContainer displayName="button-font" help={<Trans i18nKey="font-select-help" />}>
                         <Select
                           showSearch
                           className="full-width"
@@ -91,9 +92,12 @@ export const AnimatedFontComponent = observer(
                             );
                             if (onChange) onChange(property);
                           }}
-                          options={Fonts.sort().map((font) => {
-                            return { value: font, label: font };
-                          })}
+                          options={fonts
+                            .list()
+                            .sort()
+                            .map((font) => {
+                              return { value: font, label: font };
+                            })}
                         />
                       </LabeledContainer>
                     </div>

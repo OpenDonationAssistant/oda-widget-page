@@ -1,11 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import WidgetConfiguration from "./WidgetConfiguration";
+import { createContext, useEffect, useRef, useState } from "react";
+import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useLoaderData } from "react-router";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
@@ -16,6 +10,11 @@ import { makeAutoObservable } from "mobx";
 import { WidgetStore } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  PaymentPageConfig,
+  PaymentPageConfigContext,
+} from "../MediaWidget/PaymentPageConfig";
 
 export class Selection {
   private _id: string | null = null;
@@ -35,33 +34,56 @@ export class Selection {
 
 export const SelectionContext = createContext<Selection>(new Selection());
 
-function onDragEnd(result: any) {
-  if (!result.destination) {
-    return;
-  }
-  const { destination, source } = result;
-  if (
-    destination.droppableId === source.droppableId &&
-    destination.index === source.index
-  ) {
-    return;
-  }
-  // playlist.moveSong(source.index, destination.index);
-}
-
-const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
-  const selection = useContext(SelectionContext);
-  log.debug({ widgets: widgetStore.list }, "rendering widget list");
+const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   return (
     <>
-      {widgetStore.list.map((data) => (
-        <WidgetConfiguration
-          key={data.id}
-          widget={data}
-          open={selection.id === data.id}
-        />
+      {widgetStore.list.map((data, index) => (
+        <Draggable key={data.id} draggableId={data.id} index={index}>
+          {(draggable) => (
+            <div
+              ref={draggable.innerRef}
+              {...draggable.draggableProps}
+              {...draggable.dragHandleProps}
+              key={data.id}
+            >
+              <WidgetConfiguration widget={data} />
+            </div>
+          )}
+        </Draggable>
       ))}
     </>
+  );
+});
+
+const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
+  log.debug({ widgets: widgetStore.list }, "rendering widget list");
+
+  function onDragEnd(result: any) {
+    if (!result.destination) {
+      return;
+    }
+    const { destination, source } = result;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+    widgetStore.moveWidget(source.index, destination.index);
+  }
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="widgetlist">
+        {(provided) => (
+          <div id="widgetlistholder" ref={provided.innerRef}>
+            <div {...provided.droppableProps}>
+              <Widgets widgetStore={widgetStore} />
+            </div>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 });
 
@@ -131,7 +153,11 @@ export default function ConfigurationPage({}: {}) {
     <Content style={{ overflow: "initial" }}>
       <div className="widget-list">
         <SelectionContext.Provider value={selection.current}>
-          <WidgetList widgetStore={widgetStore.current} />
+          <PaymentPageConfigContext.Provider
+            value={new PaymentPageConfig(recipientId)}
+          >
+            <WidgetList widgetStore={widgetStore.current} />
+          </PaymentPageConfigContext.Provider>
         </SelectionContext.Provider>
         <AddWidgetComponent widgetStore={widgetStore.current} />
       </div>

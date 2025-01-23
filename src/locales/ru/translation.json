@@ -144,6 +144,7 @@
   "widget-goal-title": "Название",
   "widget-goal-description": "Описание",
   "widget-goal-amount": "Сумма",
+  "widget-goal-accumulated-amount": "Собранная сумма",
   "widget-goal-default": "По умолчанию",
   "widget-alert-amount": "Сумма",
   "widget-alert-image-width": "Ширина изображения в пикселях",
@@ -248,5 +249,6 @@
   "button-news": "Новости",
   "widget-donaterslist-show-header": "Показывать заголовок",
   "unsaved-notification-title": "Несохраненные изменения",
-  "unsaved-notification-description": "У вас есть несохраненные изменения в настройках виджетов"
+  "unsaved-notification-description": "У вас есть несохраненные изменения в настройках виджетов",
+  "font-select-help": "Название шрифта. ODA использует fontsource.org, поэтому вы можете предпросмотреть и выбрать шрифты там. Обратите внимание, не все шрифты поддерживают кириллицу"
 }

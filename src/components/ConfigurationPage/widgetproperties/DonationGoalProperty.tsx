@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import BooleanPropertyInput from "../components/BooleanPropertyInput";
 import InputNumber from "../components/InputNumber";
+import { PaymentPageConfigContext } from "../../MediaWidget/PaymentPageConfig";
 
 export interface Amount {
   major: number;
@@ -70,6 +71,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
           fullDescription: "",
           default: false,
           requiredAmount: { major: 100, currency: "RUB" },
+          accumulatedAmount: { major: 0, currency: "RUB" },
         },
       ],
       displayName: "Цель",
@@ -103,6 +105,8 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
   }
 
   item(goal: Goal, index: number) {
+    const paymentPageConfig = useContext(PaymentPageConfigContext);
+
     return (
       <div key={index} className={`${classes.goalcontainer}`}>
         <div className="settings-item">
@@ -143,6 +147,33 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
               onChange={(value) => {
                 const updated = toJS(goal);
                 updated.requiredAmount.major = value ?? 0;
+                this.updateGoal(updated, index);
+              }}
+            />
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-accumulated-amount">
+            <InputNumber
+              value={
+                paymentPageConfig?.goals.filter((g) => g.id === goal.id)[0]
+                  ?.accumulatedAmount.major ?? 0
+              }
+              addon="руб."
+              onChange={(value) => {
+                const updated = toJS(goal);
+                if (!updated.accumulatedAmount) {
+                  updated.accumulatedAmount = { major: 0, currency: "RUB" };
+                }
+                updated.accumulatedAmount.major = value ?? 0;
+                if (paymentPageConfig) {
+                  const updatedGoal = paymentPageConfig.goals.filter(
+                    (g) => g.id === goal.id,
+                  )[0];
+                  if (updatedGoal) {
+                    updatedGoal.accumulatedAmount.major = value ?? 0;
+                  }
+                }
                 this.updateGoal(updated, index);
               }}
             />

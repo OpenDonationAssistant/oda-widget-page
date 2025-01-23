@@ -1,6 +1,7 @@
 import axios from "axios";
 import { log as parent } from "../../logging";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { createContext } from "react";
 
 export class PaymentPageConfig {
   private _log = parent.child({ module: "PaymentPageConfig" });
@@ -44,7 +45,7 @@ export class PaymentPageConfig {
         this._tooltip = json.value["tooltip"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
-        this._log.debug({ config: this}, "PaymentPageConfig loaded");
+        this._log.debug({ config: this }, "PaymentPageConfig loaded");
       });
   }
 
@@ -183,3 +184,7 @@ export class PaymentPageConfig {
     this.sendEventPaymentPageUpdated();
   }
 }
+
+export const PaymentPageConfigContext = createContext<PaymentPageConfig | null>(
+  null,
+);

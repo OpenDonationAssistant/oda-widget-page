@@ -2,6 +2,7 @@ import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-cli
 import { Widget } from "../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
+import { produce } from "immer";
 
 export class WidgetStore {
   public list: Widget[] = [];
@@ -50,5 +51,17 @@ export class WidgetStore {
   async deleteWidget(id: string): Promise<void> {
     this.list = this.list.filter((widget) => widget.id !== id);
     await this.client()._delete(id);
+  }
+
+  async moveWidget(originIndex: number, index: number): Promise<void> {
+    const widget = this.list.at(originIndex);
+    const otherWidgets = produce(this.list, (draft) => {
+      draft.splice(originIndex, 1);
+      draft.splice(index, 0, widget!);
+    });
+    this.list = otherWidgets;
+    await this.client().reorder({
+      ids: this.list.map((widget) => widget.id)
+    })
   }
 }
