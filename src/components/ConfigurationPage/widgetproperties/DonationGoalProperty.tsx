@@ -27,6 +27,126 @@ export interface Goal {
   accumulatedAmount: Amount;
 }
 
+const ItemComponent = observer(
+  ({
+    property,
+    goal,
+    index,
+  }: {
+    property: DonationGoalProperty;
+    goal: Goal;
+    index: number;
+  }) => {
+    const paymentPageConfig = useContext(PaymentPageConfigContext);
+
+    return (
+      <div key={index} className={`${classes.goalcontainer}`}>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-title">
+            <TextPropertyModal title="Название">
+              <textarea
+                className="widget-settings-value"
+                value={goal.briefDescription}
+                onChange={(e) => {
+                  const updated = toJS(goal);
+                  updated.briefDescription = e.target.value;
+                  property.updateGoal(updated, index);
+                }}
+              />
+            </TextPropertyModal>
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-description">
+            <TextPropertyModal title="Описание">
+              <textarea
+                className="widget-settings-value"
+                value={goal.fullDescription}
+                onChange={(e) => {
+                  const updated = toJS(goal);
+                  updated.fullDescription = e.target.value;
+                  property.updateGoal(updated, index);
+                }}
+              />
+            </TextPropertyModal>
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-amount">
+            <InputNumber
+              value={goal.requiredAmount.major}
+              addon="руб."
+              onChange={(value) => {
+                const updated = toJS(goal);
+                updated.requiredAmount.major = value ?? 0;
+                property.updateGoal(updated, index);
+              }}
+            />
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-accumulated-amount">
+            <InputNumber
+              value={
+                paymentPageConfig?.goals.filter((g) => g.id === goal.id)[0]
+                  ?.accumulatedAmount.major ?? 0
+              }
+              addon="руб."
+              onChange={(value) => {
+                const updated = toJS(goal);
+                if (!updated.accumulatedAmount) {
+                  updated.accumulatedAmount = { major: 0, currency: "RUB" };
+                }
+                updated.accumulatedAmount.major = value ?? 0;
+                if (paymentPageConfig) {
+                  const updatedGoal = paymentPageConfig.goals.filter(
+                    (g) => g.id === goal.id,
+                  )[0];
+                  if (updatedGoal) {
+                    updatedGoal.accumulatedAmount.major = value ?? 0;
+                  } else {
+                    paymentPageConfig.goals.push(updated);
+                  }
+                }
+                property.updateGoal(updated, index);
+              }}
+            />
+          </LabeledContainer>
+        </div>
+        <div className="settings-item">
+          <LabeledContainer displayName="widget-goal-default">
+            <BooleanPropertyInput
+              onChange={() => {
+                const updated = toJS(goal);
+                updated.default = !updated.default;
+                property.updateGoal(updated, index);
+              }}
+              prop={{
+                value: goal.default,
+              }}
+            />
+          </LabeledContainer>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <button
+            className={`${classes.deletebutton}`}
+            onClick={() => {
+              property.deleteGoal(index);
+            }}
+          >
+            <Flex justify="center" align="center" gap={3}>
+              <span className="material-symbols-sharp">delete</span>
+              <div>
+                <Trans i18nKey="button-delete" />
+              </div>
+            </Flex>
+          </button>
+        </div>
+      </div>
+    );
+  },
+);
+
 const DonationGoalPropertyComponent = observer(
   ({ property }: { property: DonationGoalProperty }) => {
     return (
@@ -50,7 +170,7 @@ const DonationGoalPropertyComponent = observer(
             return {
               key: index,
               label: goal.briefDescription,
-              children: property.item(goal, index),
+              children: <ItemComponent property={property} goal={goal} index={index} />,
             };
           })}
         />
@@ -102,114 +222,6 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
       accumulatedAmount: { major: 0, currency: "RUB" },
     });
     log.debug({ settings: this }, "updated goals");
-  }
-
-  item(goal: Goal, index: number) {
-    const paymentPageConfig = useContext(PaymentPageConfigContext);
-
-    return (
-      <div key={index} className={`${classes.goalcontainer}`}>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-title">
-            <TextPropertyModal title="Название">
-              <textarea
-                className="widget-settings-value"
-                value={goal.briefDescription}
-                onChange={(e) => {
-                  const updated = toJS(goal);
-                  updated.briefDescription = e.target.value;
-                  this.updateGoal(updated, index);
-                }}
-              />
-            </TextPropertyModal>
-          </LabeledContainer>
-        </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-description">
-            <TextPropertyModal title="Описание">
-              <textarea
-                className="widget-settings-value"
-                value={goal.fullDescription}
-                onChange={(e) => {
-                  const updated = toJS(goal);
-                  updated.fullDescription = e.target.value;
-                  this.updateGoal(updated, index);
-                }}
-              />
-            </TextPropertyModal>
-          </LabeledContainer>
-        </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-amount">
-            <InputNumber
-              value={goal.requiredAmount.major}
-              addon="руб."
-              onChange={(value) => {
-                const updated = toJS(goal);
-                updated.requiredAmount.major = value ?? 0;
-                this.updateGoal(updated, index);
-              }}
-            />
-          </LabeledContainer>
-        </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-accumulated-amount">
-            <InputNumber
-              value={
-                paymentPageConfig?.goals.filter((g) => g.id === goal.id)[0]
-                  ?.accumulatedAmount.major ?? 0
-              }
-              addon="руб."
-              onChange={(value) => {
-                const updated = toJS(goal);
-                if (!updated.accumulatedAmount) {
-                  updated.accumulatedAmount = { major: 0, currency: "RUB" };
-                }
-                updated.accumulatedAmount.major = value ?? 0;
-                if (paymentPageConfig) {
-                  const updatedGoal = paymentPageConfig.goals.filter(
-                    (g) => g.id === goal.id,
-                  )[0];
-                  if (updatedGoal) {
-                    updatedGoal.accumulatedAmount.major = value ?? 0;
-                  }
-                }
-                this.updateGoal(updated, index);
-              }}
-            />
-          </LabeledContainer>
-        </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-default">
-            <BooleanPropertyInput
-              onChange={() => {
-                const updated = toJS(goal);
-                updated.default = !updated.default;
-                this.updateGoal(updated, index);
-              }}
-              prop={{
-                value: goal.default,
-              }}
-            />
-          </LabeledContainer>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <button
-            className={`${classes.deletebutton}`}
-            onClick={() => {
-              this.deleteGoal(index);
-            }}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">delete</span>
-              <div>
-                <Trans i18nKey="button-delete" />
-              </div>
-            </Flex>
-          </button>
-        </div>
-      </div>
-    );
   }
 
   markup(): ReactNode {
