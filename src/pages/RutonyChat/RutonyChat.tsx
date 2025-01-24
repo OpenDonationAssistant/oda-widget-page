@@ -56,11 +56,7 @@ export default function DonatonWidget({}) {
       log.debug({ message: message, }, "Received message");
     })
 
-    return () => {
-      log.debug("Closing socket");
-      socket.close;
-    }
-
+    return socket.close;
   }, [widgetId]);
 
   return <>{socket && <p>Connected to ws://127.0.0.1:8383/Donate</p>}</>;
