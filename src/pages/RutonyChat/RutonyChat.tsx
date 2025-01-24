@@ -10,14 +10,19 @@ export default function DonatonWidget({}) {
 
   useEffect(() => {
     log.debug("Connecting to ws://127.0.0.1:8383/Donate");
-    const socket = new WebSocket("ws://127.0.0.1:8383/CustomAlert");
-    socket.onmessage = (event) => {
+    const listAlertSocket = new WebSocket("ws://127.0.0.1:8383/AlertsList");
+    listAlertSocket.onmessage = (event) => {
+      log.info({ message: event.data }, "Received alert message");
+    };
+
+    const localsocket = new WebSocket("ws://127.0.0.1:8383/CustomAlert");
+    localsocket.onmessage = (event) => {
       log.debug({ message: event.data }, "Received message");
-    }
+    };
     subscribe(widgetId, conf.topic.alerts, (message) => {
       const json = JSON.parse(message.body);
       const messageToSend = {
-        ID: "test",
+        id: "test",
         // nick: json.nickname,
         // site: "oda.digital",
         // text: json.message,
@@ -26,11 +31,11 @@ export default function DonatonWidget({}) {
         // test: false,
       };
       log.debug({ message: messageToSend }, "Sending message");
-      socket.send(JSON.stringify(messageToSend));
+      localsocket.send(JSON.stringify(messageToSend));
       message.ack();
     });
-    setSocket(socket);
-    return socket.close;
+    setSocket(localsocket);
+    return localsocket.close;
   }, [widgetId]);
 
   return <>{socket && <p>Connected to ws://127.0.0.1:8383/Donate</p>}</>;
