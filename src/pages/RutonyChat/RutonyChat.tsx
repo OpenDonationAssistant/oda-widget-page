@@ -15,18 +15,12 @@ export default function DonatonWidget({}) {
       log.info({ message: event.data }, "Received alert message");
     };
 
-    const localsocket = new WebSocket("ws://127.0.0.1:8383/CustomAlert");
+    const localsocket = new WebSocket("ws://127.0.0.1:8383/Donate");
     localsocket.onmessage = (event) => {
       log.debug({ message: event.data }, "Received message");
     };
     subscribe(widgetId, conf.topic.alerts, (message) => {
       const json = JSON.parse(message.body);
-      const messageToSend = {
-        "type": "CustomAlert",
-        "data": {
-          "ID": "test",
-        }
-      };
       
       var jData = {
           "username": json.nickname,
@@ -39,6 +33,13 @@ export default function DonatonWidget({}) {
           "type": "donate",
           "data": JSON.stringify(jData)
       };
+
+      const messageToSend = {
+        "type": "Donate",
+        "data": {
+          jData
+        }
+      };
         // nick: json.nickname,
         // site: "oda.digital",
         // text: json.message,
@@ -47,6 +48,7 @@ export default function DonatonWidget({}) {
         // test: false,
       log.debug({ message: messageToSend }, "Sending message");
       localsocket.send(JSON.stringify(j));
+      localsocket.send(JSON.stringify(messageToSend));
       message.ack();
     });
     setSocket(localsocket);
