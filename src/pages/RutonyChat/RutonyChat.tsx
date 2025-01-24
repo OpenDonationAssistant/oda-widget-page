@@ -10,19 +10,20 @@ export default function DonatonWidget({}) {
 
   useEffect(() => {
     log.debug("Connecting to ws://127.0.0.1:8383/Donate");
-    const socket = new WebSocket("ws://127.0.0.1:8383/Donate");
+    const socket = new WebSocket("ws://127.0.0.1:8383/CustomAlert");
     socket.onmessage = (event) => {
       log.debug({ message: event.data }, "Received message");
     }
     subscribe(widgetId, conf.topic.alerts, (message) => {
       const json = JSON.parse(message.body);
       const messageToSend = {
-        nick: json.nickname,
-        site: "oda.digital",
-        text: json.message,
-        summ: `${json.amount.major}`,
-        summf: `${json.amount.major}`,
-        test: false,
+        ID: "test",
+        // nick: json.nickname,
+        // site: "oda.digital",
+        // text: json.message,
+        // summ: `${json.amount.major}`,
+        // summf: `${json.amount.major}`,
+        // test: false,
       };
       log.debug({ message: messageToSend }, "Sending message");
       socket.send(JSON.stringify(messageToSend));
