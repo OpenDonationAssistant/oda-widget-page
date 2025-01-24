@@ -10,18 +10,14 @@ export default function DonatonWidget({}) {
 
   useEffect(() => {
     log.debug("Connecting to ws://127.0.0.1:8383/Donate");
-    const listAlertSocket = new WebSocket("ws://127.0.0.1:8383/Donate");
-    listAlertSocket.onmessage = (event) => {
-      log.info({ message: event.data }, "Received alert message");
-    };
 
-    const localsocket = new WebSocket("ws://127.0.0.1:8383/Donate");
-    localsocket.onmessage = (event) => {
+    const socket = new WebSocket("ws://127.0.0.1:8383/Donate");
+    socket.onmessage = (event) => {
       log.debug({ message: event.data }, "Received message");
     };
     subscribe(widgetId, conf.topic.alerts, (message) => {
       const json = JSON.parse(message.body);
-      
+
       var jData = {
           "username": json.nickname,
           "text": json.message,
@@ -47,12 +43,24 @@ export default function DonatonWidget({}) {
         // summf: `${json.amount.major}`,
         // test: false,
       log.debug({ message: messageToSend }, "Sending message");
-      localsocket.send(JSON.stringify(j));
-      localsocket.send(JSON.stringify(messageToSend));
+      socket.send(JSON.stringify(j));
+      // socket.send(JSON.stringify(messageToSend));
       message.ack();
     });
-    setSocket(localsocket);
-    return localsocket.close;
+    setSocket(socket);
+    socket.onerror = (error) => {
+      log.debug("Error: '" + error + "'");
+    };
+
+    socket.onmessage = (message => {
+      log.debug({ message: message, }, "Received message");
+    })
+
+    return () => {
+      log.debug("Closing socket");
+      socket.close;
+    }
+
   }, [widgetId]);
 
   return <>{socket && <p>Connected to ws://127.0.0.1:8383/Donate</p>}</>;
