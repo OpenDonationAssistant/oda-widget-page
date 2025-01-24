@@ -41,6 +41,7 @@ import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
 import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
 import EventsPage from "./pages/Events/EventsPage";
 import DonatersTopListPage from "./pages/DonatersTopList/DonatersTopListPage";
+import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 
 async function widgetSettingsLoader({
   params,
@@ -186,6 +187,11 @@ const router = createBrowserRouter([
   {
     path: "/donaton/:widgetId",
     element: <DonatonPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/rutonychat/:widgetId",
+    element: <RutonyChatPage />,
     loader: widgetSettingsLoader,
   },
   {

@@ -14,6 +14,7 @@ import { ReelWidgetSettings } from "../components/ConfigurationPage/widgetsettin
 import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerControlWidgetSettings";
 import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
+import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -75,6 +76,11 @@ export const WIDGET_TYPES = [
     create: () => {
       return new PlayerPopupWidgetSettings();
     },
+  },
+  {
+    name: "rutonychat",
+    description: "Rutony Chat Integration",
+    create: () => new RutonyChatSettings(),
   },
 ];
 
