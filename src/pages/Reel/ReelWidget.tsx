@@ -2,7 +2,7 @@ import Glide from "@glidejs/glide";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   cleanupCommandListener,
@@ -22,6 +22,7 @@ import {
   ColorProperty,
   ColorPropertyTarget,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
+import { getRndInteger } from "../../utils";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -114,19 +115,12 @@ export default function ReelWidget({}) {
     setOptions(options);
   }, [widgetId]);
 
-  function getRndInteger(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
   const titleFont = new AnimatedFontProperty({
-    widgetId: widgetId,
     name: "titleFont",
     value: findSetting(settings, "titleFont", null),
   });
   const selectionStyle = new ColorProperty({
-    widgetId: widgetId,
     name: "selectionColor",
-    tab: "general",
     target: ColorPropertyTarget.BACKGROUND,
     displayName: "label-background",
     value: findSetting(
@@ -143,7 +137,6 @@ export default function ReelWidget({}) {
 
   function calcItemStyle(option: string) {
     let style = new BorderProperty({
-      widgetId: widgetId,
       name: "cardBorder",
       value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
     }).calcCss();
@@ -159,12 +152,9 @@ export default function ReelWidget({}) {
     return style;
   }
   const borderStyle = new BorderProperty({
-    widgetId: widgetId,
     name: "widgetBorder",
     value: findSetting(settings, "widgetBorder", DEFAULT_BORDER_PROPERTY_VALUE),
   }).calcCss();
-
-  const widgetStyle = { ...titleFont.calcStyle(), ...borderStyle };
 
   return (
     <>

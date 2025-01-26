@@ -1,8 +1,5 @@
 import { log } from "../../logging";
-
-function getRndInteger(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
+import { getRndInteger } from "../../utils";
 
 function base64ToArrayBuffer(base64) {
   var binaryString = atob(base64);

@@ -1,13 +1,10 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettingsComponent";
-import { IFontLoader } from "../../components/FontLoader/IFontLoader";
+import { AlertState } from "../../components/PaymentAlerts/AlertState";
 import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";
+import { delay, getRndInteger } from "../../utils";
 import { VoiceController } from "../voice/VoiceController";
-
-function getRndInteger(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
 
 export class AlertController {
   private settings: any;
@@ -18,20 +15,20 @@ export class AlertController {
   private sortedAlerts: any = [];
   private wait = 0;
 
-  private messageRenderers: IMessageRenderer[] = [];
-  private titleRenderers: ITitleRenderer[] = [];
-  private alertImageRenderers: IAlertImageRenderer[] = [];
-  private fontLoaders: IFontLoader[] = [];
-  private imageLoaders: IImageLoader[] = [];
   private voiceController: VoiceController | null = null;
   private _recipientId: string;
+  private _state: AlertState = new AlertState();
 
   constructor(settings: any, recipientId: string) {
     this.settings = settings;
     this._recipientId = recipientId;
   }
 
-  listen(widgetId: string, conf: any) {
+  public get state(): AlertState {
+    return this._state;
+  }
+
+  public listen(widgetId: string, conf: any) {
     this.conf = conf;
     this.handleSettings()
       .then(() => {
@@ -75,37 +72,14 @@ export class AlertController {
     });
   }
 
-  addMessageRenderer(renderer: IMessageRenderer) {
-    this.messageRenderers.push(renderer);
-  }
-
-  addTitleRenderer(renderer: ITitleRenderer) {
-    this.titleRenderers.push(renderer);
-  }
-
-  addAlertImageRenderer(renderer: IAlertImageRenderer) {
-    this.alertImageRenderers.push(renderer);
-  }
-
-  addFontLoader(loader: IFontLoader) {
-    this.fontLoaders.push(loader);
-  }
-
-  addImageLoader(loader: IImageLoader) {
-    this.imageLoaders.push(loader);
-    this.preloadImages();
-  }
-
   private preloadImages() {
     log.debug(`preload images`);
-    this.imageLoaders.forEach((loader) => {
-      this.sortedAlerts
-        .map((alert) => alert.image)
-        .forEach((image) => loader.addImage(image));
-    });
+    this.sortedAlerts
+      .map((alert) => alert.image)
+      .forEach((image: string) => this.state.images.push(image));
   }
 
-  async handleSettings() {
+  private async handleSettings() {
     const alerts = this.settings.config.properties.find(
       (it) => it.name === "alerts",
     );
@@ -139,7 +113,7 @@ export class AlertController {
     this.preloadImages();
   }
 
-  loadAudio(alert: any): Promise<any> {
+  private loadAudio(alert: any): Promise<any> {
     log.debug(`load ${alert.audio}`);
     return fetch(
       `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`,
@@ -161,7 +135,7 @@ export class AlertController {
     return defaultValue;
   }
 
-  findAlert(json) {
+  private findAlert(json) {
     let index = -1;
     if (json.alertId) {
       index = this.sortedAlerts.findIndex((alert) => alert.id === json.alertId);
@@ -308,80 +282,48 @@ export class AlertController {
 
   private clear() {
     if (this.wait > 0) {
-      this.delay(this.wait);
+      delay(this.wait);
       this.wait = 0;
     }
-    this.messageRenderers.forEach((renderer) => renderer.setMessage(""));
-    this.titleRenderers.forEach((renderer) => renderer.setTitle(""));
-    this.alertImageRenderers.forEach((renderer) => renderer.setImage(null));
-    this.alertImageRenderers.forEach((renderer) => renderer.setVideo(null));
+    this.state.clear();
     this.showing = false;
   }
 
-  private getRndInteger(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  delay = (ms: number) => {
-    var start = new Date().getTime();
-    var end = start;
-    while (end < start + ms) {
-      end = new Date().getTime();
-    }
-  };
-
   private renderImage(alert: any, data: any) {
-    log.debug(
-      `Amount of alert image renderers: ${this.alertImageRenderers.length}`,
-    );
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     const appearance = this.findSetting(alert.properties, "appearance", "none");
 
-    this.alertImageRenderers.forEach((renderer) => {
-      console.log(alert.properties);
-      if (data.media?.url) {
-        log.debug({ image: data.media.url }, "rendering generated image");
-        renderer.setImage(
-          `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`,
-        );
-      } else if (alert.image) {
-        log.debug({ image: alert.image }, "rendering image");
-        renderer.setImage(
-          `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`,
-        );
-      } else if (alert.video) {
-        log.debug({ video: alert.video }, "rendering video");
-        renderer.setVideo(
-          `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`,
-        );
-      }
-      if (appearance && appearance !== "none" && appearance !== "random") {
-        renderer.setClassName(
-          `animate__animated animate__slow animate__${appearance}`,
-        );
-      }
-      if (appearance === "random") {
-        const choice =
-          APPEARANCE_ANIMATIONS[
-            this.getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)
-          ];
-        renderer.setClassName(
-          `animate__animated animate__slow animate__${choice}`,
-        );
-      }
-      if (showTime) {
-        setTimeout(() => {
-          renderer.setImage(null);
-          renderer.setVideo(null);
-        }, showTime * 1000);
-      }
-      renderer.setStyle(
-        this.calculateImageStyle(
-          this.findSetting(alert.properties, "imageWidth", null),
-          this.findSetting(alert.properties, "imageHeight", null),
-        ),
-      );
-    });
+    console.log(alert.properties);
+    if (data.media?.url) {
+      log.debug({ image: data.media.url }, "rendering generated image");
+      this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
+    } else if (alert.image) {
+      log.debug({ image: alert.image }, "rendering image");
+      this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`;
+    } else if (alert.video) {
+      log.debug({ video: alert.video }, "rendering video");
+      this.state.video = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`;
+    }
+    if (appearance && appearance !== "none" && appearance !== "random") {
+      this.state.imageClassName = `animate__animated animate__slow animate__${appearance}`;
+    }
+    if (appearance === "random") {
+      const choice =
+        APPEARANCE_ANIMATIONS[
+          getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)
+        ];
+      this.state.imageClassName = `animate__animated animate__slow animate__${choice}`;
+    }
+    if (showTime) {
+      setTimeout(() => {
+        this.state.image = null;
+        this.state.video = null;
+      }, showTime * 1000);
+    }
+    this.state.imageStyle = this.calculateImageStyle(
+      this.findSetting(alert.properties, "imageWidth", null),
+      this.findSetting(alert.properties, "imageHeight", null),
+    );
   }
 
   private renderTitle(alert: any, data: any) {
@@ -390,44 +332,36 @@ export class AlertController {
       "nicknameTextTemplate",
       "<username> - <amount>",
     );
+
     const title = nicknameTextTemplate
       .replace("<username>", data.nickname ? data.nickname : "Аноним")
       .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
 
     const headerFont = new AnimatedFontProperty({
-      widgetId: "widgetId",
       name: "headerFont",
       value: this.findSetting(alert.properties, "headerFont", null),
     });
-    this.fontLoaders.forEach((loader) =>
-      loader.addFont(headerFont.value.family),
-    );
-    this.titleRenderers.forEach((renderer) => {
-      renderer.setClassName(headerFont.calcClassName() ?? "");
-      renderer.setStyle(headerFont.calcStyle());
-      renderer.setTitle(title);
-    });
+
+    this.state.fonts.push(headerFont.value.family);
+    this.state.title = title;
+    this.state.titleStyle = headerFont.calcStyle();
+    this.state.titleClassName = headerFont.calcClassName() ?? "";
   }
 
   private renderMessage(alert: any, data: any) {
     const showTime = this.findSetting(alert.properties, "imageShowTime", null);
     const messageFont = new AnimatedFontProperty({
-      widgetId: "widgetId",
       name: "font",
       value: this.findSetting(alert.properties, "font", null),
     });
-    this.fontLoaders.forEach((loader) =>
-      loader.addFont(messageFont.value.family),
-    );
-    this.messageRenderers.forEach((renderer) => {
-      renderer.setStyle(messageFont.calcStyle());
-      renderer.setClassName(messageFont.calcClassName() ?? "");
-      if (showTime) {
-        setTimeout(() => renderer.setMessage(data.message), showTime * 1000);
-      } else {
-        renderer.setMessage(data.message);
-      }
-    });
+    this.state.fonts.push(messageFont.value.family);
+    this.state.messageStyle = messageFont.calcStyle();
+    this.state.messageClassName = messageFont.calcClassName() ?? "";
+    if (showTime) {
+      setTimeout(() => this.state.message = data.message, showTime * 1000);
+    } else {
+      this.state.message = data.message;
+    }
   }
 
   private calculateImageStyle(imageWidth: any, imageHeight: any) {

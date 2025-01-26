@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import classes from "./PaymentAlerts.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,19 +10,20 @@ import {
   unsubscribe,
 } from "../../socket";
 import { AlertController } from "../../logic/alert/AlertController";
-import MessageBody from "./sections/MessageBody";
-import MessageTitle from "./sections/MessageTitle";
-import AlertImage from "./sections/AlertImage/AlertImage";
-import FontLoader from "../FontLoader/FontLoader";
-import ImageCache from "../ImageCache/ImageCache";
-import { findSetting } from "../utils";
+import FontLoader from "./sections/FontLoader/FontLoader";
 import { WidgetData } from "../../types/WidgetData";
+import { AlertImage } from "./sections/AlertImage/AlertImage";
+import { MessageTitle } from "./sections/MessageTitle/MessageTitle";
+import { MessageBody } from "./sections/MessageBody/MessageBody";
+import { ImageCache } from "./sections/ImageCache/ImageCache";
+import { Flex } from "antd";
+import { AlertStateContext } from "./AlertState";
 
 function PaymentAlerts({}: {}) {
   const { recipientId, settings, conf, widgetId } =
     useLoaderData() as WidgetData;
   const navigate = useNavigate();
-  const [useGreenscreen, setUseGreenscreen] = useState<boolean>(true);
+
   const alertController = useRef<AlertController>(
     new AlertController(settings, recipientId),
   );
@@ -30,10 +31,6 @@ function PaymentAlerts({}: {}) {
   useEffect(() => {
     alertController.current.listen(widgetId, conf);
   }, [alertController]);
-
-  useEffect(() => {
-    setUseGreenscreen(findSetting(settings, "useGreenscreen", false));
-  }, [settings]);
 
   useEffect(() => {
     subscribe(widgetId, conf.topic.alertWidgetCommans, (message) => {
@@ -55,24 +52,22 @@ function PaymentAlerts({}: {}) {
   }, [widgetId]);
 
   return (
-    <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%; background-color: ${
-            useGreenscreen ? "green" : "rgba(0,0,0,0)"
-          };}`,
-        }}
-      />
-      <FontLoader fontProvider={alertController.current} />
-      <ImageCache imageProvider={alertController.current} />
-      <div className={classes.paymentAlerts}>
-        <AlertImage alertController={alertController.current} />
+    <AlertStateContext.Provider value={alertController.current.state}>
+      <FontLoader />
+      <ImageCache />
+      <Flex
+        vertical
+        justify="flex-start"
+        align="center"
+        className={`${classes.paymentAlerts}`}
+      >
+        <AlertImage />
         <div className={classes.message}>
-          <MessageTitle alertController={alertController.current} />
-          <MessageBody alertController={alertController.current} />
+          <MessageTitle />
+          <MessageBody />
         </div>
-      </div>
-    </>
+      </Flex>
+    </AlertStateContext.Provider>
   );
 }
 

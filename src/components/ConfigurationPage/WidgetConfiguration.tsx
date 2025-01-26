@@ -34,6 +34,7 @@ import { DonationGoalWidgetSettings } from "./widgetsettings/DonationGoalWidgetS
 import { DonatersTopList } from "../../pages/DonatersTopList/DonatersTopList";
 import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
 import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
+import { getRndInteger } from "../../utils";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -194,10 +195,6 @@ const Comp = observer(({ widget }: { widget: Widget }) => (
 
 function getProperty(config: AbstractWidgetSettings, name: string): any {
   return config.get(name)?.value;
-}
-
-function getRndInteger(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function runReel(id: string, conf: any, config: AbstractWidgetSettings) {

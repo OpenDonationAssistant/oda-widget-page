@@ -10,7 +10,6 @@ import {
   unsubscribe,
 } from "./socket";
 import { messageCallbackType } from "@stomp/stompjs";
-import { log } from "./logging";
 
 const overflowHiddenForRootElement = (
   <style
@@ -31,8 +30,6 @@ const fullHeight = (
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
-
-  log.debug("creating widget wrapper");
 
   useEffect(() => {
     setupCommandListener(widgetId, () => navigate(0));

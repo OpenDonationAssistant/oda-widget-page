@@ -1,48 +1,40 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import classes from "./AlertImage.module.css";
-import { AlertController } from "../../../../logic/alert/AlertController";
-import { log } from "../../../../logging";
+import { observer } from "mobx-react-lite";
+import { AlertStateContext } from "../../AlertState";
 
-export default function AlertImage({
-  alertController,
-}: {
-  alertController: AlertController;
-}) {
-  const [image, setImage] = useState<string | null>(null);
-  const [video, setVideo] = useState<string | null>(null);
-  const [style, setStyle] = useState<any>({});
-  const [className, setClassName] = useState<string>("");
-  const videoRef = useRef<HTMLVideoElement|null>(null);
+export const AlertImage = observer(({}) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const state = useContext(AlertStateContext);
 
   useEffect(() => {
-    alertController.addAlertImageRenderer({
-      setClassName: setClassName,
-      setVideo: setVideo,
-      setImage: setImage,
-      setStyle: setStyle,
-    });
-  }, [alertController]);
-
-  useEffect(() => {
-    if (!videoRef.current){
+    if (!videoRef.current) {
       return;
     }
-    videoRef.current.addEventListener("ended", () => setVideo(null));
-  },[videoRef]);
-
-  log.debug({image: image, video: video}, "updated alert component");
+    videoRef.current.addEventListener("ended", () => {}); // TODO: unset video
+  }, [videoRef]);
 
   return (
     <>
-      {video && (
-        <video ref={videoRef} autoPlay={true} src={video} style={style} className={classes.alertimage} />
+      {state.video && (
+        <video
+          ref={videoRef}
+          autoPlay={true}
+          src={state.video}
+          style={state.imageStyle}
+          className={classes.alertimage}
+        />
       )}
-      {image && (
-        <img src={image} style={style} className={`${classes.alertimage} ${className}`} />
+      {state.image && (
+        <img
+          src={state.image}
+          style={state.imageStyle}
+          className={`${classes.alertimage} ${state.imageClassName}`}
+        />
       )}
-      {!image && !video && (
-        <div style={{ height: "40%", flex: "0 1 auto"}}></div>
+      {!state.image && !state.video && (
+        <div className={`${classes.emptyspace}`}></div>
       )}
     </>
   );
-}
+});
