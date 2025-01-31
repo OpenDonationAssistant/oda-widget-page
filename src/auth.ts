@@ -2,6 +2,11 @@ import axios from "axios";
 import { log } from "./logging";
 
 async function loadSession() {
+  const accessToken = localStorage.getItem("access-token");
+  if (accessToken) {
+    log.debug({ accessToken: accessToken }, "using access token");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+  }
   const sessionInfo = await axios
     .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
     .then((json) => {
