@@ -3,6 +3,7 @@ import { log } from "./logging";
 
 async function loadSession() {
   const accessToken = localStorage.getItem("access-token");
+  log.debug({ accessToken: accessToken }, "prev access token");
   if (accessToken) {
     log.debug({ accessToken: accessToken }, "using access token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
