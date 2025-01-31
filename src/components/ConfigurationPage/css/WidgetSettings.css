@@ -23,7 +23,7 @@ button.ant-btn.ant-btn-primary {
   background: var(--oda-secondary-text-color);
   color: var(--oda-label-background-color);
 
-  font-family: var(--oda-main-font-FAMILY);
+  font-family: var(--oda-main-font-family);
   font-size: 14px;
   border-radius: 5px;
   font-weight: 900;
