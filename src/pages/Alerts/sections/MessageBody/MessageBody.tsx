@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import classes from "./MessageBody.module.css";
-import { AlertStateContext } from "../../AlertState";
 import { observer } from "mobx-react-lite";
+import { AlertStateContext } from "../../AlertState";
 
 export const MessageBody = observer(({}) => {
   const state = useContext(AlertStateContext);

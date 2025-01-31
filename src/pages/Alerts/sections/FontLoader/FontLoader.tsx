@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import FontImport from "../../../FontImport/FontImport";
+import FontImport from "../../../../components/FontImport/FontImport";
 import { AlertStateContext } from "../../AlertState";
 
 export default function FontLoader({}) {
@@ -12,4 +12,5 @@ export default function FontLoader({}) {
       ))}
     </>
   );
+
 }

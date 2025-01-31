@@ -5,11 +5,32 @@ import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { AlertComponent } from "./AlertComponent";
-import { Flex } from "antd";
+import { Collapse, Flex } from "antd";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../../../types/WidgetData";
+import { log } from "../../../../logging";
+import { publish } from "../../../../socket";
+import { uuidv7 } from "uuidv7";
+
+function testAlert(topic: string, alert: Alert) {
+  publish(topic, {
+    id: uuidv7(), // TODO: сделать опциональным
+    alertId: alert.id,
+    nickname: "Тестовый алерт",
+    message: "Тестовое сообщение",
+    amount: {
+      major: 100,
+      minor: 0,
+      currency: "RUB",
+    },
+  });
+  log.debug("Send test alert");
+}
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
     const { t } = useTranslation();
+    const { conf } = useLoaderData() as WidgetData;
 
     return (
       <>
@@ -25,9 +46,45 @@ const PaymentAlertsPropertyComponent = observer(
           </button>
         </div>
         <div className={`${classes.preview}`}>
-          {property.value.map((it) => (
-            <AlertComponent alert={it} />
-          ))}
+          <Collapse
+            items={property.value.map((it, index) => {
+              return {
+                key: it.id ?? index,
+                label: (
+                  <Flex justify="space-between" align="center">
+                    <div>{it.property("name") ?? it.id ?? index}</div>
+                    <Flex className={`${classes.alertbuttons}`}>
+                      <button
+                        className="menu-button"
+                        onClick={() => testAlert(conf.topic.alerts, it)}
+                      >
+                        <span className="material-symbols-sharp">
+                          play_circle
+                        </span>
+                      </button>
+                      <button className="menu-button" onClick={() => it.copy()}>
+                        <span className="material-symbols-sharp">
+                          content_copy
+                        </span>
+                      </button>
+                      <button className="menu-button" onClick={() => it.copy()}>
+                        <span className="material-symbols-sharp">
+                          stylus
+                        </span>
+                      </button>
+                      <button
+                        className="menu-button"
+                        onClick={() => it.delete()}
+                      >
+                        <span className="material-symbols-sharp">delete</span>
+                      </button>
+                    </Flex>
+                  </Flex>
+                ),
+                children: <AlertComponent alert={it} />,
+              };
+            })}
+          />
         </div>
       </>
     );

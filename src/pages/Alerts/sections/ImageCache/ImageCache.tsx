@@ -1,12 +1,9 @@
 import { useContext } from "react";
-import { AlertStateContext } from "../../AlertState";
 import { observer } from "mobx-react-lite";
-import { log } from "../../../../logging";
+import { AlertStateContext } from "../../AlertState";
 
 export const ImageCache = observer(({}) => {
   const state = useContext(AlertStateContext);
-
-  log.debug({ images: state.images }, "preloading images");
 
   return (
     <>

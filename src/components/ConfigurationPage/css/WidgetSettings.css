@@ -5,8 +5,8 @@
   --oda-btn-background-color: #0c122e;
   --oda-main-border: 1px solid var(--oda-control-background-color);
   --oda-main-font-family: Play;
-  --oda-main-text-color: #FBFFF1;
-  --oda-secondary-text-color: #B4C5E4;
+  --oda-main-text-color: #fbfff1;
+  --oda-secondary-text-color: #b4c5e4;
   --oda-label-font: 1rem var(--oda-main-font-family);
   --oda-label-color: #ffffffda;
   --oda-panel-backgroun-color: #2b3566;
@@ -31,7 +31,7 @@ button.ant-btn.ant-btn-primary {
   padding: 6px 15px;
 }
 
-.ant-modal-content .ant-modal-footer .ant-btn.ant-btn-default{
+.ant-modal-content .ant-modal-footer .ant-btn.ant-btn-default {
   display: none;
 }
 
@@ -40,12 +40,12 @@ button.ant-btn.ant-btn-primary {
 .ant-btn-default:hover,
 #root button.ant-btn.ant-btn-default:hover,
 button.ant-btn.ant-btn-primary:hover {
-  cursor: pointer!important;
-  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0!important;
-  border-color: #3c89e8!important;
-  color: var(--oda-label-background-color)!important;
-  background-color: var(--oda-secondary-text-color)!important;
-  transform: translateY(-2px)!important;
+  cursor: pointer !important;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0 !important;
+  border-color: #3c89e8 !important;
+  color: var(--oda-label-background-color) !important;
+  background-color: var(--oda-secondary-text-color) !important;
+  transform: translateY(-2px) !important;
 }
 
 .configuration-container {
@@ -82,6 +82,7 @@ button.ant-btn.ant-btn-primary:hover {
   top: 10px;
   font-family: "Play";
 }
+
 .payment-alert-settings .widget-settings-name {
   width: 50%;
 }
@@ -212,16 +213,55 @@ textarea.widget-settings-value {
 .payment-alerts-previews-item {
   min-height: 350px;
   display: flex;
+  flex-direction: column;
   padding: 0px;
   position: relative;
-  border: var(--oda-main-border);
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
-  border-radius: 5px;
+  background-color: var(--oda-main-background-color);
+
   & .ant-tabs {
-    &.ant-tabs-top {
-      padding-top: 10px;
-      & .ant-tabs-nav {
+    flex: 1 1 auto;
+    /*border-bottom: 2px solid var(--oda-main-background-color);*/
+    /*border-top: 2px solid var(--oda-main-background-color);*/
+
+    /* border-bottom: var(--oda-main-border); */
+    &.ant-tabs-card {
+      & .ant-tabs-content-holder {
+        border-radius: 0px!important;
+      }
+    }
+
+    &.ant-tabs-left {
+      & > .ant-tabs-content-holder {
+        /* border-top: 1px solid var(--oda-main-background-color); */
+        background: var(--oda-label-background-color);
+        border-radius: 0px;
+        & > .ant-tabs-content {
+          & > .ant-tabs-tabpane {
+            padding: 0px;
+          }
+        }
+      }
+      & > .ant-tabs-nav {
+        & .ant-tabs-nav-wrap {
+          width: 145px;
+        }
         background: unset;
+        padding-left: 0px;
+        & .ant-tabs-nav-list {
+          /* border-top: 1px solid var(--oda-panel-backgroun-color); */
+          padding-top: 5px;
+          padding-bottom: 5px;
+          & .ant-tabs-ink-bar {
+            background: none;
+          }
+          & .ant-tabs-tab {
+            &.ant-tabs-tab-active {
+              border-radius: 5px;
+              margin-right: 5px;
+              border: none;
+            }
+          }
+        }
       }
     }
   }
@@ -231,26 +271,18 @@ textarea.widget-settings-value {
   background-color: black;
   display: flex;
   align-items: center;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-right: 1px solid #674afd;
-}
-
-.payment-alerts-previews-item {
-  margin-bottom: 10px;
 }
 
 .payment-alert-image-preview {
+  min-width: 200px;
   width: 200px;
   display: flex;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
   justify-content: center;
   align-items: center;
 }
 
 div.payment-alert-image-preview {
-  border-right: 1px solid #674afd;
+  background: black;
 }
 
 .alert-no-image {
@@ -467,6 +499,7 @@ div.payment-alert-image-preview {
   width: 100%;
   padding-top: 10px;
   padding-bottom: 10px;
+
   &:nth-child(even) {
     background-color: rgb(12, 18, 46, 0.12);
   }

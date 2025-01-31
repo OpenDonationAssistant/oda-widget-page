@@ -1,10 +1,10 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettingsComponent";
-import { AlertState } from "../../components/PaymentAlerts/AlertState";
+import { AlertState } from "./AlertState";
 import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";
 import { delay, getRndInteger } from "../../utils";
-import { VoiceController } from "../voice/VoiceController";
+import { VoiceController } from "../../logic/voice/VoiceController";
 
 export class AlertController {
   private settings: any;
@@ -22,10 +22,6 @@ export class AlertController {
   constructor(settings: any, recipientId: string) {
     this.settings = settings;
     this._recipientId = recipientId;
-  }
-
-  public get state(): AlertState {
-    return this._state;
   }
 
   public listen(widgetId: string, conf: any) {
@@ -371,5 +367,9 @@ export class AlertController {
           height: imageHeight + "px",
         }
       : {};
+  }
+
+  public get state(): AlertState {
+    return this._state;
   }
 }

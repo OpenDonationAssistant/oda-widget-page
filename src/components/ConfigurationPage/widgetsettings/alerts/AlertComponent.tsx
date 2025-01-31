@@ -1,25 +1,21 @@
 import { ChangeEvent } from "react";
 import { Alert } from "./Alerts";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { Tabs as AntTabs, Flex, Select, Slider } from "antd";
+import { Tabs as AntTabs, Flex, Slider } from "antd";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import { observer } from "mobx-react-lite";
-import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
-import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
 import axios from "axios";
 import TextArea from "antd/es/input/TextArea";
 import { log } from "../../../../logging";
 import { toJS } from "mobx";
-import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
 import BooleanPropertyInput from "../../components/BooleanPropertyInput";
 import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
 import classes from "./AlertComponent.module.css";
-import { publish } from "../../../../socket";
-import { WidgetData } from "../../../../types/WidgetData";
-import { useLoaderData } from "react-router";
-import { uuidv7 } from "uuidv7";
+import { ResizableBox } from "react-resizable";
+import { HeaderTab } from "./HeaderTab";
+import { MessageTab } from "./MessageTab";
 
 function playAudio(url: string | null) {
   if (!url) {
@@ -43,25 +39,6 @@ function uploadFile(file: File, name: string) {
   );
 }
 
-function testAlert(topic: string, alert: Alert) {
-  publish(topic, {
-    id: uuidv7(), // TODO: сделать опциональным
-    alertId: alert.id,
-    nickname: "Тестовый алерт",
-    message: "Тестовое сообщение",
-    amount: {
-      major: 100,
-      minor: 0,
-      currency: "RUB",
-    },
-  });
-  log.debug("Send test alert");
-}
-
-function copyAlert(alert: Alert) {
-  alert.copy();
-}
-
 const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   if (!e.target.files) {
     return Promise.reject();
@@ -72,85 +49,6 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return name;
   });
 };
-
-const MessageTab = observer(({ alert }: { alert: Alert }) => {
-  return (
-    <>
-      <div className="settings-item">
-        <AnimatedFontComponent
-          property={
-            new AnimatedFontProperty({
-              name: "font",
-              value: alert.properties.find((prop) => prop.name === "font")
-                ?.value,
-              label: "widget-alert-message-font-family",
-            })
-          }
-          onChange={(prop) => {
-            alert.update("font", prop.value);
-          }}
-        />
-      </div>
-      <div className="settings-item">
-        <LabeledContainer displayName="alert-message-appearance-label">
-          <Select
-            value={alert.property("message-appearance")}
-            className="full-width"
-            onChange={(e) => {
-              alert.update("message-appearance", e);
-            }}
-            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
-              (option) => {
-                return {
-                  value: option,
-                  label: (
-                    <>
-                      <Trans i18nKey={option} />
-                    </>
-                  ),
-                };
-              },
-            )}
-          />
-        </LabeledContainer>
-      </div>
-    </>
-  );
-});
-
-const HeaderTab = observer(({ alert }: { alert: Alert }) => {
-  return (
-    <>
-      <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-title-template">
-          <TextPropertyModal title="widget-alert-title-template">
-            <TextArea
-              className="full-width"
-              value={alert.property("nicknameTextTemplate")}
-              onChange={(text) =>
-                alert.update("nicknameTextTemplate", text.target.value)
-              }
-            />
-          </TextPropertyModal>
-        </LabeledContainer>
-      </div>
-      <div className="settings-item">
-        <AnimatedFontComponent
-          property={
-            new AnimatedFontProperty({
-              name: "headerFont",
-              value: alert.property("headerFont"),
-              label: "widget-alert-title-font-family",
-            })
-          }
-          onChange={(prop) => {
-            alert.update("headerFont", prop.value);
-          }}
-        />
-      </div>
-    </>
-  );
-});
 
 const SoundTab = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
@@ -273,47 +171,24 @@ const VoiceTab = observer(({ alert }: { alert: Alert }) => {
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
-  const { conf } = useLoaderData() as WidgetData;
   log.debug({ alert: toJS(alert) }, "render alert");
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
-      <Flex className={`${classes.alertbuttons}`}>
-        <button
-          className="menu-button"
-          onClick={() => testAlert(conf.topic.alerts, alert)}
+      <Flex justify="space-around" className={`${classes.preview}`}>
+        <ResizableBox
+          width={650}
+          height={350}
+          className={`${classes.resizable}`}
+          axis="both"
+          minConstraints={[650, 100]}
         >
-          <span className="material-symbols-sharp">play_circle</span>
-        </button>
-        <button className="menu-button" onClick={() => copyAlert(alert)}>
-          <span className="material-symbols-sharp">content_copy</span>
-        </button>
-        <button className="menu-button" onClick={() => alert.delete()}>
-          <span className="material-symbols-sharp">delete</span>
-        </button>
+          <div style={{ maxWidth: "100%" }}></div>
+        </ResizableBox>
       </Flex>
-      <div className="image-preview-container">
-        {alert.image && (
-          <img
-            className={`payment-alert-image-preview`}
-            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`}
-          />
-        )}
-      </div>
-      {alert.video && (
-        <video
-          className={`payment-alert-image-preview`}
-          src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
-          muted={true}
-        />
-      )}
-      {!alert.image && !alert.video && (
-        <div className={`payment-alert-image-preview`}>
-          <img className="alert-no-image" src={`/icons/picture.png`} />
-        </div>
-      )}
       <AntTabs
         type="card"
+        tabPosition="top"
         items={[
           {
             key: "trigger",
@@ -350,3 +225,25 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
     </div>
   );
 });
+//
+// {alert.image && (
+//   <div className="image-preview-container">
+//     <img
+//       className={`payment-alert-image-preview`}
+//       src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`}
+//     />
+//   </div>
+// )}
+// {alert.video && (
+//   <video
+//     className={`payment-alert-image-preview`}
+//     src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
+//     muted={true}
+//   />
+// )}
+// {!alert.image && !alert.video && (
+//   <div className={`payment-alert-image-preview`}>
+//     <img className="alert-no-image" src={`/icons/picture.png`} />
+//   </div>
+// )}
+//

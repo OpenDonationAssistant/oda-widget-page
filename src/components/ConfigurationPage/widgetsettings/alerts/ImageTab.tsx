@@ -7,6 +7,10 @@ import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
 import { Flex, Select, Switch } from "antd";
 import { ChangeEvent } from "react";
 import axios from "axios";
+import { BorderProperty } from "../../widgetproperties/BorderProperty";
+import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
+import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
+import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 
 // <div className="settings-item">
 //   <LabeledContainer displayName="widget-alert-image-show-time">
@@ -49,7 +53,7 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
     alert.property("imageHeight") !== null;
 
   return (
-    <>
+    <Flex vertical gap={10}>
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-limit-image-size">
           <Switch
@@ -61,6 +65,10 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           />
         </LabeledContainer>
       </div>
+      {(alert.property("imageBorder") as BorderProperty)?.markup()}
+      {(alert.property("imageRounding") as RoundingProperty)?.markup()}
+      {(alert.property("imagePadding") as PaddingProperty)?.markup()}
+      {(alert.property("imageShadow") as BoxShadowProperty)?.markup()}
       {limitImageSize && (
         <>
           <div className="settings-item">
@@ -163,7 +171,7 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           </div>
         )}
       </div>
-    </>
+    </Flex>
   );
 });
 
