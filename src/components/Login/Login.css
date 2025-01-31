@@ -14,7 +14,6 @@
 }
 
 .login-page .login-form {
-  border: 1px solid #674afd;
   padding: 15px;
   display: flex;
   flex-direction: column;

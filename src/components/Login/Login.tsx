@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import axios from "axios";
 import { log } from "../../logging";
 import { useSearchParams } from "react-router-dom";
+import { Button } from "antd";
 
 export interface Tokens {
   idToken: string;
@@ -141,12 +142,12 @@ export default function Login({}) {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button
+          <Button
             id="login"
             onClick={() => getToken(params.get("page"), login, password)}
           >
             Login
-          </button>
+          </Button>
         </div>
       </div>
     </>
