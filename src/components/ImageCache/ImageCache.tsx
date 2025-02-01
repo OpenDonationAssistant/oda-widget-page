@@ -10,9 +10,18 @@ export default function ImageCache({
   useEffect(() => {
     imageProvider.addImageLoader({
       addImage: (image) => {
-        setImages((oldImages) => {
-          return Array.from(new Set(oldImages).add(image));
-        });
+        fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+          },
+        })
+          .then((res) => res.blob())
+          .then((blob) => URL.createObjectURL(blob))
+          .then((url) => {
+            setImages((oldImages) => {
+              return Array.from(new Set(oldImages).add(url));
+            });
+          });
       },
     });
   }, [imageProvider]);
@@ -22,11 +31,7 @@ export default function ImageCache({
       {images
         .filter((image) => image)
         .map((image) => (
-          <img
-            key={image}
-            style={{ display: "none" }}
-            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`}
-          />
+          <img key={image} style={{ display: "none" }} src={image} />
         ))}
     </>
   );

@@ -139,12 +139,16 @@ export class AlertController {
     this.preloadImages();
   }
 
+  // TODO: использовать axios
   loadAudio(alert: any): Promise<any> {
     log.debug(`load ${alert.audio}`);
     return fetch(
       `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`,
       {
         method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("access-token")}`,
+        }
       },
     )
       .then((response) => response.arrayBuffer())
