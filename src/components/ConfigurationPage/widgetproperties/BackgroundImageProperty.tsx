@@ -1,4 +1,4 @@
-import { CSSProperties, ChangeEvent, ReactNode } from "react";
+import { CSSProperties, ChangeEvent, ReactNode, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -40,6 +40,12 @@ export interface ImagePropertyValue {
 
 const ImagePropertyComponent = observer(
   ({ property }: { property: BackgroundImageProperty }) => {
+    const [image, setImage] = useState<string>(property.value.url ?? "");
+
+    useEffect(() => {
+      property.fullUri().then(setImage);
+    },[property.value.url]);
+
     return (
       <>
         <LabeledContainer displayName={property.displayName}>
@@ -109,7 +115,7 @@ const ImagePropertyComponent = observer(
                   width={200}
                   height={120}
                   className={`${classes.preview}`}
-                  src={`${property.fullUri()}`}
+                  src={`${image}`}
                 />
               </Image.PreviewGroup>
               <Flex vertical={true} justify="flex-start" align="flex-start">
@@ -157,29 +163,36 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
     });
   }
 
-  public fullUri(): string | null {
+  public async fullUri(): Promise<string> {
     if (!this.value.url) {
-      return null;
+      return Promise.resolve("");
     }
-    if (this.value.url && this.value.url.startsWith("http")) {
-      return this.value.url;
+    let url = this.value.url;
+    if (!this.value.url.startsWith("http")) {
+      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url}`;
     }
-    if (this.value.url && !this.value.url.startsWith("http")) {
-      return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url}`;
-    }
-    return null;
+    // TODO: вынести в общий модуль
+    return fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
+    })
+      .then((res) => res.blob())
+      .then((blob) => URL.createObjectURL(blob));
   }
 
-  public calcCss(): CSSProperties {
-    if (this.value.url) {
+  public async calcCss(): Promise<CSSProperties> {
+    if (!this.value.url) {
+      return Promise.resolve({});
+    }
+    return this.fullUri().then((url) => {
       return {
-        backgroundImage: `url(${this.fullUri()})`,
+        backgroundImage: `url(${url})`,
         backgroundSize: this.value.size,
         backgroundRepeat: this.value.repeat ? "repeat" : "no-repeat",
         opacity: this.value.opacity,
       };
-    }
-    return {};
+    });
   }
 
   markup(): ReactNode {

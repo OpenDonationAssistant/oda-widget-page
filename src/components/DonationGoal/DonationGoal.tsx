@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
@@ -6,6 +6,7 @@ import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/
 import { AbstractDonationGoalState } from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
+import { log } from "../../logging";
 
 export const DonationGoal = observer(
   ({
@@ -15,6 +16,14 @@ export const DonationGoal = observer(
     state: AbstractDonationGoalState;
     settings: DonationGoalWidgetSettings;
   }) => {
+    const [innerBackgroundImage, setInnerBackgroundImage] =
+      useState<CSSProperties>({});
+    const [outerBackgroundImage, setOuterBackgroundImage] =
+      useState<CSSProperties>({});
+    const [titleBackgroundImage, setTitleBackgroundImage] =
+      useState<CSSProperties>({});
+    const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
+
     const titleFont = settings.titleFontProperty;
     const titleTextStyle = titleFont.calcStyle();
 
@@ -33,7 +42,9 @@ export const DonationGoal = observer(
 
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
-    const outerImageStyle = settings.outerImageProperty.calcCss();
+    useEffect(() => {
+      settings.outerImageProperty.calcCss().then(setOuterBackgroundImage);
+    }, [settings.outerImageProperty.value]);
 
     const labelTemplate = settings.labelTemplate;
     const amountFont = settings.amountFontProperty;
@@ -64,7 +75,10 @@ export const DonationGoal = observer(
     const filledRoundingStyle = settings.innerRoundingProperty.calcCss();
     const filledPaddingStyle = settings.innerPaddingProperty.calcCss();
     const filledBoxShadowStyle = settings.innerBoxShadowProperty.calcCss();
-    const filledImageStyle = settings.innerImageProperty.calcCss();
+
+    useEffect(() => {
+      settings.innerImageProperty.calcCss().then(setInnerBackgroundImage);
+    }, [settings.innerImageProperty.value]);
 
     function calcBarStyle(goal: Goal) {
       const filment = Math.floor(
@@ -80,7 +94,7 @@ export const DonationGoal = observer(
         ...filledColor,
         ...filledPaddingStyle,
         ...filledBoxShadowStyle,
-        ...filledImageStyle,
+        ...innerBackgroundImage,
         zIndex: 1,
       };
       return result;
@@ -102,11 +116,16 @@ export const DonationGoal = observer(
     const titleBoxShadowStyle = settings.titleBoxShadowProperty.calcCss();
     const titleBackgroundColorStyle =
       settings.titleBackgroundColorProperty.calcCss();
-    const titleBackgroundImageStyle =
-      settings.titleBackgroundImageProperty.calcCss();
+    useEffect(() => {
+      settings.titleBackgroundImageProperty
+        .calcCss()
+        .then(setTitleBackgroundImage);
+    }, [settings.titleBackgroundImageProperty.value]);
 
     const barPadding = settings.barPadding.calcCss();
-    const backgroundImage = settings.backgroundImage.calcCss();
+    useEffect(() => {
+      settings.backgroundImage.calcCss().then(setBackgroundImage);
+    }, [settings.backgroundImage.value]);
 
     return (
       <div
@@ -142,7 +161,7 @@ export const DonationGoal = observer(
                       ...titleRoundingStyle,
                       ...titleBoxShadowStyle,
                       ...titleBackgroundColorStyle,
-                      ...titleBackgroundImageStyle,
+                      ...titleBackgroundImage,
                     }}
                     className={`${classes.goaldescription}}`}
                   >
@@ -176,7 +195,7 @@ export const DonationGoal = observer(
                       ...outerRoundingStyle,
                       ...backgroundColor,
                       ...outerBoxShadowStyle,
-                      ...outerImageStyle,
+                      ...outerBackgroundImage,
                     }}
                   />
                 </div>

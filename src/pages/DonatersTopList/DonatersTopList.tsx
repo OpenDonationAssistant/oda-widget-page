@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import "./DonatersTopList.css";
 import { Carousel, Flex } from "antd";
 import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
@@ -14,6 +14,22 @@ export const DonatersTopList = observer(
     settings: DonatersTopListWidgetSettings;
     store: AbstractDonatersListStore;
   }) => {
+
+    const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
+    useEffect(() => {
+      settings.backgroundImage.calcCss().then(setBackgroundImage);
+    },[settings.backgroundImage.value]);
+
+    const [headerBackgroundImage, setHeaderBackgroundImage] = useState<CSSProperties>({});
+    useEffect(() => {
+      settings.headerBackgroundImage.calcCss().then(setHeaderBackgroundImage);
+    },[settings.headerBackgroundImage.value]);
+
+    const [listBackgroundImage, setListBackgroundImage] = useState<CSSProperties>({});
+    useEffect(() => {
+      settings.listBackgroundImage.calcCss().then(setListBackgroundImage);
+    },[settings.listBackgroundImage.value]);
+
     const topsize = settings.topsize;
     const layout = settings.layout;
     const title = settings.title;
@@ -112,7 +128,7 @@ export const DonatersTopList = observer(
               ...settings.itemRounding.calcCss(),
               ...settings.itemBoxShadow.calcCss(),
               ...settings.itemBackgroundColor.calcCss(),
-              ...settings.itemBackgroundImage.calcCss(),
+              ...settings.itemBackgroundImage.calcCss(), // TODO: fix it
               ...{ lineHeight: "1.5" },
             }}
             className={`${messageFont.calcClassName()}`}
@@ -146,7 +162,7 @@ export const DonatersTopList = observer(
             ...settings.rounding.calcCss(),
             ...settings.padding.calcCss(),
             ...settings.boxShadow.calcCss(),
-            ...settings.backgroundImage.calcCss(),
+            ...backgroundImage,
             ...{
               marginTop: `${widgetMarginTopAndBottomStyle}px`,
               marginBottom: `${widgetMarginTopAndBottomStyle}px`,
@@ -168,7 +184,7 @@ export const DonatersTopList = observer(
                 ...settings.headerRounding.calcCss(),
                 ...settings.headerPadding.calcCss(),
                 ...settings.headerBoxShadow.calcCss(),
-                ...settings.headerBackgroundImage.calcCss(),
+                ...headerBackgroundImage,
                 ...settings.headerWidth.calcCss(),
                 ...settings.headerHeight.calcCss(),
               }}
@@ -202,7 +218,7 @@ export const DonatersTopList = observer(
                     ...settings.listRounding.calcCss(),
                     ...settings.listBoxShadow.calcCss(),
                     ...settings.listBackgroundColor.calcCss(),
-                    ...settings.listBackgroundImage.calcCss(),
+                    ...listBackgroundImage,
                   }}
                 >
                   {pack}
