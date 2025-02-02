@@ -6,6 +6,7 @@ import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/
 import { AbstractDonationGoalState } from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
+import { log } from "../../logging";
 
 export const DonationGoal = observer(
   ({
@@ -15,9 +16,12 @@ export const DonationGoal = observer(
     state: AbstractDonationGoalState;
     settings: DonationGoalWidgetSettings;
   }) => {
-    const [innerBackgroundImage, setInnerBackgroundImage] = useState<CSSProperties>({});
-    const [outerBackgroundImage, setOuterBackgroundImage] = useState<CSSProperties>({});
-    const [titleBackgroundImage, setTitleBackgroundImage] = useState<CSSProperties>({});
+    const [innerBackgroundImage, setInnerBackgroundImage] =
+      useState<CSSProperties>({});
+    const [outerBackgroundImage, setOuterBackgroundImage] =
+      useState<CSSProperties>({});
+    const [titleBackgroundImage, setTitleBackgroundImage] =
+      useState<CSSProperties>({});
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
 
     const titleFont = settings.titleFontProperty;
@@ -40,7 +44,7 @@ export const DonationGoal = observer(
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
     useEffect(() => {
       settings.outerImageProperty.calcCss().then(setOuterBackgroundImage);
-    },[settings.outerImageProperty]);
+    }, [settings.outerImageProperty.value]);
 
     const labelTemplate = settings.labelTemplate;
     const amountFont = settings.amountFontProperty;
@@ -74,7 +78,7 @@ export const DonationGoal = observer(
 
     useEffect(() => {
       settings.innerImageProperty.calcCss().then(setInnerBackgroundImage);
-    },[settings]);
+    }, [settings.innerImageProperty.value]);
 
     function calcBarStyle(goal: Goal) {
       const filment = Math.floor(
@@ -113,13 +117,15 @@ export const DonationGoal = observer(
     const titleBackgroundColorStyle =
       settings.titleBackgroundColorProperty.calcCss();
     useEffect(() => {
-      settings.titleBackgroundImageProperty.calcCss().then(setTitleBackgroundImage);
-    },[settings.titleBackgroundImageProperty]);
+      settings.titleBackgroundImageProperty
+        .calcCss()
+        .then(setTitleBackgroundImage);
+    }, [settings.titleBackgroundImageProperty.value]);
 
     const barPadding = settings.barPadding.calcCss();
     useEffect(() => {
       settings.backgroundImage.calcCss().then(setBackgroundImage);
-    },[settings.backgroundImage]);
+    }, [settings.backgroundImage.value]);
 
     return (
       <div
