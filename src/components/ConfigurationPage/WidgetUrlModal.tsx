@@ -1,8 +1,8 @@
-import { Tokens, tokenRequest } from "../Login/Login";
 import { useRequest } from "ahooks";
 import { Button, Flex, Input, Modal, QRCode, Spin } from "antd";
 import classes from "./WidgetUrlModal.module.css";
 import axios from "axios";
+import { Tokens, tokenRequest } from "../../pages/Login/Login";
 
 async function createOtp(id: string) {
   const token = (await getToken()).refreshToken;

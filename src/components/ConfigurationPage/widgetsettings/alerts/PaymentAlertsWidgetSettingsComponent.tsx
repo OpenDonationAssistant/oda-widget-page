@@ -1,8 +1,3 @@
-import React, { useContext } from "react";
-import { Tabs as AntTabs, Input, InputNumber, Select, Slider } from "antd";
-import { useTranslation } from "react-i18next";
-import { observer } from "mobx-react-lite";
-
 export const APPEARANCE_ANIMATIONS = [
   "bounce",
   "flash",

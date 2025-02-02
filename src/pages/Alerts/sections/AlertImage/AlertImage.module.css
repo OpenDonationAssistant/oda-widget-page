@@ -6,3 +6,8 @@
   height: 0px;
   width: auto;
 }
+
+.emptyspace {
+  height: "40%";
+  flex: "0 1 auto"
+}

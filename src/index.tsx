@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import PlayerInfo from "./components/PlayerInfo/PlayerInfo";
-import PaymentAlerts from "./components/PaymentAlerts/PaymentAlerts";
 import MediaWidget from "./components/MediaWidget/MediaWidget";
 import {
   createBrowserRouter,
@@ -20,7 +19,6 @@ import { config } from "./config";
 import { log, setLoglevel } from "./logging";
 import auth from "./auth";
 import axios from "axios";
-import Login from "./components/Login/Login";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 import ReelWidget from "./pages/Reel/ReelWidget";
@@ -42,6 +40,8 @@ import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
 import EventsPage from "./pages/Events/EventsPage";
 import DonatersTopListPage from "./pages/DonatersTopList/DonatersTopListPage";
 import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
+import Login from "./pages/Login/Login";
+import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 
 async function widgetSettingsLoader({
   params,
@@ -157,7 +157,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/payment-alerts/:widgetId",
-    element: <PaymentAlerts />,
+    element: <PaymentAlertsPage />,
     loader: widgetSettingsLoader,
   },
   {

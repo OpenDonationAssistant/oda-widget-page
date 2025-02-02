@@ -43,7 +43,7 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     this._initialValue = typeof value === "object" ? { ...value } : value;
     this._value = value;
     this._help = help;
-    makeObservable(
+    makeObservable<DefaultWidgetProperty<Type>, "_initialValue" | "_value">(
       this,
       {
         _initialValue: observable,

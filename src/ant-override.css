@@ -3,12 +3,12 @@
 }
 
 .ant-btn-primary {
-  color:  var(--oda-main-text-color);
+  color: var(--oda-main-text-color);
 }
 
 .ant-input {
   border: var(--oda-main-border);
-  font-family: 'Play';
+  font-family: "Play";
   font-size: 18px;
   background-color: var(--oda-control-background-color);
   padding-top: 3px;
@@ -31,11 +31,11 @@
   & input:focus,
   & input:hover,
   & input:focus-within {
-    background-color: unset!important;
-    border-top: none!important;
-    border-left: none!important;
-    border-right: none!important;
-    outline: none!important;
+    background-color: unset !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    outline: none !important;
   }
 
   & .ant-input-number-input {
@@ -53,9 +53,9 @@
 }
 
 .ant-input-number-group .ant-input-number-group-addon {
-  font-family: 'Play'!important;
-  font-weight: 900!important;
-  font-size: 20px!important;
+  font-family: "Play" !important;
+  font-weight: 900 !important;
+  font-size: 20px !important;
   padding-left: 5px;
   padding-right: 5px;
   /* color: var(--oda-secondary-text-color); */
@@ -84,7 +84,7 @@
   border-radius: 0px;
   height: unset;
   min-height: 28px;
-  & .ant-color-picker-trigger-text{
+  & .ant-color-picker-trigger-text {
     color: var(--oda-secondary-text-color);
     font-size: 20px;
     font-family: "Play";
@@ -96,20 +96,18 @@
   }
 }
 
-
 .ant-tabs.ant-tabs-card {
   flex: 1 1 auto;
   font-family: "Play";
 
   & .ant-tabs.ant-tabs-card {
     &.ant-tabs-top {
-        & .ant-tabs-nav {
-          background: none;
-          height: 37px;
-        }
+      & .ant-tabs-nav {
+        background: none;
+        height: 37px;
+      }
     }
   }
-
 
   &.ant-tabs-top {
     & .ant-tabs-nav {
@@ -117,7 +115,7 @@
       margin-bottom: 0px;
       background-color: var(--oda-main-background-color);
 
-      &::before{
+      &::before {
         border-bottom: 1px solid #674afd;
         z-index: 0;
       }
@@ -136,12 +134,10 @@
           border-right: 1px solid #684aff;
           border-top: 1px solid #684aff;
           & .ant-tabs-tab-btn {
-            color:  var(--oda-main-text-color);
+            color: var(--oda-main-text-color);
           }
         }
-
       }
-
     }
   }
 
@@ -157,7 +153,7 @@
 }
 
 .ant-modal {
-  font-family: 'Play';
+  font-family: "Play";
   & .ant-modal-header {
     margin-left: 10px;
     background-color: var(--oda-panel-backgroun-color);
@@ -165,7 +161,6 @@
     padding-left: 10px;
     font-weight: 900;
   }
-
 
   & .ant-modal-content {
     padding-left: 0px;
@@ -176,7 +171,6 @@
     border: 1px solid rgb(43, 53, 102);
     margin-bottom: 0px;
     min-width: 800px;
-
 
     & .ant-modal-title {
       color: var(--oda-main-text-color);
@@ -213,28 +207,39 @@
 .ant-collapse {
   background-color: #151a33;
   font-family: Play;
-  border: 1px solid #674afd;
+  border-top: 1px solid #674afd;
+  border-bottom: 1px solid #674afd;
+  border-left: none;
+  border-right: none;
+  border-radius: 0px;
   margin-bottom: 20px;
-  margin-right: 20px;
-  margin-left: 20px;
 
   & .ant-collapse-content {
     background-color: #2b3566;
+    border: none;
+    border-radius: 0px;
 
     & > .ant-collapse-content-box {
       padding: 0px;
     }
   }
 
-  & > .ant-collapse-item > .ant-collapse-header {
-    font-family: Play;
-    font-weight: 900;
-    color: white;
-  }
+  & > .ant-collapse-item {
+    border-bottom: 1px solid var(--oda-panel-backgroun-color);
+    & > .ant-collapse-header {
+      font-family: Play;
+      font-weight: 900;
+      color: white;
+      border: none;
+      /* border-bottom: 1px solid var(--oda-panel-backgroun-color); */
+      border-radius: 0px!important;
+      background-color: var(--oda-main-background-color);
+    }
 
-  & > .ant-collapse-item > .ant-collapse-header:first {
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    & > .ant-collapse-header:first {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
   }
 }
 
@@ -291,7 +296,7 @@ div.ant-layout-has-sider.ant-layout {
     background-color: var(--oda-btn-background-color);
     border-radius: 6px;
     border: 1px solid rgb(43, 53, 102);
-    & .ant-dropdown-menu-item:hover{
+    & .ant-dropdown-menu-item:hover {
       background-color: var(--oda-panel-backgroun-color);
       box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.2);
       & .ant-dropdown-menu-title-content {
@@ -319,7 +324,7 @@ div.ant-layout-has-sider.ant-layout {
     /* background: var(--oda-secondary-text-color); */
     & .ant-select-selection-item {
       text-align: right;
-      font-family: 'Play';
+      font-family: "Play";
       font-size: 20px;
       font-weight: 600;
       color: var(--oda-secondary-text-color) !important;
@@ -344,7 +349,7 @@ div.ant-layout-has-sider.ant-layout {
   color: white;
   box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.6);
   border-radius: 20px;
-  font-family: 'Play';
+  font-family: "Play";
 
   & .ant-segmented-item {
     border-radius: 20px;
@@ -385,7 +390,21 @@ div.ant-layout-has-sider.ant-layout {
   color: var(--oda-secondary-text-color);
 }
 
-.ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+.ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-selected:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+.ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+.ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner {
   background: var(--oda-btn-background-color);
   color: var(--oda-main-text-color);
 }

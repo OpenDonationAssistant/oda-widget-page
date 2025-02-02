@@ -1,5 +1,18 @@
 .alertbuttons {
   position: absolute;
-  padding-top: 10px;
-  padding-left: 5px;
+  top: 10px;
+  right: 5px;
+}
+
+.resizable{
+  box-shadow: inset 0 0 12px 6px rgba(0, 0, 0, 0.8), 0 0 12px 6px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgb(43, 53, 102);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: url(https://api.oda.digital/public/commonback.jpg);
+    background-size: cover;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
 }

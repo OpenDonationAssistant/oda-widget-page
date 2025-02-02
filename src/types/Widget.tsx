@@ -2,7 +2,6 @@ import axios from "axios";
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
-import { tokenRequest } from "../components/Login/Login";
 import { WidgetStore } from "../stores/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 import { MediaWidgetSettings } from "../components/ConfigurationPage/widgetsettings/MediaWidgetSettings";
@@ -15,6 +14,7 @@ import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/wid
 import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerControlWidgetSettings";
 import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
+import { tokenRequest } from "../pages/Login/Login";
 
 export const WIDGET_TYPES = [
   {
