@@ -145,7 +145,7 @@ export class Alert {
       video: this._video,
       triggers: this._triggers,
       properties: this._properties.map((it) => {
-        log.debug({property: it}, "preparing config");
+        log.debug({ property: it }, "preparing config");
         return {
           name: it.name,
           value: it.value,
@@ -251,10 +251,12 @@ export class Alert {
   private mergeWithDefault(properties?: any[]): any[] {
     const props = new Map<string, any>();
     properties?.forEach((it) => {
-      props.set(it.name, it);
+      props.set(it.name, it.value);
     });
-    return DEFAULT_PROPERTIES.map((prop) => {
-      return props.get(prop.name) ?? prop;
+    DEFAULT_PROPERTIES.map((it) => {
+      produce(it, (draft) => {
+        draft.value = props.get(draft.name);
+      });
     });
   }
 }

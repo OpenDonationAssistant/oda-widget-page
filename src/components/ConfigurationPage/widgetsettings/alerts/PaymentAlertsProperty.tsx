@@ -11,6 +11,7 @@ import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
+import { DEFAULT_PROPERTIES } from "./DefaultProperties";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -45,48 +46,53 @@ const PaymentAlertsPropertyComponent = observer(
             </Flex>
           </button>
         </div>
-        {property.value.length > 0 && <div className={`${classes.preview}`}>
-          <Collapse
-            items={property.value.map((it, index) => {
-              return {
-                key: it.id ?? index,
-                label: (
-                  <Flex justify="space-between" align="center">
-                    <div>{it.property("name") ?? it.id ?? index}</div>
-                    <Flex className={`${classes.alertbuttons}`}>
-                      <button
-                        className="menu-button"
-                        onClick={() => testAlert(conf.topic.alerts, it)}
-                      >
-                        <span className="material-symbols-sharp">
-                          play_circle
-                        </span>
-                      </button>
-                      <button className="menu-button" onClick={() => it.copy()}>
-                        <span className="material-symbols-sharp">
-                          content_copy
-                        </span>
-                      </button>
-                      <button className="menu-button" onClick={() => it.copy()}>
-                        <span className="material-symbols-sharp">
-                          stylus
-                        </span>
-                      </button>
-                      <button
-                        className="menu-button"
-                        onClick={() => it.delete()}
-                      >
-                        <span className="material-symbols-sharp">delete</span>
-                      </button>
+        {property.value.length > 0 && (
+          <div className={`${classes.preview}`}>
+            <Collapse
+              items={property.value.map((it, index) => {
+                return {
+                  key: it.id ?? index,
+                  label: (
+                    <Flex justify="space-between" align="center">
+                      <div>{it.property("name") ?? it.id ?? index}</div>
+                      <Flex className={`${classes.alertbuttons}`}>
+                        <button
+                          className="menu-button"
+                          onClick={() => testAlert(conf.topic.alerts, it)}
+                        >
+                          <span className="material-symbols-sharp">
+                            play_circle
+                          </span>
+                        </button>
+                        <button
+                          className="menu-button"
+                          onClick={() => it.copy()}
+                        >
+                          <span className="material-symbols-sharp">
+                            content_copy
+                          </span>
+                        </button>
+                        <button
+                          className="menu-button"
+                          onClick={() => it.copy()}
+                        >
+                          <span className="material-symbols-sharp">stylus</span>
+                        </button>
+                        <button
+                          className="menu-button"
+                          onClick={() => it.delete()}
+                        >
+                          <span className="material-symbols-sharp">delete</span>
+                        </button>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                ),
-                children: <AlertComponent alert={it} />,
-              };
-            })}
-          />
-        </div>
-        }
+                  ),
+                  children: <AlertComponent alert={it} />,
+                };
+              })}
+            />
+          </div>
+        )}
       </>
     );
   },
@@ -103,16 +109,17 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
 
   public static fromConfig(config: any): PaymentAlertsProperty {
     const property = new PaymentAlertsProperty();
-    property.value = config.map(
-      (it: any) =>
-        new Alert({
-          ...it,
-          ...{
-            removeFn: (id: string) => property.removeAlert(id),
-            addFn: (alert: Alert) => property.addAlert(alert),
-          },
-        }),
-    );
+    property.value = config.map((it: any) => {
+      const loaded = new Alert({
+        ...it,
+        ...{
+          removeFn: (id: string) => property.removeAlert(id),
+          addFn: (alert: Alert) => property.addAlert(alert),
+        },
+      });
+      log.debug({ source: it, result: loaded }, "loading alert");
+      return loaded;
+    });
     return property;
   }
 

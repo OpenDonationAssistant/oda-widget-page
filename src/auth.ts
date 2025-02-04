@@ -3,15 +3,12 @@ import { log } from "./logging";
 
 async function loadSession() {
   const accessToken = localStorage.getItem("access-token");
-  log.debug({ accessToken: accessToken }, "prev access token");
   if (accessToken) {
-    log.debug({ accessToken: accessToken }, "using access token");
     axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
   }
   const sessionInfo = await axios
     .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
     .then((json) => {
-      log.debug(`login info: ${JSON.stringify(json.data)}`);
       return json.data;
     });
   return sessionInfo;
