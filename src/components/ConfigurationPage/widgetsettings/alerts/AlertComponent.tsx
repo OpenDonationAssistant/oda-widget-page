@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Alert } from "./Alerts";
 import { Trans, useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
@@ -275,6 +275,39 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
   const { conf } = useLoaderData() as WidgetData;
   log.debug({ alert: toJS(alert) }, "render alert");
+  const [image, setImage] = useState<string | null>(null);
+  const [video, setVideo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (alert.image) {
+      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob))
+        .then((url) => {
+          setImage((old) => url);
+        });
+    } else {
+      setImage(null);
+    }
+    if (alert.video) {
+      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob))
+        .then((url) => {
+          setVideo((old) => url);
+        });
+    } else {
+      setVideo(null);
+    }
+  }, [alert.image, alert.video]);
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
@@ -293,21 +326,21 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         </button>
       </Flex>
       <div className="image-preview-container">
-        {alert.image && (
+        {image && (
           <img
             className={`payment-alert-image-preview`}
-            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`}
+            src={image}
           />
         )}
       </div>
-      {alert.video && (
+      {video && (
         <video
           className={`payment-alert-image-preview`}
-          src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`}
+          src={video}
           muted={true}
         />
       )}
-      {!alert.image && !alert.video && (
+      {!image && !video && (
         <div className={`payment-alert-image-preview`}>
           <img className="alert-no-image" src={`/icons/picture.png`} />
         </div>
