@@ -35,11 +35,11 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }: {
     name: string;
     value: any;
-    displayName: string;
+    displayName?: string;
     help?: string;
   }) {
     this._name = name;
-    this._displayName = displayName;
+    this._displayName = displayName ?? "";
     this._initialValue = typeof value === "object" ? { ...value } : value;
     this._value = value;
     this._help = help;

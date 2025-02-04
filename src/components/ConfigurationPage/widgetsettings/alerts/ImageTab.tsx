@@ -65,10 +65,10 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           />
         </LabeledContainer>
       </div>
-      {(alert.property("imageBorder") as BorderProperty)?.markup()}
-      {(alert.property("imageRounding") as RoundingProperty)?.markup()}
-      {(alert.property("imagePadding") as PaddingProperty)?.markup()}
-      {(alert.property("imageShadow") as BoxShadowProperty)?.markup()}
+      {(alert.get("imageBorder") as BorderProperty)?.markup()}
+      {(alert.get("imageRounding") as RoundingProperty)?.markup()}
+      {(alert.get("imagePadding") as PaddingProperty)?.markup()}
+      {(alert.get("imageShadow") as BoxShadowProperty)?.markup()}
       {limitImageSize && (
         <>
           <div className="settings-item">

@@ -67,7 +67,10 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   }
 
   public set(key: string, value: any, asInitialValue = false): void {
-    log.debug({ value: value }, "calling payment alerts widget settings");
+    log.debug(
+      { key: key, value: value },
+      "calling payment alerts widget settings",
+    );
     this.sections = this.sections.map((section) => {
       if (section.key === "alerts") {
         section.properties = section.properties.map((prop) => {

@@ -7,51 +7,55 @@ import { HeightProperty } from "../../widgetproperties/HeightProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import { SELECTION_TYPE, SingleChoiceProperty } from "../../widgetproperties/SingleChoiceProperty";
+import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { WidthProperty } from "../../widgetproperties/WidthProperty";
 
 export const DEFAULT_PROPERTIES = [
-    { name: "name", value: null },
-    {
+    new DefaultWidgetProperty({
+      name: "name",
+      value: null,
+    }),
+    new DefaultWidgetProperty({
       name: "imageWidth",
       value: null,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "imageHeight",
       value: null,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "imageShowTime",
       value: null,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "appearance",
       value: "none",
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "audio-volume",
       value: 50,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "headerFont",
       value: null,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "nicknameTextTemplate",
       value: "<username> - <amount>",
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "font",
-      value: null,
-    },
-    {
+      value: null
+    }),
+    new DefaultWidgetProperty({
       name: "appearance",
       value: "none",
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "enableVoiceForHeader",
       value: true,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "voiceTextTemplate",
       value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username> с фразой
@@ -88,12 +92,12 @@ export const DEFAULT_PROPERTIES = [
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "enableVoiceWhenMessageIsEmpty",
       value: true,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "voiceEmptyTextTemplates",
       value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username>
@@ -130,171 +134,99 @@ export const DEFAULT_PROPERTIES = [
 Осуществлен перевод на сумму <amount> от <username> в пользу стримера <streamer>
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "message-appearance",
       value: "none",
-    },
-    {
+    }),
+    new DefaultWidgetProperty({
       name: "enableVoiceForMessage",
       value: true,
-    },
-    {
-      name: "imageBorder",
-      value: new BorderProperty({ name: "imageBorder"})
-    },
-    {
-      name: "imageRounding",
-      value: new RoundingProperty({ name: "imageRounding"})
-    },
-    {
-      name: "imagePadding",
-      value: new PaddingProperty({ name: "imagePadding"})
-    },
-    {
-      name: "imageShadow",
-      value: new BoxShadowProperty({ name: "imageShadow"})
-    },
-    {
+    }),
+    new BorderProperty({ name: "imageBorder"}),
+    new RoundingProperty({ name: "imageRounding"}),
+    new PaddingProperty({ name: "imagePadding"}),
+    new BoxShadowProperty({ name: "imageShadow"}),
+    new BooleanProperty({
       name: "showHeader",
-      value: new BooleanProperty({
-        name: "showHeader",
-        value: true,
-        displayName: "widget-donaterslist-show-header",
-      }),
-    },
-    {
-      name: "headerWidth",
-      value: new WidthProperty({ name: "headerWidth" }),
-    },
-    {
-      name: "headerHeight",
-      value: new HeightProperty({ name: "headerHeight" }),
-    },
-    {
+      value: true,
+      displayName: "widget-donaterslist-show-header",
+    }),
+    new WidthProperty({ name: "headerWidth" }),
+    new HeightProperty({ name: "headerHeight" }),
+    new SingleChoiceProperty({
       name: "headerAlignment",
-      value: new SingleChoiceProperty({
-          name: "headerAlignment",
-          value: "Center",
-          displayName: "widget-donaterslist-list-alignment",
-          options: ["Left", "Center", "Right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        })
-    },
-    {
-      name: "headerBackgroundColor",
-      value: new ColorProperty({
-          name: "titleBackgroundColor",
-          displayName: "widget-donaterslist-title-background-color",
-          value: {
-            gradient: false,
-            gradientType: GRADIENT_TYPE.LINEAR,
-            repeating: false,
-            colors: [{ color: "rgba(0,0,0,0)" }],
-            angle: 0,
-          },
-          target: ColorPropertyTarget.BACKGROUND,
-      })
-    },
-    {
-      name: "headerBackgroundImage",
-      value: new BackgroundImageProperty({
-          name: "headerBackgroundImage",
-      })
-    },
-    {
-      name: "headerBorder",
-      value: new BorderProperty({
-          name: "headerBorder",
-      })
-    },
-    {
+      value: "Center",
+      displayName: "widget-donaterslist-list-alignment",
+      options: ["Left", "Center", "Right"],
+      selectionType: SELECTION_TYPE.SEGMENTED,
+    }),
+    new ColorProperty({
+        name: "titleBackgroundColor",
+        displayName: "widget-donaterslist-title-background-color",
+        value: {
+          gradient: false,
+          gradientType: GRADIENT_TYPE.LINEAR,
+          repeating: false,
+          colors: [{ color: "rgba(0,0,0,0)" }],
+          angle: 0,
+        },
+        target: ColorPropertyTarget.BACKGROUND,
+    }),
+    new BackgroundImageProperty({
+        name: "headerBackgroundImage",
+    }),
+    new BorderProperty({
+        name: "headerBorder",
+    }),
+    new RoundingProperty({
       name: "headerRounding",
-      value:         new RoundingProperty({
-          name: "headerRounding",
-        }),
-    },
-    {
+    }),
+    new PaddingProperty({
       name: "headerPadding",
-      value: new PaddingProperty({
-        name: "headerPadding",
-      })
-    },
-    {
+    }),
+    new BoxShadowProperty({
       name: "headerBoxShadow",
-      value: new BoxShadowProperty({
-        name: "headerBoxShadow",
-      }),
-    },
-    {
+    }),
+    new BooleanProperty({
       name: "showMessage",
-      value: new BooleanProperty({
-        name: "showMessage",
-        value: true,
-        displayName: "widget-donaterslist-show-message",
-      }),
-    },
-    {
-      name: "messageWidth",
-      value: new WidthProperty({ name: "messageWidth" }),
-    },
-    {
-      name: "messageHeight",
-      value: new HeightProperty({ name: "messageHeight" }),
-    },
-    {
+      value: true,
+      displayName: "widget-donaterslist-show-message",
+    }),
+    new WidthProperty({ name: "messageWidth" }),
+    new HeightProperty({ name: "messageHeight" }),
+    new SingleChoiceProperty({
       name: "messageAlignment",
-      value: new SingleChoiceProperty({
-          name: "messageAlignment",
-          value: "Center",
-          displayName: "widget-donaterslist-list-alignment",
-          options: ["Left", "Center", "Right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        })
-    },
-    {
-      name: "messageBackgroundColor",
-      value: new ColorProperty({
-          name: "messageBackgroundColor",
-          displayName: "widget-donaterslist-title-background-color",
-          value: {
-            gradient: false,
-            gradientType: GRADIENT_TYPE.LINEAR,
-            repeating: false,
-            colors: [{ color: "rgba(0,0,0,0)" }],
-            angle: 0,
-          },
-          target: ColorPropertyTarget.BACKGROUND,
-      })
-    },
-    {
-      name: "messageBackgroundImage",
-      value: new BackgroundImageProperty({
-          name: "messageBackgroundImage",
-      })
-    },
-    {
-      name: "messageBorder",
-      value: new BorderProperty({
-          name: "messageBorder",
-      })
-    },
-    {
+      value: "Center",
+      displayName: "widget-donaterslist-list-alignment",
+      options: ["Left", "Center", "Right"],
+      selectionType: SELECTION_TYPE.SEGMENTED,
+    }),
+    new ColorProperty({
+        name: "messageBackgroundColor",
+        displayName: "widget-donaterslist-title-background-color",
+        value: {
+          gradient: false,
+          gradientType: GRADIENT_TYPE.LINEAR,
+          repeating: false,
+          colors: [{ color: "rgba(0,0,0,0)" }],
+          angle: 0,
+        },
+        target: ColorPropertyTarget.BACKGROUND,
+    }),
+    new BackgroundImageProperty({
+        name: "messageBackgroundImage",
+    }),
+    new BorderProperty({
+        name: "messageBorder",
+    }),
+    new RoundingProperty({
       name: "messageRounding",
-      value:         new RoundingProperty({
-          name: "messageRounding",
-        }),
-    },
-    {
+    }),
+    new PaddingProperty({
       name: "messagePadding",
-      value: new PaddingProperty({
-        name: "messagePadding",
-      })
-    },
-    {
+    }),
+    new BoxShadowProperty({
       name: "messageBoxShadow",
-      value: new BoxShadowProperty({
-        name: "messageBoxShadow",
-      }),
-    }
+    })
 ]

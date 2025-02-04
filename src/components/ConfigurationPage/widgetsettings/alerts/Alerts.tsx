@@ -7,7 +7,7 @@ import { makeAutoObservable, reaction, toJS } from "mobx";
 import { AlertComponent } from "./AlertComponent";
 import { log } from "../../../../logging";
 import { produce } from "immer";
-
+import { WidgetProperty } from "../../widgetproperties/WidgetProperty";
 
 export interface Amount {
   major: number;
@@ -102,7 +102,7 @@ export class Alert {
   private _image: string | null = null;
   private _video: string | null = null;
   private _triggers: Trigger[] = [DEFAULT_TRIGGER];
-  private _properties: any[] = DEFAULT_PROPERTIES;
+  private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES;
   // TODO: use store
   private _removeFn: Function;
   private _addFn: Function;
@@ -115,7 +115,7 @@ export class Alert {
     triggers,
     properties,
     removeFn,
-    addFn
+    addFn,
   }: {
     id?: string;
     audio?: string;
@@ -124,7 +124,7 @@ export class Alert {
     triggers?: Trigger[];
     properties?: any[];
     removeFn: Function;
-    addFn: Function
+    addFn: Function;
   }) {
     this._id = id || uuidv7();
     this.audio = audio || null;
@@ -144,7 +144,13 @@ export class Alert {
       image: this._image,
       video: this._video,
       triggers: this._triggers,
-      properties: this._properties,
+      properties: this._properties.map((it) => {
+        log.debug({property: it}, "preparing config");
+        return {
+          name: it.name,
+          value: it.value,
+        };
+      }),
     };
   }
 
@@ -152,7 +158,11 @@ export class Alert {
     return this._properties.find((it) => it.name === name)?.value;
   }
 
-  public copy(): Alert{
+  public get(name: string): WidgetProperty<any> | null {
+    return this._properties.find((it) => it.name === name) ?? null;
+  }
+
+  public copy(): Alert {
     const alert = new Alert({
       id: undefined,
       audio: produce(toJS(this._audio), (draft) => draft) || undefined,
@@ -161,13 +171,14 @@ export class Alert {
       triggers: produce(toJS(this._triggers), (draft) => draft),
       properties: produce(toJS(this._properties), (draft) => draft),
       removeFn: this._removeFn,
-      addFn: this._addFn
-    })
+      addFn: this._addFn,
+    });
     this._addFn(alert);
     return alert;
   }
+
   public update(name: string, value: any): void {
-    log.debug({name: name, value: value},"updating alert");
+    log.debug({ name: name, value: value }, "updating alert");
     this._properties.map((it) => {
       if (it.name === name) {
         it.value = value;
