@@ -273,6 +273,10 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
+  public get goalProperty(): DonationGoalProperty {
+    return this.get("goal") as DonationGoalProperty;
+  }
+
   public get showLabel(): boolean {
     return this.get("showLabel")?.value ?? true;
   }
