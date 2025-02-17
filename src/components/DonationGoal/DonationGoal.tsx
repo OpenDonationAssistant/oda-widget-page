@@ -40,6 +40,8 @@ export const DonationGoal = observer(
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
+    const outerWidth = settings.outerWidth.calcCss();
+    const outerHeight = settings.outerHeight.calcCss();
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
     useEffect(() => {
@@ -184,6 +186,8 @@ export const DonationGoal = observer(
                   style={{
                     ...progressBarBorderStyle,
                     ...outerRoundingStyle,
+                    ...outerHeight,
+                    ...outerWidth,
                     zIndex: 0,
                   }}
                   className={`${classes.goalprogressbar}`}
