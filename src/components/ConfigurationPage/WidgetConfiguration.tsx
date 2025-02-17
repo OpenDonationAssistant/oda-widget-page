@@ -348,7 +348,11 @@ export const WidgetConfiguration = observer(
                   {widget.type === "donationgoal" && (
                     <DonationGoal
                       settings={widget.config as DonationGoalWidgetSettings}
-                      state={new DemoDonationGoalState()}
+                      state={
+                        new DemoDonationGoalState(
+                          widget.config as DonationGoalWidgetSettings,
+                        )
+                      }
                     />
                   )}
                   {widget.type === "donaters-top-list" && (
