@@ -19,12 +19,14 @@ import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import classes from "./AbstractWidgetSettings.module.css";
 import { BackgroundImageProperty } from "../widgetproperties/BackgroundImageProperty";
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
+import { HeightProperty } from "../widgetproperties/HeightProperty";
+import { WidthProperty } from "../widgetproperties/WidthProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -169,6 +171,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           displayName: "widget-donationgoal-background",
           target: ColorPropertyTarget.BACKGROUND,
         }),
+        new WidthProperty({
+          name: "outerWidth",
+        }),
+        new HeightProperty({
+          name: "outerHeight",
+        }),
         new BorderProperty({
           name: "outerBorder",
         }),
@@ -265,6 +273,10 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
+  public get goalProperty(): DonationGoalProperty {
+    return this.get("goal") as DonationGoalProperty;
+  }
+
   public get showLabel(): boolean {
     return this.get("showLabel")?.value ?? true;
   }
@@ -337,6 +349,14 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public get backgroundColor(): ColorProperty {
     return this.get("backgroundColor") as ColorProperty;
+  }
+
+  public get outerHeight(): HeightProperty {
+    return this.get("outerHeight") as HeightProperty;
+  }
+
+  public get outerWidth(): WidthProperty {
+    return this.get("outerWidth") as WidthProperty;
   }
 
   public get outerBorderProperty(): BorderProperty {

@@ -12,10 +12,44 @@ import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
 import PresetTab from "./PresetTab";
 import { LayoutTab } from "./LayoutTab";
+import { useEffect, useState } from "react";
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
   log.debug({ alert: toJS(alert) }, "render alert");
+  const [image, setImage] = useState<string | null>(null);
+  const [video, setVideo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (alert.image) {
+      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob))
+        .then((url) => {
+          setImage((old) => url);
+        });
+    } else {
+      setImage(null);
+    }
+    if (alert.video) {
+      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob))
+        .then((url) => {
+          setVideo((old) => url);
+        });
+    } else {
+      setVideo(null);
+    }
+  }, [alert.image, alert.video]);
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">

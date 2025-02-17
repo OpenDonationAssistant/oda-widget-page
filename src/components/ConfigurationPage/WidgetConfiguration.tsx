@@ -228,7 +228,9 @@ export const WidgetConfiguration = observer(
                 <Flex vertical gap={15}>
                   <div>
                     <Trans i18nKey="unsaved-notification-description" />
-                    <span className={`${classes.widgetname}`}>{widget.name}</span>
+                    <span className={`${classes.widgetname}`}>
+                      {widget.name}
+                    </span>
                   </div>
                   <div>
                     <SaveButtons widget={widget} />
@@ -355,7 +357,11 @@ export const WidgetConfiguration = observer(
                   {widget.type === "donationgoal" && (
                     <DonationGoal
                       settings={widget.config as DonationGoalWidgetSettings}
-                      state={new DemoDonationGoalState()}
+                      state={
+                        new DemoDonationGoalState(
+                          widget.config as DonationGoalWidgetSettings,
+                        )
+                      }
                     />
                   )}
                   {widget.type === "donaters-top-list" && (

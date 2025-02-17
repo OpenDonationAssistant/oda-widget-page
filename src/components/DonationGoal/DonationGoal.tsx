@@ -40,6 +40,8 @@ export const DonationGoal = observer(
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
+    const outerWidth = settings.outerWidth.calcCss();
+    const outerHeight = settings.outerHeight.calcCss();
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
     useEffect(() => {
@@ -127,6 +129,12 @@ export const DonationGoal = observer(
       settings.backgroundImage.calcCss().then(setBackgroundImage);
     }, [settings.backgroundImage.value]);
 
+    const ids = settings.goalProperty.value.map((goal) => {
+      return goal.id;
+    });
+
+    log.debug({ids: ids, state: state.goals.map((goal) => goal.id)}, "ids")
+
     return (
       <div
         style={{
@@ -148,94 +156,101 @@ export const DonationGoal = observer(
       >
         {amountFont.createFontImport()}
         {titleFont.createFontImport()}
-        {state.goals.map((goal) => (
-          <>
-            <div className={`${classes.goalitem}`}>
-              {settings.showTitle && (
-                <Flex className="full-width" style={titleTextAlign}>
-                  <div
-                    style={{
-                      ...titleTextStyle,
-                      ...titleBorderStyle,
-                      ...titlePaddingStyle,
-                      ...titleRoundingStyle,
-                      ...titleBoxShadowStyle,
-                      ...titleBackgroundColorStyle,
-                      ...titleBackgroundImage,
-                    }}
-                    className={`${classes.goaldescription}}`}
-                  >
+        {state.goals
+          .filter((goal) => ids.includes(goal.id))
+          .map((goal) => (
+            <>
+              <div className={`${classes.goalitem}`}>
+                {settings.showTitle && (
+                  <Flex className="full-width" style={titleTextAlign}>
                     <div
-                      style={{ zIndex: 2, opacity: 1 }}
-                      className={`${titleFont.calcClassName()}`}
+                      style={{
+                        ...titleTextStyle,
+                        ...titleBorderStyle,
+                        ...titlePaddingStyle,
+                        ...titleRoundingStyle,
+                        ...titleBoxShadowStyle,
+                        ...titleBackgroundColorStyle,
+                        ...titleBackgroundImage,
+                      }}
+                      className={`${classes.goaldescription}}`}
                     >
-                      {goal.briefDescription}
+                      <div
+                        style={{ zIndex: 2, opacity: 1 }}
+                        className={`${titleFont.calcClassName()}`}
+                      >
+                        {goal.briefDescription}
+                      </div>
                     </div>
-                  </div>
-                </Flex>
-              )}
-              <div
-                style={{
-                  ...{ display: "grid" },
-                  ...barPadding,
-                }}
-              >
+                  </Flex>
+                )}
                 <div
                   style={{
-                    ...progressBarBorderStyle,
-                    ...outerRoundingStyle,
-                    zIndex: 0,
+                    ...{ display: "grid" },
+                    ...barPadding,
                   }}
-                  className={`${classes.goalprogressbar}`}
                 >
                   <div
                     style={{
-                      zIndex: 0,
-                      ...{ width: "100%", height: "100%" },
+                      ...progressBarBorderStyle,
                       ...outerRoundingStyle,
-                      ...backgroundColor,
-                      ...outerBoxShadowStyle,
-                      ...outerBackgroundImage,
+                      ...outerHeight,
+                      ...outerWidth,
+                      zIndex: 0,
                     }}
-                  />
-                </div>
-                <div
-                  style={calcBarStyle(goal)}
-                  className={`${classes.goalfilled}`}
-                ></div>
-                <div className={`${classes.goalunfilled}`}></div>
-                {settings.showLabel && (
-                  <div
-                    style={{
-                      ...filledTextStyle,
-                      ...filledTextPlacement,
-                      zIndex: 3,
-                    }}
-                    className={`${
-                      classes.goalamount
-                    } ${amountFont.calcClassName()}`}
+                    className={`${classes.goalprogressbar}`}
                   >
-                    {labelTemplate
-                      .replaceAll(
-                        "<collected>",
-                        `${goal.accumulatedAmount.major}`,
-                      )
-                      .replaceAll("<required>", `${goal.requiredAmount.major}`)
-                      .replaceAll("<currency>", "RUB")
-                      .replaceAll(
-                        "<proportion>",
-                        `${Math.trunc(
-                          (goal.accumulatedAmount.major /
-                            goal.requiredAmount.major) *
-                            100,
-                        )}`,
-                      )}
+                    <div
+                      style={{
+                        zIndex: 0,
+                        ...{ width: "100%", height: "100%" },
+                        ...outerRoundingStyle,
+                        ...backgroundColor,
+                        ...outerBoxShadowStyle,
+                        ...outerBackgroundImage,
+                      }}
+                    />
                   </div>
-                )}
+                  <div
+                    style={calcBarStyle(goal)}
+                    className={`${classes.goalfilled}`}
+                  ></div>
+                  <div className={`${classes.goalunfilled}`}></div>
+                  {settings.showLabel && (
+                    <div
+                      style={{
+                        ...filledTextStyle,
+                        ...filledTextPlacement,
+                        zIndex: 3,
+                      }}
+                      className={`${
+                        classes.goalamount
+                      } ${amountFont.calcClassName()}`}
+                    >
+                      {labelTemplate
+                        .replaceAll(
+                          "<collected>",
+                          `${goal.accumulatedAmount.major}`,
+                        )
+                        .replaceAll(
+                          "<required>",
+                          `${goal.requiredAmount.major}`,
+                        )
+                        .replaceAll("<currency>", "RUB")
+                        .replaceAll(
+                          "<proportion>",
+                          `${Math.trunc(
+                            (goal.accumulatedAmount.major /
+                              goal.requiredAmount.major) *
+                              100,
+                          )}`,
+                        )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        ))}
+            </>
+          ))}
       </div>
     );
   },

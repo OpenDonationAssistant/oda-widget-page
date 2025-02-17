@@ -1,7 +1,14 @@
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { AbstractDonationGoalState } from "./DonationGoalState";
 
 export class DemoDonationGoalState implements AbstractDonationGoalState {
+  private _config: DonationGoalWidgetSettings;
+
+  constructor(config: DonationGoalWidgetSettings) {
+    this._config = config;
+  }
+
   private _goals: Goal[] = [
     {
       id: "goal-1",
@@ -19,7 +26,10 @@ export class DemoDonationGoalState implements AbstractDonationGoalState {
     },
   ];
 
-  public get goals() {
-    return this._goals;
+  public get goals(): Goal[] {
+    if (!this._config.goalProperty.value) {
+      return this._goals;
+    }
+    return this._config.goalProperty.value;
   }
 }
