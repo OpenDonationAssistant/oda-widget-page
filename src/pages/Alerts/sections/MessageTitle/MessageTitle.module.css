@@ -1,7 +1,22 @@
 .messageheader {
+  position: relative;
 	color: rgb(251, 140, 43);
 	font-size: 45px;
 	width: 100%;
 	font-weight: bolder;
 	text-align: center;
+}
+
+.image {
+  position: absolute;
+  z-index: 0;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
 }

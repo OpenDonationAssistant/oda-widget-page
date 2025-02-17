@@ -205,6 +205,7 @@
 }
 
 .ant-collapse {
+
   background-color: #151a33;
   font-family: Play;
   border-top: 1px solid #674afd;
@@ -231,9 +232,13 @@
       font-weight: 900;
       color: white;
       border: none;
-      /* border-bottom: 1px solid var(--oda-panel-backgroun-color); */
       border-radius: 0px!important;
       background-color: var(--oda-main-background-color);
+      align-items: center;
+
+      & .ant-collapse-expand-icon {
+        color: var(--oda-secondary-text-color);
+      }
     }
 
     & > .ant-collapse-header:first {

@@ -11,6 +11,9 @@ import { BorderProperty } from "../../widgetproperties/BorderProperty";
 import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
 import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
+import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
+import { NumberProperty } from "../../widgetproperties/NumberProperty";
+import { DurationProperty } from "./DurationProperty";
 
 // <div className="settings-item">
 //   <LabeledContainer displayName="widget-alert-image-show-time">
@@ -65,10 +68,6 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           />
         </LabeledContainer>
       </div>
-      {(alert.get("imageBorder") as BorderProperty)?.markup()}
-      {(alert.get("imageRounding") as RoundingProperty)?.markup()}
-      {(alert.get("imagePadding") as PaddingProperty)?.markup()}
-      {(alert.get("imageShadow") as BoxShadowProperty)?.markup()}
       {limitImageSize && (
         <>
           <div className="settings-item">
@@ -94,20 +93,31 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
         </>
       )}
       <div className="settings-item">
-        <LabeledContainer displayName="alert-appearance-label">
-          <Select
-            className="full-width"
-            value={alert.property("appearance")}
-            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
-              (option) => {
-                return { label: t(option), value: option };
-              },
-            )}
-            onChange={(selected) => {
-              alert.update("appearance", selected);
-            }}
-          />
-        </LabeledContainer>
+        {(alert.get("imageAppearanceDelay") as NumberProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageDuration") as DurationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageAppearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageAnimation") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageDisappearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageBorder") as BorderProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageRounding") as RoundingProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imagePadding") as PaddingProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("imageShadow") as BoxShadowProperty)?.markup()}
       </div>
       <div className="upload-button-container">
         {!alert.video && !alert.image && (

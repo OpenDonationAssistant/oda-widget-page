@@ -2,4 +2,19 @@
 	font-size: 35px;
 	color: white;
 	text-align: center;
+  position: relative;
+}
+
+.image {
+  position: absolute;
+  z-index: 0;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
 }

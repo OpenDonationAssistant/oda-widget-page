@@ -5,9 +5,10 @@ import { PresetStore } from "../../../stores/PresetStore";
 import PresetPropertyComponent from "./PresetPropertyComponent";
 import { Preset } from "../../../types/Preset";
 import { log } from "../../../logging";
+import { Alert } from "../widgetsettings/alerts/Alerts";
 
 export class PresetProperty implements WidgetProperty<string> {
-  private _settings: AbstractWidgetSettings;
+  private _settings: AbstractWidgetSettings | Alert;
   private _store: PresetStore;
   public name: string = "preset";
   public value: string = "";
@@ -19,7 +20,7 @@ export class PresetProperty implements WidgetProperty<string> {
     settings,
   }: {
     type: string;
-    settings: AbstractWidgetSettings;
+    settings: AbstractWidgetSettings | Alert;
   }) {
     this.value = type;
     this._settings = settings;
@@ -34,7 +35,6 @@ export class PresetProperty implements WidgetProperty<string> {
   }
 
   apply(preset: Preset){
-    // log.debug({ types: WIDGET_TYPES}, "apply preset", preset);
     preset.applyTo(this._settings, this.value);
   }
 

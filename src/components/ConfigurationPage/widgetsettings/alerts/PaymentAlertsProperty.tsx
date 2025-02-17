@@ -1,17 +1,17 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { AlertComponent } from "./AlertComponent";
-import { Collapse, Flex } from "antd";
+import { Collapse, Flex, Input, Modal } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
-import { DEFAULT_PROPERTIES } from "./DefaultProperties";
+import { extendObservable, observable } from "mobx";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -27,6 +27,38 @@ function testAlert(topic: string, alert: Alert) {
   });
   log.debug("Send test alert");
 }
+
+export const RenameButton = observer(({ alert }: { alert: Alert }) => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>(alert.property("name"));
+
+  const toggleModal = () => {
+    setShowModal((old) => !old);
+  };
+
+  return (
+    <>
+      <Modal
+        title="Help"
+        open={showModal}
+        onCancel={toggleModal}
+        onClose={toggleModal}
+        onOk={() => {
+          alert.update("name", newName);
+          toggleModal();
+        }}
+      >
+        <Input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+        />
+      </Modal>
+      <button className="menu-button" onClick={toggleModal}>
+        <span className="material-symbols-sharp">stylus</span>
+      </button>
+    </>
+  );
+});
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
@@ -50,11 +82,16 @@ const PaymentAlertsPropertyComponent = observer(
           <div className={`${classes.preview}`}>
             <Collapse
               items={property.value.map((it, index) => {
+                log.debug({ it: it }, "create view for alert");
                 return {
                   key: it.id ?? index,
                   label: (
-                    <Flex justify="space-between" align="center">
-                      <div>{it.property("name") ?? it.id ?? index}</div>
+                    <Flex
+                      key={it.id ?? index}
+                      justify="space-between"
+                      align="center"
+                    >
+                      <div>{it.property("name")}</div>
                       <Flex className={`${classes.alertbuttons}`}>
                         <button
                           className="menu-button"
@@ -72,12 +109,7 @@ const PaymentAlertsPropertyComponent = observer(
                             content_copy
                           </span>
                         </button>
-                        <button
-                          className="menu-button"
-                          onClick={() => it.copy()}
-                        >
-                          <span className="material-symbols-sharp">stylus</span>
-                        </button>
+                        <RenameButton alert={it} />
                         <button
                           className="menu-button"
                           onClick={() => it.delete()}
@@ -87,7 +119,7 @@ const PaymentAlertsPropertyComponent = observer(
                       </Flex>
                     </Flex>
                   ),
-                  children: <AlertComponent alert={it} />,
+                  children: <AlertComponent key={it.id ?? index} alert={it} />,
                 };
               })}
             />
@@ -99,11 +131,15 @@ const PaymentAlertsPropertyComponent = observer(
 );
 
 export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
+  private _oldValue: any[] = [];
   constructor() {
     super({
       name: "alerts",
       value: [],
       displayName: "",
+    });
+    extendObservable(this, {
+      _oldValue: observable,
     });
   }
 
@@ -137,6 +173,42 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
             addFn: (alert: Alert) => this.addAlert(),
           }),
     ];
+  }
+
+  public markSaved(): void {
+    log.debug("markSaved", this._value);
+    this._oldValue = this._value.map((it) => it.config());
+    this._initialValue = this._value;
+  }
+
+  public get changed(): boolean {
+    log.debug("calc is alerts changed");
+    const valueToCheck = this.value.map((it) => it.config());
+    let changed = false;
+    if (valueToCheck.length !== this._oldValue.length) {
+      changed = true;
+    }
+    for (let i = 0; i < valueToCheck.length; i++) {
+      log.debug(
+        { new: valueToCheck[i], old: this._oldValue[i] },
+        "compare alerts",
+      );
+      if (!this.deepEqual(valueToCheck[i], this._oldValue[i])) {
+        changed = true;
+      }
+    }
+    // const result = super.deepEqual(this._oldValue, valueToCheck);
+    if (changed) {
+      log.debug(
+        {
+          changed: this,
+          newValue: valueToCheck,
+          initialValue: this._oldValue,
+        },
+        "alert change detected",
+      );
+    }
+    return changed;
   }
 
   removeAlert(id: string) {

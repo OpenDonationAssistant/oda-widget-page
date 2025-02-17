@@ -222,11 +222,21 @@ export const WidgetConfiguration = observer(
         (unsaved) => {
           if (unsaved) {
             api.warning({
+              key: widget.id,
               message: <Trans i18nKey="unsaved-notification-title" />,
-              description: <Trans i18nKey="unsaved-notification-description" />,
+              description: (
+                <Flex vertical gap={15}>
+                  <div>
+                    <Trans i18nKey="unsaved-notification-description" />
+                    <span className={`${classes.widgetname}`}>{widget.name}</span>
+                  </div>
+                  <div>
+                    <SaveButtons widget={widget} />
+                  </div>
+                </Flex>
+              ),
               placement: "bottomRight",
               duration: 0,
-              closeIcon: <div></div>,
             });
           } else {
             api.destroy();

@@ -16,12 +16,30 @@ import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
 import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 import { Flex } from "antd";
+import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
+import { NumberProperty } from "../../widgetproperties/NumberProperty";
+import { DurationProperty } from "./DurationProperty";
 
 export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
   return (
     <Flex vertical>
       <div className="settings-item">
         {(alert.get("showHeader") as BooleanProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAppearanceDelay") as NumberProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerDuration") as DurationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAppearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAnimation") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerDisappearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-title-template">
@@ -51,33 +69,33 @@ export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
         />
       </div>
       <div className="settings-item">
-      {(alert.get("titleBackgroundColor") as ColorProperty).markup()}
+        {(alert.get("titleBackgroundColor") as ColorProperty).markup()}
       </div>
       <div className="settings-item">
-      {(
-        alert.get("headerBackgroundImage") as BackgroundImageProperty
-      ).markup()}
+        {(
+          alert.get("headerBackgroundImage") as BackgroundImageProperty
+        ).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerWidth") as WidthProperty).markup()}
+        {(alert.get("headerWidth") as WidthProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerHeight") as HeightProperty).markup()}
+        {(alert.get("headerHeight") as HeightProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerAlignment") as SingleChoiceProperty).markup()}
+        {(alert.get("headerAlignment") as SingleChoiceProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerBorder") as BorderProperty).markup()}
+        {(alert.get("headerBorder") as BorderProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerRounding") as RoundingProperty).markup()}
+        {(alert.get("headerRounding") as RoundingProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerPadding") as PaddingProperty).markup()}
+        {(alert.get("headerPadding") as PaddingProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("headerBoxShadow") as BoxShadowProperty).markup()}
+        {(alert.get("headerBoxShadow") as BoxShadowProperty).markup()}
       </div>
     </Flex>
   );

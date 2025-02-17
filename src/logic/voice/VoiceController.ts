@@ -41,6 +41,9 @@ export class VoiceController {
       "enableVoiceForHeader",
       true,
     );
+    const volume =
+      alert.properties.find((prop) => prop.name === "voiceVolume")?.value ??
+      100;
     if (!playTitle) {
       if (onEndHandler) {
         onEndHandler();
@@ -83,7 +86,7 @@ export class VoiceController {
     try {
       if (resultText.length > 0) {
         this.voiceByGoogle(resultText).then((audio) =>
-          this.pronounce(audio, 100, onEndHandler),
+          this.pronounce(audio, volume, onEndHandler),
         );
       } else {
         onEndHandler();
@@ -98,6 +101,9 @@ export class VoiceController {
 
   pronounceMessage(alert: any, data: any, onEndHandler: any) {
     log.debug("start to pronounce message");
+    const volume =
+      alert.properties.find((prop) => prop.name === "voiceVolume")?.value ??
+      100;
     try {
       if (!data || !data.message || data.message.length === 0) {
         if (onEndHandler) {
@@ -106,10 +112,10 @@ export class VoiceController {
         return;
       }
       this.voiceByGoogle(data.message).then((audio) =>
-        this.pronounce(audio, 100, onEndHandler),
+        this.pronounce(audio, volume, onEndHandler),
       );
     } catch (error) {
-      console.log(error);
+      log.error({ error: error}, "error while pronouncing message");
       if (onEndHandler) {
         onEndHandler();
       }
@@ -117,7 +123,6 @@ export class VoiceController {
   }
 
   private pronounce(buffer: ArrayBuffer, volume: number, onEndHandler: any) {
-    console.log(buffer);
     this.audioCtx
       .decodeAudioData(
         buffer,

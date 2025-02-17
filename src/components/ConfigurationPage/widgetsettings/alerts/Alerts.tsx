@@ -3,8 +3,7 @@ import { DEFAULT_PROPERTIES } from "./DefaultProperties";
 import { ReactNode } from "react";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { InputNumber } from "antd";
-import { makeAutoObservable, reaction, toJS } from "mobx";
-import { AlertComponent } from "./AlertComponent";
+import { makeAutoObservable, toJS } from "mobx";
 import { log } from "../../../../logging";
 import { produce } from "immer";
 import { WidgetProperty } from "../../widgetproperties/WidgetProperty";
@@ -102,7 +101,7 @@ export class Alert {
   private _image: string | null = null;
   private _video: string | null = null;
   private _triggers: Trigger[] = [DEFAULT_TRIGGER];
-  private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES;
+  private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES();
   // TODO: use store
   private _removeFn: Function;
   private _addFn: Function;
@@ -131,7 +130,7 @@ export class Alert {
     this.image = image || null;
     this.video = video || null;
     this.triggers = triggers || [DEFAULT_TRIGGER];
-    this.properties = this.mergeWithDefault(properties);
+    this.merge(properties);
     this._removeFn = removeFn;
     this._addFn = addFn;
     makeAutoObservable(this);
@@ -145,7 +144,6 @@ export class Alert {
       video: this._video,
       triggers: this._triggers,
       properties: this._properties.map((it) => {
-        log.debug({ property: it }, "preparing config");
         return {
           name: it.name,
           value: it.value,
@@ -175,6 +173,10 @@ export class Alert {
     });
     this._addFn(alert);
     return alert;
+  }
+
+  public set(name: string, value: any, merge: boolean = true): void {
+    this.update(name, value);
   }
 
   public update(name: string, value: any): void {
@@ -248,15 +250,17 @@ export class Alert {
     this._removeFn(this._id);
   }
 
-  private mergeWithDefault(properties?: any[]): any[] {
+  private merge(properties?: any[]): void {
     const props = new Map<string, any>();
     properties?.forEach((it) => {
       props.set(it.name, it.value);
     });
-    DEFAULT_PROPERTIES.map((it) => {
-      produce(it, (draft) => {
-        draft.value = props.get(draft.name);
-      });
+    log.debug({ props: props, this: this._properties }, "merging properties");
+    this._properties.forEach((it) => {
+      const updatedValue = props.get(it.name);
+      if (updatedValue !== undefined && updatedValue !== null) {
+        it.value = updatedValue;
+      }
     });
   }
 }

@@ -248,6 +248,10 @@
   "button-news": "News",
   "widget-donaterslist-show-header": "Show Header",
   "unsaved-notification-title": "Unsaved changes",
-  "unsaved-notification-description": "You have unsaved changes in widget settings",
-  "font-select-help": "Font name. ODA uses fontsource.org so you can preview and choose fonts there."
+  "unsaved-notification-description": "You have unsaved changes in widget: ",
+  "font-select-help": "Font name. ODA uses fontsource.org so you can preview and choose fonts there.",
+  "widget-donaterslist-show-message":"Show message",
+  "appearance-animation":"Appearance animation",
+  "duration": "Display duration",
+  "animation-duration":"Animation duration"
 }

@@ -83,7 +83,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       )}
       <div className="audio-button-container">
         {!alert.audio && (
-          <div style={{ textAlign: "center", width: "100%" }}>
+          <div style={{ textAlign: "center", width: "100%", paddingBottom: "10px" }}>
             <label className="oda-btn-default">
               <input
                 type="file"

@@ -1,4 +1,5 @@
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
+import { Alert } from "../components/ConfigurationPage/widgetsettings/alerts/Alerts";
 import { Widget } from "../types/Widget";
 
 interface PresetProperty {
@@ -25,7 +26,7 @@ export class Preset {
     this._showcase = showcase;
   }
 
-  public applyTo(settings: AbstractWidgetSettings, type: string) {
+  public applyTo(settings: AbstractWidgetSettings | Alert, type: string) {
     Widget.createDefault(type)
       ?.prepareConfig()
       .forEach((prop) => {

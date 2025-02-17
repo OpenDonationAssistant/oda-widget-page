@@ -4,6 +4,8 @@ import BooleanPropertyInput from "../../components/BooleanPropertyInput";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import TextArea from "antd/es/input/TextArea";
 import { Alert } from "./Alerts";
+import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
+import { NumberProperty } from "../../widgetproperties/NumberProperty";
 
 export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -15,6 +17,9 @@ export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
             onChange={(e) => alert.update("enableVoiceForHeader", e)}
           />
         </LabeledContainer>
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerVoiceDelay") as NumberProperty).markup()}
       </div>
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-voice-title-phrase">
@@ -58,8 +63,12 @@ export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
           />
         </LabeledContainer>
       </div>
+      <div className="settings-item">
+        {(alert.get("messageVoiceDelay") as NumberProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("voiceVolume") as VolumeProperty).markup()}
+      </div>
     </>
   );
 });
-
-

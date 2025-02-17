@@ -60,7 +60,11 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     this._initialValue =
       typeof actualValue === "object" ? { ...actualValue } : actualValue;
     log.debug(
-      { name: this._name, initialValue: this._initialValue },
+      {
+        name: this._name,
+        actualValue: actualValue,
+        initialValue: this._initialValue,
+      },
       "markSaved",
     );
   }
@@ -102,7 +106,7 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
     this._displayName = value;
   }
 
-  private deepEqual(x: any, y: any): boolean {
+  protected deepEqual(x: any, y: any): boolean {
     const ok = Object.keys,
       tx = typeof x,
       ty = typeof y,
@@ -127,8 +131,8 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
       log.debug(
         {
           changed: this,
-          left: JSON.stringify(valueToCheck),
-          right: JSON.stringify(this._initialValue),
+          newValue: JSON.stringify(valueToCheck),
+          initialValue: JSON.stringify(this._initialValue),
         },
         "change detected",
       );

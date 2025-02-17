@@ -249,6 +249,10 @@
   "button-news": "Новости",
   "widget-donaterslist-show-header": "Показывать заголовок",
   "unsaved-notification-title": "Несохраненные изменения",
-  "unsaved-notification-description": "У вас есть несохраненные изменения в настройках виджетов",
-  "font-select-help": "Название шрифта. ODA использует fontsource.org, поэтому вы можете предпросмотреть и выбрать шрифты там. Обратите внимание, не все шрифты поддерживают кириллицу"
+  "unsaved-notification-description": "У вас есть несохраненные изменения в настройках виджета: ",
+  "font-select-help": "Название шрифта. ODA использует fontsource.org, поэтому вы можете предпросмотреть и выбрать шрифты там. Обратите внимание, не все шрифты поддерживают кириллицу",
+  "widget-donaterslist-show-message":"Показывать сообщение",
+  "appearance-animation":"Анимация появления",
+  "duration": "Длительность отображения",
+  "animation-duration":"Длительность анимации"
 }

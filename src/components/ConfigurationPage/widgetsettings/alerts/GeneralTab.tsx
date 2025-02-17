@@ -1,11 +1,25 @@
 import { Trans } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
-import { Alert, FixedDonationAmountTrigger, RangeDonationAmountTrigger, UnknownTrigger } from "./Alerts";
+import {
+  Alert,
+  FixedDonationAmountTrigger,
+  RangeDonationAmountTrigger,
+  UnknownTrigger,
+} from "./Alerts";
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { log } from "../../../../logging";
 import { Select } from "antd";
+import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
+import { LayoutProperty } from "./LayoutProperty";
+import { DurationProperty } from "./DurationProperty";
+import { BorderProperty } from "../../widgetproperties/BorderProperty";
+import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
+import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
+import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
+import { ColorProperty } from "../../widgetproperties/ColorProperty";
+import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
 
 const GeneralTab = observer(({ alert }: { alert: Alert }) => {
   log.debug({ alerts: alert }, "render general tab");
@@ -102,6 +116,36 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
           />
         </LabeledContainer>
       )}
+      <div className="settings-item">
+        {(alert.get("duration") as DurationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalAppearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalAnimation") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalDisappearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalBackgroundColor") as ColorProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalBackgroundImage") as BackgroundImageProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalBorder") as BorderProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalRounding") as RoundingProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalPadding") as PaddingProperty)?.markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalShadow") as BoxShadowProperty)?.markup()}
+      </div>
     </>
   );
 });

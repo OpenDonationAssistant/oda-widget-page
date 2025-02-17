@@ -1,18 +1,40 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { CSSProperties, createContext } from "react";
+import { LayoutPropertyValue } from "../../components/ConfigurationPage/widgetsettings/alerts/LayoutProperty";
 
 export class AlertState {
+  private _layout: LayoutPropertyValue = {
+    value: "1",
+    imageStartPoint: null,
+    headerStartPoint: null,
+    messageStartPoint: null,
+  };
 
+  private _totalHeight: CSSProperties = {};
+  private _totalHeightStyle: CSSProperties = { height: "100%" };
+  private _totalWidth: CSSProperties = {};
+  private _totalWidthStyle: CSSProperties = { width: "100%" };
+  private _totalBorder: CSSProperties = {};
+  private _totalBackgroundColor: CSSProperties = {};
+  private _totalBackgroundImage: CSSProperties = {};
+  private _totalRounding: CSSProperties = {};
+  private _totalPadding: CSSProperties = {};
+  private _totalShadow: CSSProperties = {};
   private _image: string | null = null;
   private _video: string | null = null;
   private _imageStyle: CSSProperties = {};
+  private _imageShadowStyle: CSSProperties = {};
   private _imageClassName: string = "";
+  private _showMessage: boolean = true;
   private _message: string | null = null;
   private _messageStyle: CSSProperties = {};
+  private _messageImageStyle: CSSProperties = {};
   private _messageClassName: string = "";
+  private _showTitle: boolean = true;
   private _title: string | null = null;
   private _titleStyle: CSSProperties = {};
   private _titleClassName: string = "";
+  private _titleImageStyle: CSSProperties = {};
   private _images: string[] = [];
   private _fonts: string[] = [];
 
@@ -20,17 +42,64 @@ export class AlertState {
     makeAutoObservable(this);
   }
 
-  public clear(){
+  public clear() {
     this._image = null;
     this._video = null;
     this._imageStyle = {};
+    this._imageShadowStyle = {};
     this._imageClassName = "";
     this._message = null;
     this._messageStyle = {};
+    this._messageImageStyle = {};
     this._messageClassName = "";
     this._title = null;
     this._titleStyle = {};
     this._titleClassName = "";
+    this._titleImageStyle = {};
+  }
+
+  public get layout(): LayoutPropertyValue {
+    return this._layout;
+  }
+
+  public get totalHeightStyle(): CSSProperties {
+    return this._totalHeightStyle;
+  }
+
+  public get totalWidthStyle(): CSSProperties {
+    return this._totalWidthStyle;
+  }
+
+  public get totalWidth(): CSSProperties {
+    return this._totalWidth;
+  }
+
+  public get totalHeight(): CSSProperties {
+    return this._totalHeight;
+  }
+
+  public get totalBorder(): CSSProperties {
+    return toJS(this._totalBorder);
+  }
+
+  public get totalBackgroundColor(): CSSProperties {
+    return toJS(this._totalBackgroundColor);
+  }
+
+  public get totalBackgroundImage(): CSSProperties {
+    return toJS(this._totalBackgroundImage);
+  }
+
+  public get totalRounding(): CSSProperties {
+    return toJS(this._totalRounding);
+  }
+
+  public get totalPadding(): CSSProperties {
+    return toJS(this._totalPadding);
+  }
+
+  public get totalShadow(): CSSProperties {
+    return toJS(this._totalShadow);
   }
 
   public get image(): string | null {
@@ -45,8 +114,16 @@ export class AlertState {
     return toJS(this._imageStyle);
   }
 
+  public get imageShadowStyle(): CSSProperties {
+    return toJS(this._imageShadowStyle);
+  }
+
   public get imageClassName(): string {
     return this._imageClassName;
+  }
+
+  public get showMessage(): boolean {
+    return this._showMessage;
   }
 
   public get message(): string | null {
@@ -57,8 +134,16 @@ export class AlertState {
     return toJS(this._messageStyle);
   }
 
+  public get messageImageStyle(): CSSProperties {
+    return toJS(this._messageImageStyle);
+  }
+
   public get messageClassName(): string {
     return this._messageClassName;
+  }
+
+  public get showTitle(): boolean {
+    return this._showTitle;
   }
 
   public get title(): string | null {
@@ -67,6 +152,10 @@ export class AlertState {
 
   public get titleStyle(): CSSProperties {
     return toJS(this._titleStyle);
+  }
+
+  public get titleImageStyle(): CSSProperties {
+    return toJS(this._titleImageStyle);
   }
 
   public get titleClassName(): string {
@@ -78,7 +167,51 @@ export class AlertState {
   }
 
   public get fonts(): string[] {
-      return this._fonts;
+    return this._fonts;
+  }
+
+  public set layout(layout: LayoutPropertyValue) {
+    this._layout = layout;
+  }
+
+  public set totalWidthStyle(totalWidthStyle: CSSProperties) {
+    this._totalWidthStyle = totalWidthStyle;
+  }
+
+  public set totalHeightStyle(totalHeightStyle: CSSProperties) {
+    this._totalHeightStyle = totalHeightStyle;
+  }
+
+  public set totalWidth(totalWidth: CSSProperties) {
+    this._totalWidth = totalWidth;
+  }
+
+  public set totalHeight(totalHeight: CSSProperties) {
+    this._totalHeight = totalHeight;
+  }
+
+  public set totalBorder(totalBorder: CSSProperties) {
+    this._totalBorder = totalBorder;
+  }
+
+  public set totalBackgroundColor(totalBackgroundColor: CSSProperties) {
+    this._totalBackgroundColor = totalBackgroundColor;
+  }
+
+  public set totalBackgroundImage(totalBackgroundImage: CSSProperties) {
+    this._totalBackgroundImage = totalBackgroundImage;
+  }
+
+  public set totalRounding(totalRounding: CSSProperties) {
+    this._totalRounding = totalRounding;
+  }
+
+  public set totalPadding(totalPadding: CSSProperties) {
+    this._totalPadding = totalPadding;
+  }
+
+  public set totalShadow(totalShadow: CSSProperties) {
+    this._totalShadow = totalShadow;
   }
 
   public set image(image: string | null) {
@@ -93,6 +226,10 @@ export class AlertState {
     this._imageStyle = imageStyle;
   }
 
+  public set imageShadowStyle(imageShadowStyle: CSSProperties) {
+    this._imageShadowStyle = imageShadowStyle;
+  }
+
   public set imageClassName(imageClassName: string) {
     this._imageClassName = imageClassName;
   }
@@ -103,6 +240,10 @@ export class AlertState {
 
   public set messageStyle(messageStyle: CSSProperties) {
     this._messageStyle = messageStyle;
+  }
+
+  public set messageImageStyle(messageImageStyle: CSSProperties) {
+    this._messageImageStyle = messageImageStyle;
   }
 
   public set messageClassName(messageClassName: string) {
@@ -117,6 +258,10 @@ export class AlertState {
     this._titleStyle = titleStyle;
   }
 
+  public set titleImageStyle(titleImageStyle: CSSProperties) {
+    this._titleImageStyle = titleImageStyle;
+  }
+
   public set titleClassName(titleClassName: string) {
     this._titleClassName = titleClassName;
   }
@@ -128,7 +273,6 @@ export class AlertState {
   public set fonts(fonts: string[]) {
     this._fonts = fonts;
   }
-
 }
 
 export const AlertStateContext = createContext(new AlertState());

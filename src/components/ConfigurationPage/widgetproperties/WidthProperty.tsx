@@ -63,7 +63,7 @@ export class WidthProperty extends DefaultWidgetProperty<number> {
     if (this.value > 0) {
       return { width: `${this.value}px` };
     }
-    return { width: "unset" };
+    return { };
   }
 
   markup(): ReactNode {

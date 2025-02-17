@@ -1,10 +1,6 @@
-import { Select } from "antd";
 import { observer } from "mobx-react-lite";
 import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
 import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
-import { Trans } from "react-i18next";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { ColorProperty } from "../../widgetproperties/ColorProperty";
 import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
@@ -16,6 +12,12 @@ import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
 import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 import { Alert } from "./Alerts";
+import { NumberProperty } from "../../widgetproperties/NumberProperty";
+import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
+import { DurationProperty } from "./DurationProperty";
+import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
+import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
+import TextArea from "antd/es/input/TextArea";
 
 export const MessageTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -23,6 +25,20 @@ export const MessageTab = observer(({ alert }: { alert: Alert }) => {
       <div className="settings-item">
         {(alert.get("showMessage") as BooleanProperty).markup()}
       </div>
+      <div className="settings-item">
+        <LabeledContainer displayName="widget-alert-title-template">
+          <TextPropertyModal title="widget-alert-title-template">
+            <TextArea
+              className="full-width"
+              value={alert.property("messageTemplate")}
+              onChange={(text) =>
+                alert.update("messageTemplate", text.target.value)
+              }
+            />
+          </TextPropertyModal>
+        </LabeledContainer>
+      </div>
+
       <div className="settings-item">
         <AnimatedFontComponent
           property={
@@ -39,56 +55,48 @@ export const MessageTab = observer(({ alert }: { alert: Alert }) => {
         />
       </div>
       <div className="settings-item">
-        <LabeledContainer displayName="alert-message-appearance-label">
-          <Select
-            value={alert.property("message-appearance")}
-            className="full-width"
-            onChange={(e) => {
-              alert.update("message-appearance", e);
-            }}
-            options={[...APPEARANCE_ANIMATIONS, "random", "none"].map(
-              (option) => {
-                return {
-                  value: option,
-                  label: (
-                    <>
-                      <Trans i18nKey={option} />
-                    </>
-                  ),
-                };
-              },
-            )}
-          />
-        </LabeledContainer>
+        {(alert.get("messageAppearanceDelay") as NumberProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageBackgroundColor") as ColorProperty).markup()}
+        {(alert.get("messageDuration") as DurationProperty).markup()}
       </div>
       <div className="settings-item">
-      {(
-        alert.get("messageBackgroundImage") as BackgroundImageProperty
-      ).markup()}
+        {(alert.get("messageAppearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageWidth") as WidthProperty).markup()}
+        {(alert.get("messageAnimation") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageHeight") as HeightProperty).markup()}
+        {(alert.get("messageDisappearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageAlignment") as SingleChoiceProperty).markup()}
+        {(alert.get("messageBackgroundColor") as ColorProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageBorder") as BorderProperty).markup()}
+        {(
+          alert.get("messageBackgroundImage") as BackgroundImageProperty
+        ).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageRounding") as RoundingProperty).markup()}
+        {(alert.get("messageWidth") as WidthProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messagePadding") as PaddingProperty).markup()}
+        {(alert.get("messageHeight") as HeightProperty).markup()}
       </div>
       <div className="settings-item">
-      {(alert.get("messageBoxShadow") as BoxShadowProperty).markup()}
+        {(alert.get("messageAlignment") as SingleChoiceProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("messageBorder") as BorderProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("messageRounding") as RoundingProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("messagePadding") as PaddingProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("messageBoxShadow") as BoxShadowProperty).markup()}
       </div>
     </>
   );

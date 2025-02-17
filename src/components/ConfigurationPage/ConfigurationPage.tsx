@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useLoaderData } from "react-router";
 import { log } from "../../logging";
@@ -35,10 +35,16 @@ export class Selection {
 export const SelectionContext = createContext<Selection>(new Selection());
 
 const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
+  const selection = useContext(SelectionContext);
   return (
     <>
       {widgetStore.list.map((data, index) => (
-        <Draggable key={data.id} draggableId={data.id} index={index}>
+        <Draggable
+          key={data.id}
+          draggableId={data.id}
+          isDragDisabled={selection.id === data.id}
+          index={index}
+        >
           {(draggable) => (
             <div
               ref={draggable.innerRef}
@@ -150,7 +156,7 @@ export default function ConfigurationPage({}: {}) {
   }, [recipientId]);
 
   return (
-    <Content style={{ overflow: "initial" }}>
+    <Content style={{ overflow: "initial", paddingBottom: "80px" }}>
       <div className="widget-list">
         <SelectionContext.Provider value={selection.current}>
           <PaymentPageConfigContext.Provider

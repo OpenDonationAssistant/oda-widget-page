@@ -5,22 +5,33 @@ import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";
 import { delay, getRndInteger } from "../../utils";
 import { VoiceController } from "../../logic/voice/VoiceController";
+import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
+import { PaymentAlertsProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsProperty";
 import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/Alerts";
+import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
+import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
+import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
+import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
+import { ColorProperty } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
+import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
+import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
+import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
+import { CSSProperties } from "react";
 
 export class AlertController {
-  private settings: any;
+  private settings: PaymentAlertsWidgetSettings;
   private conf: any;
 
   private showing: boolean = false;
   private ackFunction: Function | null = null;
-  private sortedAlerts: any = [];
+  private sortedAlerts: Alert[] = [];
   private wait = 0;
 
   private voiceController: VoiceController | null = null;
   private _recipientId: string;
   private _state: AlertState = new AlertState();
 
-  constructor(settings: any, recipientId: string) {
+  constructor(settings: PaymentAlertsWidgetSettings, recipientId: string) {
     this.settings = settings;
     this._recipientId = recipientId;
   }
@@ -44,32 +55,32 @@ export class AlertController {
       });
   }
 
-  private pausePlayer() {
+  protected pausePlayer() {
     publish(this.conf.topic.playerCommands, {
       command: "pause",
     });
   }
 
-  private resumePlayer() {
+  protected resumePlayer() {
     publish(this.conf.topic.playerCommands, {
       command: "resume",
     });
   }
 
-  private sendStartNotification(id: string) {
+  protected sendStartNotification(id: string) {
     publish(this.conf.topic.alertStatus, {
       id: id,
       status: "started",
     });
   }
 
-  private sendEndNotification() {
+  protected sendEndNotification() {
     publish(this.conf.topic.alertStatus, {
       status: "finished",
     });
   }
 
-  private async loadImage(image: string): Promise<String> {
+  private async loadImage(image: string): Promise<string> {
     return fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
@@ -84,16 +95,18 @@ export class AlertController {
     this.sortedAlerts.forEach((alert) => {
       if (alert.image) {
         this.loadImage(alert.image).then((image) => {
+          log.debug({ origin: alert.image, current: image }, "image preloaded");
           alert.image = image;
         });
       }
     });
   }
 
-  private async handleSettings() {
-    const alerts = this.settings.config.properties.find(
-      (it) => it.name === "alerts",
-    );
+  protected async handleSettings() {
+    const alerts = this.settings.get("alerts") as PaymentAlertsProperty;
+    if (!alerts) {
+      return;
+    }
     log.debug({ alerts: alerts }, "alerts properties");
     const sorted = alerts.value.sort((a, b) => {
       const first = a.triggers.at(0);
@@ -140,14 +153,6 @@ export class AlertController {
       .then((buffer) => {
         alert.buffer = buffer;
       });
-  }
-
-  private findSetting(properties, key: string, defaultValue: any | null) {
-    const setting = properties.find((prop) => key === prop.name);
-    if (setting) {
-      return setting.value;
-    }
-    return defaultValue;
   }
 
   private findAlert(json) {
@@ -214,7 +219,7 @@ export class AlertController {
     return this.sortedAlerts[index];
   }
 
-  renderAlert(alert: any, data: any, ackFunction: Function) {
+  renderAlert(alert: Alert, data: any, ackFunction: Function) {
     log.debug(
       `try to render alert ${JSON.stringify(alert)}, audio: ${
         alert.audio
@@ -233,6 +238,10 @@ export class AlertController {
     this.showing = true;
     this.ackFunction = ackFunction;
 
+    log.debug({ alert: alert }, "render image for alert");
+    this.state.layout = alert.property("layout");
+
+    this.renderWidget(alert);
     this.renderImage(alert, data);
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
@@ -243,14 +252,48 @@ export class AlertController {
     }
   }
 
-  playAudio(alert: any, data: any, ackFunction: Function) {
+  private renderWidget(alert: Alert) {
+    const shadowProperty = alert.get("totalShadow") as BoxShadowProperty;
+    this.state.totalHeightStyle = {
+      height: `calc(100% - ${2 * shadowProperty.requiredHeight}px)`,
+      marginTop: shadowProperty.requiredHeight + "px",
+    };
+    this.state.totalWidthStyle = {
+      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginLeft: shadowProperty.requiredWidth + "px",
+    };
+    this.state.totalWidth = (
+      alert.get("totalWidth") as WidthProperty
+    ).calcCss();
+    this.state.totalHeight = (
+      alert.get("totalHeight") as WidthProperty
+    ).calcCss();
+    this.state.totalBorder = (
+      alert.get("totalBorder") as BorderProperty
+    ).calcCss();
+    this.state.totalBackgroundColor = (
+      alert.get("totalBackgroundColor") as ColorProperty
+    ).calcCss();
+    (alert.get("totalBackgroundImage") as BackgroundImageProperty)
+      .calcCss()
+      .then((css) => {
+        this.state.totalBackgroundImage = css;
+      });
+    this.state.totalRounding = (
+      alert.get("totalRounding") as RoundingProperty
+    ).calcCss();
+    this.state.totalPadding = (
+      alert.get("totalPadding") as PaddingProperty
+    ).calcCss();
+    this.state.totalShadow = (
+      alert.get("totalShadow") as BoxShadowProperty
+    ).calcCss();
+  }
+
+  playAudio(alert: Alert, data: any, ackFunction: Function) {
     this.voiceController?.playAudio(alert, () => {
       this.voiceController?.pronounceTitle(alert, data, () => {
-        const voiceForMessage = this.findSetting(
-          alert.properties,
-          "enableVoiceForMessage",
-          true,
-        );
+        const voiceForMessage = alert.property("enableVoiceForMessage");
         if (!voiceForMessage) {
           // TODO: make common function
           this.clear();
@@ -261,12 +304,8 @@ export class AlertController {
           return;
         }
         this.voiceController?.pronounceMessage(alert, data, () => {
-          const showTime = this.findSetting(
-            alert.properties,
-            "imageShowTime",
-            null,
-          );
           log.debug("clearing alert");
+          const showTime = alert.property("imageShowTime");
           if (showTime) {
             setTimeout(() => {
               this.clear();
@@ -295,33 +334,34 @@ export class AlertController {
     this.sendEndNotification();
   }
 
-  private clear() {
+  protected clear() {
     if (this.wait > 0) {
       delay(this.wait);
       this.wait = 0;
     }
-    this.state.clear();
+    // this.state.clear();
     this.showing = false;
   }
 
-  private renderImage(alert: any, data: any) {
-    const showTime = this.findSetting(alert.properties, "imageShowTime", null);
-    const appearance = this.findSetting(alert.properties, "appearance", "none");
+  private renderImage(alert: Alert, data: any) {
+    const showTime = alert.property("imageShowTime");
+    const appearance = alert.property("appearance");
 
-    console.log(alert.properties);
     if (data.media?.url) {
       log.debug({ image: data.media.url }, "rendering generated image");
       this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
     } else if (alert.image) {
       log.debug({ image: alert.image }, "rendering image");
-      this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`;
+      this.state.image = `${alert.image}`;
     } else if (alert.video) {
       log.debug({ video: alert.video }, "rendering video");
-      this.state.video = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`;
+      this.state.video = `${alert.video}`;
     }
+
     if (appearance && appearance !== "none" && appearance !== "random") {
       this.state.imageClassName = `animate__animated animate__slow animate__${appearance}`;
     }
+
     if (appearance === "random") {
       const choice =
         APPEARANCE_ANIMATIONS[
@@ -329,48 +369,153 @@ export class AlertController {
         ];
       this.state.imageClassName = `animate__animated animate__slow animate__${choice}`;
     }
+
     if (showTime) {
       setTimeout(() => {
         this.state.image = null;
         this.state.video = null;
       }, showTime * 1000);
     }
-    this.state.imageStyle = this.calculateImageStyle(
-      this.findSetting(alert.properties, "imageWidth", null),
-      this.findSetting(alert.properties, "imageHeight", null),
-    );
+
+    const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
+
+    let width: CSSProperties = {
+      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginLeft: shadowProperty.requiredWidth + "px",
+      marginRight: shadowProperty.requiredWidth + "px",
+    };
+    const widthProperty = alert.get("imageWidth") as WidthProperty;
+    if (widthProperty.value > 0) {
+      width = widthProperty.calcCss();
+    }
+
+    let height: CSSProperties = {
+      height: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginTop: shadowProperty.requiredHeight + "px",
+      marginBottom: shadowProperty.requiredHeight + "px",
+    };
+    const heightProperty = alert.get("imageWidth") as WidthProperty;
+    if (heightProperty.value > 0) {
+      height = heightProperty.calcCss();
+    }
+
+    log.debug({ width: width, height: height }, "rendering image");
+
+    this.state.imageStyle = {
+      ...width,
+      ...height,
+      ...(alert.get("imagePadding") as PaddingProperty).calcCss(),
+      ...(alert.get("imageBorder") as BorderProperty).calcCss(),
+      ...(alert.get("imageRounding") as RoundingProperty).calcCss(),
+      ...(alert.get("imageShadow") as BoxShadowProperty).calcCss(),
+    };
   }
 
-  private renderTitle(alert: any, data: any) {
-    const nicknameTextTemplate = this.findSetting(
-      alert.properties,
-      "nicknameTextTemplate",
-      "<username> - <amount>",
-    );
+  private renderTitle(alert: Alert, data: any) {
+    const nicknameTextTemplate = alert.property("nicknameTextTemplate");
 
     const title = nicknameTextTemplate
       .replace("<username>", data.nickname ? data.nickname : "Аноним")
       .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
-
-    const headerFont = new AnimatedFontProperty({
-      name: "headerFont",
-      value: this.findSetting(alert.properties, "headerFont", null),
-    });
-
-    this.state.fonts.push(headerFont.value.family);
     this.state.title = title;
-    this.state.titleStyle = headerFont.calcStyle();
+
+    const headerFont = alert.get("headerFont") as AnimatedFontProperty;
+    this.state.fonts.push(headerFont.value.family);
     this.state.titleClassName = headerFont.calcClassName() ?? "";
+
+    const shadowProperty = alert.get("headerBoxShadow") as BoxShadowProperty;
+
+    let width: CSSProperties = {
+      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginLeft: shadowProperty.requiredWidth + "px",
+      marginRight: shadowProperty.requiredWidth + "px",
+    };
+    const widthProperty = alert.get("headerWidth") as WidthProperty;
+    if (widthProperty.value > 0) {
+      width = widthProperty.calcCss();
+    }
+
+    let height: CSSProperties = {
+      marginTop: shadowProperty.requiredHeight + "px",
+      marginBottom: shadowProperty.requiredHeight + "px",
+    };
+    const heightProperty = alert.get("headerWidth") as WidthProperty;
+    if (heightProperty.value > 0) {
+      height = heightProperty.calcCss();
+    }
+
+    this.state.titleStyle = {
+      ...headerFont.calcStyle(),
+      ...(alert.get("headerBorder") as BorderProperty).calcCss(),
+      ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
+      ...(alert.get("headerPadding") as PaddingProperty).calcCss(),
+      ...width,
+      ...height,
+    };
+
+    (alert.get("headerBackgroundImage") as BackgroundImageProperty)
+      .calcCss()
+      .then((css) => {
+        log.debug({ css: css }, "settings image style");
+        this.state.titleImageStyle = {
+          ...(alert.get("titleBackgroundColor") as ColorProperty).calcCss(),
+          ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
+          ...(alert.get("headerPadding") as PaddingProperty).calcCss(),
+          ...(alert.get("headerBoxShadow") as BoxShadowProperty).calcCss(),
+          ...css,
+        };
+      });
   }
 
-  private renderMessage(alert: any, data: any) {
-    const showTime = this.findSetting(alert.properties, "imageShowTime", null);
-    const messageFont = new AnimatedFontProperty({
-      name: "font",
-      value: this.findSetting(alert.properties, "font", null),
-    });
-    this.state.fonts.push(messageFont.value.family);
-    this.state.messageStyle = messageFont.calcStyle();
+  private renderMessage(alert: Alert, data: any) {
+    const showTime = alert.property("imageShowTime");
+
+    const messageFont = alert.get("font") as AnimatedFontProperty;
+    if (messageFont.value.family) {
+      this.state.fonts.push(messageFont.value.family);
+    }
+
+    const shadowProperty = alert.get("messageBoxShadow") as BoxShadowProperty;
+
+    let width: CSSProperties = {
+      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginLeft: shadowProperty.requiredWidth + "px",
+      marginRight: shadowProperty.requiredWidth + "px",
+    };
+    const widthProperty = alert.get("messageWidth") as WidthProperty;
+    if (widthProperty.value > 0) {
+      width = widthProperty.calcCss();
+    }
+
+    let height: CSSProperties = {
+      marginTop: shadowProperty.requiredHeight + "px",
+      marginBottom: shadowProperty.requiredHeight + "px",
+    };
+    const heightProperty = alert.get("messageHeight") as WidthProperty;
+    if (heightProperty.value > 0) {
+      height = heightProperty.calcCss();
+    }
+
+    this.state.messageStyle = {
+      ...messageFont.calcStyle(),
+      ...(alert.get("messageBorder") as BorderProperty).calcCss(),
+      ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
+      ...(alert.get("messagePadding") as PaddingProperty).calcCss(),
+      ...width,
+      ...height
+    };
+
+    (alert.get("messageBackgroundImage") as BackgroundImageProperty)
+      .calcCss()
+      .then((css) => {
+        log.debug({ css: css }, "settings image style");
+        this.state.messageImageStyle = {
+          ...(alert.get("messageBackgroundColor") as ColorProperty).calcCss(),
+          ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
+          ...(alert.get("messageBoxShadow") as BoxShadowProperty).calcCss(),
+          ...css,
+        };
+      });
     this.state.messageClassName = messageFont.calcClassName() ?? "";
     if (showTime) {
       setTimeout(() => (this.state.message = data.message), showTime * 1000);
