@@ -27,9 +27,6 @@ export class DemoDonationGoalState implements AbstractDonationGoalState {
   ];
 
   public get goals(): Goal[] {
-    if (!this._config.goalProperty.value) {
-      return this._goals;
-    }
-    return this._config.goalProperty.value;
+    return this._config.goalProperty.value ?? [];
   }
 }
