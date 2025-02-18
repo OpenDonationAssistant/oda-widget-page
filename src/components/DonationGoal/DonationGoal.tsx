@@ -230,7 +230,7 @@ export const DonationGoal = observer(
                       {labelTemplate
                         .replaceAll(
                           "<collected>",
-                          `${goal.accumulatedAmount.major}`,
+                          `${goal.accumulatedAmount?.major ?? 0}`,
                         )
                         .replaceAll(
                           "<required>",
@@ -240,7 +240,7 @@ export const DonationGoal = observer(
                         .replaceAll(
                           "<proportion>",
                           `${Math.trunc(
-                            (goal.accumulatedAmount.major /
+                            (goal.accumulatedAmount?.major ?? 0 /
                               goal.requiredAmount.major) *
                               100,
                           )}`,
