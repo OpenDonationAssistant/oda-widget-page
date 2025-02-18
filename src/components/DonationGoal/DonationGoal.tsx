@@ -84,7 +84,7 @@ export const DonationGoal = observer(
 
     function calcBarStyle(goal: Goal) {
       const filment = Math.floor(
-        (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100,
+        ((goal.accumulatedAmount?.major ?? 0) / goal.requiredAmount.major) * 100,
       );
       const style: CSSProperties = {
         width: `${filment < 100 ? filment + "%" : "unset"}`,
