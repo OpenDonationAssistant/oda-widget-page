@@ -18,7 +18,7 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
   }) {
     super({
       name: name,
-      value: value ?? -1,
+      value: value === undefined || value === null || value === 0 ? -1 : value,
       displayName: displayName ?? "max-height",
     });
   }
