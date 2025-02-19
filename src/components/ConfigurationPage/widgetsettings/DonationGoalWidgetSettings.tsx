@@ -65,6 +65,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new BackgroundImageProperty({
           name: "backgroundImage",
         }),
+        new WidthProperty({
+          name: "width"
+        }),
+        new HeightProperty({
+          name: "height"
+        }),
         new BorderProperty({
           name: "border",
         }),
@@ -116,6 +122,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           displayName: "widget-donationgoal-title-alignment",
           options: ["left", "center", "right"],
           selectionType: SELECTION_TYPE.SEGMENTED,
+        }),
+        new WidthProperty({
+          name: "titleWidth"
+        }),
+        new HeightProperty({
+          name: "titleHeight"
         }),
         new BorderProperty({
           name: "titleBorder",
@@ -171,9 +183,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           displayName: "widget-donationgoal-background",
           target: ColorPropertyTarget.BACKGROUND,
         }),
-        new WidthProperty({
-          name: "outerWidth",
-        }),
         new HeightProperty({
           name: "outerHeight",
         }),
@@ -212,6 +221,9 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
             gradientType: GRADIENT_TYPE.LINEAR,
             colors: [{ color: "#00FF00" }],
           },
+        }),
+        new HeightProperty({
+          name:"filledHeight",
         }),
         new BorderProperty({
           name: "innerBorder",
@@ -277,6 +289,14 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     return this.get("goal") as DonationGoalProperty;
   }
 
+  public get width(): WidthProperty {
+    return this.get("width") as WidthProperty;
+  }
+
+  public get height(): HeightProperty {
+    return this.get("height") as HeightProperty;
+  }
+
   public get showLabel(): boolean {
     return this.get("showLabel")?.value ?? true;
   }
@@ -291,6 +311,14 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public get titleTextAlign(): "left" | "center" | "right" {
     return this.get("titleTextAlign")?.value || "left";
+  }
+
+  public get titleWidth(): WidthProperty {
+    return this.get("titleWidth") as WidthProperty;
+  }
+
+  public get titleHeight(): HeightProperty {
+    return this.get("titleHeight") as HeightProperty;
   }
 
   public get titleBorderProperty(): BorderProperty {
@@ -355,10 +383,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     return this.get("outerHeight") as HeightProperty;
   }
 
-  public get outerWidth(): WidthProperty {
-    return this.get("outerWidth") as WidthProperty;
-  }
-
   public get outerBorderProperty(): BorderProperty {
     return this.get("outerBorder") as BorderProperty;
   }
@@ -385,6 +409,10 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public get filledTextPlacement(): "top" | "center" | "bottom" {
     return this.get("filledTextPlacement")?.value || "center";
+  }
+
+  public get filledHeight(): HeightProperty {
+    return this.get("filledHeight") as HeightProperty;
   }
 
   public get innerBorderProperty(): BorderProperty {
