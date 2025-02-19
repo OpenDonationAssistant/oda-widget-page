@@ -240,7 +240,7 @@ export const DonationGoal = observer(
                         .replaceAll(
                           "<proportion>",
                           `${Math.trunc(
-                            (goal.accumulatedAmount?.major ?? 0 /
+                            ((goal.accumulatedAmount?.major ?? 0) /
                               goal.requiredAmount.major) *
                               100,
                           )}`,
