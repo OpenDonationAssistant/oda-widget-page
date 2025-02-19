@@ -40,7 +40,6 @@ export const DonationGoal = observer(
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
-    const outerWidth = settings.outerWidth.calcCss();
     const outerHeight = settings.outerHeight.calcCss();
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
@@ -84,7 +83,7 @@ export const DonationGoal = observer(
 
     function calcBarStyle(goal: Goal) {
       const filment = Math.floor(
-        (goal.accumulatedAmount.major / goal.requiredAmount.major) * 100,
+        ((goal.accumulatedAmount?.major ?? 0) / goal.requiredAmount.major) * 100,
       );
       const style: CSSProperties = {
         width: `${filment < 100 ? filment + "%" : "unset"}`,
@@ -152,6 +151,8 @@ export const DonationGoal = observer(
           },
           height: `calc(100% - ${widgetMarginTopAndBottomStyle * 2}px)`,
           width: `calc(100% - ${widgetMarginLeftAndRightStyle * 2}px)`,
+          ...settings.width.calcCss(),
+          ...settings.height.calcCss(),
         }}
       >
         {amountFont.createFontImport()}
@@ -172,6 +173,8 @@ export const DonationGoal = observer(
                         ...titleBoxShadowStyle,
                         ...titleBackgroundColorStyle,
                         ...titleBackgroundImage,
+                        ...settings.titleHeight.calcCss(),
+                        ...settings.titleWidth.calcCss(),
                       }}
                       className={`${classes.goaldescription}}`}
                     >
@@ -195,7 +198,6 @@ export const DonationGoal = observer(
                       ...progressBarBorderStyle,
                       ...outerRoundingStyle,
                       ...outerHeight,
-                      ...outerWidth,
                       zIndex: 0,
                     }}
                     className={`${classes.goalprogressbar}`}
@@ -212,7 +214,10 @@ export const DonationGoal = observer(
                     />
                   </div>
                   <div
-                    style={calcBarStyle(goal)}
+                    style={{
+                      ...calcBarStyle(goal),
+                      ...settings.filledHeight.calcCss(),
+                    }}
                     className={`${classes.goalfilled}`}
                   ></div>
                   <div className={`${classes.goalunfilled}`}></div>
@@ -230,7 +235,7 @@ export const DonationGoal = observer(
                       {labelTemplate
                         .replaceAll(
                           "<collected>",
-                          `${goal.accumulatedAmount.major}`,
+                          `${goal.accumulatedAmount?.major ?? 0}`,
                         )
                         .replaceAll(
                           "<required>",
@@ -240,7 +245,7 @@ export const DonationGoal = observer(
                         .replaceAll(
                           "<proportion>",
                           `${Math.trunc(
-                            (goal.accumulatedAmount.major /
+                            ((goal.accumulatedAmount?.major ?? 0) /
                               goal.requiredAmount.major) *
                               100,
                           )}`,

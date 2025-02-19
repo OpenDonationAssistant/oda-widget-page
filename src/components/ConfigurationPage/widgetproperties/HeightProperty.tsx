@@ -18,7 +18,7 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
   }) {
     super({
       name: name,
-      value: value ?? 0,
+      value: value === undefined || value === null || value === 0 ? -1 : value,
       displayName: displayName ?? "max-height",
     });
   }
@@ -28,7 +28,7 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
       <>
         <LabeledContainer displayName={this.displayName}>
           <Flex className="full-width" justify="flex-end">
-            {this.value !== 0 && (
+            {this.value > -1 && (
               <div className={`${classes.widthholder}`}>
                 <InputNumber
                   value={this.value}
@@ -43,12 +43,12 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
               </div>
             )}
             <Switch
-              value={this.value !== 0}
+              value={this.value > -1}
               onChange={(checked) => {
                 if (checked) {
                   this.value = 100;
                 } else {
-                  this.value = 0;
+                  this.value = -1;
                 }
               }}
             />
@@ -61,7 +61,10 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
 
   public calcCss(): CSSProperties {
     if (this.value > 0) {
-      return { height: `${this.value}px` };
+      return {
+        height: `${this.value}px`,
+        overflowY: "hidden",
+      };
     }
     return {};
   }
