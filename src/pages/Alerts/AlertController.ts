@@ -15,8 +15,8 @@ import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetprop
 import { ColorProperty } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
-import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
 import { CSSProperties } from "react";
+import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -228,6 +228,12 @@ export class AlertController {
     if (data.media?.url) {
       this.wait = 10000;
     }
+    log.debug({duration: alert.property("duration")}, "alert duration");
+    const duration = alert.property("duration")?.time;
+    if (alert.property("duration")?.limited ?? false) {
+      setTimeout(() => this.interrupt(), duration * 1000);
+    }
+    // TODO: send after checking for showing?
     this.sendStartNotification(data.id);
     this.pausePlayer();
     if (this.showing == true) {
@@ -246,9 +252,9 @@ export class AlertController {
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
     if (alert.video) {
-      setTimeout(() => this.playAudio(alert, data, ackFunction), 5000);
+      setTimeout(() => this.playAudio(alert, data), 5000);
     } else {
-      this.playAudio(alert, data, ackFunction);
+      this.playAudio(alert, data);
     }
   }
 
@@ -290,7 +296,7 @@ export class AlertController {
     ).calcCss();
   }
 
-  playAudio(alert: Alert, data: any, ackFunction: Function) {
+  playAudio(alert: Alert, data: any) {
     this.voiceController?.playAudio(alert, () => {
       this.voiceController?.pronounceTitle(alert, data, () => {
         const voiceForMessage = alert.property("enableVoiceForMessage");
@@ -298,7 +304,9 @@ export class AlertController {
           // TODO: make common function
           this.clear();
           this.resumePlayer();
-          ackFunction();
+          if (this.ackFunction) {
+            this.ackFunction();
+          }
           this.sendEndNotification();
           log.debug("skipping message playing");
           return;
@@ -308,23 +316,17 @@ export class AlertController {
           const showTime = alert.property("imageShowTime");
           if (showTime) {
             setTimeout(() => {
-              this.clear();
-              this.resumePlayer();
-              ackFunction();
-              this.sendEndNotification();
+              this.interrupt();
             }, showTime * 1000);
           } else {
-            this.clear();
-            this.resumePlayer();
-            ackFunction();
-            this.sendEndNotification();
+            this.interrupt();
           }
         });
       });
     });
   }
 
-  interrupt() {
+  public interrupt() {
     this.voiceController?.interrupt();
     this.clear();
     this.resumePlayer();
@@ -346,6 +348,13 @@ export class AlertController {
   private renderImage(alert: Alert, data: any) {
     const showTime = alert.property("imageShowTime");
     const appearance = alert.property("appearance");
+
+    if (alert.property("imageDuration")?.limited ?? false) {
+      setTimeout(
+        () => this.state.image = null,
+        alert.property("imageDuration")?.time * 1000
+      );
+    }
 
     if (data.media?.url) {
       log.debug({ image: data.media.url }, "rendering generated image");
@@ -412,6 +421,13 @@ export class AlertController {
   }
 
   private renderTitle(alert: Alert, data: any) {
+    if (alert.property("headerDuration")?.limited ?? false) {
+      setTimeout(
+        () => this.state.title = null,
+        alert.property("headerDuration")?.time * 1000
+      );
+    }
+
     const nicknameTextTemplate = alert.property("nicknameTextTemplate");
 
     const title = nicknameTextTemplate
@@ -443,12 +459,15 @@ export class AlertController {
     if (heightProperty.value > 0) {
       height = heightProperty.calcCss();
     }
+    const headerAlignment = alert.get("headerAlignment") as SingleChoiceProperty;
+
 
     this.state.titleStyle = {
       ...headerFont.calcStyle(),
       ...(alert.get("headerBorder") as BorderProperty).calcCss(),
       ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
       ...(alert.get("headerPadding") as PaddingProperty).calcCss(),
+      ...{ textAlign: headerAlignment.value } as CSSProperties,
       ...width,
       ...height,
     };
@@ -468,6 +487,13 @@ export class AlertController {
   }
 
   private renderMessage(alert: Alert, data: any) {
+    if (alert.property("messageDuration")?.limited ?? false) {
+      setTimeout(
+        () => this.state.message = null,
+        alert.property("messageDuration")?.time * 1000
+      );
+    }
+
     const showTime = alert.property("imageShowTime");
 
     const messageFont = alert.get("font") as AnimatedFontProperty;
@@ -495,12 +521,14 @@ export class AlertController {
     if (heightProperty.value > 0) {
       height = heightProperty.calcCss();
     }
+    const messageAlignment = alert.get("messageAlignment") as SingleChoiceProperty;
 
     this.state.messageStyle = {
       ...messageFont.calcStyle(),
       ...(alert.get("messageBorder") as BorderProperty).calcCss(),
       ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
       ...(alert.get("messagePadding") as PaddingProperty).calcCss(),
+      ...{ textAlign: messageAlignment.value } as CSSProperties,
       ...width,
       ...height
     };
@@ -522,15 +550,6 @@ export class AlertController {
     } else {
       this.state.message = data.message;
     }
-  }
-
-  private calculateImageStyle(imageWidth: any, imageHeight: any) {
-    return imageWidth && imageHeight
-      ? {
-          width: imageWidth + "px",
-          height: imageHeight + "px",
-        }
-      : {};
   }
 
   public get state(): AlertState {

@@ -188,6 +188,7 @@ export class VoiceController {
   }
 
   interrupt() {
+    log.debug("interrupting audio");
     if (this.playingSource) {
       this.playingSource.removeEventListener("ended", this.onEndHandler);
       this.playingSource.stop();
