@@ -1,3 +1,4 @@
+import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/Alerts";
 import { log } from "../../logging";
 import { getRndInteger } from "../../utils";
 
@@ -34,43 +35,40 @@ export class VoiceController {
     }
   }
 
-  pronounceTitle(alert: any, data: any, onEndHandler: any) {
+  pronounceTitle(
+    alert: Alert,
+    data: any,
+    onEndHandler: any,
+  ): Promise<void | AudioBuffer> {
     log.debug("start to pronounce title");
-    const playTitle = this.findSetting(
-      alert.properties,
-      "enableVoiceForHeader",
-      true,
-    );
-    const volume =
-      alert.properties.find((prop) => prop.name === "voiceVolume")?.value ??
-      100;
+
+    const playTitle = alert.property("enableVoiceForHeader") ?? true;
+    const playTitleIfMessageIsEmpty =
+      alert.property("enableVoiceWhenMessageIsEmpty") ?? false;
+    const volume = alert.property("voiceVolume") ?? 100;
+
     if (!playTitle) {
       if (onEndHandler) {
         onEndHandler();
       }
-      log.debug({playTitle: playTitle},"skipping title playing");
-      return;
+      log.debug({ playTitle: playTitle }, "skipping title playing");
+      return Promise.resolve();
     }
-    const playIfMessageEmpty = this.findSetting(
-      alert.properties,
-      "enableVoiceWhenMessageIsEmpty",
-      false,
-    );
     if (
       (data.message === undefined ||
         data.message === null ||
         data.message === "") &&
-      !playIfMessageEmpty
+      !playTitleIfMessageIsEmpty
     ) {
       if (onEndHandler) {
         onEndHandler();
       }
-      return;
+      return Promise.resolve();
     }
     const message = data?.message?.trim();
     const headerForVoice = message
-      ? this.findSetting(alert.properties, "voiceTextTemplate", null)
-      : this.findSetting(alert.properties, "voiceEmptyTextTemplate", null);
+      ? alert.property("voiceTextTemplate")
+      : alert.property("voiceEmptyTextTemplate");
     const text = headerForVoice ?? "";
     const templates = text.split("\n");
     const choosenTemplate =
@@ -85,45 +83,57 @@ export class VoiceController {
       .replace("<streamer>", this.recipientId);
     try {
       if (resultText.length > 0) {
-        this.voiceByGoogle(resultText).then((audio) =>
-          this.pronounce(audio, volume, onEndHandler),
-        );
+        return this.voiceByGoogle(resultText).then((audio) => {
+          return this.pronounce(audio, volume, onEndHandler);
+        });
       } else {
         onEndHandler();
+        return Promise.resolve();
       }
     } catch (error) {
       console.log(error);
       if (onEndHandler) {
         onEndHandler();
       }
+      return Promise.resolve();
     }
   }
 
-  pronounceMessage(alert: any, data: any, onEndHandler: any) {
+  pronounceMessage(
+    alert: Alert,
+    data: any,
+    onEndHandler: any,
+  ): Promise<void | AudioBuffer> {
     log.debug("start to pronounce message");
-    const volume =
-      alert.properties.find((prop) => prop.name === "voiceVolume")?.value ??
-      100;
-    try {
-      if (!data || !data.message || data.message.length === 0) {
-        if (onEndHandler) {
-          onEndHandler();
-        }
-        return;
-      }
-      this.voiceByGoogle(data.message).then((audio) =>
-        this.pronounce(audio, volume, onEndHandler),
-      );
-    } catch (error) {
-      log.error({ error: error}, "error while pronouncing message");
+    if (!data || !data.message || data.message.length === 0) {
       if (onEndHandler) {
         onEndHandler();
       }
+      return Promise.resolve();
     }
+
+    return this.voiceByGoogle(data.message)
+      .then((audio) => {
+        return this.pronounce(
+          audio,
+          alert.property("voiceVolume") ?? 100,
+          onEndHandler,
+        );
+      })
+      .catch((error) => {
+        log.error({ error: error }, "error while pronouncing message");
+        if (onEndHandler) {
+          onEndHandler();
+        }
+      });
   }
 
-  private pronounce(buffer: ArrayBuffer, volume: number, onEndHandler: any) {
-    this.audioCtx
+  private pronounce(
+    buffer: ArrayBuffer,
+    volume: number,
+    onEndHandler: any,
+  ): Promise<void | AudioBuffer> {
+    return this.audioCtx
       .decodeAudioData(
         buffer,
         (buf) => {
@@ -193,14 +203,5 @@ export class VoiceController {
       this.playingSource.removeEventListener("ended", this.onEndHandler);
       this.playingSource.stop();
     }
-  }
-
-  private findSetting(properties, key: string, defaultValue: any | null) {
-    log.debug({key: key, properties: properties},"searching property");
-    const setting = properties.find((prop) => key === prop.name);
-    if (setting) {
-      return setting.value;
-    }
-    return defaultValue;
   }
 }

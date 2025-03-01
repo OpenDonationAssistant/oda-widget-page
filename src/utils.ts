@@ -1,6 +1,6 @@
-export const getRndInteger = (min: number, max: number): number  => {
+export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
-}
+};
 
 export const delay = (ms: number) => {
   var start = new Date().getTime();
@@ -9,3 +9,7 @@ export const delay = (ms: number) => {
     end = new Date().getTime();
   }
 };
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

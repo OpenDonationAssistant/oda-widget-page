@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "./Alerts";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
-import { APPEARANCE_ANIMATIONS } from "./PaymentAlertsWidgetSettingsComponent";
-import { Flex, Select, Switch } from "antd";
+import { Flex, Switch } from "antd";
 import { ChangeEvent } from "react";
 import axios from "axios";
 import { BorderProperty } from "../../widgetproperties/BorderProperty";
@@ -14,17 +13,6 @@ import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { DurationProperty } from "./DurationProperty";
-
-// <div className="settings-item">
-//   <LabeledContainer displayName="widget-alert-image-show-time">
-//     <InputNumber
-//       value={alert.property("imageShowTime")}
-//       onChange={(newValue) => {
-//         alert.update("imageShowTime", newValue);
-//       }}
-//     />
-//   </LabeledContainer>
-// </div>
 
 function uploadFile(file: File, name: string) {
   return axios.put(

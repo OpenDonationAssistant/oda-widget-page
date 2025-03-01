@@ -9,12 +9,14 @@ export const MessageBody = observer(({}) => {
   return (
     <>
       {state.showMessage && state.message && (
-        <div
-          style={state.messageStyle}
-          className={`${classes.messagebody} ${state.messageClassName}`}
-        >
-          <div className={classes.text}>{state.message}</div>
-          <div style={state.messageImageStyle} className={classes.image} />
+        <div className={state.messageContainerClassName}>
+          <div
+            style={state.messageStyle}
+            className={`${classes.messagebody} ${state.messageClassName}`}
+          >
+            <div className={classes.text}>{state.message}</div>
+            <div style={state.messageImageStyle} className={classes.image} />
+          </div>
         </div>
       )}
     </>

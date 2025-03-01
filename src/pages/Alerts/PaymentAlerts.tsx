@@ -1,6 +1,5 @@
 import classes from "./PaymentAlerts.module.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { log } from "../../logging";
 import { AlertController } from "./AlertController";
 import { Col, Flex, Row } from "antd";
 import { AlertState, AlertStateContext } from "./AlertState";
@@ -11,11 +10,6 @@ import { MessageBody } from "./sections/MessageBody/MessageBody";
 import { observer } from "mobx-react-lite";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
-  log.debug(
-    { state: state, layout: state.layout, check: "3" === state.layout.value },
-    "layout for alert",
-  );
-
   const rootStyle = {
     ...state.totalBorder,
     ...state.totalWidthStyle,
@@ -38,7 +32,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="flex-start"
             align="center"
             style={rootStyle}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && <AlertImage />}
             <div className={classes.message}>
@@ -55,7 +49,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="flex-start"
             align="center"
             style={rootStyle}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <div className={classes.message}>
               <MessageTitle />
@@ -74,7 +68,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="flex-start"
             align="center"
             style={rootStyle}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <div className={classes.message}>
               <MessageTitle />
@@ -91,7 +85,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="top"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 12 : 24}>
               <div>
@@ -112,7 +106,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="top"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
@@ -133,7 +127,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="top"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <Col span={12}>
@@ -158,7 +152,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="middle"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 12 : 24}>
               <MessageTitle />
@@ -183,7 +177,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="middle"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
@@ -204,7 +198,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="middle"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <Col span={12}>
@@ -225,7 +219,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="bottom"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 12 : 24}>
               <div>
@@ -246,7 +240,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="bottom"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
@@ -267,7 +261,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           <Row
             align="bottom"
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <Col span={12}>
@@ -287,7 +281,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="center"
             align="flex-start"
             style={{ ...{ position: "relative" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <AlertImage
@@ -320,7 +314,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="center"
             align="flex-start"
             style={{ ...{ position: "relative" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <AlertImage
@@ -353,7 +347,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             justify="center"
             align="flex-start"
             style={{ ...{ position: "relative" }, ...rootStyle }}
-            className={`${classes.paymentAlerts}`}
+            className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
             {state.image && (
               <AlertImage
@@ -386,6 +380,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             ...{ width: "100%", height: "100%", position: "relative" },
             ...rootStyle,
           }}
+          className={`${state.totalClassName}`}
         >
           {state.image && (
             <AlertImage

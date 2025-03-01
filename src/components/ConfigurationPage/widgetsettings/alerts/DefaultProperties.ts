@@ -39,14 +39,17 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "totalAppearance",
+    target: "in"
   }),
   new AnimationProperty({
     name: "totalAnimation",
     displayName: "Анимация отображения",
+    target: "idle"
   }),
   new AnimationProperty({
     name: "totalDisappearance",
     displayName: "Анимация исчезновения",
+    target: "out"
   }),
   new LayoutProperty(),
   new WidthProperty({ name: "totalWidth" }),
@@ -89,10 +92,6 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "imageHeight",
     value: null,
   }),
-  new DefaultWidgetProperty({
-    name: "imageShowTime",
-    value: null,
-  }),
   new VolumeProperty({
     name: "audio-volume",
   }),
@@ -115,14 +114,17 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new AnimationProperty({
     name: "imageAppearance",
     displayName: "Анимация появления",
+    target: "in"
   }),
   new AnimationProperty({
     name: "imageAnimation",
     displayName: "Анимация отображения",
+    target: "idle"
   }),
   new AnimationProperty({
     name: "imageDisappearance",
     displayName: "Анимация исчезновения",
+    target: "out"
   }),
   new DefaultWidgetProperty({
     name: "enableVoiceForHeader",
@@ -235,14 +237,17 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "messageAppearance",
+    target: "in"
   }),
   new AnimationProperty({
     name: "messageAnimation",
     displayName: "Анимация отображения",
+    target: "idle"
   }),
   new AnimationProperty({
     name: "messageDisappearance",
     displayName: "Анимация исчезновения",
+    target: "in"
   }),
   new DefaultWidgetProperty({
     name: "enableVoiceForMessage",
@@ -271,14 +276,17 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "headerAppearance",
+    target: "in"
   }),
   new AnimationProperty({
     name: "headerAnimation",
     displayName: "Анимация",
+    target:"idle"
   }),
   new AnimationProperty({
     name: "headerDisappearance",
     displayName: "Анимация исчезновения",
+    target:"out"
   }),
   new WidthProperty({ name: "headerWidth" }),
   new HeightProperty({ name: "headerHeight" }),

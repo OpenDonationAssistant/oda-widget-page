@@ -10,6 +10,7 @@ export class AlertState {
     messageStartPoint: null,
   };
 
+  private _totalClassName = "";
   private _totalHeight: CSSProperties = {};
   private _totalHeightStyle: CSSProperties = { height: "100%" };
   private _totalWidth: CSSProperties = {};
@@ -30,11 +31,13 @@ export class AlertState {
   private _messageStyle: CSSProperties = {};
   private _messageImageStyle: CSSProperties = {};
   private _messageClassName: string = "";
+  private _messageContainerClassName = "";
   private _showTitle: boolean = true;
   private _title: string | null = null;
   private _titleStyle: CSSProperties = {};
   private _titleClassName: string = "";
   private _titleImageStyle: CSSProperties = {};
+  private _headerClassName = "";
   private _images: string[] = [];
   private _fonts: string[] = [];
 
@@ -273,6 +276,31 @@ export class AlertState {
   public set fonts(fonts: string[]) {
     this._fonts = fonts;
   }
+
+  public set totalClassName(classname: string) {
+    this._totalClassName = classname;
+  }
+
+  public get totalClassName(): string {
+    return this._totalClassName;
+  }
+
+  public set headerClassName(classname: string){
+    this._headerClassName = classname;
+  }
+
+  public get headerClassName(): string {
+    return this._headerClassName;
+  }
+
+  public set messageContainerClassName(classname: string){
+    this._messageContainerClassName = classname;
+  }
+
+  public get messageContainerClassName(): string {
+    return this._messageContainerClassName;
+  }
+
 }
 
 export const AlertStateContext = createContext(new AlertState());

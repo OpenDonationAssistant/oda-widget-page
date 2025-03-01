@@ -9,12 +9,14 @@ export const MessageTitle = observer(({}) => {
   return (
     <>
       {state.showTitle && state.message && (
-        <div
-          style={state.titleStyle}
-          className={`${classes.messageheader} ${state.titleClassName}`}
-        >
-          <div className={classes.text}>{state.title}</div>
-          <div style={state.titleImageStyle} className={classes.image} />
+        <div className={state.headerClassName}>
+          <div
+            style={state.titleStyle}
+            className={`${classes.messageheader} ${state.titleClassName}`}
+          >
+            <div className={classes.text}>{state.title}</div>
+            <div style={state.titleImageStyle} className={classes.image} />
+          </div>
         </div>
       )}
     </>

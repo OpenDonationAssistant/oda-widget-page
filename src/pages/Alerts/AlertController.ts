@@ -1,9 +1,8 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { APPEARANCE_ANIMATIONS } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettingsComponent";
 import { AlertState } from "./AlertState";
 import { log } from "../../logging";
 import { publish, subscribe } from "../../socket";
-import { delay, getRndInteger } from "../../utils";
+import { delay, getRndInteger, sleep } from "../../utils";
 import { VoiceController } from "../../logic/voice/VoiceController";
 import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { PaymentAlertsProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsProperty";
@@ -17,6 +16,7 @@ import { BackgroundImageProperty } from "../../components/ConfigurationPage/widg
 import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
 import { CSSProperties } from "react";
 import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
+import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -220,18 +220,8 @@ export class AlertController {
   }
 
   renderAlert(alert: Alert, data: any, ackFunction: Function) {
-    log.debug(
-      `try to render alert ${JSON.stringify(alert)}, audio: ${
-        alert.audio
-      }, image: ${alert.image}`,
-    );
     if (data.media?.url) {
       this.wait = 10000;
-    }
-    log.debug({duration: alert.property("duration")}, "alert duration");
-    const duration = alert.property("duration")?.time;
-    if (alert.property("duration")?.limited ?? false) {
-      setTimeout(() => this.interrupt(), duration * 1000);
     }
     // TODO: send after checking for showing?
     this.sendStartNotification(data.id);
@@ -240,6 +230,10 @@ export class AlertController {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
       log.debug("another alert in play");
       return;
+    }
+    const duration = alert.property("duration")?.time;
+    if (alert.property("duration")?.limited ?? false) {
+      setTimeout(() => this.interrupt(), duration * 1000);
     }
     this.showing = true;
     this.ackFunction = ackFunction;
@@ -251,49 +245,56 @@ export class AlertController {
     this.renderImage(alert, data);
     this.renderTitle(alert, data);
     this.renderMessage(alert, data);
-    if (alert.video) {
-      setTimeout(() => this.playAudio(alert, data), 5000);
-    } else {
-      this.playAudio(alert, data);
-    }
+    this.playAudio(alert, data);
   }
 
-  private renderWidget(alert: Alert) {
+  private async renderWidget(alert: Alert) {
     const shadowProperty = alert.get("totalShadow") as BoxShadowProperty;
-    this.state.totalHeightStyle = {
-      height: `calc(100% - ${2 * shadowProperty.requiredHeight}px)`,
-      marginTop: shadowProperty.requiredHeight + "px",
-    };
-    this.state.totalWidthStyle = {
-      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-      marginLeft: shadowProperty.requiredWidth + "px",
-    };
-    this.state.totalWidth = (
-      alert.get("totalWidth") as WidthProperty
-    ).calcCss();
-    this.state.totalHeight = (
-      alert.get("totalHeight") as WidthProperty
-    ).calcCss();
-    this.state.totalBorder = (
-      alert.get("totalBorder") as BorderProperty
-    ).calcCss();
-    this.state.totalBackgroundColor = (
-      alert.get("totalBackgroundColor") as ColorProperty
-    ).calcCss();
+
     (alert.get("totalBackgroundImage") as BackgroundImageProperty)
       .calcCss()
       .then((css) => {
         this.state.totalBackgroundImage = css;
+        this.state.totalHeightStyle = {
+          height: `calc(100% - ${2 * shadowProperty.requiredHeight}px)`,
+          marginTop: shadowProperty.requiredHeight + "px",
+        };
+        this.state.totalWidthStyle = {
+          width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+          marginLeft: shadowProperty.requiredWidth + "px",
+        };
+        this.state.totalWidth = (
+          alert.get("totalWidth") as WidthProperty
+        ).calcCss();
+        this.state.totalHeight = (
+          alert.get("totalHeight") as WidthProperty
+        ).calcCss();
+        this.state.totalBorder = (
+          alert.get("totalBorder") as BorderProperty
+        ).calcCss();
+        this.state.totalBackgroundColor = (
+          alert.get("totalBackgroundColor") as ColorProperty
+        ).calcCss();
+        this.state.totalRounding = (
+          alert.get("totalRounding") as RoundingProperty
+        ).calcCss();
+        this.state.totalPadding = (
+          alert.get("totalPadding") as PaddingProperty
+        ).calcCss();
+        this.state.totalShadow = (
+          alert.get("totalShadow") as BoxShadowProperty
+        ).calcCss();
+      })
+      .then(() => {
+        const animation = alert.get("totalAppearance") as AnimationProperty;
+        this.state.totalClassName = animation.classname();
+        return sleep(animation.value.duration);
+      })
+      .then(() => {
+        const animation = alert.get("totalAnimation") as AnimationProperty;
+        this.state.totalClassName = animation.classname();
+        return sleep(animation.value.duration);
       });
-    this.state.totalRounding = (
-      alert.get("totalRounding") as RoundingProperty
-    ).calcCss();
-    this.state.totalPadding = (
-      alert.get("totalPadding") as PaddingProperty
-    ).calcCss();
-    this.state.totalShadow = (
-      alert.get("totalShadow") as BoxShadowProperty
-    ).calcCss();
   }
 
   playAudio(alert: Alert, data: any) {
@@ -341,90 +342,81 @@ export class AlertController {
       delay(this.wait);
       this.wait = 0;
     }
-    // this.state.clear();
+    this.state.clear();
     this.showing = false;
   }
 
   private renderImage(alert: Alert, data: any) {
-    const showTime = alert.property("imageShowTime");
-    const appearance = alert.property("appearance");
-
     if (alert.property("imageDuration")?.limited ?? false) {
       setTimeout(
-        () => this.state.image = null,
-        alert.property("imageDuration")?.time * 1000
+        () => (this.state.image = null),
+        alert.property("imageDuration")?.time * 1000,
       );
     }
 
-    if (data.media?.url) {
-      log.debug({ image: data.media.url }, "rendering generated image");
-      this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
-    } else if (alert.image) {
-      log.debug({ image: alert.image }, "rendering image");
-      this.state.image = `${alert.image}`;
-    } else if (alert.video) {
-      log.debug({ video: alert.video }, "rendering video");
-      this.state.video = `${alert.video}`;
-    }
+    const delay = alert.property("imageAppearanceDelay");
+    sleep(delay)
+      .then(() => {
+        if (data.media?.url) {
+          log.debug({ image: data.media.url }, "rendering generated image");
+          this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
+        } else if (alert.image) {
+          log.debug({ image: alert.image }, "rendering image");
+          this.state.image = `${alert.image}`;
+        } else if (alert.video) {
+          log.debug({ video: alert.video }, "rendering video");
+          this.state.video = `${alert.video}`;
+        }
 
-    if (appearance && appearance !== "none" && appearance !== "random") {
-      this.state.imageClassName = `animate__animated animate__slow animate__${appearance}`;
-    }
+        const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
 
-    if (appearance === "random") {
-      const choice =
-        APPEARANCE_ANIMATIONS[
-          getRndInteger(0, APPEARANCE_ANIMATIONS.length - 1)
-        ];
-      this.state.imageClassName = `animate__animated animate__slow animate__${choice}`;
-    }
+        let width: CSSProperties = {
+          width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+          marginLeft: shadowProperty.requiredWidth + "px",
+          marginRight: shadowProperty.requiredWidth + "px",
+        };
+        const widthProperty = alert.get("imageWidth") as WidthProperty;
+        if (widthProperty.value > 1) {
+          width = widthProperty.calcCss();
+        }
 
-    if (showTime) {
-      setTimeout(() => {
-        this.state.image = null;
-        this.state.video = null;
-      }, showTime * 1000);
-    }
+        let height: CSSProperties = {
+          height: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+          marginTop: shadowProperty.requiredHeight + "px",
+          marginBottom: shadowProperty.requiredHeight + "px",
+        };
+        const heightProperty = alert.get("imageWidth") as WidthProperty;
+        if (heightProperty.value > 0) {
+          height = heightProperty.calcCss();
+        }
 
-    const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
+        log.debug({ width: width, height: height }, "rendering image");
 
-    let width: CSSProperties = {
-      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-      marginLeft: shadowProperty.requiredWidth + "px",
-      marginRight: shadowProperty.requiredWidth + "px",
-    };
-    const widthProperty = alert.get("imageWidth") as WidthProperty;
-    if (widthProperty.value > 0) {
-      width = widthProperty.calcCss();
-    }
-
-    let height: CSSProperties = {
-      height: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-      marginTop: shadowProperty.requiredHeight + "px",
-      marginBottom: shadowProperty.requiredHeight + "px",
-    };
-    const heightProperty = alert.get("imageWidth") as WidthProperty;
-    if (heightProperty.value > 0) {
-      height = heightProperty.calcCss();
-    }
-
-    log.debug({ width: width, height: height }, "rendering image");
-
-    this.state.imageStyle = {
-      ...width,
-      ...height,
-      ...(alert.get("imagePadding") as PaddingProperty).calcCss(),
-      ...(alert.get("imageBorder") as BorderProperty).calcCss(),
-      ...(alert.get("imageRounding") as RoundingProperty).calcCss(),
-      ...(alert.get("imageShadow") as BoxShadowProperty).calcCss(),
-    };
+        this.state.imageStyle = {
+          ...width,
+          ...height,
+          ...(alert.get("imagePadding") as PaddingProperty).calcCss(),
+          ...(alert.get("imageBorder") as BorderProperty).calcCss(),
+          ...(alert.get("imageRounding") as RoundingProperty).calcCss(),
+          ...(alert.get("imageShadow") as BoxShadowProperty).calcCss(),
+        };
+      })
+      .then(() => {
+        const animation = alert.get("imageAppearance") as AnimationProperty;
+        this.state.imageClassName = animation.classname();
+        return sleep(animation.value.duration);
+      })
+      .then(() => {
+        const animation = alert.get("imageAnimation") as AnimationProperty;
+        this.state.imageClassName = animation.classname();
+      });
   }
 
   private renderTitle(alert: Alert, data: any) {
     if (alert.property("headerDuration")?.limited ?? false) {
       setTimeout(
-        () => this.state.title = null,
-        alert.property("headerDuration")?.time * 1000
+        () => (this.state.title = null),
+        alert.property("headerDuration")?.time * 1000,
       );
     }
 
@@ -437,7 +429,7 @@ export class AlertController {
 
     const headerFont = alert.get("headerFont") as AnimatedFontProperty;
     this.state.fonts.push(headerFont.value.family);
-    this.state.titleClassName = headerFont.calcClassName() ?? "";
+    this.state.titleClassName = `${headerFont.calcClassName()}`;
 
     const shadowProperty = alert.get("headerBoxShadow") as BoxShadowProperty;
 
@@ -459,15 +451,16 @@ export class AlertController {
     if (heightProperty.value > 0) {
       height = heightProperty.calcCss();
     }
-    const headerAlignment = alert.get("headerAlignment") as SingleChoiceProperty;
-
+    const headerAlignment = alert.get(
+      "headerAlignment",
+    ) as SingleChoiceProperty;
 
     this.state.titleStyle = {
       ...headerFont.calcStyle(),
       ...(alert.get("headerBorder") as BorderProperty).calcCss(),
       ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
       ...(alert.get("headerPadding") as PaddingProperty).calcCss(),
-      ...{ textAlign: headerAlignment.value } as CSSProperties,
+      ...({ textAlign: headerAlignment.value } as CSSProperties),
       ...width,
       ...height,
     };
@@ -483,74 +476,116 @@ export class AlertController {
           ...(alert.get("headerBoxShadow") as BoxShadowProperty).calcCss(),
           ...css,
         };
+      })
+      .then(() => {
+        const animation = alert.get("headerAppearance") as AnimationProperty;
+        this.state.headerClassName = animation.classname();
+        log.debug(
+          { duration: animation.value.duration },
+          "rendering header appearance",
+        );
+        return sleep(animation.value.duration);
+      })
+      .then(() => {
+        const animation = alert.get("headerAnimation") as AnimationProperty;
+        this.state.headerClassName = animation.classname();
+        log.debug(
+          { duration: animation.value.duration },
+          "rendering header animation",
+        );
       });
   }
 
   private renderMessage(alert: Alert, data: any) {
     if (alert.property("messageDuration")?.limited ?? false) {
       setTimeout(
-        () => this.state.message = null,
-        alert.property("messageDuration")?.time * 1000
+        () => (this.state.message = null),
+        alert.property("messageDuration")?.time * 1000,
       );
     }
 
-    const showTime = alert.property("imageShowTime");
-
+    const delay = alert.property("imageAppearanceDelay") as number;
     const messageFont = alert.get("font") as AnimatedFontProperty;
-    if (messageFont.value.family) {
-      this.state.fonts.push(messageFont.value.family);
-    }
 
-    const shadowProperty = alert.get("messageBoxShadow") as BoxShadowProperty;
+    sleep(delay)
+      .then(() => {
+        if (messageFont.value.family) {
+          this.state.fonts.push(messageFont.value.family);
+        }
 
-    let width: CSSProperties = {
-      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-      marginLeft: shadowProperty.requiredWidth + "px",
-      marginRight: shadowProperty.requiredWidth + "px",
-    };
-    const widthProperty = alert.get("messageWidth") as WidthProperty;
-    if (widthProperty.value > 0) {
-      width = widthProperty.calcCss();
-    }
+        const shadowProperty = alert.get(
+          "messageBoxShadow",
+        ) as BoxShadowProperty;
 
-    let height: CSSProperties = {
-      marginTop: shadowProperty.requiredHeight + "px",
-      marginBottom: shadowProperty.requiredHeight + "px",
-    };
-    const heightProperty = alert.get("messageHeight") as WidthProperty;
-    if (heightProperty.value > 0) {
-      height = heightProperty.calcCss();
-    }
-    const messageAlignment = alert.get("messageAlignment") as SingleChoiceProperty;
-
-    this.state.messageStyle = {
-      ...messageFont.calcStyle(),
-      ...(alert.get("messageBorder") as BorderProperty).calcCss(),
-      ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
-      ...(alert.get("messagePadding") as PaddingProperty).calcCss(),
-      ...{ textAlign: messageAlignment.value } as CSSProperties,
-      ...width,
-      ...height
-    };
-
-    (alert.get("messageBackgroundImage") as BackgroundImageProperty)
-      .calcCss()
-      .then((css) => {
-        log.debug({ css: css }, "settings image style");
-        this.state.messageImageStyle = {
-          ...(alert.get("messageBackgroundColor") as ColorProperty).calcCss(),
-          ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
-          ...(alert.get("messageBoxShadow") as BoxShadowProperty).calcCss(),
-          ...css,
+        let width: CSSProperties = {
+          width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+          marginLeft: shadowProperty.requiredWidth + "px",
+          marginRight: shadowProperty.requiredWidth + "px",
         };
+        const widthProperty = alert.get("messageWidth") as WidthProperty;
+        if (widthProperty.value > 0) {
+          width = widthProperty.calcCss();
+        }
+
+        let height: CSSProperties = {
+          marginTop: shadowProperty.requiredHeight + "px",
+          marginBottom: shadowProperty.requiredHeight + "px",
+        };
+        const heightProperty = alert.get("messageHeight") as WidthProperty;
+        if (heightProperty.value > 0) {
+          height = heightProperty.calcCss();
+        }
+        const messageAlignment = alert.get(
+          "messageAlignment",
+        ) as SingleChoiceProperty;
+
+        this.state.messageStyle = {
+          ...messageFont.calcStyle(),
+          ...(alert.get("messageBorder") as BorderProperty).calcCss(),
+          ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
+          ...(alert.get("messagePadding") as PaddingProperty).calcCss(),
+          ...({ textAlign: messageAlignment.value } as CSSProperties),
+          ...width,
+          ...height,
+        };
+      })
+      .then(() => {
+        return (alert.get("messageBackgroundImage") as BackgroundImageProperty)
+          .calcCss()
+          .then((css) => {
+            log.debug({ css: css }, "settings image style");
+            this.state.messageImageStyle = {
+              ...(
+                alert.get("messageBackgroundColor") as ColorProperty
+              ).calcCss(),
+              ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
+              ...(alert.get("messageBoxShadow") as BoxShadowProperty).calcCss(),
+              ...css,
+            };
+          });
+      })
+      .then(() => {
+        this.state.messageClassName = messageFont.calcClassName() ?? "";
+        this.state.message = data.message;
+      })
+      .then(() => {
+        const animation = alert.get("messageAppearance") as AnimationProperty;
+        this.state.messageContainerClassName = animation.classname();
+        return sleep(animation.value.duration);
+      })
+      .then(() => {
+        const animation = alert.get("messageAnimation") as AnimationProperty;
+        this.state.messageContainerClassName = animation.classname();
       });
-    this.state.messageClassName = messageFont.calcClassName() ?? "";
-    if (showTime) {
-      setTimeout(() => (this.state.message = data.message), showTime * 1000);
-    } else {
-      this.state.message = data.message;
-    }
   }
+
+  private finishWidget() {}
+
+  private finishImage() {}
+
+  private finishTitle() {}
+
+  private finishMessage() {}
 
   public get state(): AlertState {
     return this._state;

@@ -44,14 +44,17 @@ export const AlertImage = observer(
           )}
           {state.image && (
             <>
-            <img src={state.image} className={`${classes.imageoverlay}`} />
-            <img
-              src={state.image}
-              style={{
-                ...imageStyle,
-              }}
-              className={`${classes.alertimage} ${state.imageClassName}`}
-            />
+              <img
+                src={state.image}
+                className={`${state.imageClassName} ${classes.imageoverlay}`}
+              />
+              <img
+                src={state.image}
+                style={{
+                  ...imageStyle,
+                }}
+                className={`${classes.alertimage} ${state.imageClassName}`}
+              />
             </>
           )}
         </div>
