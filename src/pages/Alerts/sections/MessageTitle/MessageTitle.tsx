@@ -8,7 +8,7 @@ export const MessageTitle = observer(({}) => {
 
   return (
     <>
-      {state.showTitle && state.message && (
+      {state.showTitle && state.title && (
         <div className={state.headerClassName}>
           <div
             style={state.titleStyle}

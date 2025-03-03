@@ -8,6 +8,8 @@ import { AlertImage } from "./sections/AlertImage/AlertImage";
 import { MessageTitle } from "./sections/MessageTitle/MessageTitle";
 import { MessageBody } from "./sections/MessageBody/MessageBody";
 import { observer } from "mobx-react-lite";
+import { reaction } from "mobx";
+import { log } from "../../logging";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -21,7 +23,15 @@ const Alert = observer(({ state }: { state: AlertState }) => {
     ...state.totalShadow,
     ...state.totalBackgroundColor,
     ...state.totalBackgroundImage,
+    ...state.totalAnimationDuration
   };
+
+  reaction(
+    () => state.totalClassName,
+    () => {
+      log.debug({ classname: state.totalClassName }, "changed total animation");
+    },
+  );
 
   return (
     <>

@@ -11,6 +11,7 @@ export class AlertState {
   };
 
   private _totalClassName = "";
+  private _totalAnimationDuration: CSSProperties = {};
   private _totalHeight: CSSProperties = {};
   private _totalHeightStyle: CSSProperties = { height: "100%" };
   private _totalWidth: CSSProperties = {};
@@ -299,6 +300,14 @@ export class AlertState {
 
   public get messageContainerClassName(): string {
     return this._messageContainerClassName;
+  }
+
+  public get totalAnimationDuration(): CSSProperties {
+    return this._totalAnimationDuration;
+  }
+
+  public set totalAnimationDuration(props: CSSProperties) {
+    this._totalAnimationDuration = props;
   }
 
 }

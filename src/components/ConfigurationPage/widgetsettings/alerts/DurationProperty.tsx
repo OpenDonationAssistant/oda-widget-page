@@ -23,6 +23,9 @@ const DurationPropertyComponent = observer(
                 onChange={(update) => {
                   property.value = produce(toJS(property.value), (draft) => {
                     draft.limited = update;
+                    if (!draft.limited) {
+                      draft.time = 0;
+                    }
                   });
                 }}
               />

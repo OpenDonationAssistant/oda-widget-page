@@ -1,8 +1,8 @@
 import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/Alerts";
 import { log } from "../../logging";
-import { getRndInteger } from "../../utils";
+import { getRndInteger, sleep } from "../../utils";
 
-function base64ToArrayBuffer(base64) {
+function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
   var bytes = new Uint8Array(binaryString.length);
   for (var i = 0; i < binaryString.length; i++) {
@@ -21,25 +21,14 @@ export class VoiceController {
     this.recipientId = recipientId;
   }
 
-  playAudio(alert: any, onEndHandler: any) {
-    const volume =
-      alert.properties.find((prop) => prop.name === "audio-volume")?.value ??
-      100;
-    try {
-      this.pronounce(structuredClone(alert.buffer), volume, onEndHandler);
-    } catch (error) {
-      console.log(error);
-      if (onEndHandler) {
-        onEndHandler();
-      }
-    }
+  playAudio(alert: any): Promise<void | AudioBuffer> {
+    const volume = alert.property("audio-volume") ?? 100;
+    return sleep(alert.property("audioDelay")).then(() => {
+      this.pronounce(structuredClone(alert.buffer), volume);
+    });
   }
 
-  pronounceTitle(
-    alert: Alert,
-    data: any,
-    onEndHandler: any,
-  ): Promise<void | AudioBuffer> {
+  pronounceTitle(alert: Alert, data: any): Promise<void | AudioBuffer> {
     log.debug("start to pronounce title");
 
     const playTitle = alert.property("enableVoiceForHeader") ?? true;
@@ -48,9 +37,6 @@ export class VoiceController {
     const volume = alert.property("voiceVolume") ?? 100;
 
     if (!playTitle) {
-      if (onEndHandler) {
-        onEndHandler();
-      }
       log.debug({ playTitle: playTitle }, "skipping title playing");
       return Promise.resolve();
     }
@@ -60,9 +46,6 @@ export class VoiceController {
         data.message === "") &&
       !playTitleIfMessageIsEmpty
     ) {
-      if (onEndHandler) {
-        onEndHandler();
-      }
       return Promise.resolve();
     }
     const message = data?.message?.trim();
@@ -83,58 +66,44 @@ export class VoiceController {
       .replace("<streamer>", this.recipientId);
     try {
       if (resultText.length > 0) {
-        return this.voiceByGoogle(resultText).then((audio) => {
-          return this.pronounce(audio, volume, onEndHandler);
-        });
+        return sleep(alert.property("headerVoiceDelay") as number)
+          .then(() => {
+            return this.voiceByGoogle(resultText);
+          })
+          .then((audio) => {
+            return this.pronounce(audio, volume);
+          });
       } else {
-        onEndHandler();
         return Promise.resolve();
       }
     } catch (error) {
       console.log(error);
-      if (onEndHandler) {
-        onEndHandler();
-      }
       return Promise.resolve();
     }
   }
 
-  pronounceMessage(
-    alert: Alert,
-    data: any,
-    onEndHandler: any,
-  ): Promise<void | AudioBuffer> {
+  pronounceMessage(alert: Alert, data: any): Promise<void | AudioBuffer> {
     log.debug("start to pronounce message");
     if (!data || !data.message || data.message.length === 0) {
-      if (onEndHandler) {
-        onEndHandler();
-      }
       return Promise.resolve();
     }
 
-    return this.voiceByGoogle(data.message)
-      .then((audio) => {
-        return this.pronounce(
-          audio,
-          alert.property("voiceVolume") ?? 100,
-          onEndHandler,
-        );
+    return sleep(alert.property("messageVoiceDelay") as number)
+      .then(() => {
+        return this.voiceByGoogle(data.message);
       })
-      .catch((error) => {
-        log.error({ error: error }, "error while pronouncing message");
-        if (onEndHandler) {
-          onEndHandler();
-        }
+      .then((audio) => {
+        return this.pronounce(audio, alert.property("voiceVolume") ?? 100);
       });
   }
 
   private pronounce(
     buffer: ArrayBuffer,
     volume: number,
-    onEndHandler: any,
   ): Promise<void | AudioBuffer> {
-    return this.audioCtx
-      .decodeAudioData(
+    log.debug("trying to pronounce something");
+    return new Promise((resolve) => {
+      this.audioCtx.decodeAudioData(
         buffer,
         (buf) => {
           const gainNode = this.audioCtx.createGain();
@@ -142,27 +111,23 @@ export class VoiceController {
           gainNode.connect(this.audioCtx.destination);
 
           let source = this.audioCtx.createBufferSource();
-          if (onEndHandler) {
-            this.onEndHandler = onEndHandler;
-            source.addEventListener("ended", onEndHandler);
-          }
+          this.onEndHandler = () => {
+            log.debug("calling resolve");
+            resolve();
+          };
           this.playingSource = source;
           source.connect(gainNode);
           source.buffer = buf;
           source.loop = false;
           source.start(0);
+          source.addEventListener("ended", this.onEndHandler);
         },
         (err) => {
           console.log(err);
+          this.onEndHandler();
         },
-      )
-      .catch((error) => {
-        console.log(error);
-        if (onEndHandler) {
-          console.log("calling onEndHandler");
-          onEndHandler();
-        }
-      });
+      );
+    });
   }
 
   private async voiceByMCS(message: string): Promise<ArrayBuffer> {
@@ -197,7 +162,7 @@ export class VoiceController {
     return base64ToArrayBuffer(json.audioContent);
   }
 
-  interrupt() {
+  public interrupt() {
     log.debug("interrupting audio");
     if (this.playingSource) {
       this.playingSource.removeEventListener("ended", this.onEndHandler);

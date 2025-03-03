@@ -11,11 +11,62 @@ import InputNumber from "../components/InputNumber";
 import { toJS } from "mobx";
 import { produce } from "immer";
 import { getRndInteger } from "../../../utils";
+import { log } from "../../../logging";
+import { observer } from "mobx-react-lite";
+import { CSSProperties } from "react";
 
 export interface AnimationPropertyValue {
   animation: string;
   duration: number;
 }
+
+export const Component = observer(
+  ({ property }: { property: AnimationProperty }) => {
+    const { t } = useTranslation();
+
+    return (
+      <>
+        <LabeledContainer displayName={property.displayName}>
+          <Select
+            className="full-width"
+            value={property.value.animation}
+            options={property.options.map((option) => {
+              return { label: t(option), value: option };
+            })}
+            onChange={(selected) => {
+              property.value = produce(
+                toJS(property.value),
+                (draft: AnimationPropertyValue) => {
+                  draft.animation = selected;
+                  if (selected === "none") {
+                    draft.duration = 0;
+                  }
+                },
+              );
+            }}
+          />
+        </LabeledContainer>
+        {property.target !== "idle" && property.value.animation !== "none" && (
+          <LabeledContainer displayName="animation-duration">
+            <InputNumber
+              value={property.value.duration}
+              increment={100}
+              onChange={(value) => {
+                property.value = produce(
+                  toJS(property.value),
+                  (draft: AnimationPropertyValue) => {
+                    draft.duration = value;
+                  },
+                );
+              }}
+              addon="ms"
+            />
+          </LabeledContainer>
+        )}
+      </>
+    );
+  },
+);
 
 export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyValue> {
   private _options: string[] = [];
@@ -31,7 +82,7 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
       name: params.name,
       value: params.value ?? {
         animation: "none",
-        duration: 2,
+        duration: 0,
       },
       displayName: params.displayName ?? "appearance-animation",
     });
@@ -48,43 +99,15 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
   }
 
   public markup() {
-    const { t } = useTranslation();
+    return <Component property={this} />;
+  }
 
-    return (
-      <>
-        <LabeledContainer displayName={this.displayName}>
-          <Select
-            className="full-width"
-            value={this.value.animation}
-            options={this._options.map((option) => {
-              return { label: t(option), value: option };
-            })}
-            onChange={(selected) => {
-              this.value = produce(
-                toJS(this.value),
-                (draft: AnimationPropertyValue) => {
-                  draft.animation = selected;
-                },
-              );
-            }}
-          />
-        </LabeledContainer>
-        <LabeledContainer displayName="animation-duration">
-          <InputNumber
-            value={this.value.duration}
-            onChange={(value) => {
-              this.value = produce(
-                toJS(this.value),
-                (draft: AnimationPropertyValue) => {
-                  draft.duration = value;
-                },
-              );
-            }}
-            addon="sec"
-          />
-        </LabeledContainer>
-      </>
-    );
+  public get options(): string[] {
+    return this._options;
+  }
+
+  public get target(): "in" | "out" | "idle" {
+    return this._target;
   }
 
   public classname(): string {
@@ -96,6 +119,14 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
       return `animate__animated animate__slow animate__${choice}`;
     }
 
-    return `animate__animated animate__slow animate__${this.value.animation} ${this._target === "idle" ? "animate__infinite" : ""}`;
+    log.debug({ animation: this.value.animation }, "create animation");
+
+    return `animate__animated animate__${this.value.animation} ${this._target === "idle" ? "animate__infinite" : ""}`;
+  }
+
+  public calcCss(): CSSProperties{
+    return {
+      "--animate-duration": `${this.value.duration / 1000}s`
+    };
   }
 }

@@ -92,6 +92,12 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "imageHeight",
     value: null,
   }),
+  new NumberProperty({
+    name: "audioDelay",
+    value: 0,
+    displayName: "Задержка аудио",
+    addon: "ms",
+  }),
   new VolumeProperty({
     name: "audio-volume",
   }),
@@ -134,7 +140,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "headerVoiceDelay",
     value: 0,
     displayName: "Задержка озвучки заголовка",
-    addon: "сек",
+    addon: "ms",
   }),
   new DefaultWidgetProperty({
     name: "voiceTextTemplate",
@@ -227,7 +233,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "messageVoiceDelay",
     value: 0,
     displayName: "Задержка озвучки сообщения",
-    addon: "сек",
+    addon: "ms",
   }),
   new NumberProperty({
     name: "messageAppearanceDelay",

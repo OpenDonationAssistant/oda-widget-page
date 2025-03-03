@@ -6,6 +6,7 @@ import axios from "axios";
 import { ChangeEvent } from "react";
 import { Flex } from "antd";
 import { Alert } from "./Alerts";
+import { NumberProperty } from "../../widgetproperties/NumberProperty";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -78,6 +79,9 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
                 onChange={(value) => alert.update("audio-volume", value)}
               />
             </LabeledContainer>
+          </div>
+          <div className="settings-item">
+            {(alert.get("audioDelay") as NumberProperty).markup()}
           </div>
         </>
       )}
