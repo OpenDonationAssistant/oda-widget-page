@@ -69,7 +69,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "width"
         }),
         new HeightProperty({
-          name: "height"
+          name: "height",
         }),
         new BorderProperty({
           name: "border",
@@ -127,7 +127,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "titleWidth"
         }),
         new HeightProperty({
-          name: "titleHeight"
+          name: "titleHeight",
         }),
         new BorderProperty({
           name: "titleBorder",
@@ -184,7 +184,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new HeightProperty({
-          name: "outerHeight",
+          name: "outerHeight"
         }),
         new BorderProperty({
           name: "outerBorder",
@@ -223,7 +223,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           },
         }),
         new HeightProperty({
-          name:"filledHeight",
+          name:"filledHeight"
         }),
         new BorderProperty({
           name: "innerBorder",
