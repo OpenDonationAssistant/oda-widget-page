@@ -115,7 +115,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "imageAppearanceDelay",
     value: 0,
     displayName: "Задержка появления",
-    addon: "сек",
+    addon: "ms",
   }),
   new AnimationProperty({
     name: "imageAppearance",
@@ -239,7 +239,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "messageAppearanceDelay",
     value: 0,
     displayName: "Задержка появления",
-    addon: "сек",
+    addon: "ms",
   }),
   new AnimationProperty({
     name: "messageAppearance",
@@ -278,7 +278,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "headerAppearanceDelay",
     value: 0,
     displayName: "Задержка появления",
-    addon: "сек",
+    addon: "ms",
   }),
   new AnimationProperty({
     name: "headerAppearance",

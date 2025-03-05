@@ -234,17 +234,17 @@ export class AlertController {
     }
     const duration = alert.property("duration")?.time;
     if (alert.property("duration")?.limited ?? false) {
-      setTimeout(() => {
-        Promise.all([
-          this.finishImage(alert),
-          this.finishTitle(alert),
-          this.finishMessage(alert),
-          this.finishWidget(alert),
-        ]).then(() => {
-          log.debug("clearing alert");
-          this.interrupt();
-        });
-      }, duration);
+      // setTimeout(() => {
+      //   Promise.all([
+      //     this.finishImage(alert),
+      //     this.finishTitle(alert),
+      //     this.finishMessage(alert),
+      //     this.finishWidget(alert),
+      //   ]).then(() => {
+      //     log.debug("clearing alert");
+      //     this.interrupt();
+      //   });
+      // }, duration);
     }
     this.showing = true;
     this.ackFunction = ackFunction;
@@ -343,17 +343,18 @@ export class AlertController {
   }
 
   private renderImage(alert: Alert, data: any): Promise<void> {
-    if (alert.property("imageDuration")?.limited ?? false) {
-      setTimeout(
-        () => (this.state.image = null),
-        alert.property("imageDuration")?.time,
-      );
-    }
-
     const delay = alert.property("imageAppearanceDelay") as number;
     log.debug({ delay: delay }, "image delay");
     return sleep(delay)
       .then(() => {
+        if (alert.property("imageDuration")?.limited ?? false) {
+          const duration = alert.property("imageDuration")?.time;
+          log.debug({ duration: duration }, "set image clearing");
+          setTimeout(() => {
+            this.finishImage(alert);
+          }, duration);
+        }
+
         if (data.media?.url) {
           log.debug({ image: data.media.url }, "rendering generated image");
           this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
@@ -417,18 +418,18 @@ export class AlertController {
   }
 
   private renderTitle(alert: Alert, data: any): Promise<void> {
-    if (alert.property("headerDuration")?.limited ?? false) {
-      setTimeout(
-        () => (this.state.title = null),
-        alert.property("headerDuration")?.time,
-      );
-    }
-
     const delay = alert.property("headerAppearanceDelay") as number;
     log.debug({ delay: delay }, "header delay");
 
     return sleep(delay)
       .then(() => {
+        if (alert.property("headerDuration")?.limited ?? false) {
+          setTimeout(
+            () => this.finishTitle(alert),
+            alert.property("headerDuration")?.time,
+          );
+        }
+
         const nicknameTextTemplate = alert.property("nicknameTextTemplate");
 
         const title = nicknameTextTemplate
@@ -494,10 +495,7 @@ export class AlertController {
       .then(() => {
         const animation = alert.get("headerAppearance") as AnimationProperty;
         this.state.headerClassName = animation.classname();
-        this.state.titleStyle = {
-          ...this.state.titleStyle,
-          ...animation.calcCss(),
-        };
+        this.state.headerStyle = animation.calcCss();
         log.debug(
           { duration: animation.value.duration },
           "rendering header appearance",
@@ -507,6 +505,7 @@ export class AlertController {
       .then(() => {
         const animation = alert.get("headerAnimation") as AnimationProperty;
         this.state.headerClassName = animation.classname();
+        this.state.headerStyle = animation.calcCss();
         log.debug(
           { duration: animation.value.duration },
           "rendering header animation",
@@ -518,19 +517,19 @@ export class AlertController {
   }
 
   private renderMessage(alert: Alert, data: any): Promise<void> {
-    if (alert.property("messageDuration")?.limited ?? false) {
-      setTimeout(
-        () => (this.state.message = null),
-        alert.property("messageDuration")?.time,
-      );
-    }
-
     const delay = alert.property("messageAppearanceDelay") as number;
     const messageFont = alert.get("font") as AnimatedFontProperty;
     log.debug({ delay: delay }, "message delay");
 
     return sleep(delay)
       .then(() => {
+        if (alert.property("messageDuration")?.limited ?? false) {
+          setTimeout(
+            () => this.finishMessage(alert),
+            alert.property("messageDuration")?.time,
+          );
+        }
+
         if (messageFont.value.family) {
           this.state.fonts.push(messageFont.value.family);
         }
@@ -613,21 +612,28 @@ export class AlertController {
     log.debug("starting finishing widget");
     const animation = alert.get("totalDisappearance") as AnimationProperty;
     this.state.totalClassName = animation.classname();
+    this.state.totalAnimationDuration = animation.calcCss();
     log.debug(
-      { classname: this.state.totalClassName },
+      {
+        classname: this.state.totalClassName,
+        duration: animation.value.duration,
+      },
       "changing total animation while finishing",
     );
-    return sleep(animation.value.duration);
+    return sleep(animation.value.duration).then(() => this.state.clearTotal());
   }
 
   private finishImage(alert: Alert): Promise<void> {
+    log.debug("finishing image");
     const animation = alert.get("imageDisappearance") as AnimationProperty;
     this.state.imageClassName = animation.classname();
     this.state.imageStyle = {
       ...this.state.imageStyle,
       ...animation.calcCss(),
     };
-    return sleep(animation.value.duration);
+    return sleep(animation.value.duration).then(() => {
+      this.state.clearImage();
+    });
   }
 
   private finishTitle(alert: Alert): Promise<void> {
@@ -637,7 +643,7 @@ export class AlertController {
       ...this.state.titleStyle,
       ...animation.calcCss(),
     };
-    return sleep(animation.value.duration);
+    return sleep(animation.value.duration).then(() => this.state.clearTitle());
   }
 
   private finishMessage(alert: Alert): Promise<void> {
@@ -647,7 +653,9 @@ export class AlertController {
       ...this.state.messageStyle,
       ...animation.calcCss(),
     };
-    return sleep(animation.value.duration);
+    return sleep(animation.value.duration).then(() =>
+      this.state.cleareMessage(),
+    );
   }
 
   playAudio(alert: Alert, data: any): Promise<void | AudioBuffer> {

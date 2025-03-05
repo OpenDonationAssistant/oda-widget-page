@@ -33,8 +33,9 @@ const DurationPropertyComponent = observer(
             </Flex>
             {property.value.limited && (
               <InputNumber
+                increment={1000}
                 value={property.value.time ?? 0}
-                addon="sec"
+                addon="ms"
                 onChange={(update) => {
                   property.value = produce(toJS(property.value), (draft) => {
                     draft.time = update;

@@ -13,5 +13,5 @@ export const delay = (ms: number) => {
 };
 
 export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms)).then(() => log.debug("sleep is over"));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

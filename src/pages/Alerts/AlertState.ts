@@ -39,11 +39,53 @@ export class AlertState {
   private _titleClassName: string = "";
   private _titleImageStyle: CSSProperties = {};
   private _headerClassName = "";
+  private _headerStyle: CSSProperties = {};
   private _images: string[] = [];
   private _fonts: string[] = [];
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  public clearTotal() {
+    this._totalClassName = "";
+    this._totalAnimationDuration = {};
+    this._totalHeight = {};
+    this._totalHeightStyle = { height: "100%" };
+    this._totalWidth = {};
+    this._totalWidthStyle = { width: "100%" };
+    this._totalBorder = {};
+    this._totalBackgroundColor = {};
+    this._totalBackgroundImage = {};
+    this._totalRounding = {};
+    this._totalPadding = {};
+    this._totalShadow = {};
+  }
+
+  public clearImage() {
+    this._image = null;
+    this._video = null;
+    this._imageStyle = {};
+    this._imageShadowStyle = {};
+    this._imageClassName = "";
+  }
+
+  public clearTitle() {
+    this._showTitle = true;
+    this._title = null;
+    this._titleStyle = {};
+    this._titleClassName = "";
+    this._titleImageStyle = {};
+    this._headerClassName = "";
+  }
+
+  public cleareMessage() {
+    this._showMessage = true;
+    this._message = null;
+    this._messageStyle = {};
+    this._messageImageStyle = {};
+    this._messageClassName = "";
+    this._messageContainerClassName = "";
   }
 
   public clear() {
@@ -286,7 +328,7 @@ export class AlertState {
     return this._totalClassName;
   }
 
-  public set headerClassName(classname: string){
+  public set headerClassName(classname: string) {
     this._headerClassName = classname;
   }
 
@@ -294,7 +336,7 @@ export class AlertState {
     return this._headerClassName;
   }
 
-  public set messageContainerClassName(classname: string){
+  public set messageContainerClassName(classname: string) {
     this._messageContainerClassName = classname;
   }
 
@@ -310,6 +352,13 @@ export class AlertState {
     this._totalAnimationDuration = props;
   }
 
+  public set headerStyle(style: CSSProperties) {
+    this._headerStyle = style;
+  }
+
+  public get headerStyle(): CSSProperties {
+    return this._headerStyle;
+  }
 }
 
 export const AlertStateContext = createContext(new AlertState());

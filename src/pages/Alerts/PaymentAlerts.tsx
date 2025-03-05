@@ -26,13 +26,6 @@ const Alert = observer(({ state }: { state: AlertState }) => {
     ...state.totalAnimationDuration
   };
 
-  reaction(
-    () => state.totalClassName,
-    () => {
-      log.debug({ classname: state.totalClassName }, "changed total animation");
-    },
-  );
-
   return (
     <>
       {"1" === state.layout.value && (
