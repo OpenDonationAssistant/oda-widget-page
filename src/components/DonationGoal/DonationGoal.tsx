@@ -40,7 +40,7 @@ export const DonationGoal = observer(
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
-    const outerHeight = {...{ height: "50px"},...settings.outerHeight.calcCss()};
+    const outerHeight = {...{ minHeight: "50px"},...settings.outerHeight.calcCss()};
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
     useEffect(() => {
@@ -216,7 +216,7 @@ export const DonationGoal = observer(
                   <div
                     style={{
                       ...calcBarStyle(goal),
-                      ...{...{ height: "50px"},...settings.filledHeight.calcCss()},
+                      ...{...{ minHeight: "50px"},...settings.filledHeight.calcCss()},
                     }}
                     className={`${classes.goalfilled}`}
                   ></div>
