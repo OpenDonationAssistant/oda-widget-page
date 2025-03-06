@@ -33,6 +33,7 @@ export class AlertState {
   private _messageImageStyle: CSSProperties = {};
   private _messageClassName: string = "";
   private _messageContainerClassName = "";
+  private _messageContainerStyle: CSSProperties = {};
   private _showTitle: boolean = true;
   private _title: string | null = null;
   private _titleStyle: CSSProperties = {};
@@ -80,12 +81,12 @@ export class AlertState {
   }
 
   public cleareMessage() {
-    this._showMessage = true;
-    this._message = null;
-    this._messageStyle = {};
-    this._messageImageStyle = {};
-    this._messageClassName = "";
-    this._messageContainerClassName = "";
+    // this._showMessage = true;
+    // this._message = null;
+    // this._messageStyle = {};
+    // this._messageImageStyle = {};
+    // this._messageClassName = "";
+    // this._messageContainerClassName = "";
   }
 
   public clear() {
@@ -357,8 +358,17 @@ export class AlertState {
   }
 
   public get headerStyle(): CSSProperties {
-    return this._headerStyle;
+    return toJS(this._headerStyle);
   }
+
+  public set messageContainerStyle(style: CSSProperties){
+    this._messageContainerStyle = style;
+  }
+
+  public get messageContainerStyle(){
+    return toJS(this._messageContainerStyle);
+  }
+
 }
 
 export const AlertStateContext = createContext(new AlertState());

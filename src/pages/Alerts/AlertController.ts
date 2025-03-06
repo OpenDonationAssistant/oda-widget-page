@@ -593,10 +593,7 @@ export class AlertController {
       .then(() => {
         const animation = alert.get("messageAppearance") as AnimationProperty;
         this.state.messageContainerClassName = animation.classname();
-        this.state.messageStyle = {
-          ...this.state.messageStyle,
-          ...animation.calcCss(),
-        };
+        this.state.messageContainerStyle = animation.calcCss();
         return sleep(animation.value.duration);
       })
       .then(() => {
@@ -626,34 +623,40 @@ export class AlertController {
   private finishImage(alert: Alert): Promise<void> {
     log.debug("finishing image");
     const animation = alert.get("imageDisappearance") as AnimationProperty;
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
     this.state.imageClassName = animation.classname();
     this.state.imageStyle = {
       ...this.state.imageStyle,
       ...animation.calcCss(),
     };
-    return sleep(animation.value.duration).then(() => {
+    return Promise.all([
+      sleep(animation.value.duration),
+      sleep(waiting)
+    ]).then(() => {
       this.state.clearImage();
     });
   }
 
   private finishTitle(alert: Alert): Promise<void> {
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
     const animation = alert.get("headerDisappearance") as AnimationProperty;
     this.state.headerClassName = animation.classname();
-    this.state.titleStyle = {
-      ...this.state.titleStyle,
-      ...animation.calcCss(),
-    };
-    return sleep(animation.value.duration).then(() => this.state.clearTitle());
+    this.state.headerStyle = animation.calcCss();
+    return Promise.all([
+      sleep(animation.value.duration),
+      sleep(waiting)
+    ]).then(() => this.state.clearTitle());
   }
 
   private finishMessage(alert: Alert): Promise<void> {
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
     const animation = alert.get("messageDisappearance") as AnimationProperty;
     this.state.messageContainerClassName = animation.classname();
-    this.state.messageStyle = {
-      ...this.state.messageStyle,
-      ...animation.calcCss(),
-    };
-    return sleep(animation.value.duration).then(() =>
+    this.state.messageContainerStyle = animation.calcCss();
+    return Promise.all([
+      sleep(animation.value.duration),
+      sleep(waiting)
+    ]).then(() =>
       this.state.cleareMessage(),
     );
   }

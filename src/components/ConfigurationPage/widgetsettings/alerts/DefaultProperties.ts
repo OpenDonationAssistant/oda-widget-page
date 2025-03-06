@@ -253,7 +253,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new AnimationProperty({
     name: "messageDisappearance",
     displayName: "Анимация исчезновения",
-    target: "in"
+    target: "out"
   }),
   new DefaultWidgetProperty({
     name: "enableVoiceForMessage",

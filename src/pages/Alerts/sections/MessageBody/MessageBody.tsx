@@ -9,7 +9,7 @@ export const MessageBody = observer(({}) => {
   return (
     <>
       {state.showMessage && state.message && (
-        <div className={state.messageContainerClassName}>
+        <div className={state.messageContainerClassName} style={state.messageContainerStyle}>
           <div
             style={state.messageStyle}
             className={`${classes.messagebody} ${state.messageClassName}`}

@@ -124,9 +124,9 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
     return `animate__animated animate__${this.value.animation} ${this._target === "idle" ? "animate__infinite" : ""}`;
   }
 
-  public calcCss(): CSSProperties{
+  public calcCss(): CSSProperties {
     return {
-      "--animate-duration": `${this.value.duration / 1000}s`
+      "--animate-duration": `${this.value.duration / 1000}s`,
     };
   }
 }
