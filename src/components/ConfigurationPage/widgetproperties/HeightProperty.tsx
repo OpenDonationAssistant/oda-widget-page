@@ -63,6 +63,7 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
     if (this.value > 0) {
       return {
         height: `${this.value}px`,
+        minHeight: `${this.value}px`,
         overflowY: "hidden",
       };
     }
