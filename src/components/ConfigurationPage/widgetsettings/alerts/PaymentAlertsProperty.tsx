@@ -11,7 +11,7 @@ import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
-import { extendObservable, observable } from "mobx";
+import { extendObservable, observable, toJS } from "mobx";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -190,10 +190,10 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
     }
     for (let i = 0; i < valueToCheck.length; i++) {
       log.debug(
-        { new: valueToCheck[i], old: this._oldValue[i] },
+        { new: toJS(valueToCheck[i]), old: toJS(this._oldValue[i])},
         "compare alerts",
       );
-      if (!this.deepEqual(valueToCheck[i], this._oldValue[i])) {
+      if (!this.deepEqual(toJS(valueToCheck[i]), toJS(this._oldValue[i]))) {
         changed = true;
       }
     }

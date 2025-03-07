@@ -142,7 +142,7 @@ export class Alert {
       audio: this._audio,
       image: this._image,
       video: this._video,
-      triggers: this._triggers,
+      triggers: toJS(this._triggers),
       properties: this._properties.map((it) => {
         return {
           name: it.name,

@@ -1,4 +1,10 @@
-import { CSSProperties, ChangeEvent, ReactNode, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  ChangeEvent,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -44,7 +50,7 @@ const ImagePropertyComponent = observer(
 
     useEffect(() => {
       property.fullUri().then(setImage);
-    },[property.value.url]);
+    }, [property.value.url]);
 
     return (
       <>

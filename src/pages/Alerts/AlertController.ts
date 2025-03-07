@@ -18,6 +18,7 @@ import { CSSProperties } from "react";
 import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
 import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 import { toJS } from "mobx";
+import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -98,6 +99,12 @@ export class AlertController {
         this.loadImage(alert.image).then((image) => {
           log.debug({ origin: alert.image, current: image }, "image preloaded");
           alert.image = image;
+        });
+      }
+      if (alert.video) {
+        this.loadImage(alert.video).then((video) => {
+          log.debug({ origin: alert.video, current: video }, "image preloaded");
+          alert.video = video;
         });
       }
     });
@@ -261,7 +268,16 @@ export class AlertController {
         log.debug("handled audio");
       }),
       sleep(duration).then(() => {
-        log.debug("handled sleep");
+        log.debug("handled widget sleep");
+      }),
+      sleep(alert.property("messageDuration")?.time).then(() => {
+        log.debug("handled message sleep");
+      }),
+      sleep(alert.property("headerDuration")?.time).then(() => {
+        log.debug("handled header sleep");
+      }),
+      sleep(alert.property("imageDuration")?.time).then(() => {
+        log.debug("handled header sleep");
       }),
     ])
       .then(() => {
@@ -383,9 +399,10 @@ export class AlertController {
           marginTop: shadowProperty.requiredHeight + "px",
           marginBottom: shadowProperty.requiredHeight + "px",
         };
-        const heightProperty = alert.get("imageWidth") as WidthProperty;
+
+        const heightProperty = alert.get("imageHeight") as HeightProperty;
         if (heightProperty.value > 0) {
-          height = heightProperty.calcCss();
+          height = {...heightProperty.calcCss(),...{ flexGrow: 0 }};
         }
 
         log.debug({ width: width, height: height }, "rendering image");
@@ -623,41 +640,39 @@ export class AlertController {
   private finishImage(alert: Alert): Promise<void> {
     log.debug("finishing image");
     const animation = alert.get("imageDisappearance") as AnimationProperty;
-    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
+      .duration;
     this.state.imageClassName = animation.classname();
     this.state.imageStyle = {
       ...this.state.imageStyle,
       ...animation.calcCss(),
     };
-    return Promise.all([
-      sleep(animation.value.duration),
-      sleep(waiting)
-    ]).then(() => {
-      this.state.clearImage();
-    });
+    return Promise.all([sleep(animation.value.duration), sleep(waiting)]).then(
+      () => {
+        this.state.clearImage();
+      },
+    );
   }
 
   private finishTitle(alert: Alert): Promise<void> {
-    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
+      .duration;
     const animation = alert.get("headerDisappearance") as AnimationProperty;
     this.state.headerClassName = animation.classname();
     this.state.headerStyle = animation.calcCss();
-    return Promise.all([
-      sleep(animation.value.duration),
-      sleep(waiting)
-    ]).then(() => this.state.clearTitle());
+    return Promise.all([sleep(animation.value.duration), sleep(waiting)]).then(
+      () => this.state.clearTitle(),
+    );
   }
 
   private finishMessage(alert: Alert): Promise<void> {
-    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value.duration;
+    const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
+      .duration;
     const animation = alert.get("messageDisappearance") as AnimationProperty;
     this.state.messageContainerClassName = animation.classname();
     this.state.messageContainerStyle = animation.calcCss();
-    return Promise.all([
-      sleep(animation.value.duration),
-      sleep(waiting)
-    ]).then(() =>
-      this.state.cleareMessage(),
+    return Promise.all([sleep(animation.value.duration), sleep(waiting)]).then(
+      () => this.state.cleareMessage(),
     );
   }
 

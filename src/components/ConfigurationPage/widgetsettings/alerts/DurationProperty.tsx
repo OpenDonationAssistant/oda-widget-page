@@ -29,7 +29,7 @@ const DurationPropertyComponent = observer(
                   });
                 }}
               />
-              <div>Ограничить</div>
+              <div>Задать</div>
             </Flex>
             {property.value.limited && (
               <InputNumber

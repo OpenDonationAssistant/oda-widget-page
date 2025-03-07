@@ -2,7 +2,6 @@ import { CSSProperties, useContext, useEffect, useRef } from "react";
 import classes from "./AlertImage.module.css";
 import { observer } from "mobx-react-lite";
 import { AlertStateContext } from "../../AlertState";
-import { log } from "../../../../logging";
 
 export const AlertImage = observer(
   ({
@@ -33,7 +32,10 @@ export const AlertImage = observer(
               ref={videoRef}
               autoPlay={true}
               src={state.video}
-              className={classes.alertimage}
+              className={`${classes.alertimage} ${state.imageClassName}`}
+              style={{
+                ...imageStyle,
+              }}
             />
           )}
           {state.image && (

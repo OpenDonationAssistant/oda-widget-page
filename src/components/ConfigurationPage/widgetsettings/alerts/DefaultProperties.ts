@@ -84,13 +84,11 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new DurationProperty({
     name: "imageDuration",
   }),
-  new DefaultWidgetProperty({
+  new WidthProperty({
     name: "imageWidth",
-    value: null,
   }),
-  new DefaultWidgetProperty({
+  new HeightProperty({
     name: "imageHeight",
-    value: null,
   }),
   new NumberProperty({
     name: "audioDelay",

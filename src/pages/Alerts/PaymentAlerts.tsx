@@ -8,8 +8,6 @@ import { AlertImage } from "./sections/AlertImage/AlertImage";
 import { MessageTitle } from "./sections/MessageTitle/MessageTitle";
 import { MessageBody } from "./sections/MessageBody/MessageBody";
 import { observer } from "mobx-react-lite";
-import { reaction } from "mobx";
-import { log } from "../../logging";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -23,7 +21,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
     ...state.totalShadow,
     ...state.totalBackgroundColor,
     ...state.totalBackgroundImage,
-    ...state.totalAnimationDuration
+    ...state.totalAnimationDuration,
   };
 
   return (
@@ -37,7 +35,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={rootStyle}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && <AlertImage />}
+            <AlertImage />
             <div className={classes.message}>
               <MessageTitle />
               <MessageBody />
@@ -57,7 +55,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             <div className={classes.message}>
               <MessageTitle />
             </div>
-            {state.image && <AlertImage />}
+            <AlertImage />
             <div className={classes.message}>
               <MessageBody />
             </div>
@@ -79,7 +77,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             <div className={classes.message}>
               <MessageBody />
             </div>
-            {state.image && <AlertImage />}
+            <AlertImage />
           </Flex>
         </>
       )}
@@ -96,11 +94,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
                 <MessageBody />
               </div>
             </Col>
-            {state.image && (
-              <Col span={12}>
-                <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
-              </Col>
-            )}
+            <Col span={12}>
+              <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
+            </Col>
           </Row>
         </>
       )}
@@ -114,11 +110,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
             </Col>
-            {state.image && (
-              <Col span={8}>
-                <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
-              </Col>
-            )}
+            <Col span={8}>
+              <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
+            </Col>
             <Col span={state.image ? 8 : 12}>
               <MessageBody />
             </Col>
@@ -132,17 +126,15 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <Col span={12}>
-                <AlertImage
-                  imageStyle={{ width: "100%", height: "unset" }}
-                  style={{
-                    width: "100%",
-                    height: "unset",
-                  }}
-                />
-              </Col>
-            )}
+            <Col span={12}>
+              <AlertImage
+                imageStyle={{ width: "100%", height: "unset" }}
+                style={{
+                  width: "100%",
+                  height: "unset",
+                }}
+              />
+            </Col>
             <Col span={state.image ? 12 : 24}>
               <MessageTitle />
               <MessageBody />
@@ -185,11 +177,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
             </Col>
-            {state.image && (
-              <Col span={8}>
-                <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
-              </Col>
-            )}
+            <Col span={8}>
+              <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
+            </Col>
             <Col span={state.image ? 8 : 12}>
               <MessageBody />
             </Col>
@@ -203,11 +193,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <Col span={12}>
-                <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
-              </Col>
-            )}
+            <Col span={12}>
+              <AlertImage imageStyle={{ width: "100%", height: "unset" }} />
+            </Col>
             <Col span={state.image ? 12 : 24}>
               <div>
                 <MessageTitle />
@@ -230,11 +218,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
                 <MessageBody />
               </div>
             </Col>
-            {state.image && (
-              <Col span={12}>
-                <AlertImage />
-              </Col>
-            )}
+            <Col span={12}>
+              <AlertImage />
+            </Col>
           </Row>
         </>
       )}
@@ -248,11 +234,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             <Col span={state.image ? 8 : 12}>
               <MessageTitle />
             </Col>
-            {state.image && (
-              <Col span={8}>
-                <AlertImage />
-              </Col>
-            )}
+            <Col span={8}>
+              <AlertImage />
+            </Col>
             <Col span={state.image ? 8 : 12}>
               <MessageBody />
             </Col>
@@ -266,11 +250,9 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ width: "100%", height: "100%" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <Col span={12}>
-                <AlertImage />
-              </Col>
-            )}
+            <Col span={12}>
+              <AlertImage />
+            </Col>
             <Col span={state.image ? 12 : 24}>
               <MessageTitle />
               <MessageBody />
@@ -286,12 +268,10 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ position: "relative" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <AlertImage
-                style={{ height: "100%", width: "100%" }}
-                imageStyle={{ height: "100%", width: "unset" }}
-              />
-            )}
+            <AlertImage
+              style={{ height: "100%", width: "100%" }}
+              imageStyle={{ height: "100%", width: "unset" }}
+            />
             <div
               className={classes.message}
               style={{
@@ -319,12 +299,10 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ position: "relative" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <AlertImage
-                style={{ height: "100%", width: "100%" }}
-                imageStyle={{ height: "100%", width: "unset" }}
-              />
-            )}
+            <AlertImage
+              style={{ height: "100%", width: "100%" }}
+              imageStyle={{ height: "100%", width: "unset" }}
+            />
             <div
               className={classes.message}
               style={{
@@ -352,12 +330,10 @@ const Alert = observer(({ state }: { state: AlertState }) => {
             style={{ ...{ position: "relative" }, ...rootStyle }}
             className={`${classes.paymentAlerts} ${state.totalClassName}`}
           >
-            {state.image && (
-              <AlertImage
-                style={{ height: "100%", width: "100%" }}
-                imageStyle={{ height: "100%", width: "unset" }}
-              />
-            )}
+            <AlertImage
+              style={{ height: "100%", width: "100%" }}
+              imageStyle={{ height: "100%", width: "unset" }}
+            />
             <div
               className={classes.message}
               style={{
@@ -385,22 +361,20 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           }}
           className={`${state.totalClassName}`}
         >
-          {state.image && (
-            <AlertImage
-              imageStyle={{
-                height: "100%",
-                position: "absolute",
-                top: state.layout.imageStartPoint?.y ?? "0px",
-                left: state.layout.imageStartPoint?.x ?? "0px",
-              }}
-              style={{
-                height: "100%",
-                position: "absolute",
-                top: state.layout.imageStartPoint?.y,
-                left: state.layout.imageStartPoint?.x,
-              }}
-            />
-          )}
+          <AlertImage
+            imageStyle={{
+              height: "100%",
+              position: "absolute",
+              top: state.layout.imageStartPoint?.y ?? "0px",
+              left: state.layout.imageStartPoint?.x ?? "0px",
+            }}
+            style={{
+              height: "100%",
+              position: "absolute",
+              top: state.layout.imageStartPoint?.y,
+              left: state.layout.imageStartPoint?.x,
+            }}
+          />
           <div
             style={{
               position: "absolute",
