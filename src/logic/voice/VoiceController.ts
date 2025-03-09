@@ -38,10 +38,11 @@ export class VoiceController {
 
   playAudio(alert: any): Promise<void | AudioBuffer> {
     const volume = alert.property("audio-volume") ?? 100;
-    return sleep(alert.property("audioDelay")).then(() => {
+    return sleep(alert.property("audioDelay"))
+    .then(() => {
       log.debug({buffer: alert.buffer}, "audio file buffer");
       if (alert.buffer) {
-        this.pronounce(structuredClone(alert.buffer), volume);
+        return this.pronounce(structuredClone(alert.buffer), volume);
       }
     });
   }
