@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AlertController } from "./AlertController";
 import { Col, Flex, Row } from "antd";
 import { AlertState, AlertStateContext } from "./AlertState";
-import FontLoader from "./sections/FontLoader/FontLoader";
+import { FontLoader } from "./sections/FontLoader/FontLoader";
 import { AlertImage } from "./sections/AlertImage/AlertImage";
 import { MessageTitle } from "./sections/MessageTitle/MessageTitle";
 import { MessageBody } from "./sections/MessageBody/MessageBody";
@@ -322,7 +322,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           </Flex>
         </>
       )}
-      {"14" === state.layout.value && (
+      {"15" === state.layout.value && (
         <>
           <Flex
             justify="center"
@@ -353,7 +353,7 @@ const Alert = observer(({ state }: { state: AlertState }) => {
           </Flex>
         </>
       )}
-      {"8" === state.layout.value && (
+      {"16" === state.layout.value && (
         <div
           style={{
             ...{ width: "100%", height: "100%", position: "relative" },
@@ -406,7 +406,7 @@ function PaymentAlerts({
 }) {
   return (
     <AlertStateContext.Provider value={alertController.state}>
-      <FontLoader />
+      <FontLoader state={alertController.state} />
       <Alert state={alertController.state} />
     </AlertStateContext.Provider>
   );

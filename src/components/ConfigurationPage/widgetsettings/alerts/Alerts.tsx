@@ -101,7 +101,7 @@ export class Alert {
   private _image: string | null = null;
   private _video: string | null = null;
   private _triggers: Trigger[] = [DEFAULT_TRIGGER];
-  private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES();
+  private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES(this);
   // TODO: use store
   private _removeFn: Function;
   private _addFn: Function;

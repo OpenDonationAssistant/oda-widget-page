@@ -21,10 +21,28 @@ export class VoiceController {
     this.recipientId = recipientId;
   }
 
+  // TODO: использовать axios
+  private loadAudio(url: string): Promise<ArrayBuffer> {
+    log.debug(`load ${url}`);
+    return fetch(
+      url,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      },
+    )
+      .then((response) => response.arrayBuffer());
+  }
+
   playAudio(alert: any): Promise<void | AudioBuffer> {
     const volume = alert.property("audio-volume") ?? 100;
     return sleep(alert.property("audioDelay")).then(() => {
-      this.pronounce(structuredClone(alert.buffer), volume);
+      log.debug({buffer: alert.buffer}, "audio file buffer");
+      if (alert.buffer) {
+        this.pronounce(structuredClone(alert.buffer), volume);
+      }
     });
   }
 
@@ -48,6 +66,7 @@ export class VoiceController {
     ) {
       return Promise.resolve();
     }
+
     const message = data?.message?.trim();
     const headerForVoice = message
       ? alert.property("voiceTextTemplate")
@@ -68,6 +87,9 @@ export class VoiceController {
       if (resultText.length > 0) {
         return sleep(alert.property("headerVoiceDelay") as number)
           .then(() => {
+            if (data.nickname === "Тестовый алерт"){
+              return this.loadAudio("https://api.oda.digital/public/title.mp3")
+            }
             return this.voiceByGoogle(resultText);
           })
           .then((audio) => {
@@ -90,6 +112,9 @@ export class VoiceController {
 
     return sleep(alert.property("messageVoiceDelay") as number)
       .then(() => {
+        if (data.message === "Тестовое сообщение"){
+          return this.loadAudio("https://api.oda.digital/public/message.mp3")
+        }
         return this.voiceByGoogle(data.message);
       })
       .then((audio) => {
@@ -103,6 +128,10 @@ export class VoiceController {
   ): Promise<void | AudioBuffer> {
     log.debug("trying to pronounce something");
     return new Promise((resolve) => {
+      this.onEndHandler = () => {
+        log.debug("calling resolve");
+        resolve();
+      };
       this.audioCtx.decodeAudioData(
         buffer,
         (buf) => {
@@ -111,10 +140,6 @@ export class VoiceController {
           gainNode.connect(this.audioCtx.destination);
 
           let source = this.audioCtx.createBufferSource();
-          this.onEndHandler = () => {
-            log.debug("calling resolve");
-            resolve();
-          };
           this.playingSource = source;
           source.connect(gainNode);
           source.buffer = buf;

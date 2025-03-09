@@ -83,7 +83,11 @@ export class AlertController {
   }
 
   private async loadImage(image: string): Promise<string> {
-    return fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`, {
+    let url = image;
+    if (!image.startsWith("http")) {
+      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`
+    }
+    return fetch(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
       },
@@ -145,11 +149,17 @@ export class AlertController {
     this.preloadImages();
   }
 
-  // TODO: использовать axios
   private loadAudio(alert: any): Promise<any> {
+    if (!alert.audio) {
+      return Promise.resolve();
+    }
     log.debug(`load ${alert.audio}`);
+    let url = alert.audio;
+    if (!url.startsWith("http")) {
+      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`
+    }
     return fetch(
-      `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`,
+      url,
       {
         method: "GET",
         headers: {
@@ -477,7 +487,7 @@ export class AlertController {
           marginTop: shadowProperty.requiredHeight + "px",
           marginBottom: shadowProperty.requiredHeight + "px",
         };
-        const heightProperty = alert.get("headerWidth") as WidthProperty;
+        const heightProperty = alert.get("headerHeight") as HeightProperty;
         if (heightProperty.value > 0) {
           height = heightProperty.calcCss();
         }

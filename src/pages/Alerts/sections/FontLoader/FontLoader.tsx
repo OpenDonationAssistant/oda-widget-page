@@ -1,10 +1,8 @@
-import { useContext } from "react";
 import FontImport from "../../../../components/FontImport/FontImport";
-import { AlertStateContext } from "../../AlertState";
+import { AlertState } from "../../AlertState";
+import { observer } from "mobx-react-lite";
 
-export default function FontLoader({}) {
-  const state = useContext(AlertStateContext);
-
+export const FontLoader = observer(({ state }: { state: AlertState }) => {
   return (
     <>
       {state.fonts.map((font) => (
@@ -12,5 +10,4 @@ export default function FontLoader({}) {
       ))}
     </>
   );
-
-}
+});

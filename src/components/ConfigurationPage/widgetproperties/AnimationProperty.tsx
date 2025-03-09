@@ -111,6 +111,9 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
   }
 
   public classname(): string {
+    if (this.value.animation === "none") {
+      return "";
+    }
     if (this.value.animation === "random") {
       const choice =
         APPEARANCE_ANIMATIONS[
@@ -125,6 +128,9 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
   }
 
   public calcCss(): CSSProperties {
+    if (!this.value.duration) {
+      return {};
+    }
     return {
       "--animate-duration": `${this.value.duration / 1000}s`,
     };

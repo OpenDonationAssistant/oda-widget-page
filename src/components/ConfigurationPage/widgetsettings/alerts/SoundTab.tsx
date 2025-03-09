@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import Slider from "rc-slider";
 import axios from "axios";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Flex } from "antd";
 import { Alert } from "./Alerts";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
@@ -31,19 +31,61 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   });
 };
 
-function playAudio(url: string | null) {
-  if (!url) {
-    return;
+const audioCtx = new AudioContext();
+
+function loadAudio(name: string): Promise<ArrayBuffer | void> {
+  if (!name) {
+    return Promise.resolve();
   }
-  const audio = new Audio(
-    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${url}`,
-  );
-  audio.play();
+  let url = name;
+  if (!name.startsWith("http")) {
+    url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
+  }
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+  }).then((response) => response.arrayBuffer());
 }
 
+function play(buffer: ArrayBuffer | null) {
+  if (!buffer) {
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => {
+    audioCtx.decodeAudioData(
+      buffer,
+      (buf) => {
+        const gainNode = audioCtx.createGain();
+        gainNode.connect(audioCtx.destination);
+
+        let source = audioCtx.createBufferSource();
+        source.connect(gainNode);
+        source.buffer = buf;
+        source.loop = false;
+        source.start(0);
+        source.addEventListener("ended", () => {
+          resolve();
+        });
+      },
+      (err) => {
+        console.log(err);
+      },
+    );
+  });
+}
 
 export const SoundTab = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
+
+  useEffect(() => {
+    if (alert.audio) {
+      loadAudio(alert.audio).then((buffer) => setBuffer(buffer));
+    }
+  }, [alert.audio]);
+
   return (
     <div className="sound-container">
       {alert.audio && (
@@ -51,9 +93,11 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
           <div className="settings-item">
             <LabeledContainer displayName="Файл">
               <div className="current-sound">
-                <span className="audio-name">{alert.audio}</span>
+                <span className="audio-name">
+                  {alert.audio.replace("https://api.oda.digital/assets/", "")}
+                </span>
                 <span
-                  onClick={() => playAudio(alert.audio)}
+                  onClick={() => play(structuredClone(buffer))}
                   className="material-symbols-sharp"
                 >
                   play_circle
@@ -87,7 +131,13 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       )}
       <div className="audio-button-container">
         {!alert.audio && (
-          <div style={{ textAlign: "center", width: "100%", paddingBottom: "10px" }}>
+          <div
+            style={{
+              textAlign: "center",
+              width: "100%",
+              paddingBottom: "10px",
+            }}
+          >
             <label className="oda-btn-default">
               <input
                 type="file"
