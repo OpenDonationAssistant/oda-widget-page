@@ -1,3 +1,10 @@
 .container {
   margin-top: 20px;
 }
+
+.addbutton {
+  margin-top: 20px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}

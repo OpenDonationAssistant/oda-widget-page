@@ -3,27 +3,41 @@ import classes from "./RuleComponent.module.css";
 import { AutomationRule } from "./AutomationState";
 import { Button, Flex, Select } from "antd";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
+import { useContext } from "react";
+import { AutomationTriggerControllerContext } from "./AutomationTriggerController";
+import { AutomationActionControllerContext } from "./AutomationActionController";
 
 const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
+  const triggerController = useContext(AutomationTriggerControllerContext);
+  const actionController = useContext(AutomationActionControllerContext);
+
   return (
     <>
-      <div className={`${classes.rulename}`}>{rule.name}</div>
+      <Flex className={`${classes.rulename}`} justify="space-between">
+        <Flex>
+          <div>{rule.name}</div>
+          <Button className={`${classes.rename}`}>
+            <span className="material-symbols-sharp">edit</span>
+          </Button>
+        </Flex>
+        <div>
+          <Button className={`${classes.rename}`}>
+            <span className="material-symbols-sharp">delete</span>
+          </Button>
+        </div>
+      </Flex>
       <div className={`${classes.rule}`}>
         <Flex vertical>
           <Flex className={`${classes.ruletrigger}`} vertical gap={10}>
             <LabeledContainer displayName="Условие срабатывания">
               <Select
                 className="full-width"
-                options={[
-                  {
-                    label: "Новый донат",
-                    value: "new-donation",
-                  },
-                  {
-                    label: "Заполнен донатгол",
-                    value: "donationgoal-filled",
-                  },
-                ]}
+                options={triggerController.triggers.map((trigger) => {
+                  return {
+                    label: trigger.name,
+                    value: trigger.id,
+                  };
+                })}
               />
             </LabeledContainer>
             <Flex justify="center">
@@ -39,16 +53,12 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
             <LabeledContainer displayName="Действие">
               <Select
                 className="full-width"
-                options={[
-                  {
-                    label: "Запустить алерт",
-                    value: "run-alert",
-                  },
-                  {
-                    label: "Обновить донатгол",
-                    value: "update-donationgoal",
-                  },
-                ]}
+                options={actionController.actions.map((action) => {
+                  return {
+                    label: action.name,
+                    value: action.id,
+                  };
+                })}
               />
             </LabeledContainer>
             <Flex justify="center">

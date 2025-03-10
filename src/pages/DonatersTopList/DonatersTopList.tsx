@@ -14,21 +14,22 @@ export const DonatersTopList = observer(
     settings: DonatersTopListWidgetSettings;
     store: AbstractDonatersListStore;
   }) => {
-
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
       settings.backgroundImage.calcCss().then(setBackgroundImage);
-    },[settings.backgroundImage.value]);
+    }, [settings.backgroundImage.value]);
 
-    const [headerBackgroundImage, setHeaderBackgroundImage] = useState<CSSProperties>({});
+    const [headerBackgroundImage, setHeaderBackgroundImage] =
+      useState<CSSProperties>({});
     useEffect(() => {
       settings.headerBackgroundImage.calcCss().then(setHeaderBackgroundImage);
-    },[settings.headerBackgroundImage.value]);
+    }, [settings.headerBackgroundImage.value]);
 
-    const [listBackgroundImage, setListBackgroundImage] = useState<CSSProperties>({});
+    const [listBackgroundImage, setListBackgroundImage] =
+      useState<CSSProperties>({});
     useEffect(() => {
       settings.listBackgroundImage.calcCss().then(setListBackgroundImage);
-    },[settings.listBackgroundImage.value]);
+    }, [settings.listBackgroundImage.value]);
 
     const topsize = settings.topsize;
     const layout = settings.layout;
@@ -131,10 +132,14 @@ export const DonatersTopList = observer(
               ...settings.itemBackgroundImage.calcCss(), // TODO: fix it
               ...{ lineHeight: "1.5" },
             }}
-            className={`${messageFont.calcClassName()}`}
           >
-            {donater} - {donaters.get(donater).major}
-            {` \u20BD`}
+            <div
+              style={messageFont.calcStyle()}
+              className={`${messageFont.calcClassName()}`}
+            >
+              {donater} - {donaters.get(donater).major}
+              {` \u20BD`}
+            </div>
           </div>
         ));
         packs[packs.length] = label;
