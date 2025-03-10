@@ -1,0 +1,37 @@
+.rule {
+  margin-bottom: 5px;
+  padding-top: 8px;
+  margin-left: 10px;
+  margin-right: 10px;
+  background-color: var(--oda-panel-background-color);
+  color: var(--oda-main-text-color);
+  border-radius: 5px;
+  border: 1px solid rgb(43, 53, 102);
+}
+
+.rulebody {
+  color: rgb(180, 197, 228);
+  font-size: 19px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+  background-color: rgb(43, 53, 102);
+  user-select: text;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.rulename {
+  font-size: 19px;
+}
+
+.ruletrigger {
+  font-size: 19px;
+  padding-bottom: 8px;
+}
+
+.add {
+  background-color: transparent!important;
+  color: var(--oda-secondary-text-color)!important;
+  box-shadow: none!important;
+  border: none!important;
+}

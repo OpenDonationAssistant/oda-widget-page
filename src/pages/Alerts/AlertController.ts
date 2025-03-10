@@ -416,6 +416,7 @@ export class AlertController {
         }
 
         log.debug({ width: width, height: height }, "rendering image");
+        this.state.imageBackgroundBlur = alert.property("imageBackgroundBlur");
 
         this.state.imageStyle = {
           ...width,

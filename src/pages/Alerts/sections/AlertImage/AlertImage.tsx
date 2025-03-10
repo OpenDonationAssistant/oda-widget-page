@@ -40,7 +40,7 @@ export const AlertImage = observer(
           )}
           {state.image && (
             <>
-              {!state.totalClassName && (
+              {!state.totalClassName && state.imageBackgroundBlur && (
                 <img
                   src={state.image}
                   className={`${state.imageClassName} ${classes.imageoverlay}`}

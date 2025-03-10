@@ -42,6 +42,8 @@ import DonatersTopListPage from "./pages/DonatersTopList/DonatersTopListPage";
 import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
+import AutomationPage from "./pages/Automation/AutomationPage";
+import { AutomationState } from "./pages/Automation/AutomationState";
 
 async function widgetSettingsLoader({
   params,
@@ -95,6 +97,9 @@ function detectPage(path: string): Page {
   if (path.endsWith("history-page")) {
     return Page.HISTORY;
   }
+  if (path.endsWith("automation-page")) {
+    return Page.AUTOMATION;
+  }
   return Page.WIDGETS;
 }
 
@@ -146,6 +151,11 @@ const router = createBrowserRouter([
       {
         path: "history-page",
         element: <HistoryPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "automation-page",
+        element: <AutomationPage state={new AutomationState()} />,
         loader: widgetSettingsLoader,
       },
     ],

@@ -24,6 +24,7 @@ export class AlertState {
   private _totalShadow: CSSProperties = {};
   private _image: string | null = null;
   private _video: string | null = null;
+  private _imageBackgroundBlur = false;
   private _imageStyle: CSSProperties = {};
   private _imageShadowStyle: CSSProperties = {};
   private _imageClassName: string = "";
@@ -361,14 +362,21 @@ export class AlertState {
     return toJS(this._headerStyle);
   }
 
-  public set messageContainerStyle(style: CSSProperties){
+  public set messageContainerStyle(style: CSSProperties) {
     this._messageContainerStyle = style;
   }
 
-  public get messageContainerStyle(){
+  public get messageContainerStyle() {
     return toJS(this._messageContainerStyle);
   }
 
+  public get imageBackgroundBlur(): boolean {
+    return this._imageBackgroundBlur;
+  }
+
+  public set imageBackgroundBlur(blur: boolean) {
+    this._imageBackgroundBlur = blur;
+  }
 }
 
 export const AlertStateContext = createContext(new AlertState());

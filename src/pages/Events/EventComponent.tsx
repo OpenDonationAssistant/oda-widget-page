@@ -18,7 +18,7 @@ export default function EventComponent({
 }) {
   const { conf } = useLoaderData() as WidgetData;
   const settings = useContext(PaymentsWidgetSettingsContext);
-  const { publish, subscribe } = useContext(WidgetSettingsContext);
+  const { publish } = useContext(WidgetSettingsContext);
 
   const musicFont = settings.musicFontProperty;
   const musicStyle = musicFont.calcStyle();

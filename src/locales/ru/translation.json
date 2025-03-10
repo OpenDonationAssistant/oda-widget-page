@@ -2,6 +2,7 @@
   "menu-widgets": "Виджеты",
   "menu-history": "История",
   "menu-payment-page-config": "Страница доната",
+  "menu-automation": "Автоматизация",
   "button-font": "Шрифт",
   "button-font-size": "Размер шрифта",
   "button-shadow-size": "Радиус блюра тени",
@@ -13,6 +14,7 @@
   "button-edit-playlist-name": "Название плейлиста",
   "button-text-color": "Цвет текста",
   "button-addwidget": "Добавить виджет",
+  "button-add-automation-rule": "Добавить правило",
   "button-spin": "Крутить",
   "button-testalert": "Тест",
   "button-save": "Сохранить",
@@ -255,5 +257,12 @@
   "appearance-animation": "Анимация появления",
   "duration": "Длительность отображения",
   "animation-duration": "Длительность анимации",
-  "Layout": "Компоновка"
+  "Layout": "Компоновка",
+  "image-background-blur": "Блюр оставшегося фона изображением",
+  "widget-alert-header-start-point-y": "Смещение по высоте для заголовка",
+  "widget-alert-header-start-point-x": "Смещение по горизонтали для заголовка",
+  "widget-alert-image-start-point-x":"Смещение по горизонтали для изображения",
+  "widget-alert-image-start-point-y":"Смещение по вертикали для изображения",
+  "widget-alert-message-start-point-x":"Смещение по горизонтали для сообщения",
+  "widget-alert-message-start-point-y":"Смещение по вертикали для сообщения"
 }

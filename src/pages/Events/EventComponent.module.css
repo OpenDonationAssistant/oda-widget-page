@@ -6,7 +6,6 @@
   color: var(--oda-main-text-color);
   border-radius: 5px;
   border: 1px solid rgb(43, 53, 102);
-  box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.5);
   &[class*="active"] {
     border-color: var(--oda-secondary-text-color);
     box-shadow: 0px 0px 2px 2px var(--oda-main-text-color);
@@ -48,9 +47,7 @@
 	padding-left: 10px;
 	padding-right: 15px;
 	padding-top: 3px;
-  border-top: var(--oda-main-border);
   background-color: rgb(43, 53, 102);
-  box-shadow: 0 -10px 10px 1px rgba(0, 0, 0, 0.5);
   user-select: text;
 }
 

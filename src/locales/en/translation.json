@@ -2,8 +2,10 @@
   "menu-widgets": "Widgets",
   "menu-history": "History",
   "menu-payment-page-config": "Donation Page",
+  "menu-automation": "Automation",
   "button-text-color": "Text color",
   "button-addwidget": "Add widget",
+  "button-add-automation-rule": "Add rule",
   "button-spin": "Spin",
   "button-testalert": "Test",
   "button-save": "Save",
@@ -254,5 +256,12 @@
   "appearance-animation": "Appearance animation",
   "duration": "Display duration",
   "animation-duration": "Animation duration",
-  "Layout": "Layout"
+  "Layout": "Layout",
+  "image-background-blur": "Background blur",
+  "widget-alert-header-start-point-y": "Y offset for header",
+  "widget-alert-header-start-point-x": "X offset for header",
+  "widget-alert-image-start-point-x":"X offset for image",
+  "widget-alert-image-start-point-y":"Y offset for image",
+  "widget-alert-message-start-point-x":"X offset for message",
+  "widget-alert-message-start-point-y":"Y offset for message"
 }

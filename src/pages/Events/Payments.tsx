@@ -4,8 +4,6 @@ import { useLoaderData, useNavigate } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import {
-  cleanupCommandListener,
-  setupCommandListener,
   subscribe,
   unsubscribe,
 } from "../../socket";
@@ -76,7 +74,6 @@ const Collapse = ({
 };
 
 export default function Payments({}: {}) {
-  const navigate = useNavigate();
   const [active, setActive] = useState("");
   const [dateToPaymentsMap, setDateToPaymentsMap] = useState(new Map());
   const [todayPayments, setTodayPayments] = useState([]);
@@ -141,7 +138,6 @@ export default function Payments({}: {}) {
       .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
       .then((data) => data.data)
       .then((json) => {
-        // let updatedDateToPaymentsMap = dateToPaymentsMap;
         let updatedDateToPaymentsMap = new Map();
         const today = dateTimeFormat.format(Date.now());
         updatedDateToPaymentsMap.set(today, []);

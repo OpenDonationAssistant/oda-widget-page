@@ -14,6 +14,7 @@ import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { DurationProperty } from "./DurationProperty";
 import classes from "./ImageTab.module.css";
+import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -180,6 +181,9 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               </div>
             </>
           )}
+          <div className="settings-item">
+            {(alert.get("imageBackgroundBlur") as BooleanProperty).markup()}
+          </div>
           <div className="settings-item">
             {(alert.get("imageAppearanceDelay") as NumberProperty).markup()}
           </div>

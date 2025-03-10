@@ -81,6 +81,11 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new BoxShadowProperty({
     name: "totalShadow",
   }),
+  new BooleanProperty({
+    name: "imageBackgroundBlur",
+    value: false,
+    displayName: "image-background-blur"
+  }),
   new DurationProperty({
     name: "imageDuration",
   }),
