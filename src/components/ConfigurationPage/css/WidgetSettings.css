@@ -474,6 +474,7 @@ div.payment-alert-image-preview {
 
 .configuration-container .ant-descriptions-item-content {
   color: white;
+  user-select: text;
 }
 
 .configuration-container
