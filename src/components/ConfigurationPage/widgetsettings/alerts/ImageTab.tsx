@@ -15,6 +15,7 @@ import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { DurationProperty } from "./DurationProperty";
 import classes from "./ImageTab.module.css";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
+import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -190,6 +191,11 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
           <div className="settings-item">
             {(alert.get("imageDuration") as DurationProperty).markup()}
           </div>
+          {alert.video && (
+            <div className="settings-item">
+              {(alert.get("imageVolume") as VolumeProperty).markup()}
+            </div>
+          )}
           <div className="settings-item">
             {(alert.get("imageAppearance") as AnimationProperty).markup()}
           </div>
