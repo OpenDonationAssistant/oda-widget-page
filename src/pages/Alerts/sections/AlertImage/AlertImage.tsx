@@ -29,6 +29,11 @@ export const AlertImage = observer(
         >
           {state.video && (
             <video
+              onLoadStart={() => {
+                if (videoRef.current) {
+                  videoRef.current.volume = state.imageVolume / 100;
+                }
+              }}
               ref={videoRef}
               autoPlay={true}
               src={state.video}

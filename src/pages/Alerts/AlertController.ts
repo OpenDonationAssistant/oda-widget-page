@@ -19,6 +19,7 @@ import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetp
 import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
+import { VolumeProperty } from "../../components/ConfigurationPage/widgetproperties/VolumeProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -393,6 +394,7 @@ export class AlertController {
         }
 
         const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
+        this.state.imageVolume = alert.property("imageVolume");
 
         let width: CSSProperties = {
           width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,

@@ -89,6 +89,9 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new DurationProperty({
     name: "imageDuration",
   }),
+  new VolumeProperty({
+    name: "imageVolume",
+  }),
   new WidthProperty({
     name: "imageWidth",
   }),

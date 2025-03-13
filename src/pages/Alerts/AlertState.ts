@@ -26,6 +26,7 @@ export class AlertState {
   private _video: string | null = null;
   private _imageBackgroundBlur = false;
   private _imageStyle: CSSProperties = {};
+  private _imageVolume: number = 100;
   private _imageShadowStyle: CSSProperties = {};
   private _imageClassName: string = "";
   private _showMessage: boolean = true;
@@ -376,6 +377,14 @@ export class AlertState {
 
   public set imageBackgroundBlur(blur: boolean) {
     this._imageBackgroundBlur = blur;
+  }
+
+  public get imageVolume(){
+    return this._imageVolume;
+  }
+
+  public set imageVolume(volume: number){
+    this._imageVolume = volume;
   }
 }
 
