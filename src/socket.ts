@@ -56,7 +56,7 @@ function unsubscribe(id: string, topic: string) {
 
 function setupCommandListener(widgetId: string, reloadFn: Function) {
   subscribe(widgetId, "/topic/commands", (message) => {
-    console.log(`Command: ${message.body}`);
+    log.debug({command: message.body}, `Received widget command`);
     let json = JSON.parse(message.body);
     if (json.id === widgetId || json.id === "all") {
       if (json.command === "reload") {

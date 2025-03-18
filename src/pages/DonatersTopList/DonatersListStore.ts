@@ -38,10 +38,8 @@ export class DonatersListStore implements AbstractDonatersListStore {
   ) {
     log.debug("create subscription");
     subscribe(widgetId, topic, (message: any) => {
-      setTimeout(() => {
-        this.updateDonaters(period, type);
-        message.ack();
-      }, 3000);
+      this.updateDonaters(period, type);
+      message.ack();
     });
     this.updateDonaters(period, type);
   }

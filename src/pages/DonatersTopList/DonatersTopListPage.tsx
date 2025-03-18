@@ -19,7 +19,7 @@ export default function DonatersTopListPage({}) {
     recipientId,
     widgetSettings.period,
     widgetSettings.type,
-    conf.topic.alerts,
+    conf.topic.donaterstoplist,
   );
 
   return (
