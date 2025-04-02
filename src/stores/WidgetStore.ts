@@ -3,12 +3,22 @@ import { Widget } from "../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { produce } from "immer";
+import { createContext } from "react";
 
 export class WidgetStore {
-  public list: Widget[] = [];
+  private _list: Widget[] = [];
 
   constructor() {
+    this.load();
     makeAutoObservable(this);
+  }
+
+  public get list() {
+    return this._list;
+  }
+
+  public search({ type }: { type?: string }) {
+    return this.list.filter(widget => widget.type === type);
   }
 
   private client() {
@@ -18,24 +28,27 @@ export class WidgetStore {
     );
   }
 
-  public async load(): Promise<void> {
-    const response = await this.client().list();
-    this.list = response.data
-      .sort((a, b) => {
-        if (a.sortOrder === undefined && b.sortOrder === undefined) {
-          return 0;
-        }
-        if (a.sortOrder === undefined) {
-          return 1;
-        }
-        if (b.sortOrder === undefined) {
-          return -1;
-        }
-        return a.sortOrder - b.sortOrder;
-      })
-      .flatMap((widget) => {
-        const created = Widget.fromJson(widget, this);
-        return created ? [created] : [];
+  private load(): Promise<void> {
+    return this.client()
+      .list()
+      .then((response) => {
+        this._list = response.data
+          .sort((a, b) => {
+            if (a.sortOrder === undefined && b.sortOrder === undefined) {
+              return 0;
+            }
+            if (a.sortOrder === undefined) {
+              return 1;
+            }
+            if (b.sortOrder === undefined) {
+              return -1;
+            }
+            return a.sortOrder - b.sortOrder;
+          })
+          .flatMap((widget) => {
+            const created = Widget.fromJson(widget, this);
+            return created ? [created] : [];
+          });
       });
   }
 
@@ -49,7 +62,7 @@ export class WidgetStore {
   }
 
   async deleteWidget(id: string): Promise<void> {
-    this.list = this.list.filter((widget) => widget.id !== id);
+    this._list = this.list.filter((widget) => widget.id !== id);
     await this.client()._delete(id);
   }
 
@@ -59,9 +72,11 @@ export class WidgetStore {
       draft.splice(originIndex, 1);
       draft.splice(index, 0, widget!);
     });
-    this.list = otherWidgets;
+    this._list = otherWidgets;
     await this.client().reorder({
-      ids: this.list.map((widget) => widget.id)
-    })
+      ids: this.list.map((widget) => widget.id),
+    });
   }
 }
+
+export const WidgetStoreContext = createContext<WidgetStore | null>(null);

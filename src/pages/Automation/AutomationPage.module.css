@@ -1,10 +1,105 @@
+.content {
+  padding-top: 15px;
+  border-radius: 16px;
+  background-color: #101012;
+}
+
 .container {
-  margin-top: 20px;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.rulecontainer {
+  background-color: #1b1b1f;
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.variablecontainer {
+  background-color: #1B1B1F;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  padding: 19px 24px 23px 24px;
+  align-items: center;
+  height: 72px;
 }
 
 .addbutton {
-  margin-top: 20px;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  font-size: 15px;
+  color: #b2d4fb;
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+.section {
+  font-family: "Play";
+  font-size: 20px;
+  border-bottom: 1px solid var(--oda-secondary-text-color);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.rulename {
+  font-size: 24px;
+  color: white;
+}
+
+.variablename {
+  font-family: "Play";
+  font-size: 20px;
+}
+
+.variabletype {
+  font-family: "Play";
+  font-size: 20px;
+}
+
+.delete {
+  padding: 0px !important;
+  background-color: transparent !important;
+  box-shadow: none!important;
+  border: 1px solid #36363d!important;
+  width: 27px;
+  height: 27px;
+}
+
+.deletevariable {
+  width: 48px;
+  height: 48px;
+  background-color: #231717;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rename {
+  width: 27px;
+  height: 27px;
+  background-color: transparent !important;
+  color: var(--oda-secondary-text-color) !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 3px!important;
+}
+
+.variablevalue {
+  flex-grow: 2;
+  max-width: 50%;
+}
+
+.variablesectionname {
+  font-size: 15px;
+}
+
+.variabletab {
+  margin-top: 60px;
 }

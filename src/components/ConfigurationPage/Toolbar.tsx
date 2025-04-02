@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import classes from "./Toolbar.module.css";
+import style from "./Toolbar-theme-2.module.css";
 
 enum Page {
   WIDGETS,
@@ -8,6 +9,8 @@ enum Page {
   PAYMENTPAGE,
   HISTORY,
   AUTOMATION,
+  GUIDES,
+  INTEGRATIONS,
 }
 
 interface Section {
@@ -36,23 +39,37 @@ const buttons: Section[] = [
     symbol: "local_atm",
     label: "menu-payment-page-config",
   },
-  // {
-  //   page: Page.AUTOMATION,
-  //   url: "/configuration/automation-page",
-  //   symbol: "automation",
-  //   label: "menu-automation",
-  // },
+  //{
+  //  page: Page.INTEGRATIONS,
+  //  url: "/configuration/integrations",
+  //  symbol: "webhook",
+  //  label: "menu-integrations",
+  //},
+  {
+    page: Page.AUTOMATION,
+    url: "/configuration/automation-page",
+    symbol: "precision_manufacturing",
+    label: "menu-automation",
+  },
+  //{
+  //  page: Page.GUIDES,
+  //  url: "/configuration/guides",
+  //  symbol: "developer_guide",
+  //  label: "menu-guides",
+  //},
 ];
 
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (
-    <div className={`${classes.toolbar}`}>
+    <div
+      className={`${page === Page.AUTOMATION ? style.toolbar : classes.toolbar}`}
+    >
       {buttons.map((button) => (
         <button
           key={button.label}
-          className={`${classes.toolbarbutton} ${
+          className={`${page === Page.AUTOMATION ? style.button : classes.toolbarbutton} ${
             page === button.page ? "selected" : "inactive"
           }`}
           onClick={() => navigate(button.url)}

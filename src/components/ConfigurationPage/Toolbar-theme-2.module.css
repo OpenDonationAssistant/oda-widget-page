@@ -1,0 +1,26 @@
+.toolbar {
+  width: 320px!important;
+}
+
+.button {
+  border-radius: 12px;
+  background-color: #101012;
+  border: none;
+  height: 48px;
+  min-width: 318px;
+  text-align: left;
+  margin-bottom: 3px;
+  font-size: 18px;
+  color: #707080;
+  & [class*="material-symbols-sharp"] {
+    vertical-align: bottom;
+  }
+
+  &[class*="inactive"]:hover {
+    color: #707080;
+  }
+
+  &[class*="selected"] {
+    color: #B2D4FB;
+  }
+}

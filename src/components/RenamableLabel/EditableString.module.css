@@ -1,0 +1,15 @@
+.variablename{
+  font-family: 'Play';
+  font-size: 24px;
+}
+
+.rename {
+  background-color: transparent!important;
+  color: var(--oda-secondary-text-color)!important;
+  box-shadow: none!important;
+  border: none!important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+

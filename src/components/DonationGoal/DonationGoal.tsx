@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
 import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
@@ -7,6 +7,7 @@ import { AbstractDonationGoalState } from "./DonationGoalState";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { log } from "../../logging";
+import { VariableStoreContext } from "../../stores/VariableStore";
 
 export const DonationGoal = observer(
   ({
@@ -16,6 +17,8 @@ export const DonationGoal = observer(
     state: AbstractDonationGoalState;
     settings: DonationGoalWidgetSettings;
   }) => {
+    const variables = useContext(VariableStoreContext);
+
     const [innerBackgroundImage, setInnerBackgroundImage] =
       useState<CSSProperties>({});
     const [outerBackgroundImage, setOuterBackgroundImage] =
@@ -40,7 +43,10 @@ export const DonationGoal = observer(
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
-    const outerHeight = {...{ minHeight: "50px"},...settings.outerHeight.calcCss()};
+    const outerHeight = {
+      ...{ minHeight: "50px" },
+      ...settings.outerHeight.calcCss(),
+    };
     const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
     const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
     useEffect(() => {
@@ -83,7 +89,8 @@ export const DonationGoal = observer(
 
     function calcBarStyle(goal: Goal) {
       const filment = Math.floor(
-        ((goal.accumulatedAmount?.major ?? 0) / goal.requiredAmount.major) * 100,
+        ((goal.accumulatedAmount?.major ?? 0) / goal.requiredAmount.major) *
+          100,
       );
       const style: CSSProperties = {
         width: `${filment < 100 ? filment + "%" : "unset"}`,
@@ -132,7 +139,7 @@ export const DonationGoal = observer(
       return goal.id;
     });
 
-    log.debug({ids: ids, state: state.goals.map((goal) => goal.id)}, "ids")
+    log.debug({ ids: ids, state: state.goals.map((goal) => goal.id) }, "ids");
 
     return (
       <div
@@ -182,7 +189,7 @@ export const DonationGoal = observer(
                         style={{ zIndex: 2, opacity: 1 }}
                         className={`${titleFont.calcClassName()}`}
                       >
-                        {goal.briefDescription}
+                        {variables.processTemplate(goal.briefDescription)}
                       </div>
                     </div>
                   </Flex>
@@ -216,7 +223,10 @@ export const DonationGoal = observer(
                   <div
                     style={{
                       ...calcBarStyle(goal),
-                      ...{...{ minHeight: "50px"},...settings.filledHeight.calcCss()},
+                      ...{
+                        ...{ minHeight: "50px" },
+                        ...settings.filledHeight.calcCss(),
+                      },
                     }}
                     className={`${classes.goalfilled}`}
                   ></div>
@@ -232,7 +242,8 @@ export const DonationGoal = observer(
                         classes.goalamount
                       } ${amountFont.calcClassName()}`}
                     >
-                      {labelTemplate
+                      {variables
+                        .processTemplate(labelTemplate)
                         .replaceAll(
                           "<collected>",
                           `${goal.accumulatedAmount?.major ?? 0}`,

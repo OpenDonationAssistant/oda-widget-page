@@ -96,6 +96,31 @@
   }
 }
 
+/* .ant-tabs-top { */
+/*   margin-left: 10px; */
+/*   margin-right: 10px; */
+/* } */
+/**/
+/* .ant-tabs-top >.ant-tabs-nav .ant-tabs-ink-bar { */
+/*   background: var(--oda-secondary-text-color); */
+/* } */
+/**/
+/* .ant-tabs .ant-tabs-tab-btn { */
+/*   color: var(--oda-secondary-text-color); */
+/*   font-family: 'Play'; */
+/*   font-size: 18px; */
+/* } */
+/**/
+/* .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn { */
+/*   color: var(--oda-secondary-text-color); */
+/*   font-family: 'Play'; */
+/*   font-size: 18px; */
+/* } */
+/* .ant-tabs-top >.ant-tabs-nav::before { */
+/*   border-color: var(--oda-secondary-text-color); */
+/*   border-color: var(--oda-main-background-color); */
+/* } */
+/**/
 .ant-tabs.ant-tabs-card {
   flex: 1 1 auto;
   font-family: "Play";
@@ -129,6 +154,7 @@
 
         &.ant-tabs-tab-active {
           background-color: var(--oda-panel-backgroun-color);
+          /* background-color: var(--oda-label-background-color); */
           border-bottom: none;
           border-left: 1px solid #684aff;
           border-right: 1px solid #684aff;
@@ -143,6 +169,7 @@
 
   & .ant-tabs-content-holder {
     background: var(--oda-panel-backgroun-color);
+    /* background: none; */
     border-radius: 3px;
     border: none;
   }

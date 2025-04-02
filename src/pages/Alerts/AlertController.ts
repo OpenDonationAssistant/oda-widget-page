@@ -86,7 +86,7 @@ export class AlertController {
   private async loadImage(image: string): Promise<string> {
     let url = image;
     if (!image.startsWith("http")) {
-      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`
+      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${image}`;
     }
     return fetch(url, {
       headers: {
@@ -157,17 +157,14 @@ export class AlertController {
     log.debug(`load ${alert.audio}`);
     let url = alert.audio;
     if (!url.startsWith("http")) {
-      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`
+      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`;
     }
-    return fetch(
-      url,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
       },
-    )
+    })
       .then((response) => response.arrayBuffer())
       .then((buffer) => {
         alert.buffer = buffer;
@@ -414,7 +411,7 @@ export class AlertController {
 
         const heightProperty = alert.get("imageHeight") as HeightProperty;
         if (heightProperty.value > 0) {
-          height = {...heightProperty.calcCss(),...{ flexGrow: 0 }};
+          height = { ...heightProperty.calcCss(), ...{ flexGrow: 0 } };
         }
 
         log.debug({ width: width, height: height }, "rendering image");

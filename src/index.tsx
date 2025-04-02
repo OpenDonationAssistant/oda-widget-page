@@ -43,7 +43,12 @@ import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
-import { AutomationState } from "./pages/Automation/AutomationState";
+import {
+  AutomationState,
+  AutomationStateContext,
+} from "./pages/Automation/AutomationState";
+import { GuidesPage } from "./pages/Guides/GuidesPage";
+import { WidgetStore, WidgetStoreContext } from "./stores/WidgetStore";
 
 async function widgetSettingsLoader({
   params,
@@ -100,6 +105,9 @@ function detectPage(path: string): Page {
   if (path.endsWith("automation-page")) {
     return Page.AUTOMATION;
   }
+  if (path.indexOf("guides") > 0) {
+    return Page.GUIDES;
+  }
   return Page.WIDGETS;
 }
 
@@ -110,23 +118,27 @@ function ConfigurationPageTemplate() {
   return (
     <>
       {backgroundColor}
-      <Layout>
+      <Flex vertical>
         <AntHeader>
           <Header />
         </AntHeader>
-        <Layout>
-          <Sider>
-            <Toolbar page={page} />
-          </Sider>
-          <Flex style={{ height: "100vh" }} className="full-width" vertical>
+        <Flex>
+          <Toolbar page={page} />
+          <Flex
+            style={{ marginLeft: "24px", width: "100%", marginRight: "24px" }}
+            className="full-width"
+          >
             <NewsComponent />
             <Outlet />
           </Flex>
-        </Layout>
-      </Layout>
+          <div style={{ width: "320px", flexGrow: "0", marginRight: "18px" }}/>
+        </Flex>
+      </Flex>
     </>
   );
 }
+
+const widgetStore = new WidgetStore();
 
 const router = createBrowserRouter([
   {
@@ -140,7 +152,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "widgets",
-        element: <ConfigurationPage />,
+        element: (
+          <WidgetStoreContext.Provider value={widgetStore}>
+            <ConfigurationPage />
+          </WidgetStoreContext.Provider>
+        ),
         loader: widgetSettingsLoader,
       },
       {
@@ -155,7 +171,18 @@ const router = createBrowserRouter([
       },
       {
         path: "automation-page",
-        element: <AutomationPage state={new AutomationState()} />,
+        element: (
+          <WidgetStoreContext.Provider value={widgetStore}>
+            <AutomationStateContext.Provider value={new AutomationState(true)}>
+              <AutomationPage />
+            </AutomationStateContext.Provider>
+          </WidgetStoreContext.Provider>
+        ),
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "guides",
+        element: <GuidesPage />,
         loader: widgetSettingsLoader,
       },
     ],
@@ -241,9 +268,6 @@ if (rootElement) {
   root.render(
     <ConfigProvider
       theme={{
-        token: {
-          borderRadius: 8,
-        },
         algorithm: theme.darkAlgorithm,
       }}
     >

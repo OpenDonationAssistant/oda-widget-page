@@ -6,6 +6,7 @@ import { DonationGoal } from "../../components/DonationGoal/DonationGoal";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { DonationGoalState } from "../../components/DonationGoal/DonationGoalState";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
+import { DefaultVariableStore, VariableStoreContext } from "../../stores/VariableStore";
 
 export default function DonatonPage({}) {
   const { widgetId, conf, recipientId, settings } =
@@ -23,7 +24,9 @@ export default function DonatonPage({}) {
 
   return (
     <WidgetWrapper>
-      <DonationGoal settings={donationGoalSettings} state={state} />
+      <VariableStoreContext.Provider value={new DefaultVariableStore()}>
+        <DonationGoal settings={donationGoalSettings} state={state} />
+      </VariableStoreContext.Provider>
     </WidgetWrapper>
   );
 }

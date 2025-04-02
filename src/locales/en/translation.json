@@ -3,6 +3,8 @@
   "menu-history": "History",
   "menu-payment-page-config": "Donation Page",
   "menu-automation": "Automation",
+  "menu-guides":"Guides",
+  "menu-integrations": "Integrations",
   "button-text-color": "Text color",
   "button-addwidget": "Add widget",
   "button-add-automation-rule": "Add rule",
@@ -263,5 +265,7 @@
   "widget-alert-image-start-point-x":"X offset for image",
   "widget-alert-image-start-point-y":"Y offset for image",
   "widget-alert-message-start-point-x":"X offset for message",
-  "widget-alert-message-start-point-y":"Y offset for message"
+  "widget-alert-message-start-point-y":"Y offset for message",
+  "button-add-variable-rule":"Add variable",
+  "button-add-number-variable-rule":"Add number variable"
 }

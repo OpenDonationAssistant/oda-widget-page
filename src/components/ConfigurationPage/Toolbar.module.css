@@ -1,6 +1,7 @@
 .toolbar {
   height: 100%;
   padding-top: 10px;
+  width: 400px!important;
 
   & [class*="material-symbols-sharp"] {
     vertical-align: bottom;

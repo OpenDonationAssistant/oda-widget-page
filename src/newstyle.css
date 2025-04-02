@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  font-family: Play;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+button.ant-btn.ant-btn-default {
+  min-height: unset;
+}
+
+.newstyle {
+  & .oda-btn-default {
+    height: 48px;
+    border-radius: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

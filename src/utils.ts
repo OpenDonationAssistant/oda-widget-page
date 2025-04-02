@@ -1,4 +1,4 @@
-import { log } from "./logging";
+import { ReactNode } from "react";
 
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -14,4 +14,8 @@ export const delay = (ms: number) => {
 
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export interface Renderable{
+  markup: ReactNode;
 }

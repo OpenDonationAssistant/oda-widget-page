@@ -3,7 +3,6 @@ import {
   FontDto,
 } from "@opendonationassistant/oda-font-service-client";
 import { createContext } from "react";
-import { log } from "../logging";
 
 export class FontStore {
   private _fonts: FontDto[] = [];

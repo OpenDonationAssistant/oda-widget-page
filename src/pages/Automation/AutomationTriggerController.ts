@@ -1,23 +1,18 @@
 import { createContext } from "react";
 import { AutomationTrigger } from "./AutomationState";
+import { FilledDonationGoalTrigger } from "./AutomationTrigger/FilledDonationGoalTrigger";
+import { Renderable } from "../../utils";
 
 export class AutomationTriggerController {
-
-  private _triggers: AutomationTrigger[] = [
-    {
-      id: "new-donation",
-      name: "Новый донат"
-    },
-    {
-      id: "donationgoal-filled",
-      name: "Заполнен донатгол"
-    }
-  ];
-
-  public get triggers() {
-    return this._triggers;
+  public get triggers(): (AutomationTrigger & Renderable)[] {
+    return [new FilledDonationGoalTrigger()];
   }
 
+  public get(id: string) {
+    return this.triggers.filter((trigger) => trigger.id === id).at(0);
+  }
 }
 
-export const AutomationTriggerControllerContext = createContext(new AutomationTriggerController());
+export const AutomationTriggerControllerContext = createContext(
+  new AutomationTriggerController(),
+);

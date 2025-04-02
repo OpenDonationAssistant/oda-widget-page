@@ -1,0 +1,105 @@
+.ant-layout-header {
+  height: 66px;
+  padding-left: 0px;
+  padding-right: 0px;
+  background: unset;
+}
+
+.newstyle {
+  & .ant-input {
+    border: 1px solid #36363D;
+    border-radius: 9px;
+    font-family: "Play";
+    font-size: 15px;
+    padding: 14px 18px 15px 18px;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  & .ant-input-number {
+    border: none;
+    font-size: 15px;
+    outline: none!important;
+    box-shadow: none;
+  }
+  &.ant-layout-content {
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 12px;
+  }
+
+  & .ant-tabs.ant-tabs-card {
+    & .ant-tabs-content-holder {
+      background: none;
+    }
+  }
+
+  & .ant-tabs.ant-tabs-card {
+    &.ant-tabs-top {
+      & .ant-tabs-nav {
+        background: none;
+        &::before {
+          border-bottom: none;
+          z-index: 0;
+        }
+        & .ant-tabs-tab {
+          background: none;
+          border-radius: 49px;
+          border: 1px solid #36363d;
+          margin-right: 9px;
+          & .ant-tabs-tab-btn {
+            color: #a6a6bd;
+          }
+          &.ant-tabs-tab-active {
+            border: 1px solid #b2d4fb;
+            & .ant-tabs-tab-btn {
+              color: #b2d4fb;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  & .ant-select {
+    &.ant-select-outlined {
+      height: 48px;
+      border: 1px solid #36363D;
+      & .ant-select-selection-item {
+        padding: 12px 15px;
+        text-align: left;
+        font-size: 15px;
+        color: white!important;
+      }
+    }
+  }
+
+  & .ant-segmented {
+    background-color: transparent;
+    box-shadow: none;
+    border: 1px solid #36363d;
+    border-radius: 9px;
+    padding: 6px;
+
+    & .ant-segmented-group {
+      & .ant-segmented-item {
+        flex-grow: 1;
+        height: 36px;
+        align-items: center;
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        color: white;
+        font-size: 15px;
+        border-radius: 9px;
+        & .ant-segmented-item-label {
+          text-align: center;
+          width: 100%;
+        }
+        &.ant-segmented-item-selected {
+          background-color: #36363d;
+        }
+      }
+    }
+  }
+}

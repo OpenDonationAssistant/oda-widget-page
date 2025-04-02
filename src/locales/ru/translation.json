@@ -3,6 +3,8 @@
   "menu-history": "История",
   "menu-payment-page-config": "Страница доната",
   "menu-automation": "Автоматизация",
+  "menu-guides":"Гайды",
+  "menu-integrations": "Интеграции",
   "button-font": "Шрифт",
   "button-font-size": "Размер шрифта",
   "button-shadow-size": "Радиус блюра тени",
@@ -261,8 +263,10 @@
   "image-background-blur": "Блюр оставшегося фона изображением",
   "widget-alert-header-start-point-y": "Смещение по высоте для заголовка",
   "widget-alert-header-start-point-x": "Смещение по горизонтали для заголовка",
-  "widget-alert-image-start-point-x":"Смещение по горизонтали для изображения",
-  "widget-alert-image-start-point-y":"Смещение по вертикали для изображения",
-  "widget-alert-message-start-point-x":"Смещение по горизонтали для сообщения",
-  "widget-alert-message-start-point-y":"Смещение по вертикали для сообщения"
+  "widget-alert-image-start-point-x": "Смещение по горизонтали для изображения",
+  "widget-alert-image-start-point-y": "Смещение по вертикали для изображения",
+  "widget-alert-message-start-point-x": "Смещение по горизонтали для сообщения",
+  "widget-alert-message-start-point-y": "Смещение по вертикали для сообщения",
+  "button-add-variable-rule": "Добавить переменную",
+  "button-add-number-variable-rule": "Добавить числовую переменную"
 }
