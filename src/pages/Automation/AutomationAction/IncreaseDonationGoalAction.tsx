@@ -10,6 +10,7 @@ import { makeAutoObservable } from "mobx";
 
 export interface IncreaseDonationGoalActionValue {
   goalId: string;
+  widgetId: string;
   amount: number;
 }
 
@@ -30,7 +31,19 @@ const IncreaseDonationGoalActionComponent = observer(
                 return { label: goal.briefDescription, value: goal.id };
               }),
             )}
-          onChange={(id) => action.setGoalId(id)}
+          onChange={(id) => {
+            action.setGoalId(id);
+            action.setWidgetId(
+              widgets
+                ?.search({ type: "donationgoal" })
+                .filter((widget) => {
+                  return (
+                    widget.config as DonationGoalWidgetSettings
+                  ).goalProperty.value.filter((goal) => goal.id === id);
+                })
+                .at(0)?.id ?? "",
+            );
+          }}
         />
         <InputNumber
           value={action.value.amount}
@@ -46,6 +59,7 @@ export class IncreaseDonationGoalAction
 {
   private _value: IncreaseDonationGoalActionValue = {
     goalId: "",
+    widgetId: "",
     amount: 1000,
   };
 
@@ -61,7 +75,11 @@ export class IncreaseDonationGoalAction
     this._value.goalId = id;
   }
 
-  public set value(value: IncreaseDonationGoalActionValue){
+  public setWidgetId(id: string) {
+    this._value.widgetId = id;
+  }
+
+  public set value(value: IncreaseDonationGoalActionValue) {
     this._value = value;
   }
 
