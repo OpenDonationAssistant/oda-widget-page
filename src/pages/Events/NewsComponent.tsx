@@ -3,6 +3,8 @@ import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
 import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
 import { useRequest } from "ahooks";
+import VoteUp from "../../icons/VoteUp";
+import VoteDown from "../../icons/VoteDown";
 
 interface News {
   id: string;
@@ -58,13 +60,13 @@ export default function NewsComponent({}: {}) {
           className={`${classes.newscontainer}`}
         >
           <div className={`${classes.closebutton}`}>
+            <a href="https://oda.digital/news">Новости</a>
             <button
-              className="material-symbols-sharp"
               onClick={() => {
                 sendFeedback(-1);
               }}
             >
-              close
+              скрыть сообщение
             </button>
           </div>
           <Flex justify="center" align="baseline">
@@ -75,18 +77,18 @@ export default function NewsComponent({}: {}) {
             align="middle"
             justify="center"
           >
-            <div className={`${classes.newsbody}`}>{data.description}</div>
             {data.demoUrl && (
               <img className={`${classes.newsdemo}`} src={data.demoUrl} />
             )}
+            <div className={`${classes.newsbody}`}>{data.description}</div>
           </Flex>
           <Flex
             className={`${classes.buttons}`}
             vertical={false}
             justify="space-around"
           >
-            <img src="/icons/thumb-up.png" onClick={() => sendFeedback(10)} />
-            <img src="/icons/thumb-down.png" onClick={() => sendFeedback(0)} />
+            <button onClick={() => sendFeedback(10)} ><VoteUp/></button>
+            <button onClick={() => sendFeedback(0)} ><VoteDown/></button>
           </Flex>
         </Flex>
       )}

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import classes from "./Toolbar.module.css";
 import style from "./Toolbar-theme-2.module.css";
+import NewsComponent from "../../pages/Events/NewsComponent";
 
 enum Page {
   WIDGETS,
@@ -80,6 +81,7 @@ export default function Toolbar({ page }: { page: Page }) {
           </span>
         </button>
       ))}
+      <NewsComponent />
     </div>
   );
 }

@@ -128,7 +128,6 @@ function ConfigurationPageTemplate() {
             style={{ marginLeft: "24px", width: "100%", marginRight: "24px" }}
             className="full-width"
           >
-            <NewsComponent />
             <Outlet />
           </Flex>
           <div style={{ width: "320px", flexGrow: "0", marginRight: "18px" }}/>

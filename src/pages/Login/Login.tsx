@@ -32,9 +32,8 @@ function parseTokens(response: any): Tokens {
   document.cookie = `JWT=${idToken}`;
   localStorage.setItem("access-token", idToken.toString());
   localStorage.setItem("refresh-token", refreshToken.toString());
-  axios.defaults.headers.common[
-    "Authorization"
-  ] = `Bearer ${idToken.toString()}`;
+  axios.defaults.headers.common["Authorization"] =
+    `Bearer ${idToken.toString()}`;
   return {
     idToken: idToken,
     refreshToken: refreshToken,
@@ -121,7 +120,7 @@ export default function Login({}) {
     <>
       <style
         dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%;}`,
+          __html: `html, body {height: 100%; padding: 0px!important;}`,
         }}
       />
       <div className="login-page">
