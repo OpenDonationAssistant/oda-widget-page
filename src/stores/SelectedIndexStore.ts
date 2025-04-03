@@ -8,14 +8,13 @@ export class SelectedIndexStore {
     makeAutoObservable(this);
   }
 
-  public get index(){
+  public get index() {
     return this._index;
   }
 
-  public set index(index: number | null){
+  public set index(index: number | null) {
     this._index = index;
   }
-
 }
 
 export const SelectedIndexContext = createContext(new SelectedIndexStore());

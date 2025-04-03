@@ -31,8 +31,9 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
   reaction(
     () => index.index,
     () => {
+      log.debug({ index: index.index }, "new trigger selected index");
       if (index.index != null) {
-        if ((index.index = rule.triggers.length)) {
+        if ((index.index == rule.triggers.length)) {
           setTrigger(null);
           setTriggerId("");
         } else {
@@ -180,6 +181,10 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                       </Flex>
                       <button
                         onClick={() => {
+                          log.debug(
+                            { index: index },
+                            "selecting trigger for edit",
+                          );
                           selectedIndex.index = index;
                         }}
                         className={`${classes.edit}`}
