@@ -251,6 +251,15 @@ export const WidgetConfiguration = observer(
       <div
         className={`widget ${selection.id === widget.id ? "extended" : "collapsed"}`}
       >
+        <style
+    dangerouslySetInnerHTML={{
+      __html: `
+main {
+  max-width: 900px;
+}`,
+    }}
+  />
+
         {context}
         <RenameModal state={renameModalState.current} />
         <div className="widget-header">
