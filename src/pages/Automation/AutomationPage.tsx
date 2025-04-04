@@ -184,6 +184,7 @@ const AutomationPage = observer(({}) => {
           </button>
         </div>
       </Flex>
+
       <style
         dangerouslySetInnerHTML={{
           __html: `

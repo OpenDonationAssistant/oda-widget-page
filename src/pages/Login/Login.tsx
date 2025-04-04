@@ -118,11 +118,6 @@ export default function Login({}) {
 
   return (
     <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `html, body {height: 100%; padding: 0px!important;}`,
-        }}
-      />
       <div className="login-page">
         <div className="login-form">
           <div className="login-container">

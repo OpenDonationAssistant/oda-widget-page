@@ -123,6 +123,17 @@ function ConfigurationPageTemplate() {
           <Header />
         </AntHeader>
         <Flex>
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
+body {
+  padding-left: 18px;
+  padding-right: 18px;
+}
+`,
+            }}
+          />
+
           <Toolbar page={page} />
           <Flex
             style={{ marginLeft: "24px", width: "100%", marginRight: "24px" }}
@@ -130,7 +141,7 @@ function ConfigurationPageTemplate() {
           >
             <Outlet />
           </Flex>
-          <div style={{ width: "320px", flexGrow: "0", marginRight: "18px" }}/>
+          <div style={{ width: "320px", flexGrow: "0", marginRight: "18px" }} />
         </Flex>
       </Flex>
     </>
