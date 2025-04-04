@@ -173,7 +173,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                           {trigger.name ? trigger.name : "<Не выбрано>"}
                         </div>
                         <button
-                          className={`${classes.closetrigger}`}
+                          className={`${classes.closetrigger} oda-icon-button`}
                           onClick={() => rule.removeTrigger(index)}
                         >
                           <CloseIcon color="#FF8888" />

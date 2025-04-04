@@ -71,8 +71,8 @@
 }
 
 .deletevariable {
-  width: 48px;
-  height: 48px;
+  width: 48px!important;
+  height: 48px!important;
   background-color: #231717;
   box-shadow: none !important;
   border: none !important;

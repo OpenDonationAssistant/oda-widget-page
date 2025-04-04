@@ -20,3 +20,10 @@ button.ant-btn.ant-btn-default {
     align-items: center;
   }
 }
+
+button.ant-btn.ant-btn-default.oda-icon-button {
+  height: 27px;
+  width: 27px;
+  border-radius: 6px;
+  padding: 0px;
+}

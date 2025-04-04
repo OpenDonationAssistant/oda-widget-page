@@ -56,7 +56,7 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
           />
         )}
         <Button
-          className={`${classes.deletevariable}`}
+          className={`${classes.deletevariable} oda-icon-button`}
           style={{ background: "#231717" }}
           onClick={() => {
             state.removeVariable(variable.id);
@@ -100,7 +100,7 @@ const RuleList = observer(({}) => {
                 />
               </Modal>
               <Button
-                className={`${classes.rename}`}
+                className={`${classes.rename} oda-icon-button`}
                 onClick={() => toggleModal()}
               >
                 <EditIcon />
@@ -108,7 +108,7 @@ const RuleList = observer(({}) => {
             </Flex>
             <div>
               <Button
-                className={`${classes.delete}`}
+                className={`${classes.delete} oda-icon-button`}
                 onClick={() => state.removeRule(index)}
               >
                 <CloseIcon color="#FF8888" />

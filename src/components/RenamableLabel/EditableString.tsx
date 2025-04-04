@@ -27,7 +27,7 @@ export const EditableString = observer(
                 : label}
             </div>
             <Button
-              className={`${classes.rename}`}
+              className={`${classes.rename} oda-icon-button`}
               onClick={() => {
                 setValue(label);
                 setEdit(true);
@@ -46,7 +46,7 @@ export const EditableString = observer(
               }}
             />
             <Button
-              className={`${classes.rename}`}
+              className={`${classes.rename} oda-icon-button`}
               onClick={() => {
                 onChange(value ?? "");
                 setEdit(false);
