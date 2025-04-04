@@ -5,7 +5,7 @@ import { log } from "../logging";
 import { produce } from "immer";
 import { createContext } from "react";
 
-export interface WidgetStore{
+export interface WidgetStore {
   list: Widget[];
   addWidget(type: string): Promise<void>;
   deleteWidget(id: string): Promise<void>;

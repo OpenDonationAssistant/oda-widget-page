@@ -7,7 +7,11 @@ import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
-import { DefaultWidgetStore, WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
+import {
+  DefaultWidgetStore,
+  WidgetStore,
+  WidgetStoreContext,
+} from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -15,6 +19,7 @@ import {
   PaymentPageConfig,
   PaymentPageConfigContext,
 } from "../MediaWidget/PaymentPageConfig";
+import classes from "./ConfigurationPage.module.css";
 
 export class Selection {
   private _id: string | null = null;
@@ -153,7 +158,11 @@ export default function ConfigurationPage({}: {}) {
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
-      <Content style={{ overflow: "initial", paddingBottom: "80px" }}>
+      <Content
+        className={`${classes.content} newstyle`}
+        style={{ overflow: "initial", paddingBottom: "80px" }}
+      >
+        <h1 className={`${classes.header}`}>Виджеты</h1>
         {widgetStore?.list && (
           <div className="widget-list">
             <SelectionContext.Provider value={selection.current}>

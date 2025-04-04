@@ -3,6 +3,11 @@ import { useTranslation } from "react-i18next";
 import classes from "./Toolbar.module.css";
 import style from "./Toolbar-theme-2.module.css";
 import NewsComponent from "../../pages/Events/NewsComponent";
+import WidgetsIcon from "../../icons/WidgetsIcon";
+import HistoryIcon from "../../icons/HistoryIcon";
+import RubleIcon from "../../icons/RubleIcon";
+import AutomationIcon from "../../icons/AutomationIcon";
+import { ReactNode } from "react";
 
 enum Page {
   WIDGETS,
@@ -17,7 +22,8 @@ enum Page {
 interface Section {
   page: Page;
   url: string;
-  symbol: string;
+  active: ReactNode,
+  nonactive: ReactNode,
   label: string;
 }
 
@@ -25,19 +31,22 @@ const buttons: Section[] = [
   {
     page: Page.WIDGETS,
     url: "/configuration/widgets",
-    symbol: "widgets",
+    active: <WidgetsIcon color="var(--oda-color-800)"/>,
+    nonactive: <WidgetsIcon color="var(--oda-color-500)"/>,
     label: "menu-widgets",
   },
   {
     page: Page.HISTORY,
     url: "/configuration/history-page",
-    symbol: "history",
+    active: <HistoryIcon color="var(--oda-color-800)"/>,
+    nonactive: <HistoryIcon color="var(--oda-color-500)"/>,
     label: "menu-history",
   },
   {
     page: Page.PAYMENTPAGE,
     url: "/configuration/payment-page",
-    symbol: "local_atm",
+    active: <RubleIcon color="var(--oda-color-800)"/>,
+    nonactive: <RubleIcon color="var(--oda-color-500)"/>,
     label: "menu-payment-page-config",
   },
   //{
@@ -49,7 +58,8 @@ const buttons: Section[] = [
   {
     page: Page.AUTOMATION,
     url: "/configuration/automation-page",
-    symbol: "precision_manufacturing",
+    active: <AutomationIcon color="var(--oda-color-800)"/>,
+    nonactive: <AutomationIcon color="var(--oda-color-500)"/>,
     label: "menu-automation",
   },
   //{
@@ -64,9 +74,7 @@ export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (
-    <div
-      className={`${style.toolbar}`}
-    >
+    <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
         <button
           key={button.label}
@@ -75,7 +83,7 @@ export default function Toolbar({ page }: { page: Page }) {
           }`}
           onClick={() => navigate(button.url)}
         >
-          <span className="material-symbols-sharp">{button.symbol}</span>
+          {page === button.page ? button.active : button.nonactive}
           <span className={`${classes.toolbarbuttontitle}`}>
             {t(button.label)}
           </span>

@@ -8,7 +8,7 @@
 
 .ant-input {
   border: var(--oda-main-border);
-  font-family: "Play";
+  font-family: "Mulish Variable";
   font-size: 18px;
   background-color: var(--oda-control-background-color);
   padding-top: 3px;
@@ -53,7 +53,7 @@
 }
 
 .ant-input-number-group .ant-input-number-group-addon {
-  font-family: "Play" !important;
+  font-family: "Mulish Variable" !important;
   font-weight: 900 !important;
   font-size: 20px !important;
   padding-left: 5px;
@@ -87,7 +87,7 @@
   & .ant-color-picker-trigger-text {
     color: var(--oda-secondary-text-color);
     font-size: 20px;
-    font-family: "Play";
+    font-family: "Mulish Variable";
   }
   & .ant-color-picker-color-block {
     width: 20px;
@@ -123,7 +123,7 @@
 /**/
 .ant-tabs.ant-tabs-card {
   flex: 1 1 auto;
-  font-family: "Play";
+  font-family: "Mulish Variable";
 
   & .ant-tabs.ant-tabs-card {
     &.ant-tabs-top {
@@ -148,7 +148,7 @@
       & .ant-tabs-tab {
         border: none;
         color: #7885bd;
-        font-family: "Play";
+        font-family: "Mulish Variable";
         font-weight: 900;
         height: 44px;
 
@@ -180,7 +180,7 @@
 }
 
 .ant-modal {
-  font-family: "Play";
+  font-family: "Mulish Variable";
   & .ant-modal-header {
     margin-left: 10px;
     background-color: var(--oda-panel-backgroun-color);
@@ -234,7 +234,7 @@
 .ant-collapse {
 
   background-color: #151a33;
-  font-family: Play;
+  font-family: "Mulish Variable";
   border-top: 1px solid #674afd;
   border-bottom: 1px solid #674afd;
   border-left: none;
@@ -255,7 +255,7 @@
   & > .ant-collapse-item {
     border-bottom: 1px solid var(--oda-panel-backgroun-color);
     & > .ant-collapse-header {
-      font-family: Play;
+      font-family: "Mulish Variable";
       font-weight: 900;
       color: white;
       border: none;
@@ -277,7 +277,7 @@
 
 .ant-layout {
   background: none !important;
-  font-family: "Play";
+  font-family: "Mulish Variable";
 
   & .ant-layout-sider {
     background: none !important;
@@ -354,7 +354,7 @@ div.ant-layout-has-sider.ant-layout {
     /* background: var(--oda-secondary-text-color); */
     & .ant-select-selection-item {
       text-align: right;
-      font-family: "Play";
+      font-family: "Mulish Variable";
       font-size: 20px;
       font-weight: 600;
       color: var(--oda-secondary-text-color) !important;
@@ -379,7 +379,7 @@ div.ant-layout-has-sider.ant-layout {
   color: white;
   box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.6);
   border-radius: 20px;
-  font-family: "Play";
+  font-family: "Mulish Variable";
 
   & .ant-segmented-item {
     border-radius: 20px;
@@ -409,7 +409,7 @@ div.ant-layout-has-sider.ant-layout {
 }
 
 .ant-col {
-  font-family: "Play";
+  font-family: "Mulish Variable";
 }
 
 .ant-btn-sm {
@@ -449,7 +449,7 @@ div.ant-layout-has-sider.ant-layout {
 
   & .ant-picker-input > input {
     color: var(--oda-secondary-text-color);
-    font-family: "Play";
+    font-family: "Mulish Variable";
     font-weight: 900;
     font-size: 20px;
   }

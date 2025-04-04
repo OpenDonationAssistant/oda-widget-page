@@ -11,7 +11,11 @@
   text-align: left;
   margin-bottom: 3px;
   font-size: 18px;
-  color: #707080;
+  color: var(--oda-color-500);
+  padding-left: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   & [class*="material-symbols-sharp"] {
     vertical-align: bottom;
   }
@@ -21,6 +25,6 @@
   }
 
   &[class*="selected"] {
-    color: #B2D4FB;
+    color: var(--oda-color-800);
   }
 }

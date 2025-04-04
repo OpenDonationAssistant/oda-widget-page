@@ -7,7 +7,7 @@
   --oda-label-background-color: #0c122e;
   --oda-btn-background-color: #b2d4fb;
   --oda-main-border: 1px solid var(--oda-control-background-color);
-  --oda-main-font-family: Play;
+  --oda-main-font-family: "Mulish Variable";
   --oda-main-text-color: #fbfff1;
   --oda-secondary-text-color: #b4c5e4;
   --oda-label-font: 1rem var(--oda-main-font-family);
@@ -87,7 +87,7 @@ button.ant-btn.ant-btn-primary:hover {
   font-size: 1rem;
   cursor: text;
   top: 10px;
-  font-family: "Play";
+  font-family: "Mulish Variable";
 }
 
 .payment-alert-settings .widget-settings-name {
@@ -154,7 +154,7 @@ button.ant-btn.ant-btn-primary:hover {
 .configuration-container .widget-header .ant-btn-default:not(:hover) {
   color: white;
   border: 1px solid #674afd;
-  font-family: Play;
+  font-family: "Mulish Variable";
 }
 
 .widget-settings-value {
@@ -162,7 +162,7 @@ button.ant-btn.ant-btn-primary:hover {
   width: 25%;
   outline: 0;
   font-size: 1rem;
-  font-family: "Play";
+  font-family: "Mulish Variable";
   color: #fff;
   padding: 7px 0;
   background: transparent;
@@ -507,10 +507,6 @@ div.payment-alert-image-preview {
   width: 100%;
   padding-top: 10px;
   padding-bottom: 10px;
-
-  &:nth-child(even) {
-    background-color: rgb(12, 18, 46, 0.12);
-  }
 }
 
 .widget-settings .payment-alerts-previews-item button.oda-btn-default {

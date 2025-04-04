@@ -1,0 +1,10 @@
+.header {
+  color: var(--oda-color-1000);
+  margin-bottom: 15px;
+}
+
+.content {
+  padding-top: 15px;
+  border-radius: 16px;
+  background-color: var(--oda-color-100);
+}

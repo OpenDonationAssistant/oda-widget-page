@@ -30,9 +30,7 @@ import "./i18n";
 import "animate.css";
 import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
-import Sider from "antd/es/layout/Sider";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
-import NewsComponent from "./pages/Events/NewsComponent";
 import DonatonPage from "./pages/Donaton/DonatonPage";
 import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageConfigComponent";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
@@ -44,16 +42,8 @@ import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
-import {
-  AutomationState,
-  AutomationStateContext,
-} from "./pages/Automation/AutomationState";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
-import {
-  DefaultWidgetStore,
-  WidgetStore,
-  WidgetStoreContext,
-} from "./stores/WidgetStore";
+import IntegrationsPage from "./pages/Integrations/IntegrationsPage";
 
 async function widgetSettingsLoader({
   params,
@@ -81,25 +71,6 @@ async function widgetSettingsLoader({
   return { recipientId, settings, conf, widgetId };
 }
 
-const backgroundColor = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `
-body::before {
-    content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    display: block;
-    background-color: #0c122e;
-    width: 100%;
-    height: 100%;
-`,
-    }}
-  />
-);
-
 function detectPage(path: string): Page {
   if (path.endsWith("payment-page")) {
     return Page.PAYMENTPAGE;
@@ -113,6 +84,9 @@ function detectPage(path: string): Page {
   if (path.indexOf("guides") > 0) {
     return Page.GUIDES;
   }
+  if (path.indexOf("integrations") > 0) {
+    return Page.INTEGRATIONS;
+  }
   return Page.WIDGETS;
 }
 
@@ -122,12 +96,11 @@ function ConfigurationPageTemplate() {
 
   return (
     <>
-      {backgroundColor}
       <Flex vertical className="newstyle">
         <AntHeader>
           <Header />
         </AntHeader>
-        <Flex>
+        <Flex style={{ paddingTop: "18px" }}>
           <style
             dangerouslySetInnerHTML={{
               __html: `
@@ -139,7 +112,7 @@ function ConfigurationPageTemplate() {
     z-index: -1;
     display: block;
     background-color: #2d3436;
-    background-image: linear-gradient(315deg, #2d3436 0%, #000000 74%);
+    background-image: linear-gradient(345deg, #2d3436 0%, #000000 58%);
     width: 100%;
     height: 100%;
   }`,
@@ -193,6 +166,11 @@ const router = createBrowserRouter([
       {
         path: "guides",
         element: <GuidesPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "integrations",
+        element: <IntegrationsPage />,
         loader: widgetSettingsLoader,
       },
     ],

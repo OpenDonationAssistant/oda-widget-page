@@ -22,7 +22,7 @@
     background-color: transparent;
     text-decoration: underline;
     text-decoration-style: dotted;
-    color: #707080;
+    color: var(--oda-color-800);
   }
 }
 

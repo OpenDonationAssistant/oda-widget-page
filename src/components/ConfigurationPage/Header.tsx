@@ -4,7 +4,10 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./Header.module.css";
 import { useTranslation } from "react-i18next";
-import { log } from "../../logging";
+import TelegramIcon from "../../icons/TelegramIcon";
+import NewsIcon from "../../icons/NewsIcon";
+import LanguageIcon from "../../icons/LanguageIcon";
+import PersonIcon from "../../icons/PersonIcon";
 
 function logout() {
   localStorage.removeItem("login");
@@ -18,8 +21,6 @@ export default function Header({}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { t, i18n } = useTranslation();
 
-  log.debug({ language: i18n.resolvedLanguage });
-
   const changeLang = (l: string) => {
     i18n.changeLanguage(l);
   };
@@ -29,10 +30,10 @@ export default function Header({}) {
       <ODALogo />
       <div className={`${classes.buttons}`}>
         <a onClick={(e) => window.open("https://t.me/opendonationassistant")}>
-          <img width={25} height={25} src="/icons/telegram.png" />
+          <TelegramIcon/>
         </a>
         <a href="https://oda.digital/news">
-          <span className="material-symbols-sharp">news</span>
+          <NewsIcon/>
         </a>
         <Dropdown
           trigger={["click"]}
@@ -52,7 +53,7 @@ export default function Header({}) {
           }}
         >
           <a onClick={(e) => e.preventDefault()}>
-            <span className="material-symbols-sharp">language</span>
+            <LanguageIcon/>
           </a>
         </Dropdown>
         <Dropdown
@@ -69,7 +70,7 @@ export default function Header({}) {
           }}
         >
           <a onClick={(e) => e.preventDefault()}>
-            <span className="material-symbols-sharp">person</span>
+            <PersonIcon/>
             {recipientId}
           </a>
         </Dropdown>

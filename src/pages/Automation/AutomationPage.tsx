@@ -16,8 +16,6 @@ import EditIcon from "../../icons/EditIcon";
 import "../../ant.css";
 import "../../newstyle.css";
 import CloseIcon from "../../icons/CloseIcon";
-import { log } from "../../logging";
-import { toJS } from "mobx";
 import {
   DefaultWidgetStore,
   WidgetStoreContext,
@@ -183,7 +181,7 @@ const AutomationPage = observer(({}) => {
       <WidgetStoreContext.Provider value={widgetStore}>
         <Content className={`${classes.content} newstyle`}>
           <Flex justify="space-between">
-            <h1>Автоматизация</h1>
+            <h1 className={`${classes.header}`}>Автоматизация</h1>
             <div>
               <button
                 className="oda-btn-default"

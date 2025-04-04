@@ -4,7 +4,7 @@ export default function CloseIcon({ color }: { color?: string }) {
   return (
     <>
       <svg
-      className={`${classes.icon}`}
+        className={`${classes.icon}`}
         width="24"
         height="24"
         viewBox="0 0 24 24"
