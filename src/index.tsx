@@ -49,7 +49,11 @@ import {
   AutomationStateContext,
 } from "./pages/Automation/AutomationState";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
-import { WidgetStore, WidgetStoreContext } from "./stores/WidgetStore";
+import {
+  DefaultWidgetStore,
+  WidgetStore,
+  WidgetStoreContext,
+} from "./stores/WidgetStore";
 
 async function widgetSettingsLoader({
   params,
@@ -156,8 +160,6 @@ function ConfigurationPageTemplate() {
   );
 }
 
-const widgetStore = new WidgetStore();
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -170,11 +172,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "widgets",
-        element: (
-          <WidgetStoreContext.Provider value={widgetStore}>
-            <ConfigurationPage />
-          </WidgetStoreContext.Provider>
-        ),
+        element: <ConfigurationPage />,
         loader: widgetSettingsLoader,
       },
       {
@@ -189,13 +187,7 @@ const router = createBrowserRouter([
       },
       {
         path: "automation-page",
-        element: (
-          <WidgetStoreContext.Provider value={widgetStore}>
-            <AutomationStateContext.Provider value={new AutomationState(true)}>
-              <AutomationPage />
-            </AutomationStateContext.Provider>
-          </WidgetStoreContext.Provider>
-        ),
+        element: <AutomationPage />,
         loader: widgetSettingsLoader,
       },
       {

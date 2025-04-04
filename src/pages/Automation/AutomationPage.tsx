@@ -1,7 +1,7 @@
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { Button, Flex, Modal, Input, Tabs } from "antd";
-import { AutomationStateContext, Variable } from "./AutomationState";
+import { AutomationState, AutomationStateContext, Variable } from "./AutomationState";
 import RuleComponent from "./RuleComponent";
 import { observer } from "mobx-react-lite";
 import classes from "./AutomationPage.module.css";
@@ -167,47 +167,49 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 });
 
 const AutomationPage = observer(({}) => {
-  const state = useContext(AutomationStateContext);
+  const state = new AutomationState(true);
 
   return (
-    <Content className={`${classes.content} newstyle`}>
-      <Flex justify="space-between">
-        <h1>Автоматизация</h1>
-        <div>
-          <button
-            className="oda-btn-default"
-            onClick={() => {
-              state.save();
-            }}
-          >
-            Сохранить
-          </button>
-        </div>
-      </Flex>
+    <AutomationStateContext.Provider value={state}>
+      <Content className={`${classes.content} newstyle`}>
+        <Flex justify="space-between">
+          <h1>Автоматизация</h1>
+          <div>
+            <button
+              className="oda-btn-default"
+              onClick={() => {
+                state.save();
+              }}
+            >
+              Сохранить
+            </button>
+          </div>
+        </Flex>
 
-      <Tabs
-        type="card"
-        items={[
-          {
-            label: "Правила",
-            key: "rules",
-            children: <RuleList />,
-          },
-          {
-            label: "Переменные",
-            key: "variables",
-            children: (
-              <Flex vertical className={`${classes.variabletab}`}>
-                <div className={`${classes.variablesectionname}`}>Числа</div>
-                <VariableList type="number" />
-                <div className={`${classes.variablesectionname}`}>Строки</div>
-                <VariableList type="string" />
-              </Flex>
-            ),
-          },
-        ]}
-      />
-    </Content>
+        <Tabs
+          type="card"
+          items={[
+            {
+              label: "Правила",
+              key: "rules",
+              children: <RuleList />,
+            },
+            {
+              label: "Переменные",
+              key: "variables",
+              children: (
+                <Flex vertical className={`${classes.variabletab}`}>
+                  <div className={`${classes.variablesectionname}`}>Числа</div>
+                  <VariableList type="number" />
+                  <div className={`${classes.variablesectionname}`}>Строки</div>
+                  <VariableList type="string" />
+                </Flex>
+              ),
+            },
+          ]}
+        />
+      </Content>
+    </AutomationStateContext.Provider>
   );
 });
 

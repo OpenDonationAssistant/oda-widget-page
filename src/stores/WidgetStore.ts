@@ -5,7 +5,15 @@ import { log } from "../logging";
 import { produce } from "immer";
 import { createContext } from "react";
 
-export class WidgetStore {
+export interface WidgetStore{
+  list: Widget[];
+  addWidget(type: string): Promise<void>;
+  deleteWidget(id: string): Promise<void>;
+  moveWidget(originIndex: number, index: number): Promise<void>;
+  search({ type }: { type?: string }): Widget[];
+}
+
+export class DefaultWidgetStore implements WidgetStore {
   private _list: Widget[] = [];
 
   constructor() {
@@ -29,6 +37,7 @@ export class WidgetStore {
   }
 
   private load(): Promise<void> {
+    log.debug("loading widgets");
     return this.client()
       .list()
       .then((response) => {
@@ -79,4 +88,10 @@ export class WidgetStore {
   }
 }
 
-export const WidgetStoreContext = createContext<WidgetStore | null>(null);
+export const WidgetStoreContext = createContext<WidgetStore>({
+  list: [],
+  addWidget: (type: string) => Promise.resolve(),
+  deleteWidget: (id: string) => Promise.resolve(),
+  moveWidget: (originIndex: number, index: number) => Promise.resolve(),
+  search: ({ type }: { type?: string }) => []
+});

@@ -7,7 +7,7 @@ import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
 import { makeAutoObservable } from "mobx";
-import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
+import { DefaultWidgetStore, WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -61,8 +61,8 @@ const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   );
 });
 
-const WidgetList = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
-  log.debug({ widgets: widgetStore.list }, "rendering widget list");
+const WidgetList = observer(({}) => {
+  const widgetStore = useContext(WidgetStoreContext);
 
   function onDragEnd(result: any) {
     if (!result.destination) {
@@ -148,23 +148,25 @@ const AddWidgetComponent = observer(
 
 export default function ConfigurationPage({}: {}) {
   const { recipientId } = useLoaderData() as WidgetData;
-  const widgetStore = useContext(WidgetStoreContext);
   const selection = useRef(new Selection());
+  const widgetStore = new DefaultWidgetStore();
 
   return (
-    <Content style={{ overflow: "initial", paddingBottom: "80px" }}>
-      {widgetStore?.list && (
-        <div className="widget-list">
-          <SelectionContext.Provider value={selection.current}>
-            <PaymentPageConfigContext.Provider
-              value={new PaymentPageConfig(recipientId)}
-            >
-              <WidgetList widgetStore={widgetStore} />
-            </PaymentPageConfigContext.Provider>
-          </SelectionContext.Provider>
-          <AddWidgetComponent widgetStore={widgetStore} />
-        </div>
-      )}
-    </Content>
+    <WidgetStoreContext.Provider value={widgetStore}>
+      <Content style={{ overflow: "initial", paddingBottom: "80px" }}>
+        {widgetStore?.list && (
+          <div className="widget-list">
+            <SelectionContext.Provider value={selection.current}>
+              <PaymentPageConfigContext.Provider
+                value={new PaymentPageConfig(recipientId)}
+              >
+                <WidgetList />
+              </PaymentPageConfigContext.Provider>
+            </SelectionContext.Provider>
+            <AddWidgetComponent widgetStore={widgetStore} />
+          </div>
+        )}
+      </Content>
+    </WidgetStoreContext.Provider>
   );
 }

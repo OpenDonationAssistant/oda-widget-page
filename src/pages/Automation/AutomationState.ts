@@ -121,6 +121,7 @@ export class AutomationState {
   }
 
   public load() {
+    log.debug("loading automation state");
     this.client()
       .getState({})
       .then((response) => {
