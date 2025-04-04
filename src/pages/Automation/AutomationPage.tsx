@@ -1,7 +1,11 @@
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { Button, Flex, Modal, Input, Tabs } from "antd";
-import { AutomationState, AutomationStateContext, Variable } from "./AutomationState";
+import {
+  AutomationState,
+  AutomationStateContext,
+  Variable,
+} from "./AutomationState";
 import RuleComponent from "./RuleComponent";
 import { observer } from "mobx-react-lite";
 import classes from "./AutomationPage.module.css";
@@ -14,6 +18,10 @@ import "../../newstyle.css";
 import CloseIcon from "../../icons/CloseIcon";
 import { log } from "../../logging";
 import { toJS } from "mobx";
+import {
+  DefaultWidgetStore,
+  WidgetStoreContext,
+} from "../../stores/WidgetStore";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   const state = useContext(AutomationStateContext);
@@ -168,47 +176,54 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 
 const AutomationPage = observer(({}) => {
   const state = new AutomationState(true);
+  const widgetStore = new DefaultWidgetStore();
 
   return (
     <AutomationStateContext.Provider value={state}>
-      <Content className={`${classes.content} newstyle`}>
-        <Flex justify="space-between">
-          <h1>Автоматизация</h1>
-          <div>
-            <button
-              className="oda-btn-default"
-              onClick={() => {
-                state.save();
-              }}
-            >
-              Сохранить
-            </button>
-          </div>
-        </Flex>
+      <WidgetStoreContext.Provider value={widgetStore}>
+        <Content className={`${classes.content} newstyle`}>
+          <Flex justify="space-between">
+            <h1>Автоматизация</h1>
+            <div>
+              <button
+                className="oda-btn-default"
+                onClick={() => {
+                  state.save();
+                }}
+              >
+                Сохранить
+              </button>
+            </div>
+          </Flex>
 
-        <Tabs
-          type="card"
-          items={[
-            {
-              label: "Правила",
-              key: "rules",
-              children: <RuleList />,
-            },
-            {
-              label: "Переменные",
-              key: "variables",
-              children: (
-                <Flex vertical className={`${classes.variabletab}`}>
-                  <div className={`${classes.variablesectionname}`}>Числа</div>
-                  <VariableList type="number" />
-                  <div className={`${classes.variablesectionname}`}>Строки</div>
-                  <VariableList type="string" />
-                </Flex>
-              ),
-            },
-          ]}
-        />
-      </Content>
+          <Tabs
+            type="card"
+            items={[
+              {
+                label: "Правила",
+                key: "rules",
+                children: <RuleList />,
+              },
+              {
+                label: "Переменные",
+                key: "variables",
+                children: (
+                  <Flex vertical className={`${classes.variabletab}`}>
+                    <div className={`${classes.variablesectionname}`}>
+                      Числа
+                    </div>
+                    <VariableList type="number" />
+                    <div className={`${classes.variablesectionname}`}>
+                      Строки
+                    </div>
+                    <VariableList type="string" />
+                  </Flex>
+                ),
+              },
+            ]}
+          />
+        </Content>
+      </WidgetStoreContext.Provider>
     </AutomationStateContext.Provider>
   );
 });
