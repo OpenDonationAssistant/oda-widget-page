@@ -4,7 +4,7 @@
 
 .button {
   border-radius: 12px;
-  background-color: #101012;
+  background-color: var(--oda-panel-backgroun-color);
   border: none;
   height: 48px;
   min-width: 318px;

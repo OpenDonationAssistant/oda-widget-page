@@ -18,7 +18,7 @@ export default function GeneralTab({ config }: { config: PaymentPageConfig }) {
       <Flex justify="flex-end">
         <div className={`${classes.qrholder}`}>
           <QRCode
-            color="#2b3566"
+            color="var(--oda-panel-backgroun-color)"
             icon="https://api.oda.digital/public/logo.png"
             value={`https://${config.recipientId}.oda.digital/`}
           />

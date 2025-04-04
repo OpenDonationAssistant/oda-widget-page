@@ -48,7 +48,7 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
       {widget.config.unsaved && (
         <>
           <button
-            className="widget-button widget-button-accept"
+            className="oda-btn-default widget-button-accept"
             onClick={() => {
               widget.save().then(() => {
                 socket.publish({
@@ -67,7 +67,7 @@ export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
             </Flex>
           </button>
           <button
-            className="widget-button widget-button-decline"
+            className="oda-btn-default widget-button-decline"
             onClick={() => {
               widget.reload();
             }}
@@ -232,9 +232,9 @@ export const WidgetConfiguration = observer(
                       {widget.name}
                     </span>
                   </div>
-                  <div>
+                  <Flex>
                     <SaveButtons widget={widget} />
-                  </div>
+                  </Flex>
                 </Flex>
               ),
               placement: "bottomRight",
@@ -251,15 +251,6 @@ export const WidgetConfiguration = observer(
       <div
         className={`widget ${selection.id === widget.id ? "extended" : "collapsed"}`}
       >
-        <style
-    dangerouslySetInnerHTML={{
-      __html: `
-main {
-  max-width: 900px;
-}`,
-    }}
-  />
-
         {context}
         <RenameModal state={renameModalState.current} />
         <div className="widget-header">

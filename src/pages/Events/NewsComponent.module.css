@@ -1,6 +1,6 @@
 .newscontainer {
   position: relative;
-  background-color: #101012;
+  background-color: var(--oda-panel-backgroun-color);
   margin-top: 20px;
   padding: 12px 15px;
   border-radius: 12px;

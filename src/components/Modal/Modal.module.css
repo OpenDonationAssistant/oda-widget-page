@@ -5,7 +5,7 @@
   width: 720px;
   z-index: 200;
   border-radius: 12px;
-  background-color: #101012;
+  background-color: var(--oda-panel-backgroun-color);
   padding: 12px 18px;
 }
 

@@ -65,12 +65,12 @@ export default function Toolbar({ page }: { page: Page }) {
   const { t } = useTranslation();
   return (
     <div
-      className={`${page === Page.AUTOMATION ? style.toolbar : classes.toolbar}`}
+      className={`${style.toolbar}`}
     >
       {buttons.map((button) => (
         <button
           key={button.label}
-          className={`${page === Page.AUTOMATION ? style.button : classes.toolbarbutton} ${
+          className={`${style.button} ${
             page === button.page ? "selected" : "inactive"
           }`}
           onClick={() => navigate(button.url)}

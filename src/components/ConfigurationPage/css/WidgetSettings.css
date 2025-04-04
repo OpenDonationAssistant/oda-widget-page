@@ -1,22 +1,24 @@
 :root {
+  --oda-main-background-color: #101012;
+  --oda-panel-backgroun-color: #101012;
+  --oda-focus: #1b1b1f;
+
   --oda-control-background-color: #684aff;
-  --oda-main-background-color: #0c122e;
   --oda-label-background-color: #0c122e;
-  --oda-btn-background-color: #0c122e;
+  --oda-btn-background-color: #b2d4fb;
   --oda-main-border: 1px solid var(--oda-control-background-color);
   --oda-main-font-family: Play;
   --oda-main-text-color: #fbfff1;
   --oda-secondary-text-color: #b4c5e4;
   --oda-label-font: 1rem var(--oda-main-font-family);
   --oda-label-color: #ffffffda;
-  --oda-panel-backgroun-color: #2b3566;
+  --oda-color-0: black;
 }
 
 .widget-settings button.oda-btn-default,
 .oda-btn-default,
 button.ant-btn.ant-btn-default,
 button.ant-btn.ant-btn-primary {
-  min-height: 36px;
   color: var(--oda-main-text-color);
   background-color: var(--oda-btn-background-color);
   border: none;
@@ -25,10 +27,15 @@ button.ant-btn.ant-btn-primary {
 
   font-family: var(--oda-main-font-family);
   font-size: 14px;
-  border-radius: 5px;
   font-weight: 900;
   box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
   padding: 6px 15px;
+
+  height: 48px;
+  border-radius: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ant-modal-content .ant-modal-footer .ant-btn.ant-btn-default {

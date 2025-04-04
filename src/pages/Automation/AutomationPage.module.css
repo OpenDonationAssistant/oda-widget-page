@@ -1,7 +1,7 @@
 .content {
   padding-top: 15px;
   border-radius: 16px;
-  background-color: #101012;
+  background-color: var(--oda-panel-backgroun-color);
 }
 
 .container {

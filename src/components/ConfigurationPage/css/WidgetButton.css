@@ -67,8 +67,6 @@
 button.ant-btn {
   border-radius: 5px;
   font-weight: 900;
-  border: 1px solid #684aff;
-  background-color: #151a33;
   padding: 4px 15px;
   font-size: 14px;
   font-family: Play;
@@ -111,20 +109,12 @@ button.ant-btn {
   animation: none;
 }
 
-.widget-button.widget-button-decline .blinker {
+.oda-btn-default.widget-button-decline .blinker {
   animation: none;
 }
 
-.widget-button.widget-button-decline {
-  height: 38px;
-  border: 1px solid var(--oda-panel-backgroun-color);
-  border-radius: 5px;
-  color: var(--oda-secondary-text-color);
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-left: 10px;
-  font-weight: 900;
-  font-size: 14px;
+.oda-btn-default.widget-button-decline {
+  background-color: var(--oda-focus);
+  color: white;
+  margin-left: 15px;
 }

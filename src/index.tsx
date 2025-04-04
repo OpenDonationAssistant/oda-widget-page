@@ -13,6 +13,7 @@ import PlayerControl from "./components/PlayerControl/PlayerControl";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
 import "./ant-override.css";
+import "./ant.css";
 import "@fontsource/material-symbols-sharp";
 import "@fontsource/play";
 import { config } from "./config";
@@ -118,7 +119,7 @@ function ConfigurationPageTemplate() {
   return (
     <>
       {backgroundColor}
-      <Flex vertical>
+      <Flex vertical className="newstyle">
         <AntHeader>
           <Header />
         </AntHeader>
@@ -126,11 +127,18 @@ function ConfigurationPageTemplate() {
           <style
             dangerouslySetInnerHTML={{
               __html: `
-body {
-  padding-left: 18px;
-  padding-right: 18px;
-}
-`,
+        body::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    background-color: #2d3436;
+    background-image: linear-gradient(315deg, #2d3436 0%, #000000 74%);
+    width: 100%;
+    height: 100%;
+  }`,
             }}
           />
 
