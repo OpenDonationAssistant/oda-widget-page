@@ -68,8 +68,6 @@ body {
   font-family: 'Mulish Variable';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-left: 18px;
-  padding-right: 18px;
 }
 
 button.ant-btn.ant-btn-default {

@@ -104,6 +104,15 @@ function ConfigurationPageTemplate() {
           <style
             dangerouslySetInnerHTML={{
               __html: `
+        body {
+          padding-left: 18px;
+          padding-right: 18px;
+  }`,
+            }}
+          />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
         body::before {
     content: "";
     position: fixed;
