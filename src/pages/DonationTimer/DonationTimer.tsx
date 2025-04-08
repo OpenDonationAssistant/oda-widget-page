@@ -1,4 +1,4 @@
-import React, { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext } from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLoaderData } from "react-router";

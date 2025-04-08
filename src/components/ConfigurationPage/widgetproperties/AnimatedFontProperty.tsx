@@ -10,6 +10,7 @@ import {
 } from "./ColorProperty";
 import { log } from "../../../logging";
 import { AnimatedFontComponent } from "./AnimatedFontComponent";
+import { toJS } from "mobx";
 
 export interface TextOutline {
   enabled: boolean;
@@ -134,6 +135,14 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
     };
     log.debug({ font: style }, "calculated font style");
     return style;
+  }
+
+  copy() {
+    return new AnimatedFontProperty({
+      name: this.name,
+      value: produce(toJS(this.value), (draft) => draft),
+      label: this.label,
+    });
   }
 
   markup(): ReactNode {

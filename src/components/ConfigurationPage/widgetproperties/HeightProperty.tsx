@@ -23,6 +23,14 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
     });
   }
 
+  copy(){
+    return new HeightProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName
+    });
+  }
+
   comp = observer(() => {
     return (
       <>

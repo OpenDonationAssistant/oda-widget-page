@@ -13,6 +13,8 @@ import { Trans } from "react-i18next";
 import { Button, Flex, Image, Select, Switch, Upload } from "antd";
 import classes from "./BackgroundImageProperty.module.css";
 import InputNumber from "../components/InputNumber";
+import { produce } from "immer";
+import { toJS }  from "mobx";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -132,6 +134,7 @@ const ImagePropertyComponent = observer(
                       url: null,
                       size: "auto",
                       repeat: false,
+                      opacity: 1
                     })
                   }
                 >
@@ -198,6 +201,15 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
         backgroundRepeat: this.value.repeat ? "repeat" : "no-repeat",
         opacity: this.value.opacity,
       };
+    });
+  }
+
+  copy(){
+    return new BackgroundImageProperty({
+      name: this.name,
+      value: produce(toJS(this.value), draft => draft),
+      displayName: this.displayName,
+      help: this.help
     });
   }
 

@@ -48,6 +48,12 @@ export class DonatersTopListLayoutProperty extends DefaultWidgetProperty<string>
     super({ name: "layout", displayName: "Компоновка", value: "vertical" });
   }
 
+  copy() {
+    const newCopy = new DonatersTopListLayoutProperty();
+    newCopy.value = this.value;
+    return newCopy;
+  }
+
   markup(): ReactNode {
     return <DonatersTopListLayoutPropertyComponent property={this} />;
   }

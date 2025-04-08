@@ -14,6 +14,12 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
     });
   }
 
+  public copy(){
+    const copy = new ReelItemBackgroundProperty();
+    copy.value = this._value;
+    return copy;
+  }
+
   uploadFile(file: File, name: string) {
     return axios.put(
       `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,

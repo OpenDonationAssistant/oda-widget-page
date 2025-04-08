@@ -3,6 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import { ColorPropertyComponent } from "./ColorPropertyComponent";
 import { log } from "../../../logging";
 import { toJS } from "mobx";
+import { produce } from "immer";
 
 export enum GRADIENT_TYPE {
   LINEAR,
@@ -61,8 +62,17 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
     this._target = params.target;
   }
 
+  copy() {
+    return new ColorProperty({
+      name: this.name,
+      value: produce(toJS(this.value), (draft) => draft),
+      displayName: this.displayName,
+      target: this._target,
+    });
+  }
+
   markup(): ReactNode {
-    return <ColorPropertyComponent property={this} />
+    return <ColorPropertyComponent property={this} />;
   }
 
   calcCss(): CSSProperties {
@@ -92,7 +102,10 @@ export class ColorProperty extends DefaultWidgetProperty<ColorPropertyValue> {
   }
 
   calcRowColorValue(): string | undefined {
-    log.debug({ name: this.name, config: toJS(this.value)},"calculating row color value");
+    log.debug(
+      { name: this.name, config: toJS(this.value) },
+      "calculating row color value",
+    );
     const setting = this.value as ColorPropertyValue;
     let value = setting.colors.at(0)?.color;
     if (setting.gradient) {

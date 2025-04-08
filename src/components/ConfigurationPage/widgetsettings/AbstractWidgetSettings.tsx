@@ -24,6 +24,18 @@ export class AbstractWidgetSettings {
     });
   }
 
+  public copy(): AbstractWidgetSettings {
+    return new AbstractWidgetSettings({
+      sections: this.sections.map((section) => {
+        return {
+          key: section.key,
+          title: section.title,
+          properties: section.properties.map((it) => it.copy()),
+        };
+      }),
+    });
+  }
+
   protected get sections() {
     return this._sections;
   }
@@ -38,8 +50,8 @@ export class AbstractWidgetSettings {
     this.makeIndex();
   }
 
-  public reset():void {
-    this._sections=[];
+  public reset(): void {
+    this._sections = [];
     this._index.clear();
   }
 

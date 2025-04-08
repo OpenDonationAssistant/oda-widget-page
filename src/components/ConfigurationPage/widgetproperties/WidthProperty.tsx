@@ -66,10 +66,18 @@ export class WidthProperty extends DefaultWidgetProperty<number> {
         overflowX: "hidden",
       };
     }
-    return { };
+    return {};
   }
 
   markup(): ReactNode {
     return <this.comp />;
+  }
+
+  public copy(): WidthProperty {
+    return new WidthProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+    });
   }
 }

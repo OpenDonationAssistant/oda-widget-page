@@ -74,4 +74,9 @@ export class ReelItemListProperty extends DefaultWidgetProperty<string[]> {
   markup(): ReactNode {
     return <ReelItemListPropertyComponent property={this} />;
   }
+
+  public copy(): ReelItemListProperty {
+    const copy = new ReelItemListProperty();
+    return copy;
+  }
 }

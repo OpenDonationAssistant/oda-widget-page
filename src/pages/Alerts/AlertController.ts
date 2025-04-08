@@ -20,6 +20,7 @@ import { AnimationProperty } from "../../components/ConfigurationPage/widgetprop
 import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
 import { VolumeProperty } from "../../components/ConfigurationPage/widgetproperties/VolumeProperty";
+import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -464,6 +465,7 @@ export class AlertController {
           .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
         log.debug("setting title");
         this.state.title = title;
+        this.state.showTitle = (alert.get("showHeader") as BooleanProperty).value;
 
         const headerFont = alert.get("headerFont") as AnimatedFontProperty;
         this.state.fonts.push(headerFont.value.family);
@@ -546,7 +548,6 @@ export class AlertController {
   private renderMessage(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("messageAppearanceDelay") as number;
     const messageFont = alert.get("font") as AnimatedFontProperty;
-    log.debug({ delay: delay }, "message delay");
 
     return sleep(delay)
       .then(() => {
@@ -616,6 +617,7 @@ export class AlertController {
         log.debug("setting message");
         this.state.messageClassName = messageFont.calcClassName() ?? "";
         this.state.message = data.message;
+        this.state.showMessage = (alert.get("showMessage") as BooleanProperty).value;
       })
       .then(() => {
         const animation = alert.get("messageAppearance") as AnimationProperty;
@@ -682,7 +684,7 @@ export class AlertController {
     this.state.messageContainerClassName = animation.classname();
     this.state.messageContainerStyle = animation.calcCss();
     return Promise.all([sleep(animation.value.duration), sleep(waiting)]).then(
-      () => this.state.cleareMessage(),
+      () => this.state.clearMessage(),
     );
   }
 

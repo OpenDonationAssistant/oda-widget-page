@@ -1,12 +1,10 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useLoaderData } from "react-router";
-import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
-import { makeAutoObservable } from "mobx";
 import {
   DefaultWidgetStore,
   WidgetStore,
@@ -20,27 +18,11 @@ import {
   PaymentPageConfigContext,
 } from "../MediaWidget/PaymentPageConfig";
 import classes from "./ConfigurationPage.module.css";
-
-export class Selection {
-  private _id: string | null = null;
-
-  constructor() {
-    makeAutoObservable(this);
-  }
-
-  public get id(): string | null {
-    return this._id;
-  }
-
-  public set id(value: string) {
-    this._id = value;
-  }
-}
-
-export const SelectionContext = createContext<Selection>(new Selection());
+import { SelectedIndexContext, SelectedIndexStore } from "../../stores/SelectedIndexStore";
 
 const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
-  const selection = useContext(SelectionContext);
+  const selection = useContext(SelectedIndexContext);
+
   return (
     <>
       {widgetStore.list.map((data, index) => (
@@ -153,7 +135,7 @@ const AddWidgetComponent = observer(
 
 export default function ConfigurationPage({}: {}) {
   const { recipientId } = useLoaderData() as WidgetData;
-  const selection = useRef(new Selection());
+  const selection = useRef(new SelectedIndexStore());
   const widgetStore = new DefaultWidgetStore();
 
   return (
@@ -165,13 +147,13 @@ export default function ConfigurationPage({}: {}) {
         <h1 className={`${classes.header}`}>Виджеты</h1>
         {widgetStore?.list && (
           <div className="widget-list">
-            <SelectionContext.Provider value={selection.current}>
+            <SelectedIndexContext.Provider value={selection.current}>
               <PaymentPageConfigContext.Provider
                 value={new PaymentPageConfig(recipientId)}
               >
                 <WidgetList />
               </PaymentPageConfigContext.Provider>
-            </SelectionContext.Provider>
+            </SelectedIndexContext.Provider>
             <AddWidgetComponent widgetStore={widgetStore} />
           </div>
         )}

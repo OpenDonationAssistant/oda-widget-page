@@ -33,6 +33,15 @@ export class BooleanProperty extends DefaultWidgetProperty<boolean> {
     </LabeledContainer>
   ));
 
+  copy() {
+    return new BooleanProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
+
   markup(): ReactNode {
     return <this.comp />;
   }

@@ -7,7 +7,7 @@ import { createContext } from "react";
 
 export interface WidgetStore {
   list: Widget[];
-  addWidget(type: string): Promise<void>;
+  addWidget(type: string): Promise<Widget | null>;
   deleteWidget(id: string): Promise<void>;
   moveWidget(originIndex: number, index: number): Promise<void>;
   search({ type }: { type?: string }): Widget[];
@@ -26,7 +26,7 @@ export class DefaultWidgetStore implements WidgetStore {
   }
 
   public search({ type }: { type?: string }) {
-    return this.list.filter(widget => widget.type === type);
+    return this.list.filter((widget) => widget.type === type);
   }
 
   private client() {
@@ -61,13 +61,15 @@ export class DefaultWidgetStore implements WidgetStore {
       });
   }
 
-  async addWidget(type: string): Promise<void> {
+  async addWidget(type: string): Promise<Widget | null> {
     const response = await this.client().add({
       type: type,
       sortOrder: this.list.length,
     });
     log.debug({ response: response.data }, "add widget response");
-    this.list.push(Widget.fromJson(response.data, this)!);
+    const widget = Widget.fromJson(response.data, this);
+    this.list.push(widget!);
+    return widget;
   }
 
   async deleteWidget(id: string): Promise<void> {
@@ -90,8 +92,8 @@ export class DefaultWidgetStore implements WidgetStore {
 
 export const WidgetStoreContext = createContext<WidgetStore>({
   list: [],
-  addWidget: (type: string) => Promise.resolve(),
+  addWidget: (type: string) => Promise.resolve(null),
   deleteWidget: (id: string) => Promise.resolve(),
   moveWidget: (originIndex: number, index: number) => Promise.resolve(),
-  search: ({ type }: { type?: string }) => []
+  search: ({ type }: { type?: string }) => [],
 });

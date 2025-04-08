@@ -18,7 +18,6 @@ import { observer } from "mobx-react-lite";
 import { Widget } from "../../types/Widget";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
 import { makeAutoObservable, reaction } from "mobx";
-import { SelectionContext } from "./ConfigurationPage";
 import { AbstractWidgetSettings } from "./widgetsettings/AbstractWidgetSettings";
 import WidgetUrlModal from "./WidgetUrlModal";
 import DonatonWidget from "../../pages/Donaton/DonatonWidget";
@@ -35,6 +34,8 @@ import { DonatersTopList } from "../../pages/DonatersTopList/DonatersTopList";
 import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListWidgetSettings";
 import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
 import { getRndInteger } from "../../utils";
+import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
+import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -110,7 +111,7 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
 });
 
 const NameComponent = observer(({ widget }: { widget: Widget }) => {
-  const selection = useContext(SelectionContext);
+  const selection = useContext(SelectedIndexContext);
   return (
     <div
       className="widget-header-toogler"
@@ -209,7 +210,8 @@ function runReel(id: string, conf: any, config: AbstractWidgetSettings) {
 
 export const WidgetConfiguration = observer(
   ({ widget }: WidgetConfigurationProps) => {
-    const selection = useContext(SelectionContext);
+    const store = useContext(WidgetStoreContext);
+    const selection = useContext(SelectedIndexContext);
     const { conf } = useLoaderData() as WidgetData;
     const { t } = useTranslation();
     const renameModalState = useRef(new RenameModalState(widget));
@@ -301,6 +303,22 @@ export const WidgetConfiguration = observer(
                   ),
                   onClick: () => {
                     renameModalState.current.show();
+                  },
+                },
+                {
+                  key: "copy-widget",
+                  label: (
+                    <Flex gap={5}>
+                      <span className="material-symbols-sharp">
+                        content_copy
+                      </span>
+                      <span>{t("button-copy-widget")}</span>
+                    </Flex>
+                  ),
+                  onClick: () => {
+                    if (widget.type !== "payment-alerts") {
+                      widget.copy();
+                    }
                   },
                 },
                 {

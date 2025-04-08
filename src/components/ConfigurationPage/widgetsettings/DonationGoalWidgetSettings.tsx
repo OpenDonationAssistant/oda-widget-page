@@ -66,7 +66,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "backgroundImage",
         }),
         new WidthProperty({
-          name: "width"
+          name: "width",
         }),
         new HeightProperty({
           name: "height",
@@ -124,7 +124,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new WidthProperty({
-          name: "titleWidth"
+          name: "titleWidth",
         }),
         new HeightProperty({
           name: "titleHeight",
@@ -184,7 +184,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new HeightProperty({
-          name: "outerHeight"
+          name: "outerHeight",
         }),
         new BorderProperty({
           name: "outerBorder",
@@ -223,7 +223,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           },
         }),
         new HeightProperty({
-          name:"filledHeight"
+          name: "filledHeight",
         }),
         new BorderProperty({
           name: "innerBorder",
@@ -253,6 +253,18 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
       ],
     });
+  }
+
+  public copy(): DonationGoalWidgetSettings {
+    const settings = new DonationGoalWidgetSettings();
+    settings.sections = this.sections.map((section) => {
+      return {
+        key: section.key,
+        title: section.title,
+        properties: section.properties.map((it) => it.copy()),
+      };
+    });
+    return settings;
   }
 
   public help(): ReactNode {

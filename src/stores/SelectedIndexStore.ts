@@ -3,6 +3,7 @@ import { createContext } from "react";
 
 export class SelectedIndexStore {
   private _index: number | null = null;
+  private _id: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -14,6 +15,14 @@ export class SelectedIndexStore {
 
   public set index(index: number | null) {
     this._index = index;
+  }
+
+  public get id(){
+    return this._id;
+  }
+
+  public set id(id: string | null){
+    this._id = id;
   }
 }
 

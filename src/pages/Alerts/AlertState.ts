@@ -82,13 +82,13 @@ export class AlertState {
     this._headerClassName = "";
   }
 
-  public cleareMessage() {
-    // this._showMessage = true;
-    // this._message = null;
-    // this._messageStyle = {};
-    // this._messageImageStyle = {};
-    // this._messageClassName = "";
-    // this._messageContainerClassName = "";
+  public clearMessage() {
+     this._showMessage = false;
+     this._message = null;
+     this._messageStyle = {};
+     this._messageImageStyle = {};
+     this._messageClassName = "";
+     this._messageContainerClassName = "";
   }
 
   public clear() {
@@ -386,6 +386,15 @@ export class AlertState {
   public set imageVolume(volume: number){
     this._imageVolume = volume;
   }
+
+  public set showMessage(showMessage: boolean){
+    this._showMessage = showMessage;
+  }
+
+  public set showTitle(show: boolean){
+    this._showTitle = show;
+  }
+
 }
 
 export const AlertStateContext = createContext(new AlertState());

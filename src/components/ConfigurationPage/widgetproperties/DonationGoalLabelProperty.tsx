@@ -88,6 +88,12 @@ export class DonationGoalLabelProperty extends DefaultWidgetProperty<string> {
     });
   }
 
+  copy() {
+    const newCopy = new DonationGoalLabelProperty();
+    newCopy.value = this.value;
+    return newCopy;
+  }
+
   // TODO: локализовать
   markup(): ReactNode {
     return (

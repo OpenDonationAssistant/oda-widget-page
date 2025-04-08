@@ -38,7 +38,16 @@ export class VolumeProperty extends DefaultWidgetProperty<number> {
       displayName: displayName ?? "Громкость",
     });
   }
+
   markup(): ReactNode {
     return <VolumePropertyComponent property={this} />;
+  }
+
+  public copy(): VolumeProperty {
+    return new VolumeProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+    });
   }
 }

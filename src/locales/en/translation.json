@@ -267,5 +267,6 @@
   "widget-alert-message-start-point-x":"X offset for message",
   "widget-alert-message-start-point-y":"Y offset for message",
   "button-add-variable-rule":"Add variable",
-  "button-add-number-variable-rule":"Add number variable"
+  "button-add-number-variable-rule":"Add number variable",
+  "button-copy-widget": "Make a copy"
 }

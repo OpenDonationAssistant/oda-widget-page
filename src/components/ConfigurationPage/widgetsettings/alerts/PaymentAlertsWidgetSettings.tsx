@@ -22,7 +22,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     this._alerts = defaultAlert;
   }
 
-  public get alerts(){
+  public get alerts() {
     return this._alerts;
   }
 

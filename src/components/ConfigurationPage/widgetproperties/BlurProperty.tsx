@@ -30,7 +30,7 @@ export class BlurProperty extends DefaultWidgetProperty<BlurPropertyValue> {
     });
   }
 
-  public calcCss(): CSSProperties{
+  public calcCss(): CSSProperties {
     if (this.value.enabled) {
       return { filter: `blur(${this.value.blur}px)` };
     }
@@ -65,6 +65,15 @@ export class BlurProperty extends DefaultWidgetProperty<BlurPropertyValue> {
       </LabeledContainer>
     );
   });
+
+  copy() {
+    return new BlurProperty({
+      name: this.name,
+      value: produce(toJS(this.value), (draft) => draft),
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
 
   markup(): ReactNode {
     return <this.BlurPropertyComponent />;

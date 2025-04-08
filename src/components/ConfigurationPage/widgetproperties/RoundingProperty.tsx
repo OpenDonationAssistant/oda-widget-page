@@ -44,12 +44,12 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
               toJS(property.value),
               (draft: RoundingValue) => {
                 draft.isSame = selected;
-                if (draft.isSame){
+                if (draft.isSame) {
                   draft.topRight = draft.topLeft;
                   draft.bottomRight = draft.topLeft;
                   draft.bottomLeft = draft.topLeft;
                 }
-                if (draft.isSame === null){
+                if (draft.isSame === null) {
                   draft.topLeft = 0;
                   draft.topRight = 0;
                   draft.bottomRight = 0;
@@ -223,5 +223,14 @@ export class RoundingProperty extends DefaultWidgetProperty<RoundingValue> {
 
   markup(): ReactNode {
     return <Comp property={this} />;
+  }
+
+  public copy() {
+    return new RoundingProperty({
+      name: this.name,
+      displayName: this.displayName,
+      value: produce(toJS(this.value), draft => draft),
+      help: this.help,
+    });
   }
 }

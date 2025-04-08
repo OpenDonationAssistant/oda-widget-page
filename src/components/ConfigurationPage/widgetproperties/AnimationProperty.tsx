@@ -98,6 +98,14 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
     }
   }
 
+  copy() {
+    return new AnimationProperty({
+      name: this.name,
+      value: produce(toJS(this.value), draft => draft),
+      displayName: this.displayName,
+      target: this._target,
+    });
+  }
   public markup() {
     return <Component property={this} />;
   }

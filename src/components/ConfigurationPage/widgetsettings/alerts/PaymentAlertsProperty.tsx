@@ -48,10 +48,7 @@ export const RenameButton = observer(({ alert }: { alert: Alert }) => {
           toggleModal();
         }}
       >
-        <Input
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
+        <Input value={newName} onChange={(e) => setNewName(e.target.value)} />
       </Modal>
       <button className="menu-button" onClick={toggleModal}>
         <span className="material-symbols-sharp">stylus</span>
@@ -132,6 +129,7 @@ const PaymentAlertsPropertyComponent = observer(
 
 export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
   private _oldValue: any[] = [];
+
   constructor() {
     super({
       name: "alerts",
@@ -190,7 +188,7 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
     }
     for (let i = 0; i < valueToCheck.length; i++) {
       log.debug(
-        { new: toJS(valueToCheck[i]), old: toJS(this._oldValue[i])},
+        { new: toJS(valueToCheck[i]), old: toJS(this._oldValue[i]) },
         "compare alerts",
       );
       if (!this.deepEqual(toJS(valueToCheck[i]), toJS(this._oldValue[i]))) {
@@ -213,6 +211,23 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
 
   removeAlert(id: string) {
     this.value = this.value.filter((alert) => alert.id !== id);
+  }
+
+  copy() {
+    const copied = new PaymentAlertsProperty();
+    this._value.forEach(
+      (alert) =>
+        copied.addAlert(new Alert({
+          audio: alert.audio ?? undefined,
+          image: alert.image ?? undefined,
+          video: alert.video ?? undefined,
+          triggers: undefined,
+          properties: alert.properties.map((prop) => prop.copy()),
+          removeFn: copied.removeAlert,
+          addFn: copied.addAlert,
+        }))
+    );
+    return copied;
   }
 
   markup(): ReactNode {

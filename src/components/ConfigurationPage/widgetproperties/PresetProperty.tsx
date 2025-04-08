@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { WidgetProperty } from "./WidgetProperty";
+import { DefaultWidgetProperty, WidgetProperty } from "./WidgetProperty";
 import { AbstractWidgetSettings } from "../widgetsettings/AbstractWidgetSettings";
 import { PresetStore } from "../../../stores/PresetStore";
 import PresetPropertyComponent from "./PresetPropertyComponent";
@@ -7,13 +7,9 @@ import { Preset } from "../../../types/Preset";
 import { log } from "../../../logging";
 import { Alert } from "../widgetsettings/alerts/Alerts";
 
-export class PresetProperty implements WidgetProperty<string> {
+export class PresetProperty extends DefaultWidgetProperty<string> {
   private _settings: AbstractWidgetSettings | Alert;
   private _store: PresetStore;
-  public name: string = "preset";
-  public value: string = "";
-  public displayName: string = "widget-preset";
-  public changed: boolean = false;
 
   constructor({
     type,
@@ -22,19 +18,36 @@ export class PresetProperty implements WidgetProperty<string> {
     type: string;
     settings: AbstractWidgetSettings | Alert;
   }) {
-    this.value = type;
+    super({ name: "preset", value: type, displayName: "widget-preset" });
     this._settings = settings;
     this._store = new PresetStore();
+  }
+  protected _name: string = "preset";
+  protected _value: string = "unknown";
+  protected _initialValue: string = "unknown";
+  protected _displayName: string = "Готовые шаблоны";
+  protected _changed: boolean = false;
+
+  public get help(): string | undefined {
+    return "";
+  }
+
+  protected deepEqual(x: any, y: any): boolean {
+    return true;
   }
 
   markSaved: () => void = () => {};
 
+  copy() {
+    return new PresetProperty({ type: this.value, settings: this._settings });
+  }
+
   load(): Promise<Preset[]> {
-    log.debug({ property: this}, "load presets");
+    log.debug({ property: this }, "load presets");
     return this._store.for(this.value);
   }
 
-  apply(preset: Preset){
+  apply(preset: Preset) {
     preset.applyTo(this._settings, this.value);
   }
 

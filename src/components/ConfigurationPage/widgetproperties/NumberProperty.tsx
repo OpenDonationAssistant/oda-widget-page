@@ -22,6 +22,15 @@ export class NumberProperty extends DefaultWidgetProperty<number> {
     this._addon = addon;
   }
 
+  copy(){
+    return new NumberProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+      addon: this._addon
+    });
+  }
+
   comp = observer(() => {
     return (
       <LabeledContainer displayName={this.displayName}>

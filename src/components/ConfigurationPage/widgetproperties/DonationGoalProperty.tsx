@@ -170,7 +170,9 @@ const DonationGoalPropertyComponent = observer(
             return {
               key: index,
               label: goal.briefDescription,
-              children: <ItemComponent property={property} goal={goal} index={index} />,
+              children: (
+                <ItemComponent property={property} goal={goal} index={index} />
+              ),
             };
           })}
         />
@@ -196,6 +198,10 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
       ],
       displayName: "Цель",
     });
+  }
+
+  copy() {
+    return new DonationGoalProperty();
   }
 
   deleteGoal(index: number) {

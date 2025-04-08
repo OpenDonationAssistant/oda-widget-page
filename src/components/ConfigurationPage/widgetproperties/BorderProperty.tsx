@@ -318,6 +318,15 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
     return `${border.width}px ${border.type} ${border.color}`;
   }
 
+  copy() {
+    return new BorderProperty({
+      name: this.name,
+      value: produce(toJS(this.value), draft => draft),
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
+
   markup(): ReactNode {
     return <this.Comp />;
   }

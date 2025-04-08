@@ -268,5 +268,6 @@
   "widget-alert-message-start-point-x": "Смещение по горизонтали для сообщения",
   "widget-alert-message-start-point-y": "Смещение по вертикали для сообщения",
   "button-add-variable-rule": "Добавить переменную",
-  "button-add-number-variable-rule": "Добавить числовую переменную"
+  "button-add-number-variable-rule": "Добавить числовую переменную",
+  "button-copy-widget": "Сделать копию"
 }

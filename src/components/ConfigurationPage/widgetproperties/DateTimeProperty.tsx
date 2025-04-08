@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -6,6 +6,7 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { log } from "../../../logging";
 import { toJS } from "mobx";
+import { produce } from "immer";
 
 export interface DateTimePropertyValue {
   timestamp?: Date;
@@ -48,6 +49,15 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
       </>
     );
   });
+
+  copy() {
+    return new DateTimeProperty({
+      name: this.name,
+      value: produce(toJS(this.value), draft => draft),
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
 
   markup(): ReactNode {
     return <this.DateTimePropertyComponent />;

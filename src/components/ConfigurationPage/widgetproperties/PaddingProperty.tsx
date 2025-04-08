@@ -188,6 +188,15 @@ export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue>
     this._target = target ?? "padding";
   }
 
+  copy() {
+    return new PaddingProperty({
+      name: this.name,
+      value: produce(toJS(this.value), (draft) => draft),
+      displayName: this.displayName,
+      target: this._target,
+    });
+  }
+
   calcCss(): CSSProperties {
     if (this._target === "padding") {
       return this.calcPadding();

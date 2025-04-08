@@ -92,4 +92,14 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
       </LabeledContainer>
     );
   }
+
+  public copy(): SingleChoiceProperty {
+    return new SingleChoiceProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+      options: this._options,
+      selectionType: this._selectionType,
+    });
+  }
 }

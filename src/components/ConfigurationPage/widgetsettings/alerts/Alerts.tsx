@@ -161,16 +161,21 @@ export class Alert {
   }
 
   public copy(): Alert {
+    const updated = this._properties.map(prop => prop.copy());
     const alert = new Alert({
       id: undefined,
       audio: produce(toJS(this._audio), (draft) => draft) || undefined,
       image: produce(toJS(this._image), (draft) => draft) || undefined,
       video: produce(toJS(this._video), (draft) => draft) || undefined,
       triggers: produce(toJS(this._triggers), (draft) => draft),
-      properties: produce(toJS(this._properties), (draft) => draft),
+      properties: updated,
       removeFn: this._removeFn,
       addFn: this._addFn,
     });
+    log.debug(
+      { added: updated, origin: toJS(this._properties) },
+      "created copy properties",
+    );
     this._addFn(alert);
     return alert;
   }

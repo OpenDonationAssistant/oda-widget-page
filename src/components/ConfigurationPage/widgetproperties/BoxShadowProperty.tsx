@@ -208,6 +208,15 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
     return { boxShadow: result };
   }
 
+  copy() {
+    return new BoxShadowProperty({
+      name: this.name,
+      value: produce(toJS(this.value), draft => draft),
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
+
   markup(): ReactNode {
     return <this.BoxShadowPropertyComponent />;
   }

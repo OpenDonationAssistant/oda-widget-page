@@ -17,6 +17,7 @@ export interface WidgetProperty<Type> {
   markup: () => ReactNode;
   changed: boolean;
   markSaved: () => void;
+  copy: () => WidgetProperty<Type>;
 }
 
 export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
@@ -104,6 +105,18 @@ export class DefaultWidgetProperty<Type> implements WidgetProperty<Type> {
   }
   public set displayName(value: string) {
     this._displayName = value;
+  }
+
+  public copy(): WidgetProperty<Type> {
+    return {
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+      markup: this.markup,
+      changed: this.changed,
+      markSaved: this.markSaved,
+      copy: () => this
+    };
   }
 
   protected deepEqual(x: any, y: any): boolean {

@@ -87,6 +87,12 @@ export class DonatersTopListCarouselProperty extends DefaultWidgetProperty<Donat
     });
   }
 
+  copy() {
+    const newCopy = new DonatersTopListCarouselProperty();
+    newCopy.value = produce(toJS(this.value), (draft) => draft);
+    return newCopy;
+  }
+
   markup(): ReactNode {
     return <DonatersTopListCarouselPropertyComponent property={this} />;
   }

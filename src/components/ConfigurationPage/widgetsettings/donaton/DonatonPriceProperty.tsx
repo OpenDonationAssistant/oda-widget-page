@@ -72,6 +72,10 @@ export class DonatonPriceProperty extends DefaultWidgetProperty<DonationPrice> {
     });
   }
 
+  public copy(){
+    return new DonatonPriceProperty();
+  }
+
   markup(): ReactNode {
     return <DonationPricePropertyComponent property={this} />;
   }

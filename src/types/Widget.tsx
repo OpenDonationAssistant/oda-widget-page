@@ -181,6 +181,15 @@ export class Widget {
     });
   }
 
+  public copy(): Promise<Widget | null> {
+    return this._store.addWidget(this.type).then((widget) => {
+      if (widget) {
+        widget.setConfig(this.config.copy());
+      }
+      return widget;
+    });
+  }
+
   private setConfig(config: AbstractWidgetSettings) {
     this._config = config;
   }
@@ -232,11 +241,9 @@ export class Widget {
       `${process.env.REACT_APP_ENDPOINT}/${this._type}/${this._id}?refresh-token=${tokens.refreshToken}`,
     );
   }
-
   async delete(): Promise<void> {
     await this._store.deleteWidget(this._id);
   }
-
   public get id(): string {
     return this._id;
   }

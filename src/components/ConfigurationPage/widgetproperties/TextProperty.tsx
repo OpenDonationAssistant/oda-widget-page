@@ -28,7 +28,18 @@ const TextPropertyComponent = observer(
 );
 
 export class TextProperty extends DefaultWidgetProperty<string> {
+
   markup(): ReactNode {
     return <TextPropertyComponent property={this} />;
   }
+
+  public copy(): TextProperty {
+    return new TextProperty({
+      name: this.name,
+      value: this.value,
+      displayName: this.displayName,
+      help: this.help,
+    });
+  }
+
 }
