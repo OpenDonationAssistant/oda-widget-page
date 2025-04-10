@@ -8,3 +8,49 @@
   border-radius: 16px;
   background-color: var(--oda-color-100);
 }
+
+.widgetpreviewcontainer {
+  border-radius: 9px;
+  background-color: var(--oda-color-150);
+  height: 210px;
+  width: 660px;
+  padding: 9px 15px;
+  &:hover {
+    cursor: pointer;
+    background-color: var(--oda-color-250);
+  }
+}
+
+.addwidgetcontainer {
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+
+.section {
+  font-size: 18px;
+  color: var(--oda-color-500);
+  text-align: center;
+  width: 100%;
+}
+
+.widgetpreviewimage {
+  flex-shrink: 0;
+  width: 240px;
+  height: 160px;
+  border-radius: 12px;
+  & img {
+    width: 240px;
+    height: 160px;
+    border-radius: 12px;
+  }
+}
+
+.widgetpreviewtitle {
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.widgetpreviewdescription {
+  font-size: 15px;
+  color: #707080;
+}

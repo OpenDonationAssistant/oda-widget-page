@@ -18,7 +18,12 @@ import {
   PaymentPageConfigContext,
 } from "../MediaWidget/PaymentPageConfig";
 import classes from "./ConfigurationPage.module.css";
-import { SelectedIndexContext, SelectedIndexStore } from "../../stores/SelectedIndexStore";
+import {
+  SelectedIndexContext,
+  SelectedIndexStore,
+} from "../../stores/SelectedIndexStore";
+import Modal from "../Modal/Modal";
+import AddIcon from "../../icons/AddIcon";
 
 const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectedIndexContext);
@@ -80,52 +85,103 @@ const WidgetList = observer(({}) => {
   );
 });
 
+const WidgetPreviewComponent = observer(
+  ({
+    widget,
+  }: {
+    widget: { title: string; description: string; preview: string };
+  }) => {
+    const { t } = useTranslation();
+
+    return (
+      <Flex
+        className={`${classes.widgetpreviewcontainer}`}
+        align="center"
+        gap={12}
+      >
+        <div className={`${classes.widgetpreviewimage}`}>
+          {widget.preview && <img src={widget.preview} />}
+        </div>
+        <Flex vertical gap={9}>
+          <div className={`${classes.widgetpreviewtitle}`}>
+            {t(widget.title)}
+          </div>
+          <div className={`${classes.widgetpreviewdescription}`}>
+            {t(widget.description)}
+          </div>
+        </Flex>
+      </Flex>
+    );
+  },
+);
+
 const AddWidgetComponent = observer(
   ({ widgetStore }: { widgetStore: WidgetStore }) => {
     const { t } = useTranslation();
+    const selection = useContext(SelectedIndexContext);
     const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
+
+    const NewWidgetSection = observer(({ category }: { category: string }) => {
+      return (
+        <>
+          {WIDGET_TYPES.filter((type) => type.category === category).map(
+            (type) => (
+              <div
+                onClick={() => {
+                  widgetStore.addWidget(type.name).then(() => {
+                    setShowAddWidgetPopup(false);
+                    selection.index = widgetStore.list.length - 1;
+                    selection.id =
+                      widgetStore.list.at(selection.index)?.id || null;
+                  });
+                }}
+              >
+                <WidgetPreviewComponent widget={type} />
+              </div>
+            ),
+          )}
+        </>
+      );
+    });
 
     return (
       <>
+        <Modal
+          size="big"
+          title="Добавление виджета"
+          show={showAddWidgetPopup}
+          showSubmitButton={false}
+          onSubmit={() => {
+            setShowAddWidgetPopup(false);
+          }}
+          onDecline={() => {
+            setShowAddWidgetPopup(false);
+          }}
+        >
+          <Flex
+            gap={12}
+            wrap={true}
+            justify="center"
+            align="center"
+            className={`${classes.addwidgetcontainer} full-width`}
+          >
+            <div className={`${classes.section}`}>Для стрима</div>
+            <NewWidgetSection category="onscreen" />
+            <div className={`${classes.section}`}>Медиа</div>
+            <NewWidgetSection category="media" />
+            <div className={`${classes.section}`}>Инструменты стримера</div>
+            <NewWidgetSection category="internal" />
+          </Flex>
+        </Modal>
         {!showAddWidgetPopup && (
           <div
             className="oda-btn-default"
-            onClick={() => setShowAddWidgetPopup(!showAddWidgetPopup)}
-            style={{
-              marginTop: "20px",
-              width: "fit-content",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
+            onClick={() => setShowAddWidgetPopup(true)}
           >
             <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">add</span>
+              <AddIcon color="var(--oda-label-background-color)" />
               <div>{t("button-addwidget")}</div>
             </Flex>
-          </div>
-        )}
-        {showAddWidgetPopup && (
-          <div className="new-widget-popup">
-            {WIDGET_TYPES.map((type) => (
-              <div
-                className="new-widget-type-button"
-                onClick={() => {
-                  widgetStore
-                    .addWidget(type.name)
-                    .then(() => setShowAddWidgetPopup(false));
-                }}
-              >
-                <img className="widget-icon" src={`/icons/${type.name}.png`} />
-                <div>{t(type.description)}</div>
-              </div>
-            ))}
-            <div
-              className="new-widget-type-button"
-              onClick={() => setShowAddWidgetPopup(false)}
-              style={{ border: "none", paddingTop: "33px" }}
-            >
-              <img className="widget-icon" src={`/icons/close.png`} />
-            </div>
           </div>
         )}
       </>
@@ -142,21 +198,27 @@ export default function ConfigurationPage({}: {}) {
     <WidgetStoreContext.Provider value={widgetStore}>
       <Content
         className={`${classes.content} newstyle`}
-        style={{ overflow: "initial", paddingBottom: "80px" }}
+        style={{
+          overflow: "initial",
+          paddingBottom: "12px",
+          marginBottom: "30px",
+        }}
       >
-        <h1 className={`${classes.header}`}>Виджеты</h1>
-        {widgetStore?.list && (
-          <div className="widget-list">
-            <SelectedIndexContext.Provider value={selection.current}>
+        <SelectedIndexContext.Provider value={selection.current}>
+          <Flex justify="space-between" align="center">
+            <h1 className={`${classes.header}`}>Виджеты</h1>
+            <AddWidgetComponent widgetStore={widgetStore} />
+          </Flex>
+          {widgetStore?.list && (
+            <div className="widget-list">
               <PaymentPageConfigContext.Provider
                 value={new PaymentPageConfig(recipientId)}
               >
                 <WidgetList />
               </PaymentPageConfigContext.Provider>
-            </SelectedIndexContext.Provider>
-            <AddWidgetComponent widgetStore={widgetStore} />
-          </div>
-        )}
+            </div>
+          )}
+        </SelectedIndexContext.Provider>
       </Content>
     </WidgetStoreContext.Provider>
   );

@@ -18,69 +18,112 @@ import { tokenRequest } from "../pages/Login/Login";
 
 export const WIDGET_TYPES = [
   {
+    name: "payment-alerts",
+    title: "Алерты",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/alert.png",
+    description: "Показывает оповещения о получаемых донатах.",
+    create: () => new PaymentAlertsWidgetSettings(),
+  },
+  {
+    name: "donationgoal",
+    title: "Цели сбора",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/donationgoal.png",
+    description:
+      "Позволяет задать цели сбора донатов. При добавлении виджета и добавлении в нем целей, они отображаются на странице доната и доступны для выбора, а сам виджет можно показать на стриме и отслеживать прогресс.",
+    create: () => new DonationGoalWidgetSettings(),
+  },
+  {
+    name: "donaters-top-list",
+    title: "Список донатеров",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/toplist.png",
+    description:
+      "Отображает список или топ-донатеров или последних донатеров за промежуток времени (день, месяц)",
+    create: () => new DonatersTopListWidgetSettings(),
+  },
+  {
     name: "media",
-    title: "Media Player",
-    description: "Music Player",
+    title: "Медиаплеер",
+    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    category: "media",
+    description:
+      "Позволяет воспроизвести реквесты (музыки) из донатов. Поддерживается YouTube и VKVideo. Если реквестов нет, можно в плеере включить свой плейлист из YouTube - если будет реквест в донате, плеер автоматически переключится на него, а потом обратно на свой плейлист.",
     create: () => {
       return new MediaWidgetSettings();
     },
   },
   {
     name: "payments",
-    description: "Payment History",
+    title: "События",
+    category: "internal",
+    preview: "https://api.oda.digital/assets/payments.png",
+    description:
+      "Показывает список донатов, обновляется в реальном времени. Также есть кнопки для прерывания/повтора алерта на стриме.",
     create: () => new PaymentsWidgetSettings(),
   },
   {
-    name: "player-control",
-    description: "Music Player Remote Control",
-    create: () => new PlayerControlWidgetSettings(),
-  },
-  {
-    name: "player-info",
-    description: "Music Player Info",
-    create: () => new PlayerInfoWidgetSettings(),
-  },
-  {
-    name: "donaters-top-list",
-    description: "Donaters List",
-    create: () => new DonatersTopListWidgetSettings(),
-  },
-  {
     name: "donation-timer",
-    description: "Donation Timer",
+    title: "Счётчик времени без поддержки",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/donationtimer.png",
+    description:
+      "Отображает время прошедшее после последней поддержки. Обновляется в реальном времени.",
     create: () => new DonationTimerWidgetSettings(),
   },
   {
-    name: "donationgoal",
-    description: "Donation Goals",
-    create: () => new DonationGoalWidgetSettings(),
+    name: "player-info",
+    title: "Информация для медиаплеера",
+    category: "media",
+    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    description:
+      "Выводит информацию для медиаплеера: название и количество заказов в очереди",
+    create: () => new PlayerInfoWidgetSettings(),
   },
   {
     name: "reel",
-    description: "Roulette",
+    title: "Рулетка",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    description:
+      "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
     create: () => new ReelWidgetSettings(),
   },
   {
-    name: "payment-alerts",
-    description: "Payment Alerts",
-    create: () => new PaymentAlertsWidgetSettings(),
-  },
-  {
     name: "donaton",
-    description: "Donaton",
+    title: "Таймер до конца трансляции",
+    category: "onscreen",
+    preview: "https://api.oda.digital/assets/donaton.png",
+    description:
+      "Выводит таймер до конца трансляции. Донаты увеличивают время таймера. Подходит для донатофонов",
     create: () => new DonatonWidgetSettings(),
   },
   {
     name: "player-popup",
-    description: "Video Popup",
+    title: "Видео из медиаплеера",
+    category: "media",
+    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    description: "Показывает видео из заказанных медиа в медиаплеере",
     create: () => {
       return new PlayerPopupWidgetSettings();
     },
   },
   {
     name: "rutonychat",
+    title: "Rutony Chat Integration",
+    category: "internal",
+    preview: "",
     description: "Rutony Chat Integration",
     create: () => new RutonyChatSettings(),
+  },
+  {
+    name: "player-control",
+    title: "Пульт от медиаплеера",
+    category: "media",
+    preview: "",
+    description: "Позволяет удалённо управлять медиаплеером",
+    create: () => new PlayerControlWidgetSettings(),
   },
 ];
 

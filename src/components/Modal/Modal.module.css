@@ -1,12 +1,33 @@
 .modal {
   position: absolute;
   top: calc(50% - 250px);
-  left: calc(50% - 360px);
-  width: 720px;
   z-index: 200;
   border-radius: 12px;
   background-color: var(--oda-panel-backgroun-color);
   padding: 12px 18px;
+}
+
+.normalmodal {
+  width: 720px;
+  left: calc(50% - 360px);
+}
+
+.bigmodal{
+  top: 10%;
+}
+
+@media(min-width: 1600px){
+  .bigmodal {
+    width: 1500px;
+    left: calc(50% - 750px);
+  }
+}
+
+@media(max-width: 1600px){
+  .bigmodal {
+    width: 750px;
+    left: calc(50% - 330px);
+  }
 }
 
 .back {

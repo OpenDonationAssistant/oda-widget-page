@@ -33,7 +33,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
     () => {
       log.debug({ index: index.index }, "new trigger selected index");
       if (index.index != null) {
-        if ((index.index == rule.triggers.length)) {
+        if (index.index == rule.triggers.length) {
           setTrigger(null);
           setTriggerId("");
         } else {
@@ -144,7 +144,6 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
 });
 
 const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
-  const actionController = useContext(AutomationActionControllerContext);
   const [selectedIndex] = useState<SelectedIndexStore>(
     new SelectedIndexStore(),
   );

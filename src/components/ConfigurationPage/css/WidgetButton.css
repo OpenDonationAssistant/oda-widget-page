@@ -80,12 +80,12 @@ button.ant-btn {
   border: 1px solid #674afd;
 }
 
-.widget-button.widget-button-accept {
+.widget-button-accept {
   color: var(--oda-label-background-color);
   height: 36px;
   font-weight: 900;
   font-size: 14px;
-  margin-left: 10px;
+  margin-left: 20px;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 15px;
