@@ -8,7 +8,7 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
-import { Header as AntHeader } from "antd/es/layout/layout";
+import { Header as AntHeader, Content } from "antd/es/layout/layout";
 import PlayerControl from "./components/PlayerControl/PlayerControl";
 import ConfigurationPage from "./components/ConfigurationPage/ConfigurationPage";
 import "./index.css";
@@ -81,6 +81,9 @@ function detectPage(path: string): Page {
   if (path.endsWith("automation-page")) {
     return Page.AUTOMATION;
   }
+  if (path.endsWith("gateways")) {
+    return Page.GATEWAYS;
+  }
   if (path.indexOf("guides") > 0) {
     return Page.GUIDES;
   }
@@ -127,15 +130,23 @@ function ConfigurationPageTemplate() {
   }`,
             }}
           />
-
           <Toolbar page={page} />
           <Flex
             style={{ marginLeft: "24px", width: "100%", marginRight: "24px" }}
             className="full-width"
           >
-            <Outlet />
+            <Content
+              className={`newstyle`}
+              style={{
+                paddingTop: "15px",
+                borderRadius: "16px",
+                backgroundColor: "var(--oda-color-100)",
+              }}
+            >
+              <Outlet />
+            </Content>
           </Flex>
-          <div style={{ width: "320px", flexGrow: "0", marginRight: "18px" }} />
+          <div className="right-space" />
         </Flex>
       </Flex>
     </>
@@ -182,12 +193,12 @@ const router = createBrowserRouter([
         element: <IntegrationsPage />,
         loader: widgetSettingsLoader,
       },
+      {
+        path: "gateways",
+        element: <PaymentGatewaysConfiguration />,
+        loader: widgetSettingsLoader,
+      },
     ],
-  },
-  {
-    path: "/configuration/gateways",
-    element: <PaymentGatewaysConfiguration />,
-    loader: widgetSettingsLoader,
   },
   {
     path: "/payment-alerts/:widgetId",

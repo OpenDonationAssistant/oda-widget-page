@@ -76,19 +76,10 @@ export const WIDGET_TYPES = [
     name: "player-info",
     title: "Информация для медиаплеера",
     category: "media",
-    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    preview: "https://api.oda.digital/assets/playerinfo.png",
     description:
       "Выводит информацию для медиаплеера: название и количество заказов в очереди",
     create: () => new PlayerInfoWidgetSettings(),
-  },
-  {
-    name: "reel",
-    title: "Рулетка",
-    category: "onscreen",
-    preview: "https://api.oda.digital/assets/mediaplayer.png",
-    description:
-      "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
-    create: () => new ReelWidgetSettings(),
   },
   {
     name: "donaton",
@@ -100,10 +91,19 @@ export const WIDGET_TYPES = [
     create: () => new DonatonWidgetSettings(),
   },
   {
+    name: "reel",
+    title: "Рулетка",
+    category: "onscreen",
+    preview: "",
+    description:
+      "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
+    create: () => new ReelWidgetSettings(),
+  },
+  {
     name: "player-popup",
     title: "Видео из медиаплеера",
     category: "media",
-    preview: "https://api.oda.digital/assets/mediaplayer.png",
+    preview: "https://api.oda.digital/assets/popup.png",
     description: "Показывает видео из заказанных медиа в медиаплеере",
     create: () => {
       return new PlayerPopupWidgetSettings();

@@ -1,5 +1,6 @@
 import {
   Descriptions,
+  Flex,
   Input,
   InputNumber,
   List,
@@ -8,8 +9,7 @@ import {
   Spin,
   Switch,
 } from "antd";
-import { Content } from "antd/es/layout/layout";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classes from "./HistoryPage.module.css";
 import {
   HistoryItemData,
@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { uuidv7 } from "uuidv7";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
+import AddIcon from "../../icons/AddIcon";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
@@ -172,17 +173,21 @@ export default function HistoryPage({}) {
   }
 
   return (
-    <Content>
+    <>
+      <Flex justify="space-between" align="center">
+        <h1 className={`${classes.header}`}>История</h1>
+        <button
+          className="oda-btn-default"
+          onClick={() => setShowModal((old) => !old)}
+        >
+          <Flex align="center" gap={3}>
+            <AddIcon color="var(--oda-label-background-color)" />
+            {t("button-add-historyitem")}
+          </Flex>
+        </button>
+      </Flex>
       <div className="configuration-container">
         <div className={classes.pagecontainer}>
-          <div className={classes.buttons}>
-            <button
-              className="oda-btn-default"
-              onClick={() => setShowModal((old) => !old)}
-            >
-              {t("button-add-historyitem")}
-            </button>
-          </div>
           {loading ? <Spin /> : list(data?.list ?? [], pagination)}
         </div>
         <Modal
@@ -250,6 +255,6 @@ export default function HistoryPage({}) {
           </div>
         </Modal>
       </div>
-    </Content>
+    </>
   );
 }

@@ -1,10 +1,9 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
 import axios from "axios";
 import { WidgetData } from "../../types/WidgetData";
 import { File } from "buffer";
-import { Content } from "antd/es/layout/layout";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { Flex, QRCode } from "antd";
 
@@ -115,7 +114,8 @@ export default function PaymentPageConfigComponent({}: {}) {
   }, [recipientId]);
 
   return (
-    <Content>
+    <>
+      <h1 className={`${classes.header}`}>Страница доната</h1>
       <div className={classes.paymentpageconfig}>
         <div className={classes.widgetsettingsitem}>
           <div className={classes.widgetsettingsname}>Адрес страницы</div>
@@ -351,6 +351,6 @@ export default function PaymentPageConfigComponent({}: {}) {
           </div>
         )}
       </div>
-    </Content>
+    </>
   );
 }

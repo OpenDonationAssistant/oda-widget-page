@@ -1,39 +1,44 @@
-import React, { useState } from "react";
-import Toolbar, { Page } from "../../components/ConfigurationPage/Toolbar";
 import classes from "./PaymentGatewaysConfiguration.module.css";
-
-const backgroundColor = (
-  <style
-    dangerouslySetInnerHTML={{
-      __html: `html, body {background-color: #0c122e; height: 100%;}`,
-    }}
-  />
-);
+import { Button, Flex } from "antd";
 
 export default function PaymentGatewaysConfiguration({}) {
-  const [shopId, setShopId] = useState<string>("");
-  const [shopToken, setShopToken] = useState<string>("");
   return (
-    <>
-      {backgroundColor}
-      <Toolbar page={Page.GATEWAYS} />
-      <div className={classes.gatewaysconfig}>
-        <h2 className={classes.configsectiontitle}>Настройки YooKassa</h2>
-        <div className={classes.configitem}>
-          <div className={classes.configname}>Shop Id</div>
-          <input
-            value={shopId}
-            className={classes.configvalue}
-          />
-        </div>
-        <div className={classes.configitem}>
-          <div className={classes.configname}>Shop Token</div>
-          <input
-            value={shopToken}
-            className={classes.configvalue}
-          />
-        </div>
+    <Flex vertical gap={9}>
+      <h1 className={`${classes.header}`}>Способы оплаты</h1>
+      <div className={`${classes.sectionname}`}>
+        Фиатная валюта (RUB, USD, etc)
       </div>
-    </>
+      <Flex>
+        <Button className={`${classes.addbutton}`}>
+          <Flex
+            vertical
+            justify="center"
+            align="center"
+            gap={3}
+            className="full-height"
+          >
+            <span className="material-symbols-sharp">add</span>
+            <div>Добавить</div>
+          </Flex>
+        </Button>
+      </Flex>
+      <div className={`${classes.sectionname}`}>
+        Криптовалюта (Bitcoin, Etherium, TON, etc)
+      </div>
+      <Flex>
+        <Button className={`${classes.addbutton}`}>
+          <Flex
+            vertical
+            justify="center"
+            align="center"
+            gap={3}
+            className="full-height"
+          >
+            <span className="material-symbols-sharp">add</span>
+            <div>Добавить</div>
+          </Flex>
+        </Button>
+      </Flex>
+    </Flex>
   );
 }

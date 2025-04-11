@@ -47,6 +47,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
 
   return (
     <Modal
+      size="normal"
       title={`Действие в ${rule.name}`}
       show={index.index != null}
       onSubmit={() => {
@@ -106,6 +107,7 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
 
   return (
     <Modal
+      size="normal"
       title={`Действие в ${rule.name}`}
       show={index.index != null}
       onSubmit={() => {
@@ -155,12 +157,12 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
     <>
       <div className={`${classes.rule}`}>
         <Flex vertical>
-          <Flex className={`${classes.ruletrigger}`} vertical gap={10}>
+          <Flex className={`${classes.ruletrigger}`} vertical gap={9}>
             <span>Условия</span>
             <Flex>
               <SelectedIndexContext.Provider value={selectedIndex}>
                 <TriggerModal rule={rule} />
-                <Flex gap={6} className={`${classes.triggers}`}>
+                <Flex gap={6} className={`${classes.triggers}`} wrap>
                   {rule.triggers.map((trigger, index) => (
                     <div key={trigger.id} className={`${classes.triggercard}`}>
                       <Flex
@@ -192,19 +194,19 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                       </button>
                     </div>
                   ))}
+                  <Button
+                    className={`${classes.add}`}
+                    onClick={() => {
+                      rule.addTrigger();
+                      selectedIndex.index = rule.triggers.length - 1;
+                    }}
+                  >
+                    <Flex vertical justify="center">
+                      <span className="material-symbols-sharp">add</span>
+                      <div>Добавить условие</div>
+                    </Flex>
+                  </Button>
                 </Flex>
-                <Button
-                  className={`${classes.add}`}
-                  onClick={() => {
-                    rule.addTrigger();
-                    selectedIndex.index = rule.triggers.length - 1;
-                  }}
-                >
-                  <Flex vertical justify="center">
-                    <span className="material-symbols-sharp">add</span>
-                    <div>Добавить условие</div>
-                  </Flex>
-                </Button>
               </SelectedIndexContext.Provider>
             </Flex>
           </Flex>
@@ -213,7 +215,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
             <Flex>
               <SelectedIndexContext.Provider value={selectedAction}>
                 <ActionModal rule={rule} />
-                <Flex gap={6} className={`${classes.triggers}`}>
+                <Flex gap={6} className={`${classes.triggers}`} wrap>
                   {rule.actions.map((action, index) => (
                     <div key={action.id} className={`${classes.triggercard}`}>
                       <Flex
@@ -245,19 +247,19 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                       </button>
                     </div>
                   ))}
+                  <Button
+                    className={`${classes.add}`}
+                    onClick={() => {
+                      rule.addAction();
+                      selectedAction.index = rule.actions.length - 1;
+                    }}
+                  >
+                    <Flex vertical justify="center" align="center">
+                      <span className="material-symbols-sharp">add</span>
+                      <div>Добавить действие</div>
+                    </Flex>
+                  </Button>
                 </Flex>
-                <Button
-                  className={`${classes.add}`}
-                  onClick={() => {
-                    rule.addAction();
-                    selectedAction.index = rule.actions.length - 1;
-                  }}
-                >
-                  <Flex vertical justify="center" align="center">
-                    <span className="material-symbols-sharp">add</span>
-                    <div>Добавить действие</div>
-                  </Flex>
-                </Button>
               </SelectedIndexContext.Provider>
             </Flex>
           </Flex>

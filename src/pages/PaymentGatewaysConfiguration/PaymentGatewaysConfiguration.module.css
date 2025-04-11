@@ -1,33 +1,26 @@
-.gatewaysconfig {
-  color: white;
-  margin-left: 300px;
-	margin-right: 100px;
-	padding-top: 50px;
-	padding-left: 20px;
-	padding-right: 20px;
-  flex: 1 0 auto;
+.header {
+    color: var(--oda-color-1000);
 }
 
-.configitem {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 20px;
+.sectionname {
+  font-size: 19px;
+  padding-bottom: 8px;
+  color: #707080;
+  margin-top: 18px;
 }
 
-.configname {
-	flex: 1 0 auto;
-}
-
-.configvalue {
-  display: inline-block;
-  border-radius: 5px;
-  border: 1px solid #684aff;
-  background: none;
-  color: white;
-  text-align: center;
-  width: 250px;
-}
-
-.configsectiontitle {
-  margin-bottom: 40px;
+.addbutton {
+  background-color: transparent!important;
+  color: var(--oda-secondary-text-color)!important;
+  box-shadow: none;
+  width: 222px;
+  height: 150px;
+  border: 1px solid #36363D;
+  border-radius: 9px;
+  &[class*="ant-btn"][class*="ant-btn-default"]{
+    border: 1px solid #36363D;
+    box-shadow: none;
+    min-height: 150px;
+    border-radius: 9px;
+  }
 }

@@ -488,8 +488,7 @@ div.payment-alert-image-preview {
   .ant-pagination-options
   .ant-select
   .ant-select-selector {
-  border: var(--oda-main-border);
-  background-color: var(--oda-btn-background-color);
+    min-width: 150px;
 }
 
 .menu-button {

@@ -196,14 +196,6 @@ export default function ConfigurationPage({}: {}) {
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
-      <Content
-        className={`${classes.content} newstyle`}
-        style={{
-          overflow: "initial",
-          paddingBottom: "12px",
-          marginBottom: "30px",
-        }}
-      >
         <SelectedIndexContext.Provider value={selection.current}>
           <Flex justify="space-between" align="center">
             <h1 className={`${classes.header}`}>Виджеты</h1>
@@ -219,7 +211,6 @@ export default function ConfigurationPage({}: {}) {
             </div>
           )}
         </SelectedIndexContext.Provider>
-      </Content>
     </WidgetStoreContext.Provider>
   );
 }

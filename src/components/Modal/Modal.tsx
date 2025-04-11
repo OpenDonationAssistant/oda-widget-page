@@ -1,6 +1,7 @@
 import { Button, Flex } from "antd";
 import classes from "./Modal.module.css";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
+import { log } from "../../logging";
 
 export default function Modal({
   children,
@@ -19,6 +20,33 @@ export default function Modal({
   onSubmit: () => void;
   onDecline: () => void;
 }) {
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      log.info(
+        {
+          modalRef: modalRef.current,
+          show: show,
+          contains: modalRef.current?.contains(event.target),
+        },
+        "handling click outside",
+      );
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        show
+      ) {
+        log.info("closing modal");
+        onDecline();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [modalRef, show]);
+
   return (
     <>
       {show && (
@@ -29,6 +57,7 @@ export default function Modal({
         >
           <div className={`${classes.back}`} />
           <Flex
+            ref={modalRef}
             vertical
             justify="space-between"
             className={`${classes.content}`}

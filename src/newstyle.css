@@ -90,3 +90,21 @@ button.ant-btn.ant-btn-default.oda-icon-button {
   border-radius: 6px;
   padding: 0px;
 }
+
+.right-space {
+  flex-grow: "0";
+}
+
+@media(min-width: 1600px){
+  .right-space {
+    width: 320px;
+    margin-right: 18px;
+  }
+}
+
+@media(max-width: 1600px){
+  .right-space {
+    width: 0px;
+    margin-right: 0px;
+  }
+}

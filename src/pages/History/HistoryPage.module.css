@@ -1,6 +1,8 @@
+.header {
+  color: var(--oda-color-1000);
+}
+
 .pagecontainer {
-  margin-left: 20px;
-  margin-top: 20px;
 }
 
 .little {

@@ -1,3 +1,7 @@
+.header {
+    color: var(--oda-color-1000);
+}
+
 .paymentpageconfig {
   color: white;
   padding-bottom: 50px;

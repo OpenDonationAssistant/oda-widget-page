@@ -4,6 +4,7 @@
   "menu-payment-page-config": "Donation Page",
   "menu-automation": "Automation",
   "menu-guides":"Guides",
+  "menu-gateways": "Payment methods",
   "menu-integrations": "Integrations",
   "button-text-color": "Text color",
   "button-addwidget": "Add widget",

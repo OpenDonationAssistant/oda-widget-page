@@ -1,4 +1,3 @@
-import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { Button, Flex, Modal, Input, Tabs } from "antd";
 import {
@@ -141,7 +140,6 @@ const RuleList = observer(({}) => {
 
 const VariableList = observer(({ type }: { type: "string" | "number" }) => {
   const state = useContext(AutomationStateContext);
-  const { t } = useTranslation();
 
   return (
     <Flex vertical className={`${classes.container}`}>
@@ -151,22 +149,14 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
           return <VariableComponent variable={variable} />;
         })}
       <Flex
-        style={{ marginTop: "24px" }}
-        className="full-width"
+        className={`${classes.addvariable} full-width`}
         justify="center"
-        gap={10}
+        align="center"
+        onClick={() => {
+          state.addVariable(type);
+        }}
       >
-        <div
-          className={`oda-btn-default`}
-          onClick={() => {
-            state.addVariable(type);
-          }}
-        >
-          <Flex className="full-width" justify="center" align="center" gap={3}>
-            <span className="material-symbols-sharp">add</span>
-            <div>{t("button-add-variable-rule")}</div>
-          </Flex>
-        </div>
+        <span className="material-symbols-sharp">add</span>
       </Flex>
     </Flex>
   );
@@ -179,48 +169,42 @@ const AutomationPage = observer(({}) => {
   return (
     <AutomationStateContext.Provider value={state}>
       <WidgetStoreContext.Provider value={widgetStore}>
-        <Content className={`${classes.content} newstyle`}>
-          <Flex justify="space-between">
-            <h1 className={`${classes.header}`}>Автоматизация</h1>
-            <div>
-              <button
-                className="oda-btn-default"
-                onClick={() => {
-                  state.save();
-                }}
-              >
-                Сохранить
-              </button>
-            </div>
-          </Flex>
+        <Flex justify="space-between">
+          <h1 className={`${classes.header}`}>Автоматизация</h1>
+          <div>
+            <button
+              className="oda-btn-default"
+              onClick={() => {
+                state.save();
+              }}
+            >
+              Сохранить
+            </button>
+          </div>
+        </Flex>
 
-          <Tabs
-            type="card"
-            items={[
-              {
-                label: "Правила",
-                key: "rules",
-                children: <RuleList />,
-              },
-              {
-                label: "Переменные",
-                key: "variables",
-                children: (
-                  <Flex vertical className={`${classes.variabletab}`}>
-                    <div className={`${classes.variablesectionname}`}>
-                      Числа
-                    </div>
-                    <VariableList type="number" />
-                    <div className={`${classes.variablesectionname}`}>
-                      Строки
-                    </div>
-                    <VariableList type="string" />
-                  </Flex>
-                ),
-              },
-            ]}
-          />
-        </Content>
+        <Tabs
+          type="card"
+          items={[
+            {
+              label: "Правила",
+              key: "rules",
+              children: <RuleList />,
+            },
+            {
+              label: "Переменные",
+              key: "variables",
+              children: (
+                <Flex vertical className={`${classes.variabletab}`}>
+                  <div className={`${classes.variablesectionname}`}>Числа</div>
+                  <VariableList type="number" />
+                  <div className={`${classes.variablesectionname}`}>Строки</div>
+                  <VariableList type="string" />
+                </Flex>
+              ),
+            },
+          ]}
+        />
       </WidgetStoreContext.Provider>
     </AutomationStateContext.Provider>
   );

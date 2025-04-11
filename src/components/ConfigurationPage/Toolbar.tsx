@@ -22,8 +22,8 @@ enum Page {
 interface Section {
   page: Page;
   url: string;
-  active: ReactNode,
-  nonactive: ReactNode,
+  active: ReactNode;
+  nonactive: ReactNode;
   label: string;
 }
 
@@ -31,24 +31,31 @@ const buttons: Section[] = [
   {
     page: Page.WIDGETS,
     url: "/configuration/widgets",
-    active: <WidgetsIcon color="var(--oda-color-800)"/>,
-    nonactive: <WidgetsIcon color="var(--oda-color-500)"/>,
+    active: <WidgetsIcon color="var(--oda-color-800)" />,
+    nonactive: <WidgetsIcon color="var(--oda-color-500)" />,
     label: "menu-widgets",
   },
   {
     page: Page.HISTORY,
     url: "/configuration/history-page",
-    active: <HistoryIcon color="var(--oda-color-800)"/>,
-    nonactive: <HistoryIcon color="var(--oda-color-500)"/>,
+    active: <HistoryIcon color="var(--oda-color-800)" />,
+    nonactive: <HistoryIcon color="var(--oda-color-500)" />,
     label: "menu-history",
   },
   {
     page: Page.PAYMENTPAGE,
     url: "/configuration/payment-page",
-    active: <RubleIcon color="var(--oda-color-800)"/>,
-    nonactive: <RubleIcon color="var(--oda-color-500)"/>,
+    active: <RubleIcon color="var(--oda-color-800)" />,
+    nonactive: <RubleIcon color="var(--oda-color-500)" />,
     label: "menu-payment-page-config",
   },
+  //{
+  //  page: Page.GATEWAYS,
+  //  url: "/configuration/gateways",
+  //  active: <div style={{ width: "24px", height: "24px" }} />,
+  //  nonactive: <div style={{ width: "24px", height: "24px" }} />,
+  //  label: "menu-gateways",
+  //},
   //{
   //  page: Page.INTEGRATIONS,
   //  url: "/configuration/integrations",
@@ -58,8 +65,8 @@ const buttons: Section[] = [
   {
     page: Page.AUTOMATION,
     url: "/configuration/automation-page",
-    active: <AutomationIcon color="var(--oda-color-800)"/>,
-    nonactive: <AutomationIcon color="var(--oda-color-500)"/>,
+    active: <AutomationIcon color="var(--oda-color-800)" />,
+    nonactive: <AutomationIcon color="var(--oda-color-500)" />,
     label: "menu-automation",
   },
   //{
@@ -73,6 +80,7 @@ const buttons: Section[] = [
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
   return (
     <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
