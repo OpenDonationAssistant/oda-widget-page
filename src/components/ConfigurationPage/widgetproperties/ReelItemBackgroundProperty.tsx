@@ -2,6 +2,7 @@ import { ChangeEvent, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import axios from "axios";
 import classes from "./ReelItemBackgroundProperty.module.css";
+import { uuidv7 } from "uuidv7";
 
 export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
   string | null
@@ -35,7 +36,7 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
   handleBackgroundImageChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       const file = e.target.files[0];
-      const name = encodeURIComponent(file.name);
+      const name = uuidv7();
       this.uploadFile(file, name).then(() => {
         this.value = name;
       });

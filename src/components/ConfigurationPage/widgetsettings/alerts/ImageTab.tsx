@@ -16,6 +16,7 @@ import { DurationProperty } from "./DurationProperty";
 import classes from "./ImageTab.module.css";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
+import { uuidv7 } from "uuidv7";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -34,7 +35,7 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return Promise.reject();
   }
   const file = e.target.files[0];
-  const name = encodeURIComponent(file.name);
+  const name = uuidv7();
   return uploadFile(file, name).then((ignore) => {
     return name;
   });

@@ -4,11 +4,11 @@ import { DefaultApiFactory as WidgetApiFactory } from "@opendonationassistant/od
 
 export class PresetStore {
   public async for(type: string | null | undefined): Promise<Preset[]> {
-    log.debug({type: type},"checking presets");
+    log.debug({ type: type }, "checking presets");
     if (!type) {
       return Promise.resolve([]);
     }
-    log.debug({type: type},"loading templates");
+    log.debug({ type: type }, "loading templates");
     return WidgetApiFactory(
       undefined,
       process.env.REACT_APP_WIDGET_API_ENDPOINT,

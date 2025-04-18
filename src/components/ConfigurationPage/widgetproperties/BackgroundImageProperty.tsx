@@ -15,6 +15,7 @@ import classes from "./BackgroundImageProperty.module.css";
 import InputNumber from "../components/InputNumber";
 import { produce } from "immer";
 import { toJS }  from "mobx";
+import { uuidv7 } from "uuidv7";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -33,7 +34,7 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return Promise.reject();
   }
   const file = e.target.files[0];
-  const name = encodeURIComponent(file.name);
+  const name = uuidv7();
   return uploadFile(file, name).then((ignore: any) => {
     return name;
   });

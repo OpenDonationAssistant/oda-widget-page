@@ -7,6 +7,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Flex } from "antd";
 import { Alert } from "./Alerts";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
+import { uuidv7 } from "uuidv7";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -25,7 +26,7 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return Promise.reject();
   }
   const file = e.target.files[0];
-  const name = encodeURIComponent(file.name);
+  const name = uuidv7();
   return uploadFile(file, name).then((ignore) => {
     return name;
   });
@@ -82,7 +83,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
 
   useEffect(() => {
     if (alert.audio) {
-      loadAudio(alert.audio).then((buffer) => setBuffer(buffer));
+      loadAudio(alert.audio).then((buffer) => setBuffer(buffer ?? null));
     }
   }, [alert.audio]);
 

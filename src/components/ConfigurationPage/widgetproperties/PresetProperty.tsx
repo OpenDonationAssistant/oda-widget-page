@@ -23,7 +23,6 @@ export class PresetProperty extends DefaultWidgetProperty<string> {
     this._store = new PresetStore();
   }
   protected _name: string = "preset";
-  protected _value: string = "unknown";
   protected _initialValue: string = "unknown";
   protected _displayName: string = "Готовые шаблоны";
   protected _changed: boolean = false;

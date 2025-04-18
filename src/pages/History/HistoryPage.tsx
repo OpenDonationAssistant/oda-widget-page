@@ -107,7 +107,7 @@ function list(data: HistoryItemData[], pagination: any) {
 export default function HistoryPage({}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { data, loading, pagination } = usePagination(getHistory, {
-    defaultPageSize: 10,
+    defaultPageSize: 5,
   });
   const [showModal, setShowModal] = useState<boolean>();
   const { t } = useTranslation();

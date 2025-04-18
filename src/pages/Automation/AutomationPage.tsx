@@ -170,16 +170,16 @@ const AutomationPage = observer(({}) => {
     <AutomationStateContext.Provider value={state}>
       <WidgetStoreContext.Provider value={widgetStore}>
         <Flex justify="space-between">
-          <h1 className={`${classes.header}`}>Автоматизация</h1>
+          <h1>Автоматизация</h1>
           <div>
-            <button
+            <Button
               className="oda-btn-default"
               onClick={() => {
                 state.save();
               }}
             >
               Сохранить
-            </button>
+            </Button>
           </div>
         </Flex>
 

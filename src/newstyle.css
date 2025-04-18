@@ -21,6 +21,7 @@
   --oda-color-900: #F1F1F3;
   --oda-color-950: #F7F7F8;
   --oda-color-1000: #FFFFFF;
+  --oda-primary-color: #BEC8F8;
 }
 
 /* mulish-latin-wght-normal */
@@ -81,6 +82,15 @@ button.ant-btn.ant-btn-default {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  h1 {
+    font-size: 48px;
+    color: var(--oda-color-1000);
+  }
+
+  a {
+    color: var(--oda-primary-color);
   }
 }
 
