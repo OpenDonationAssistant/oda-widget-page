@@ -7,11 +7,12 @@ import "./css/WidgetSettings.css";
 import TestAlertButton from "./settings/TestAlertButton";
 
 import { publish, socket } from "../../socket";
-import { Button, Flex, Input, Modal, notification } from "antd";
+import { Button, Flex, Input, Modal as AntModal, notification } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Trans, useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
+import Modal from "../Modal/Modal";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
 import { observer } from "mobx-react-lite";
@@ -93,7 +94,7 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
 
   return (
     <>
-      <Modal
+      <AntModal
         className={`${classes.helpmodal}`}
         title="Help"
         open={showModal}
@@ -102,7 +103,7 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
         onOk={toggleModal}
       >
         {widget.config.help()}
-      </Modal>
+      </AntModal>
       <button className={`${classes.helpbutton}`} onClick={toggleModal}>
         <span className="material-symbols-sharp">help</span>
       </button>
@@ -171,7 +172,7 @@ class RenameModalState {
 // TODO: localize
 const RenameModal = observer(({ state }: { state: RenameModalState }) => {
   return (
-    <Modal
+    <AntModal
       title={"Rename"}
       open={state.open}
       onOk={() => state.apply()}
@@ -186,7 +187,7 @@ const RenameModal = observer(({ state }: { state: RenameModalState }) => {
           />
         </LabeledContainer>
       </div>
-    </Modal>
+    </AntModal>
   );
 });
 
@@ -239,7 +240,7 @@ export const WidgetConfiguration = observer(
                   </Flex>
                 </Flex>
               ),
-              placement: "bottomRight",
+              placement: "bottom",
               duration: 0,
             });
           } else {
@@ -339,61 +340,68 @@ export const WidgetConfiguration = observer(
             </button>
           </Dropdown>
         </div>
-        <div
-          className={`widget-settings ${selection.id === widget.id ? "" : "visually-hidden"}`}
+        <Modal
+          size="big"
+          show={selection.id === widget.id}
+          onSubmit={() => {}}
+          onDecline={() => {}}
         >
-          {(widget.type === "donaton" ||
-            widget.type === "donation-timer" ||
-            widget.type === "donationgoal" ||
-            widget.type === "player-popup" ||
-            widget.type === "donaters-top-list") && (
-            <Flex justify="space-around" className={`${classes.preview}`}>
-              <ResizableBox
-                width={800}
-                height={250}
-                className={`${classes.resizable}`}
-                axis="both"
-                minConstraints={[650, 100]}
-              >
-                <div style={{ maxWidth: "100%" }}>
-                  {widget.type === "donation-timer" && (
-                    <DonationTimer
-                      settings={widget.config as DonationTimerWidgetSettings}
-                    />
-                  )}
-                  {widget.type === "donaton" && (
-                    <DonatonWidget
-                      settings={widget.config as DonatonWidgetSettings}
-                    />
-                  )}
-                  {widget.type === "player-popup" && (
-                    <PlayerPopup
-                      player={new DemoPlayerStore()}
-                      settings={widget.config as PlayerPopupWidgetSettings}
-                    />
-                  )}
-                  {widget.type === "donationgoal" && (
-                    <DonationGoal
-                      settings={widget.config as DonationGoalWidgetSettings}
-                      state={
-                        new DemoDonationGoalState(
-                          widget.config as DonationGoalWidgetSettings,
-                        )
-                      }
-                    />
-                  )}
-                  {widget.type === "donaters-top-list" && (
-                    <DonatersTopList
-                      settings={widget.config as DonatersTopListWidgetSettings}
-                      store={new DemoListStore()}
-                    />
-                  )}
-                </div>
-              </ResizableBox>
-            </Flex>
-          )}
-          <Comp widget={widget} />
-        </div>
+          <Flex vertical>
+            {(widget.type === "donaton" ||
+              widget.type === "donation-timer" ||
+              widget.type === "donationgoal" ||
+              widget.type === "player-popup" ||
+              widget.type === "donaters-top-list") && (
+              <Flex justify="space-around" className={`${classes.preview}`}>
+                <ResizableBox
+                  width={800}
+                  height={250}
+                  className={`${classes.resizable}`}
+                  axis="both"
+                  minConstraints={[650, 100]}
+                >
+                  <div style={{ maxWidth: "100%" }}>
+                    {widget.type === "donation-timer" && (
+                      <DonationTimer
+                        settings={widget.config as DonationTimerWidgetSettings}
+                      />
+                    )}
+                    {widget.type === "donaton" && (
+                      <DonatonWidget
+                        settings={widget.config as DonatonWidgetSettings}
+                      />
+                    )}
+                    {widget.type === "player-popup" && (
+                      <PlayerPopup
+                        player={new DemoPlayerStore()}
+                        settings={widget.config as PlayerPopupWidgetSettings}
+                      />
+                    )}
+                    {widget.type === "donationgoal" && (
+                      <DonationGoal
+                        settings={widget.config as DonationGoalWidgetSettings}
+                        state={
+                          new DemoDonationGoalState(
+                            widget.config as DonationGoalWidgetSettings,
+                          )
+                        }
+                      />
+                    )}
+                    {widget.type === "donaters-top-list" && (
+                      <DonatersTopList
+                        settings={
+                          widget.config as DonatersTopListWidgetSettings
+                        }
+                        store={new DemoListStore()}
+                      />
+                    )}
+                  </div>
+                </ResizableBox>
+              </Flex>
+            )}
+            <Comp widget={widget} />
+          </Flex>
+        </Modal>
       </div>
     );
   },

@@ -363,27 +363,33 @@ export class PaymentGatewayConfigurationStore {
       ]),
     },
   ];
+  private _recipientId: string;
 
   constructor(recipientId: string) {
+    this._recipientId = recipientId;
+    this.load();
+    makeAutoObservable(this);
+  }
+
+  private load() {
     this._client
-      .listGateways(recipientId)
+      .listGateways(this._recipientId)
       .then((response) => response.data)
-      .then((data) =>
-        data.forEach((it) => {
-          this._configurations.push({
+      .then((data) => {
+        this.configurations = data.map((it) => {
+          return {
             id: it.id,
             type: it.type,
             enabled: it.enabled,
-          });
-        }),
-      );
-    makeAutoObservable(this);
+          };
+        }).reverse();
+      });
   }
 
   public toggle(id: string) {
     const conf = this._configurations.find((conf) => conf.id === id);
     if (conf) {
-      this._client.toggleGateway({ id: conf.id });
+      this._client.toggleGateway({ id: conf.id }).then(() => this.load());
     }
   }
 
@@ -392,18 +398,27 @@ export class PaymentGatewayConfigurationStore {
       .filter((it) => it.id === this._gateway)
       .forEach((gateway) => {
         log.debug({ fields: gateway.fields }, "saving gateway");
-        this._client.setGateway({
-          id: uuidv7(),
-          gateway: gateway.id,
-          gatewayId:
-            gateway.fields.find((field) => field.id === "shopId")?.value ?? "",
-          token:
-            gateway.fields.find((field) => field.id === "apiKey")?.value ?? "",
-          secret:
-            gateway.fields.find((field) => field.id === "secret")?.value ?? "",
-          enabled: true,
-        });
+        this._client
+          .setGateway({
+            id: uuidv7(),
+            gateway: gateway.id,
+            gatewayId:
+              gateway.fields.find((field) => field.id === "shopId")?.value ??
+              "",
+            token:
+              gateway.fields.find((field) => field.id === "apiKey")?.value ??
+              "",
+            secret:
+              gateway.fields.find((field) => field.id === "secret")?.value ??
+              "",
+            enabled: true,
+          })
+          .then(() => this.load());
       });
+  }
+
+  public set configurations(configurations: GatewayConfiguration[]) {
+    this._configurations = configurations;
   }
 
   public get configurations() {

@@ -1,10 +1,36 @@
 .modal {
-  position: absolute;
+  position: fixed;
   top: calc(50% - 250px);
   z-index: 200;
   border-radius: 12px;
   background-color: var(--oda-color-100);
   padding: 12px 18px;
+}
+
+.data {
+  max-height: 50vh;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    display: initial;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: var(--oda-color-500);
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: var(--oda-secondary-text-color);
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
 }
 
 .note {
@@ -18,7 +44,7 @@
 }
 
 .bigmodal{
-  top: 10%;
+  top: 10vh;
 }
 
 @media(min-width: 1600px){

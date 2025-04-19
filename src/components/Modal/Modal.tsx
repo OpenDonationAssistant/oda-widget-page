@@ -82,7 +82,7 @@ export default function Modal({
                   )}
                 </Flex>
               )}
-              <Flex>{children}</Flex>
+              <Flex className={`${classes.data}`}>{children}</Flex>
               <Flex
                 className={`${classes.buttons} full-width`}
                 align="flex-end"

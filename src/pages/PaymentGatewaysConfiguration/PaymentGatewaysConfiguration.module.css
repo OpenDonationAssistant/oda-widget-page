@@ -41,7 +41,6 @@
   background-color: var(--oda-color-150);
   width: 100%;
   min-width: 300px;
-  min-height: 177px;
   padding: 18px 15px 15px 15px;
   &:hover {
     cursor: pointer;

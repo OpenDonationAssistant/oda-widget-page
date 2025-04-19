@@ -40,10 +40,10 @@
     background: var(--oda-secondary-text-color);
   }
 
-/* Handle on hover */
-&::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 .section {
