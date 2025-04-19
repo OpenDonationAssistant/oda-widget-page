@@ -25,7 +25,7 @@ import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/P
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import HistoryPage from "./pages/History/HistoryPage";
-import { ConfigProvider, Flex, Layout, theme } from "antd";
+import { Button, ConfigProvider, Flex, Layout, theme } from "antd";
 import "./i18n";
 import "animate.css";
 import WidgetWrapper from "./WidgetWrapper";

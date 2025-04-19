@@ -6,21 +6,31 @@ import { log } from "../../logging";
 export default function Modal({
   children,
   title,
+  subtitle,
   show,
   showSubmitButton,
+  showDeclineButton,
+  submitButtonText,
+  declineButtonText,
+  note,
   size = "normal",
   onSubmit,
   onDecline,
 }: {
   children: ReactNode;
   title?: string;
+  subtitle?: string;
   show: boolean;
   showSubmitButton?: boolean;
+  showDeclineButton?: boolean;
+  submitButtonText?: string;
+  declineButtonText?: string;
   size: "normal" | "big";
+  note?: ReactNode;
   onSubmit: () => void;
   onDecline: () => void;
 }) {
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -50,36 +60,54 @@ export default function Modal({
   return (
     <>
       {show && (
-        <Flex
-          className={`${classes.modal} ${size === "normal" ? classes.normalmodal : classes.bigmodal}`}
-          justify="flex-start"
-          vertical
-        >
+        <>
           <div className={`${classes.back}`} />
           <Flex
-            ref={modalRef}
+            className={`${classes.modal} ${size === "normal" ? classes.normalmodal : classes.bigmodal}`}
+            justify="flex-start"
             vertical
-            justify="space-between"
-            className={`${classes.content}`}
           >
-            {title && <Flex className={`${classes.title}`}>{title}</Flex>}
-            <Flex>{children}</Flex>
             <Flex
-              className={`${classes.buttons} full-width`}
-              justify="flex-end"
-              gap={9}
+              ref={modalRef}
+              vertical
+              justify="space-between"
+              className={`${classes.content}`}
+              gap={60}
             >
-              <Button onClick={onDecline} className={`${classes.decline}`}>
-                Отменить
-              </Button>
-              {(showSubmitButton === undefined || showSubmitButton) && (
-                <Button className={`${classes.save}`} onClick={onSubmit}>
-                  Сохранить
-                </Button>
+              {(title || subtitle) && (
+                <Flex vertical>
+                  {title && <div className={`${classes.title}`}>{title}</div>}
+                  {subtitle && (
+                    <div className={`${classes.subtitle}`}>{subtitle}</div>
+                  )}
+                </Flex>
               )}
+              <Flex>{children}</Flex>
+              <Flex
+                className={`${classes.buttons} full-width`}
+                align="flex-end"
+                justify="space-between"
+              >
+                <Flex className={`${classes.note}`}>{note}</Flex>
+                <Flex justify="flex-end" gap={9}>
+                  {(showDeclineButton === undefined || showDeclineButton) && (
+                    <Button
+                      onClick={onDecline}
+                      className={`${classes.decline}`}
+                    >
+                      {declineButtonText ? declineButtonText : "Отменить"}
+                    </Button>
+                  )}
+                  {(showSubmitButton === undefined || showSubmitButton) && (
+                    <Button className={`${classes.save}`} onClick={onSubmit}>
+                      {submitButtonText ? submitButtonText : "Сохранить"}
+                    </Button>
+                  )}
+                </Flex>
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
+        </>
       )}
     </>
   );

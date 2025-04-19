@@ -8,6 +8,7 @@ import HistoryIcon from "../../icons/HistoryIcon";
 import RubleIcon from "../../icons/RubleIcon";
 import AutomationIcon from "../../icons/AutomationIcon";
 import { ReactNode } from "react";
+import WalletIcon from "../../icons/WalletIcon";
 
 enum Page {
   WIDGETS,
@@ -49,13 +50,13 @@ const buttons: Section[] = [
     nonactive: <RubleIcon color="var(--oda-color-500)" />,
     label: "menu-payment-page-config",
   },
-  //{
-  //  page: Page.GATEWAYS,
-  //  url: "/configuration/gateways",
-  //  active: <div style={{ width: "24px", height: "24px" }} />,
-  //  nonactive: <div style={{ width: "24px", height: "24px" }} />,
-  //  label: "menu-gateways",
-  //},
+  {
+    page: Page.GATEWAYS,
+    url: "/configuration/gateways",
+    active: <WalletIcon color="var(--oda-color-800)" />,
+    nonactive: <WalletIcon color="var(--oda-color-500)" />,
+    label: "menu-gateways",
+  },
   //{
   //  page: Page.INTEGRATIONS,
   //  url: "/configuration/integrations",

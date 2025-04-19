@@ -3,8 +3,13 @@
   top: calc(50% - 250px);
   z-index: 200;
   border-radius: 12px;
-  background-color: var(--oda-panel-backgroun-color);
+  background-color: var(--oda-color-100);
   padding: 12px 18px;
+}
+
+.note {
+  color: var(--oda-color-500);
+  font-size: 18px;
 }
 
 .normalmodal {
@@ -37,18 +42,19 @@
   z-index: 100;
   width: 100vw;
   height: 100vh;
-  filter: blur(20px);
   background-color: rgba(0, 0, 0, 0.8);
 }
 
 .title {
-  color: white;
-  font-size: 24px;
-  margin-bottom: 60px;
+  color: var(--oda-color-1000);
+  font-size: 48px;
+}
+
+.subtitle {
+  color: var(--oda-color-500);
 }
 
 .buttons {
-  margin-top: 50px;
 }
 
 .content {

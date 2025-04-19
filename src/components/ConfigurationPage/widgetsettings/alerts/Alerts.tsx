@@ -161,7 +161,7 @@ export class Alert {
   }
 
   public copy(): Alert {
-    const updated = this._properties.map(prop => prop.copy());
+    const updated = this._properties.map((prop) => prop.copy());
     const alert = new Alert({
       id: undefined,
       audio: produce(toJS(this._audio), (draft) => draft) || undefined,
