@@ -157,7 +157,7 @@ class Playlist {
     if (this._index == null) {
       return false;
     }
-    return this._index + 1 >= this._songs.length;
+    return this._index + 1 < this._songs.length;
   }
 
   nextSong() {
