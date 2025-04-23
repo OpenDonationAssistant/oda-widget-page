@@ -111,6 +111,10 @@ export class PlaylistController {
     );
   }
 
+  hasNextSong() {
+    return this.current.hasNextSong();
+  }
+
   clearCurrentPlaylist() {
     if (this.current.type() == PLAYLIST_TYPE.REQUESTED) {
       MediaService(
@@ -141,7 +145,7 @@ export class PlaylistController {
 
   finishSong() {
     const song = this.current.song();
-    log.debug({song: song}, `finishing song`);
+    log.debug({ song: song }, `finishing song`);
     if (song?.id) {
       this.current.markListened(song?.id);
     }
@@ -172,6 +176,7 @@ export class PlaylistController {
   public get repeat() {
     return this._repeat;
   }
+
   public set repeat(value) {
     this._repeat = value;
   }

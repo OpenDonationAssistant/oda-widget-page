@@ -354,7 +354,9 @@ export default function VideoJSComponent({
       log.error(player.error());
       setPaused(true);
       playerState.current = PLAYER_STATE.INITIALIZING;
-      playlistController.finishSong();
+      if (playlistController.hasNextSong()) {
+        playlistController.finishSong();
+      }
       sendAlert();
     });
     player.src(song);

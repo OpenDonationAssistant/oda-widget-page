@@ -50,7 +50,8 @@ class Playlist {
     songs.forEach((song) => {
       if (
         this._songs.some(
-          (existing) => existing.originId && existing.originId === song.originId,
+          (existing) =>
+            existing.originId && existing.originId === song.originId,
         )
       ) {
         log.debug("skipping playlist update because of same song");
@@ -120,7 +121,7 @@ class Playlist {
     return null;
   }
 
-  clear(){
+  clear() {
     this._songs = [];
     this._index = null;
     this.triggerListeners();
@@ -150,6 +151,13 @@ class Playlist {
     if (this.song()?.id === id) {
       this.nextSong();
     }
+  }
+
+  hasNextSong() {
+    if (this._index == null) {
+      return false;
+    }
+    return this._index + 1 >= this._songs.length;
   }
 
   nextSong() {
@@ -193,7 +201,7 @@ class Playlist {
     );
   }
 
-  publishState(){
+  publishState() {
     publish(this.topic, {
       count:
         this._index === null || this._type === PLAYLIST_TYPE.PERSONAL
