@@ -1,0 +1,22 @@
+.button {
+  height: 48px;
+  padding: 15px 34px 16px 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  border-radius: 110px;
+
+  color: var(--oda-color-1000);
+  background: var(--oda-color-150);
+
+  font-family: var(--oda-main-font-family);
+  font-size: 18px;
+  font-weight: 400;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+}

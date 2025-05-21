@@ -32,7 +32,7 @@ export default function Header({}) {
         <a onClick={(e) => window.open("https://t.me/opendonationassistant")}>
           <TelegramIcon/>
         </a>
-        <a href="https://oda.digital/news">
+        <a onClick={(e) => window.open("https://oda.digital/news")}>
           <NewsIcon/>
         </a>
         <Dropdown

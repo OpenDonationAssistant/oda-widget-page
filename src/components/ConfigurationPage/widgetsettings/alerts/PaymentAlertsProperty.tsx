@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { MouseEvent, MouseEventHandler, ReactNode, useState } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
@@ -12,6 +12,12 @@ import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, toJS } from "mobx";
+import SubActionButton from "../../../SubActionButton/SubActionButton";
+import RunIcon from "../../../../icons/RunIcon";
+import CloseIcon from "../../../../icons/CloseIcon";
+import { EditableString } from "../../../RenamableLabel/EditableString";
+import ArrowUp from "../../../../icons/ArrowUp";
+import ArrowDown from "../../../../icons/ArrowDown";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -25,7 +31,6 @@ function testAlert(topic: string, alert: Alert) {
       currency: "RUB",
     },
   });
-  log.debug("Send test alert");
 }
 
 export const RenameButton = observer(({ alert }: { alert: Alert }) => {
@@ -61,58 +66,84 @@ const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
     const { t } = useTranslation();
     const { conf } = useLoaderData() as WidgetData;
+    const [opened, setOpened] = useState<string>("");
 
     return (
       <>
-        <div className={`${classes.adddalertbutton}`}>
-          <button
-            className="oda-btn-default"
-            onClick={() => property.addAlert()}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">add</span>
-              <div>{t("button-add-alert")}</div>
-            </Flex>
-          </button>
-        </div>
         {property.value.length > 0 && (
           <div className={`${classes.preview}`}>
             <Collapse
+              activeKey={opened}
+              collapsible="disabled"
+              expandIcon={({ isActive }) => (
+                <div>{isActive ? <ArrowUp /> : <ArrowDown />}</div>
+              )}
+              expandIconPosition="end"
               items={property.value.map((it, index) => {
                 log.debug({ it: it }, "create view for alert");
+                const switcher = () => {
+                  if (opened === it.id) {
+                    setOpened("");
+                  } else if (opened === String(index)) {
+                    setOpened("");
+                  } else {
+                    setOpened(it.id ?? String(index));
+                  }
+                };
+                const clickHandler: MouseEventHandler = (e) => {
+                  if (e.target === e.currentTarget) {
+                    switcher();
+                  }
+                };
+
                 return {
                   key: it.id ?? index,
+                  showArrow: false,
                   label: (
                     <Flex
                       key={it.id ?? index}
                       justify="space-between"
                       align="center"
+                      onClick={clickHandler}
                     >
-                      <div>{it.property("name")}</div>
-                      <Flex className={`${classes.alertbuttons}`}>
-                        <button
-                          className="menu-button"
+                      <EditableString
+                        label={it.property("name")}
+                        onChange={(value) => it.set("name", value)}
+                        onClick={switcher}
+                      />
+                      <Flex className={`${classes.alertbuttons}`} gap={3}>
+                        <SubActionButton
                           onClick={() => testAlert(conf.topic.alerts, it)}
                         >
-                          <span className="material-symbols-sharp">
-                            play_circle
-                          </span>
-                        </button>
-                        <button
-                          className="menu-button"
-                          onClick={() => it.copy()}
+                          <RunIcon />
+                          <div>Тест</div>
+                        </SubActionButton>
+                        <SubActionButton
+                          onClick={() => {
+                            it.copy();
+                          }}
                         >
                           <span className="material-symbols-sharp">
                             content_copy
                           </span>
-                        </button>
-                        <RenameButton alert={it} />
-                        <button
-                          className="menu-button"
-                          onClick={() => it.delete()}
+                          <div>Сделать копию</div>
+                        </SubActionButton>
+                        <SubActionButton onClick={() => it.delete()}>
+                          <CloseIcon color="#FF8888" />
+                          <div style={{ color: "#FF8888" }}>Удалить</div>
+                        </SubActionButton>
+                        <Flex
+                          justify="center"
+                          align="center"
+                          onClick={switcher}
                         >
-                          <span className="material-symbols-sharp">delete</span>
-                        </button>
+                          {(it.id === opened || String(index) === opened) && (
+                            <ArrowUp />
+                          )}
+                          {it.id !== opened && String(index) !== opened && (
+                            <ArrowDown />
+                          )}
+                        </Flex>
                       </Flex>
                     </Flex>
                   ),
@@ -122,6 +153,15 @@ const PaymentAlertsPropertyComponent = observer(
             />
           </div>
         )}
+        <button
+          className={`${classes.adddalertbutton}`}
+          onClick={() => property.addAlert()}
+        >
+          <Flex justify="center" align="center" gap={3}>
+            <span className="material-symbols-sharp">add</span>
+            <div>{t("button-add-alert")}</div>
+          </Flex>
+        </button>
       </>
     );
   },
@@ -215,9 +255,9 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
 
   copy() {
     const copied = new PaymentAlertsProperty();
-    this._value.forEach(
-      (alert) =>
-        copied.addAlert(new Alert({
+    this._value.forEach((alert) =>
+      copied.addAlert(
+        new Alert({
           audio: alert.audio ?? undefined,
           image: alert.image ?? undefined,
           video: alert.video ?? undefined,
@@ -225,7 +265,8 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
           properties: alert.properties.map((prop) => prop.copy()),
           removeFn: copied.removeAlert,
           addFn: copied.addAlert,
-        }))
+        }),
+      ),
     );
     return copied;
   }

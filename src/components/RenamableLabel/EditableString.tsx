@@ -1,5 +1,5 @@
 import { Button, Flex, Input } from "antd";
-import { useState } from "react";
+import { MouseEvent, MouseEventHandler, useState } from "react";
 import classes from "./EditableString.module.css";
 import { observer } from "mobx-react-lite";
 import EditIcon from "../../icons/EditIcon";
@@ -9,10 +9,12 @@ export const EditableString = observer(
     label,
     placeholder,
     onChange,
+    onClick
   }: {
     label: string;
     placeholder?: string;
     onChange: (newValue: string) => void;
+    onClick?: MouseEventHandler<HTMLDivElement>
   }) => {
     const [edit, setEdit] = useState<boolean>(false);
     const [value, setValue] = useState<string>();
@@ -21,7 +23,7 @@ export const EditableString = observer(
       <>
         {!edit && (
           <Flex justify="center" align="center">
-            <div className={`${classes.variablename}`}>
+            <div className={`${classes.variablename}`} onClick={onClick}>
               {label === null || label === undefined || label === ""
                 ? placeholder
                 : label}

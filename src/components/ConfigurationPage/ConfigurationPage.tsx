@@ -2,7 +2,6 @@ import { useContext, useRef, useState } from "react";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
 import {
@@ -24,6 +23,7 @@ import {
 } from "../../stores/SelectedIndexStore";
 import Modal from "../Modal/Modal";
 import AddIcon from "../../icons/AddIcon";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
 const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectedIndexContext);
@@ -174,15 +174,10 @@ const AddWidgetComponent = observer(
           </Flex>
         </Modal>
         {!showAddWidgetPopup && (
-          <div
-            className="oda-btn-default"
-            onClick={() => setShowAddWidgetPopup(true)}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <AddIcon color="var(--oda-label-background-color)" />
-              <div>{t("button-addwidget")}</div>
-            </Flex>
-          </div>
+          <SecondaryButton onClick={() => setShowAddWidgetPopup(true)}>
+            <AddIcon color="var(--oda-primary-color)" />
+            <div>{t("button-addwidget")}</div>
+          </SecondaryButton>
         )}
       </>
     );
@@ -196,21 +191,21 @@ export default function ConfigurationPage({}: {}) {
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
-        <SelectedIndexContext.Provider value={selection.current}>
-          <Flex justify="space-between" align="center">
-            <h1 className={`${classes.header}`}>Виджеты</h1>
-            <AddWidgetComponent widgetStore={widgetStore} />
-          </Flex>
-          {widgetStore?.list && (
-            <div className="widget-list">
-              <PaymentPageConfigContext.Provider
-                value={new PaymentPageConfig(recipientId)}
-              >
-                <WidgetList />
-              </PaymentPageConfigContext.Provider>
-            </div>
-          )}
-        </SelectedIndexContext.Provider>
+      <SelectedIndexContext.Provider value={selection.current}>
+        <Flex justify="space-between" align="center">
+          <h1 className={`${classes.header}`}>Виджеты</h1>
+          <AddWidgetComponent widgetStore={widgetStore} />
+        </Flex>
+        {widgetStore?.list && (
+          <div className="widget-list">
+            <PaymentPageConfigContext.Provider
+              value={new PaymentPageConfig(recipientId)}
+            >
+              <WidgetList />
+            </PaymentPageConfigContext.Provider>
+          </div>
+        )}
+      </SelectedIndexContext.Provider>
     </WidgetStoreContext.Provider>
   );
 }

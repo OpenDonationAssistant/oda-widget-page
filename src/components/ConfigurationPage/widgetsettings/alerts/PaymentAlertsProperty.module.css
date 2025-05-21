@@ -1,11 +1,24 @@
 .adddalertbutton {
-  margin-top: 10px;
-  margin-bottom: 10px;
   text-align: center;
+  width: 100%;
+  background-color: var(--oda-color-150);
+  border: none;
+  border-radius: 6px;
+  color: var(--oda-primary-color);
+  height: 52px;
+  &:hover{
+    background-color: var(--oda-color-250);
+  }
 }
 
 .preview {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  & [class*="ant-collapse"] {
+    & [class*="ant-collapse-content"] {
+      & [class*="ant-collapse-content-box"] {
+        padding: 12px;
+      }
+    }
+  }
 }

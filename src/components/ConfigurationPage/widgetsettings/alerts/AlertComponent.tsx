@@ -1,4 +1,9 @@
-import { Alert, FixedDonationAmountTrigger, RangeDonationAmountTrigger, UnknownTrigger } from "./Alerts";
+import {
+  Alert,
+  FixedDonationAmountTrigger,
+  RangeDonationAmountTrigger,
+  UnknownTrigger,
+} from "./Alerts";
 import { Trans, useTranslation } from "react-i18next";
 import { Tabs as AntTabs, Flex, Select } from "antd";
 import { observer } from "mobx-react-lite";
@@ -13,8 +18,8 @@ import { VoiceTab } from "./VoiceTab";
 import PresetTab from "./PresetTab";
 import { LayoutTab } from "./LayoutTab";
 import { useEffect, useState } from "react";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
+import classes from "./AlertComponent.module.css";
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
@@ -74,8 +79,9 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
 
   return (
     <div key={alert.id} className="payment-alerts-previews-item">
-      <div className="settings-item">
-        <LabeledContainer displayName="tab-alert-trigger">
+      <div className={`${classes.littletitle}`}>Срабатывает</div>
+      <Flex gap={12} justify="space-around" style={{ marginBottom: "18px" }}>
+        <Flex className="full-width">
           <Select
             value={alert.triggers.at(0)?.type}
             className="full-width"
@@ -115,36 +121,36 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
               },
             ]}
           />
-        </LabeledContainer>
-      </div>
-      {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
-        <LabeledContainer displayName="">
-          <InputNumber
-            value={alert.triggers.at(0)?.amount}
-            addon="руб."
-            onChange={(newAmount) => {
-              if (!newAmount) {
-                return;
-              }
-              updateAmount(newAmount);
-            }}
-          />
-        </LabeledContainer>
-      )}
-      {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
-        <LabeledContainer displayName="">
-          <InputNumber
-            value={alert.triggers.at(0)?.min}
-            addon="руб."
-            onChange={(newAmount) => {
-              if (!newAmount) {
-                return;
-              }
-              updateAmount(newAmount);
-            }}
-          />
-        </LabeledContainer>
-      )}
+        </Flex>
+          {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
+            <div style={{ display: "inline-block", width: "50%" }}>
+              <InputNumber
+                value={alert.triggers.at(0)?.amount}
+                addon="руб."
+                onChange={(newAmount) => {
+                  if (!newAmount) {
+                    return;
+                  }
+                  updateAmount(newAmount);
+                }}
+              />
+            </div>
+          )}
+        {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
+          <div style={{ display: "inline-block", width: "50%" }}>
+            <InputNumber
+              value={alert.triggers.at(0)?.min}
+              addon="руб."
+              onChange={(newAmount) => {
+                if (!newAmount) {
+                  return;
+                }
+                updateAmount(newAmount);
+              }}
+            />
+          </div>
+        )}
+      </Flex>
       <AntTabs
         type="card"
         tabPosition="top"

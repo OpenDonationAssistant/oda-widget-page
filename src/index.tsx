@@ -25,7 +25,7 @@ import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/P
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import HistoryPage from "./pages/History/HistoryPage";
-import { Button, ConfigProvider, Flex, Layout, theme } from "antd";
+import { ConfigProvider, Flex, theme } from "antd";
 import "./i18n";
 import "animate.css";
 import WidgetWrapper from "./WidgetWrapper";
@@ -44,6 +44,8 @@ import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import IntegrationsPage from "./pages/Integrations/IntegrationsPage";
+import SecondaryButton from "./components/SecondaryButton/SecondaryButton";
+import UtilityButton from "./components/UtilityButton/UtilityButton";
 
 async function widgetSettingsLoader({
   params,
@@ -99,6 +101,27 @@ function ConfigurationPageTemplate() {
 
   return (
     <>
+      <Flex
+        id="support-buttons"
+        style={{
+          position: "absolute",
+          bottom: "12px",
+          right: "15px",
+          paddingTop: "36px",
+        }}
+        gap={9}
+      >
+        <UtilityButton
+          onClick={() => window.open("https://yoomoney.ru/to/4100118300145014")}
+        >
+          Поддержать
+        </UtilityButton>
+        <UtilityButton
+          onClick={() => window.open("https://t.me/opendonationassistant")}
+        >
+          Обратная связь
+        </UtilityButton>
+      </Flex>
       <Flex vertical className="newstyle">
         <AntHeader>
           <Header />
@@ -107,10 +130,19 @@ function ConfigurationPageTemplate() {
           <style
             dangerouslySetInnerHTML={{
               __html: `
+        #root {
+          min-height: 100vh;
+          padding-bottom: 90px;
+        }`,
+            }}
+          />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
         body {
           padding-left: 18px;
           padding-right: 18px;
-  }`,
+        }`,
             }}
           />
           <style
@@ -132,7 +164,12 @@ function ConfigurationPageTemplate() {
           />
           <Toolbar page={page} />
           <Flex
-            style={{ marginLeft: "24px", width: "100%", marginRight: "24px" }}
+            style={{
+              marginLeft: "24px",
+              width: "100%",
+              marginRight: "24px",
+              paddingBottom: "60px",
+            }}
             className="full-width"
           >
             <Content

@@ -30,6 +30,7 @@ export interface GatewayField {
 
 export interface GatewayConfiguration {
   id: string;
+  gateway: string;
   type: string;
   enabled: boolean;
 }
@@ -379,6 +380,7 @@ export class PaymentGatewayConfigurationStore {
         this.configurations = data.map((it) => {
           return {
             id: it.id,
+            gateway: it.gateway,
             type: it.type,
             enabled: it.enabled,
           };
@@ -390,6 +392,13 @@ export class PaymentGatewayConfigurationStore {
     const conf = this._configurations.find((conf) => conf.id === id);
     if (conf) {
       this._client.toggleGateway({ id: conf.id }).then(() => this.load());
+    }
+  }
+
+  public delete(id: string) {
+    const conf = this._configurations.find((conf) => conf.id === id);
+    if (conf) {
+      this._client.deleteGateway({ id: conf.id }).then(() => this.load());
     }
   }
 
@@ -411,6 +420,7 @@ export class PaymentGatewayConfigurationStore {
             secret:
               gateway.fields.find((field) => field.id === "secret")?.value ??
               "",
+            type: gateway.type,
             enabled: true,
           })
           .then(() => this.load());

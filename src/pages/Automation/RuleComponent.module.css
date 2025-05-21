@@ -34,7 +34,7 @@
   justify-content: space-between;
   flex-direction: column;
   padding: 12px 15px;
-  background-color: #141417;
+  background-color: var(--oda-color-100);
   border-radius: 9px;
 }
 

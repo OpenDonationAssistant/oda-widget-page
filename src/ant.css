@@ -6,6 +6,15 @@
 }
 
 .newstyle {
+
+  & .ant-descriptions .ant-descriptions-row >td {
+    padding-bottom: 0px;
+  }
+
+  & .ant-list-split.ant-list-something-after-last-item .ant-spin-container>.ant-list-items>.ant-list-item:last-child {
+    border-block-end: 0px;
+  }
+
   & .ant-input {
     border: 1px solid #36363D;
     border-radius: 9px;

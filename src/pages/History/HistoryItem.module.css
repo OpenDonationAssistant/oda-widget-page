@@ -1,0 +1,32 @@
+.little {
+  font-size: 16px;
+  color: rgb(120, 133, 189);
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.timestamp {
+  justify-self: flex-end;
+  text-align: right;
+  flex: 1 0 auto;
+  color: var(--oda-color-800);
+  margin-top: 10px;
+}
+
+.amount {
+  color: var(--oda-primary-color);
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  font-size: 18px;
+}
+
+.goals {
+  font-size: 18px;
+  flex-grow: 1;
+  justify-content: flex-end;
+}

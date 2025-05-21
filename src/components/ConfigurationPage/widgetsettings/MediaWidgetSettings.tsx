@@ -2,6 +2,9 @@ import { ReactNode } from "react";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
+import { BooleanProperty } from "../widgetproperties/BooleanProperty";
+import { TextProperty } from "../widgetproperties/TextProperty";
+import { DurationProperty } from "../widgetproperties/DurationProperty";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -10,6 +13,48 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
         {
           key: "general",
           title: "Общие",
+          properties: [
+            new NumberProperty({
+              name: "songRequestCost",
+              value: 100,
+              addon: "руб",
+              displayName: "Стоимость одного видео",
+            }),
+            new NumberProperty({
+              name: "songMaxAmount",
+              value: 12,
+              displayName: "Максимальное кол-во видео в одном донате",
+            }),
+            new NumberProperty({
+              name: "requestViewAmount",
+              value: 100,
+              displayName: "Минимальное кол-во просмотров",
+            }),
+            new BooleanProperty({
+              name: "youtubeEnabled",
+              value: true,
+              displayName: "Реквесты с YouTube",
+            }),
+            new BooleanProperty({
+              name: "vkvideoEnabled",
+              value: true,
+              displayName: "Реквесты с VKVideo",
+            }),
+            new TextProperty({
+              name: "requestTooltip",
+              value: "",
+              displayName: "Текст подсказки для донатера"
+            }),
+            new TextProperty({
+              name: "wordsBlacklist",
+              value: "",
+              displayName: "Blacklist слов в названии"
+            })
+          ],
+        },
+        {
+          key: "appearance",
+          title: "Внешний вид",
           properties: [
             new NumberProperty({
               name: "playlistSongTitleFontSize",

@@ -11,15 +11,15 @@
 }
 
 .rulecontainer {
-  background-color: #1b1b1f;
+  background-color: var(--oda-color-150);
   border-radius: 6px;
   padding: 18px;
-  margin-bottom: 18px;
+  margin-bottom: 9px;
   width: 100%;
 }
 
 .variablecontainer {
-  background-color: #1B1B1F;
+  background-color: var(--oda-color-150);
   border-radius: 6px;
   margin-bottom: 5px;
   padding: 19px 24px 23px 24px;
@@ -28,25 +28,29 @@
 }
 
 .addbutton {
-  width: fit-content;
+  width: 100%;
+  height: 72px;
   margin-left: auto;
   margin-right: auto;
+  border-radius: 6px;
   font-size: 15px;
-  color: #b2d4fb;
+  background-color: var(--oda-color-150);
+  color: var(--oda-primary-color);
   &:hover{
     cursor: pointer;
+    background-color: var(--oda-color-250);
   }
 }
 
 .addvariable {
-  background-color: #1B1B1F;
+  background-color: var(--oda-color-150);
   border-radius: 6px;
   margin-bottom: 5px;
   padding: 19px 24px 23px 24px;
   align-items: center;
   height: 72px;
   &:hover{
-    background-color: var(--oda-color-200);
+    background-color: var(--oda-color-250);
     cursor: pointer;
   }
 }
@@ -79,7 +83,6 @@
   background-color: transparent !important;
   box-shadow: none!important;
   border: 1px solid #36363d!important;
-  width: 27px;
   height: 27px;
 }
 

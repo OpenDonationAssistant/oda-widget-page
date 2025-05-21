@@ -6,15 +6,15 @@
 }
 
 .addbutton {
-  background-color: transparent!important;
-  color: var(--oda-secondary-text-color)!important;
+  background-color: transparent !important;
+  color: var(--oda-secondary-text-color) !important;
   box-shadow: none;
   width: 33%;
-  height: auto!important;
-  border: 1px solid #36363D;
+  height: auto !important;
+  border: 1px solid #36363d;
   border-radius: 9px;
-  &[class*="ant-btn"][class*="ant-btn-default"]{
-    border: 1px solid #36363D;
+  &[class*="ant-btn"][class*="ant-btn-default"] {
+    border: 1px solid #36363d;
     box-shadow: none;
     min-height: 200px;
     border-radius: 9px;
@@ -42,7 +42,11 @@
   width: 100%;
   min-width: 300px;
   padding: 18px 15px 15px 15px;
+}
+
+.hover {
   &:hover {
+    transform: translateY(-2px);
     cursor: pointer;
   }
 }
@@ -98,7 +102,6 @@
     -ms-user-select: text;
     user-select: text;
   }
-
 }
 
 .screen {

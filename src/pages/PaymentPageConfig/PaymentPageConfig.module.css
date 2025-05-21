@@ -1,10 +1,18 @@
-.header {
-    color: var(--oda-color-1000);
+.panel {
+  background: var(--oda-color-150);
+  border-radius: 6px;
+  padding: 12px 15px 15px 15px;
+  margin-bottom: 9px;
+}
+
+.fieldname {
+  color: var(--oda-color-500);
+  font-size: 12px;
+  margin-bottom: 6px;
 }
 
 .paymentpageconfig {
   color: white;
-  padding-bottom: 50px;
   flex: 1 0 auto;
   margin-top: 22px;
 }
@@ -27,17 +35,26 @@
 
 .widgetsettingsvalue {
   display: inline-block;
-  width: 120px;
+  width: 100%;
   border-radius: 5px;
-  border: 1px solid #684aff;
+  border: 1px solid var(--oda-color-300);
   background: none;
   color: white;
   text-align: center;
+  flex-grow: 1;
 }
 
-.url {
-  font-size: 20px;
-  color: white;
+a.url {
+  font-size: 30px;
+  color: var(--oda-color-1000)!important;
+  text-decoration: none;
+}
+
+.pagetext {
+  border: 1px solid var(--oda-color-250);
+  border-radius: 9px;
+  background: none;
+  color: var(--oda-color-1000);
 }
 
 .widgetsettingsvalue:focus-visible,
@@ -46,15 +63,19 @@
 }
 
 .backgroundimage {
-	width: 400px;
-	height: 300px;
-  border: 1px solid #684aff;
+  width: 227px;
+  height: 106px;
+  padding: 12px;
+  border: 1px solid var(--oda-color-250);
+  border-radius: 6px;
 }
 
 .logoimage {
-	width: 110px;
-	height: 110px;
-  border: 1px solid #684aff;
+	width: 106px;
+	height: 106px;
+  padding: 12px;
+  border: 1px solid var(--oda-color-250);
+  border-radius: 6px;
 }
 
 .backgroundimage:hover {
@@ -62,8 +83,7 @@
 }
 
 .buttons {
-  width: 100%;
-  text-align: right;
+  margin-top: 36px;
 }
 
 .cancelButton {

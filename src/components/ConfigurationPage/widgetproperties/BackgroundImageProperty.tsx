@@ -14,7 +14,7 @@ import { Button, Flex, Image, Select, Switch, Upload } from "antd";
 import classes from "./BackgroundImageProperty.module.css";
 import InputNumber from "../components/InputNumber";
 import { produce } from "immer";
-import { toJS }  from "mobx";
+import { toJS } from "mobx";
 import { uuidv7 } from "uuidv7";
 
 function uploadFile(file: File, name: string) {
@@ -59,10 +59,7 @@ const ImagePropertyComponent = observer(
       <>
         <LabeledContainer displayName={property.displayName}>
           {!property.value.url && (
-            <label
-              className={`oda-btn-default ${classes.upload}`}
-              style={{ marginRight: "10px" }}
-            >
+            <label className={`${classes.upload}`}>
               <input
                 type="file"
                 onChange={(e) =>
@@ -135,7 +132,7 @@ const ImagePropertyComponent = observer(
                       url: null,
                       size: "auto",
                       repeat: false,
-                      opacity: 1
+                      opacity: 1,
                     })
                   }
                 >
@@ -205,12 +202,12 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
     });
   }
 
-  copy(){
+  copy() {
     return new BackgroundImageProperty({
       name: this.name,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       displayName: this.displayName,
-      help: this.help
+      help: this.help,
     });
   }
 

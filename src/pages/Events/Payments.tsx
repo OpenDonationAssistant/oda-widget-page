@@ -1,6 +1,6 @@
 import "./Payments.css";
 import { useState, useEffect } from "react";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import {
@@ -238,6 +238,7 @@ body::before {
           />
         </Menu>
       </div>
+
       <div>
         <NewsComponent />
         <div>

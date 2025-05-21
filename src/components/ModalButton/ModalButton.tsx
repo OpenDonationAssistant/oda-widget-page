@@ -2,6 +2,7 @@ import React, { ReactNode, useState } from "react";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
 import { Flex, Modal } from "antd";
 import { Trans, useTranslation } from "react-i18next";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
 export default function ModalButton({
   label,
@@ -35,14 +36,12 @@ export default function ModalButton({
 
   return (
     <LabeledContainer help={help} displayName={label}>
-      <button className={`full-width oda-btn-default`} onClick={toggleModal}>
-        <Flex justify="center" align="center" gap={3}>
-          {icon && <span className="material-symbols-sharp">{icon}</span>}
-          <div>
-            <Trans i18nKey={buttonLabel} />
-          </div>
-        </Flex>
-      </button>
+      <SecondaryButton className="full-width" onClick={toggleModal}>
+        {icon && <span className="material-symbols-sharp">{icon}</span>}
+        <div>
+          <Trans i18nKey={buttonLabel} />
+        </div>
+      </SecondaryButton>
       <Modal
         title={t(modalTitle)}
         open={showModal}

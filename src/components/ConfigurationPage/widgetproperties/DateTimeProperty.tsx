@@ -53,7 +53,7 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
   copy() {
     return new DateTimeProperty({
       name: this.name,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       displayName: this.displayName,
       help: this.help,
     });

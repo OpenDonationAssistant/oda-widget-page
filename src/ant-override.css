@@ -233,17 +233,13 @@
 
 .ant-collapse {
 
-  background-color: #151a33;
+  background-color: var(--oda-color-150);
   font-family: "Mulish Variable";
-  border-top: 1px solid #674afd;
-  border-bottom: 1px solid #674afd;
-  border-left: none;
-  border-right: none;
-  border-radius: 0px;
-  margin-bottom: 20px;
+  border: none;
+  margin-bottom: 9px;
 
   & .ant-collapse-content {
-    background-color: var(--oda-panel-backgroun-color);
+    background-color: var(--oda-color-150);
     border: none;
     border-radius: 0px;
 
@@ -255,22 +251,19 @@
   & > .ant-collapse-item {
     border-bottom: 1px solid var(--oda-panel-backgroun-color);
     & > .ant-collapse-header {
+      border-radius: 12px!important;
       font-family: "Mulish Variable";
       font-weight: 900;
       color: white;
-      border: none;
-      border-radius: 0px!important;
-      background-color: var(--oda-main-background-color);
       align-items: center;
+
+      &:hover {
+        cursor: pointer!important;
+      }
 
       & .ant-collapse-expand-icon {
         color: var(--oda-secondary-text-color);
       }
-    }
-
-    & > .ant-collapse-header:first {
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
     }
   }
 }
@@ -464,11 +457,13 @@ div.ant-layout-has-sider.ant-layout {
 }
 
 .ant-spin .ant-spin-dot-item {
-  background-color: #674afd;
+  background-color: var(--oda-primary-color);
 }
 
 .ant-qrcode {
   border: none;
+  margin-left: 12px;
+  padding: 0px;
 }
 
 .ant-notification .ant-notification-notice-wrapper .ant-notification-notice {

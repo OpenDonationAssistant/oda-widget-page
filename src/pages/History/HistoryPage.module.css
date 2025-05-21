@@ -3,27 +3,29 @@
 }
 
 .pagecontainer {
-}
+  height: 70vh;
+  overflow-y: scroll;
+  position: relative;
 
-.little {
-  font-size: 16px;
-  color: rgb(120, 133, 189);
-  margin-left: 3px;
-  margin-right: 3px;
-}
+  &::-webkit-scrollbar {
+    width: 3px;
+    display: none;
+  }
 
-.timestamp {
-  justify-self: flex-end;
-  text-align: right;
-  flex: 1 0 auto;
-  color: rgb(120, 133, 189);
-  padding-left: 20px;
-}
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: var(--oda-color-500);
+  }
 
-.title {
-  width: 100%;
-  display: flex;
-  align-items: baseline;
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: var(--oda-secondary-text-color);
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 .buttons {

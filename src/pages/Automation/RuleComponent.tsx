@@ -18,6 +18,7 @@ import {
 import { reaction } from "mobx";
 import CloseIcon from "../../icons/CloseIcon";
 import { log } from "../../logging";
+import IconButton from "../../components/IconButton/IconButton";
 
 const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
   const triggerController = useContext(AutomationTriggerControllerContext);
@@ -47,7 +48,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
 
   return (
     <Modal
-      size="normal"
+      size="big"
       title={`Действие в ${rule.name}`}
       show={index.index != null}
       onSubmit={() => {
@@ -107,7 +108,7 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
 
   return (
     <Modal
-      size="normal"
+      size="big"
       title={`Действие в ${rule.name}`}
       show={index.index != null}
       onSubmit={() => {
@@ -173,12 +174,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {trigger.name ? trigger.name : "<Не выбрано>"}
                         </div>
-                        <button
-                          className={`${classes.closetrigger} oda-icon-button`}
-                          onClick={() => rule.removeTrigger(index)}
-                        >
+                        <IconButton onClick={() => rule.removeTrigger(index)}>
                           <CloseIcon color="#FF8888" />
-                        </button>
+                        </IconButton>
                       </Flex>
                       <button
                         onClick={() => {
@@ -226,12 +224,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {action.name ? action.name : "<Не выбрано>"}
                         </div>
-                        <button
-                          className={`${classes.closetrigger}`}
-                          onClick={() => rule.removeAction(index)}
-                        >
+                        <IconButton onClick={() => rule.removeAction(index)}>
                           <CloseIcon color="#FF8888" />
-                        </button>
+                        </IconButton>
                       </Flex>
                       <button
                         onClick={() => {

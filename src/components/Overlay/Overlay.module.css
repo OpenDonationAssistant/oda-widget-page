@@ -1,0 +1,51 @@
+.back {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  height: calc(max(100%,100vh));
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal {
+  position: absolute;
+  top: calc(50% - 250px);
+  z-index: 200;
+  border-radius: 12px;
+  background-color: var(--oda-color-100);
+  padding: 12px 18px;
+  margin-bottom: 36px;
+}
+
+.small {
+  width: 720px;
+  left: calc(50% - 360px);
+}
+
+.big {
+  top: 2vh;
+}
+
+.title {
+  color: var(--oda-color-1000);
+  font-size: 48px;
+}
+
+.subtitle {
+  color: var(--oda-color-500);
+}
+
+@media(min-width: 1600px){
+  .big {
+    width: 1200px;
+    left: calc(50% - 600px);
+  }
+}
+
+@media(max-width: 1600px){
+  .big {
+    width: 750px;
+    left: calc(50% - 330px);
+  }
+}

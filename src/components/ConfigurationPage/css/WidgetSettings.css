@@ -223,7 +223,7 @@ textarea.widget-settings-value {
   flex-direction: column;
   padding: 0px;
   position: relative;
-  background-color: var(--oda-main-background-color);
+  background-color: var(--oda-color-150);
 
   & .ant-tabs {
     flex: 1 1 auto;
@@ -231,11 +231,6 @@ textarea.widget-settings-value {
     /*border-top: 2px solid var(--oda-main-background-color);*/
 
     /* border-bottom: var(--oda-main-border); */
-    &.ant-tabs-card {
-      & .ant-tabs-content-holder {
-        border-radius: 0px!important;
-      }
-    }
 
     &.ant-tabs-left {
       & > .ant-tabs-content-holder {
@@ -407,10 +402,10 @@ div.payment-alert-image-preview {
 }
 
 .configuration-container .ant-pagination .ant-pagination-item-active {
-  border: var(--oda-main-border);
-  background-color: #684aff;
-  color: white !important;
-  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
+  /*border: var(--oda-main-border);*/
+  border: none;
+  background-color: var(--oda-primary-color);
+  color: var(--oda-label-background-color)!important;
   border-radius: 3px;
 }
 
@@ -430,7 +425,6 @@ div.payment-alert-image-preview {
   .ant-descriptions
   .ant-descriptions-item-container
   .ant-descriptions-item-label {
-  margin-right: 10px;
   color: black;
   font-weight: 900;
 }
@@ -443,17 +437,18 @@ div.payment-alert-image-preview {
 }
 
 .configuration-container .ant-list-split .ant-list-item {
-  background-color: #151a33;
-  padding: 4px 15px;
-  border-radius: 8px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  box-shadow: inset 0 0 5px 1px rgba(0, 0, 0, 0.9);
+  padding: 12px 15px;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 3px;
+  background: var(--oda-color-150);
 }
 
 .configuration-container .ant-list .ant-list-item .ant-list-item-meta-title {
   color: white;
   font-size: 24px;
+  margin: 0px;
+  padding: 0px;
 }
 
 .configuration-container .ant-list .ant-list-item .material-symbols-sharp {

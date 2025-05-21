@@ -1,15 +1,11 @@
 .modal {
-  position: fixed;
+  position: absolute;
   top: calc(50% - 250px);
   z-index: 200;
-  border-radius: 12px;
-  background-color: var(--oda-color-100);
-  padding: 12px 18px;
 }
 
 .data {
-  max-height: 50vh;
-  overflow-y: auto;
+  width: 100%;
 
   &::-webkit-scrollbar {
     width: 3px;
@@ -44,13 +40,13 @@
 }
 
 .bigmodal{
-  top: 10vh;
+  top: 2vh;
 }
 
 @media(min-width: 1600px){
   .bigmodal {
-    width: 1500px;
-    left: calc(50% - 750px);
+    max-width: 1200px;
+    left: calc(50% - 600px);
   }
 }
 
@@ -66,8 +62,8 @@
   top: 0;
   left: 0;
   z-index: 100;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: calc(max(100%,100vh));
   background-color: rgba(0, 0, 0, 0.8);
 }
 
@@ -86,6 +82,10 @@
 .content {
   height: 100%;
   z-index: 200;
+  border-radius: 12px;
+  background-color: var(--oda-color-100);
+  padding: 12px 18px;
+  margin-bottom: 36px;
 }
 
 .decline {

@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { log } from "../../logging";
 import "./TestAlertPopup.css";
 import { publish } from "../../socket";
 import { Config } from "../../config";
+import { Dialog, ModalStateContext, Overlay } from "../Overlay/Overlay";
 
 export default function TestAlertPopup({ config }: { config: Config }) {
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState("");
-  const [showAlertPopup, setShowAlertPopup] = useState(false);
+  const state = useContext(ModalStateContext);
 
   function sendTestAlert() {
     publish(config.topic.alerts, {
@@ -24,18 +25,10 @@ export default function TestAlertPopup({ config }: { config: Config }) {
     log.debug("Send test alert");
   }
 
-  useEffect(() => {
-    function toggle() {
-      setShowAlertPopup((value) => !value);
-    }
-    document.addEventListener("toggleSendAlertPopup", toggle);
-    return () => document.removeEventListener("toggleSendAlertPopup", toggle);
-  }, [showAlertPopup]);
-
   return (
-    <>
-      {showAlertPopup && (
-        <div className="test-alert-popup">
+    <ModalStateContext.Provider value={state}>
+      <Overlay>
+        <Dialog>
           <div className="test-alert-field-container">
             <div className="test-alert-field-label">Nickname</div>
             <input
@@ -70,21 +63,26 @@ export default function TestAlertPopup({ config }: { config: Config }) {
             />
           </div>
           <div className="test-alert-buttons">
-            <button className="btn btn-dark" onClick={() => {
-							sendTestAlert();
-							setShowAlertPopup(false);
-						}}>
+            <button
+              className="btn btn-dark"
+              onClick={() => {
+                sendTestAlert();
+                state.show = false;
+              }}
+            >
               Test alert
             </button>
             <button
               className="btn btn-dark"
-              onClick={() => setShowAlertPopup(false)}
+              onClick={() => {
+                state.show = false;
+              }}
             >
               Close
             </button>
           </div>
-        </div>
-      )}
-    </>
+        </Dialog>
+      </Overlay>
+    </ModalStateContext.Provider>
   );
 }

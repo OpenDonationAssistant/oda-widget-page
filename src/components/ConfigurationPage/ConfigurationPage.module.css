@@ -12,8 +12,8 @@
 .widgetpreviewcontainer {
   border-radius: 9px;
   background-color: var(--oda-color-150);
-  height: 210px;
-  width: 660px;
+  height: 100%;
+  width: 500px;
   padding: 9px 15px;
   &:hover {
     cursor: pointer;
@@ -22,6 +22,7 @@
 }
 
 .addwidgetcontainer {
+  align-items: stretch;
   max-height: 60vh;
   overflow-y: scroll;
 
@@ -56,11 +57,13 @@
 .widgetpreviewimage {
   flex-shrink: 0;
   width: 240px;
-  height: 160px;
+  min-height: 160px;
+  height: 100%;
   border-radius: 12px;
   & img {
     width: 240px;
-    height: 160px;
+    min-height: 160px;
+    height: 100%;
     border-radius: 12px;
   }
 }
@@ -68,6 +71,7 @@
 .widgetpreviewtitle {
   font-size: 21px;
   font-weight: 500;
+  color: var(--oda-color-500);
 }
 
 .widgetpreviewdescription {

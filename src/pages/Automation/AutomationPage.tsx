@@ -19,6 +19,8 @@ import {
   DefaultWidgetStore,
   WidgetStoreContext,
 } from "../../stores/WidgetStore";
+import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
+import SubActionButton from "../../components/SubActionButton/SubActionButton";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   const state = useContext(AutomationStateContext);
@@ -85,7 +87,7 @@ const RuleList = observer(({}) => {
   return (
     <Flex vertical className={`${classes.container}`} align="flex-start">
       {state.rules.map((rule, index) => (
-        <Flex vertical className={`${classes.rulecontainer}`}>
+        <Flex key={rule.id} vertical className={`${classes.rulecontainer}`}>
           <Flex className={`${classes.rulename}`} justify="space-between">
             <Flex align="center">
               <div>{rule.name}</div>
@@ -112,12 +114,10 @@ const RuleList = observer(({}) => {
               </Button>
             </Flex>
             <div>
-              <Button
-                className={`${classes.delete} oda-icon-button`}
-                onClick={() => state.removeRule(index)}
-              >
+              <SubActionButton onClick={() => state.removeRule(index)}>
                 <CloseIcon color="#FF8888" />
-              </Button>
+                <span style={{ color: "#FF8888" }}>Удалить</span>
+              </SubActionButton>
             </div>
           </Flex>
           <RuleComponent rule={rule} />
@@ -129,7 +129,7 @@ const RuleList = observer(({}) => {
           state.addRule();
         }}
       >
-        <Flex justify="center" align="center" gap={3}>
+        <Flex justify="center" align="center" gap={3} className="full-height">
           <span className="material-symbols-sharp">add</span>
           <div>{t("button-add-automation-rule")}</div>
         </Flex>
@@ -146,7 +146,7 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
       {state.variables
         .filter((variable) => variable.type === type)
         .map((variable) => {
-          return <VariableComponent variable={variable} />;
+          return <VariableComponent key={variable.id} variable={variable} />;
         })}
       <Flex
         className={`${classes.addvariable} full-width`}
@@ -169,21 +169,18 @@ const AutomationPage = observer(({}) => {
   return (
     <AutomationStateContext.Provider value={state}>
       <WidgetStoreContext.Provider value={widgetStore}>
-        <Flex justify="space-between">
-          <h1>Автоматизация</h1>
-          <div>
-            <Button
-              className="oda-btn-default"
+        <h1>Автоматизация</h1>
+
+        <Tabs
+          tabBarExtraContent={
+            <SecondaryButton
               onClick={() => {
                 state.save();
               }}
             >
               Сохранить
-            </Button>
-          </div>
-        </Flex>
-
-        <Tabs
+            </SecondaryButton>
+          }
           type="card"
           items={[
             {

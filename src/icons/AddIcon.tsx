@@ -9,8 +9,8 @@ export default function AddIcon({ color }: { color: string }) {
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M11.5376 12.5V18.5H12.5127V12.5H18.0376V11.5H12.5127V6H11.5376V11.5H6.03758V12.5H11.5376Z"
           fill={color}
         />

@@ -4,7 +4,6 @@ import "./css/Widget.css";
 import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
-import TestAlertButton from "./settings/TestAlertButton";
 
 import { publish, socket } from "../../socket";
 import { Button, Flex, Input, Modal as AntModal, notification } from "antd";
@@ -12,7 +11,6 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Trans, useTranslation } from "react-i18next";
 import Dropdown from "antd/es/dropdown/dropdown";
-import Modal from "../Modal/Modal";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
 import { observer } from "mobx-react-lite";
@@ -36,7 +34,18 @@ import { DonatersTopListWidgetSettings } from "./widgetsettings/DonatersTopListW
 import { DemoListStore } from "../../pages/DonatersTopList/DemoListStore";
 import { getRndInteger } from "../../utils";
 import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
-import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
+import { WidgetStoreContext } from "../../stores/WidgetStore";
+import TestAlertPopup from "../TestAlertPopup/TestAlertPopup";
+import {
+  ModalState,
+  ModalStateContext,
+  Overlay,
+  Panel,
+  Subtitle,
+  Title,
+} from "../Overlay/Overlay";
+import CloseIcon from "../../icons/CloseIcon";
+import IconButton from "../IconButton/IconButton";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -112,21 +121,91 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
 });
 
 const NameComponent = observer(({ widget }: { widget: Widget }) => {
-  const selection = useContext(SelectedIndexContext);
+  const [modalState] = useState<ModalState>(new ModalState());
+
   return (
-    <div
-      className="widget-header-toogler"
-      onClick={() => {
-        if (selection.id === widget.id) {
-          selection.id = "";
-        } else {
-          selection.id = widget.id;
-        }
-      }}
-    >
-      <img className="widget-icon" src={`/icons/${widget.type}.png`} />
-      <div className="widget-title">{widget.name}</div>
-    </div>
+    <ModalStateContext.Provider value={modalState}>
+      <div
+        className="widget-header-toogler"
+        onClick={() => {
+          modalState.show = true;
+        }}
+      >
+        <img className="widget-icon" src={`/icons/${widget.type}.png`} />
+        <div className="widget-title">{widget.name}</div>
+      </div>
+      <Overlay>
+        <Panel>
+          <Title>
+            <Flex justify="space-between">
+              <div>{widget.name}</div>
+              <div>
+                <IconButton
+                  onClick={() => {
+                    modalState.show = false;
+                  }}
+                >
+                  <CloseIcon color="var(--oda-color-1000)" />
+                </IconButton>
+              </div>
+            </Flex>
+          </Title>
+          <Subtitle className={`${classes.settingssubtitle}`}>
+            Настройки виджета
+          </Subtitle>
+          {(widget.type === "donaton" ||
+            widget.type === "donation-timer" ||
+            widget.type === "donationgoal" ||
+            widget.type === "player-popup" ||
+            widget.type === "donaters-top-list") && (
+            <Flex justify="space-around" className={`${classes.preview}`}>
+              <ResizableBox
+                height={250}
+                className={`${classes.resizable}`}
+                axis="both"
+                minConstraints={[650, 100]}
+              >
+                <div style={{ maxWidth: "100%" }}>
+                  {widget.type === "donation-timer" && (
+                    <DonationTimer
+                      settings={widget.config as DonationTimerWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "donaton" && (
+                    <DonatonWidget
+                      settings={widget.config as DonatonWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "player-popup" && (
+                    <PlayerPopup
+                      player={new DemoPlayerStore()}
+                      settings={widget.config as PlayerPopupWidgetSettings}
+                    />
+                  )}
+                  {widget.type === "donationgoal" && (
+                    <DonationGoal
+                      settings={widget.config as DonationGoalWidgetSettings}
+                      state={
+                        new DemoDonationGoalState(
+                          widget.config as DonationGoalWidgetSettings,
+                        )
+                      }
+                    />
+                  )}
+                  {widget.type === "donaters-top-list" && (
+                    <DonatersTopList
+                      settings={widget.config as DonatersTopListWidgetSettings}
+                      store={new DemoListStore()}
+                    />
+                  )}
+                </div>
+              </ResizableBox>
+            </Flex>
+          )}
+          <Comp widget={widget} />
+        </Panel>
+      </Overlay>
+    </ModalStateContext.Provider>
   );
 });
 
@@ -228,7 +307,7 @@ export const WidgetConfiguration = observer(
               key: widget.id,
               message: <Trans i18nKey="unsaved-notification-title" />,
               description: (
-                <Flex vertical gap={15}>
+                <Flex vertical gap={15} className="full-width">
                   <div>
                     <Trans i18nKey="unsaved-notification-description" />
                     <span className={`${classes.widgetname}`}>
@@ -240,7 +319,7 @@ export const WidgetConfiguration = observer(
                   </Flex>
                 </Flex>
               ),
-              placement: "bottom",
+              placement: "bottomRight",
               duration: 0,
             });
           } else {
@@ -269,9 +348,7 @@ export const WidgetConfiguration = observer(
               </Flex>
             </Button>
           )}
-          {widget.type === "payment-alerts" && (
-            <TestAlertButton config={conf} />
-          )}
+          {widget.type === "payment-alerts" && <TestAlertPopup config={conf} />}
           <SaveButtons widget={widget} />
           <WidgetUrlModal
             open={showUrlModal}
@@ -340,68 +417,6 @@ export const WidgetConfiguration = observer(
             </button>
           </Dropdown>
         </div>
-        <Modal
-          size="big"
-          show={selection.id === widget.id}
-          onSubmit={() => {}}
-          onDecline={() => {}}
-        >
-          <Flex vertical>
-            {(widget.type === "donaton" ||
-              widget.type === "donation-timer" ||
-              widget.type === "donationgoal" ||
-              widget.type === "player-popup" ||
-              widget.type === "donaters-top-list") && (
-              <Flex justify="space-around" className={`${classes.preview}`}>
-                <ResizableBox
-                  width={800}
-                  height={250}
-                  className={`${classes.resizable}`}
-                  axis="both"
-                  minConstraints={[650, 100]}
-                >
-                  <div style={{ maxWidth: "100%" }}>
-                    {widget.type === "donation-timer" && (
-                      <DonationTimer
-                        settings={widget.config as DonationTimerWidgetSettings}
-                      />
-                    )}
-                    {widget.type === "donaton" && (
-                      <DonatonWidget
-                        settings={widget.config as DonatonWidgetSettings}
-                      />
-                    )}
-                    {widget.type === "player-popup" && (
-                      <PlayerPopup
-                        player={new DemoPlayerStore()}
-                        settings={widget.config as PlayerPopupWidgetSettings}
-                      />
-                    )}
-                    {widget.type === "donationgoal" && (
-                      <DonationGoal
-                        settings={widget.config as DonationGoalWidgetSettings}
-                        state={
-                          new DemoDonationGoalState(
-                            widget.config as DonationGoalWidgetSettings,
-                          )
-                        }
-                      />
-                    )}
-                    {widget.type === "donaters-top-list" && (
-                      <DonatersTopList
-                        settings={
-                          widget.config as DonatersTopListWidgetSettings
-                        }
-                        store={new DemoListStore()}
-                      />
-                    )}
-                  </div>
-                </ResizableBox>
-              </Flex>
-            )}
-            <Comp widget={widget} />
-          </Flex>
-        </Modal>
       </div>
     );
   },

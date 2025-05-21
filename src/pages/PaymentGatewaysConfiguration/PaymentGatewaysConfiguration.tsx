@@ -12,6 +12,8 @@ import { useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { log } from "../../logging";
+import CloseIcon from "../../icons/CloseIcon";
+import IconButton from "../../components/IconButton/IconButton";
 
 const SettingsModal = observer(
   ({ configuration }: { configuration: PaymentGatewayConfigurationStore }) => {
@@ -159,21 +161,33 @@ const GatewayCard = observer(
     info,
     selected,
     onClick,
+    onDelete,
   }: {
     info: GatewayInfo;
     selected: boolean;
     onClick: () => void;
+    onDelete?: () => void;
   }) => {
     return (
       <Col
         span={7}
-        className={`${classes.card} ${selected ? classes.selected : classes.notselected}`}
-        onClick={onClick}
+        className={`${classes.card} ${!onDelete && classes.hover} ${selected ? classes.selected : classes.notselected}`}
+        onClick={() => {
+          if (!onDelete) onClick();
+        }}
       >
         <Flex vertical gap={36}>
           <Flex align="center" justify="space-between">
-            <div className={`${classes.gatewayname}`}>{info.name}</div>
-            {selected && (
+            <Flex align="center" gap={12} justify="flex-start">
+              <div className={`${classes.gatewayname}`}>{info.name}</div>
+              {onDelete && <Switch value={selected} onClick={onClick} />}
+            </Flex>
+            {onDelete && (
+              <IconButton onClick={onDelete}>
+                <CloseIcon color="#FF8888" />
+              </IconButton>
+            )}
+            {!onDelete && selected && (
               <div className={`${classes.iconbackground}`}>
                 <CheckIcon color="var(--oda-color-0)" />
               </div>
@@ -226,12 +240,12 @@ const ChooseGatewayModal = observer(
               .filter((it) => it.type === type)
               .map((it) => (
                 <GatewayCard
+                  key={it.id}
                   info={it}
                   selected={configuration.gateway === it.id}
                   onClick={() => {
-                    configuration.gateway === it.id
-                      ? null
-                      : (configuration.gateway = it.id);
+                    configuration.gateway =
+                      configuration.gateway === it.id ? null : it.id;
                   }}
                 />
               ))}
@@ -272,14 +286,18 @@ const ExisingGateways = observer(
         {configuration.configurations.flatMap((conf) => {
           const gateways = configuration.gateways
             .filter((gateway) => gateway.type === type)
-            .filter((gateway) => gateway.id === conf.type);
+            .filter((gateway) => gateway.id === conf.gateway);
+
           return gateways.map((gateway) => (
             <GatewayCard
-              key={gateway.id}
+              key={conf.id}
               info={gateway}
               selected={conf.enabled}
               onClick={() => {
                 configuration.toggle(conf.id);
+              }}
+              onDelete={() => {
+                configuration.delete(conf.id);
               }}
             />
           ));
@@ -304,22 +322,16 @@ const PaymentGatewaysConfiguration = observer(({}) => {
         <div className={`${classes.sectionname}`}>
           Фиатная валюта (RUB, USD, etc)
         </div>
-        <Flex gap={12}>
+        <Flex gap={12} wrap>
           <ExisingGateways configuration={configuration.current} type="fiat" />
           <ChooseGatewayModal
             type="fiat"
             configuration={configuration.current}
           />
         </Flex>
-        <div className={`${classes.sectionname}`}>
+        <div className={`${classes.sectionname} hidden`}>
           Криптовалюта (Bitcoin, Etherium, TON, etc)
         </div>
-        <Flex>
-          <ChooseGatewayModal
-            type="crypto"
-            configuration={configuration.current}
-          />
-        </Flex>
       </Flex>
       <InstructionModal
         subtitle="Зарегистрируйте аккаунт у партнера"

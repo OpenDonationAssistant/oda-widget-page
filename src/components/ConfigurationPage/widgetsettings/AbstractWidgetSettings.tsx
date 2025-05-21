@@ -98,8 +98,22 @@ export class AbstractWidgetSettings {
   };
 
   public markup(): ReactNode {
+    if (this._sections.length > 1) {
+      return (
+        <AntTabs
+          type="card"
+          items={this._sections.map(this.tabPaneGenerator)}
+        />
+      );
+    }
     return (
-      <AntTabs type="card" items={this._sections.map(this.tabPaneGenerator)} />
+      <>
+        {this._sections.at(0)?.properties.map((prop) => (
+          <div key={prop.name} className="settings-item">
+            {prop.markup()}
+          </div>
+        ))}
+      </>
     );
   }
 
