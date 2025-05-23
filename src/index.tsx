@@ -44,8 +44,8 @@ import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import IntegrationsPage from "./pages/Integrations/IntegrationsPage";
-import SecondaryButton from "./components/SecondaryButton/SecondaryButton";
 import UtilityButton from "./components/UtilityButton/UtilityButton";
+import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 
 async function widgetSettingsLoader({
   params,
@@ -250,6 +250,11 @@ const router = createBrowserRouter([
   {
     path: "/payments/:widgetId",
     element: <EventsPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/horizontal-events/:widgetId",
+    element: <HorizontalEventsPage />,
     loader: widgetSettingsLoader,
   },
   {

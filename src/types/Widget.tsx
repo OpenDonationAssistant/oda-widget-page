@@ -15,6 +15,7 @@ import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/wid
 import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
 import { tokenRequest } from "../pages/Login/Login";
+import { HorizontalEventsWidgetSettings } from "../pages/HorizontalEvents/HorizontalEventsWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -124,6 +125,15 @@ export const WIDGET_TYPES = [
     preview: "",
     description: "Позволяет удалённо управлять медиаплеером",
     create: () => new PlayerControlWidgetSettings(),
+  },
+  {
+    name: "horizontal-events",
+    title: "Горизонтальная лента событий",
+    category: "onscreen",
+    preview: "",
+    description:
+      "Бегущая строка, показывающая последние события (донаты в текущий момент)",
+    create: () => new HorizontalEventsWidgetSettings(),
   },
 ];
 
