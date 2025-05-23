@@ -230,7 +230,6 @@ body::before {
       />
 
       <div style={{ marginBottom: "5px", marginLeft: "5px" }}>
-        <TestAlertPopup config={conf} />
         <Menu>
           <MenuEventButton
             event="toggleSendAlertPopup"
