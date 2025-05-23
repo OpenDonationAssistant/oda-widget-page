@@ -37,7 +37,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new BooleanProperty({
           name: "showHeader",
           value: true,
-          displayName: "Показывать заголовок"
+          displayName: "Показывать заголовок",
         }),
         new TextProperty({
           name: "headerText",
@@ -117,7 +117,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new NumberProperty({
           name: "eventGap",
           value: 12,
-          displayName: "Отступ между событиями"
+          displayName: "Отступ между событиями",
         }),
         new AnimatedFontProperty({
           name: "eventsAmountFont",
@@ -269,6 +269,14 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
   public get showHeader() {
     return this.get("showHeader") as BooleanProperty;
+  }
+
+  public get showAmount() {
+    return this.get("showAmount") as BooleanProperty;
+  }
+
+  public get showMessage() {
+    return this.get("showMessage") as BooleanProperty;
   }
 
   public get headerText() {

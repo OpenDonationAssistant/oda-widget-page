@@ -125,19 +125,22 @@ export default function HorizontalEventsWidget({
               >
                 {it.nickname ?? "Аноним"}
               </span>{" "}
-              -{" "}
-              <span
-                style={eventsAmountFont?.calcStyle()}
-                className={`${eventsAmountFont.calcClassName()}`}
-              >
-                {it.amount?.major}RUB
-              </span>
-              <span
-                style={eventsMessageFont?.calcStyle()}
-                className={`${eventsMessageFont.calcClassName()}`}
-              >
-                {it.message ? ` - ${it.message}` : ""}
-              </span>
+              {settings.showAmount.value && (
+                <span
+                  style={eventsAmountFont?.calcStyle()}
+                  className={`${eventsAmountFont.calcClassName()}`}
+                >
+                  - {it.amount?.major}RUB
+                </span>
+              )}
+              {settings.showMessage.value && (
+                <span
+                  style={eventsMessageFont?.calcStyle()}
+                  className={`${eventsMessageFont.calcClassName()}`}
+                >
+                  {it.message ? ` - ${it.message}` : ""}
+                </span>
+              )}
             </span>
           ))}
         </Marquee>
