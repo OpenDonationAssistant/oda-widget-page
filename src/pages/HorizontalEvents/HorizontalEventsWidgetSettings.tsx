@@ -27,7 +27,15 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
     this.addSection({
       key: "general",
       title: "Общие",
-      properties: [new HorizontalEventsModeProperty()],
+      properties: [
+        new HorizontalEventsModeProperty(),
+        new NumberProperty({
+          name: "speed",
+          value: 50,
+          displayName: "Скорость прокрутки",
+          addon: "pixels/second",
+        }),
+      ],
     });
 
     this.addSection({
@@ -265,6 +273,10 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         }),
       ],
     });
+  }
+
+  public get speed() {
+    return this.get("speed") as NumberProperty;
   }
 
   public get showHeader() {

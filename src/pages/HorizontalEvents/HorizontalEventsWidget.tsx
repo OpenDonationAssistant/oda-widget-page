@@ -108,7 +108,7 @@ export default function HorizontalEventsWidget({
             </span>
           </div>
         )}
-        <Marquee>
+        <Marquee speed={settings.speed.value}>
           {events.map((it) => (
             <span
               style={{
