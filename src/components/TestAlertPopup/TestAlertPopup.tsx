@@ -4,11 +4,18 @@ import "./TestAlertPopup.css";
 import { publish } from "../../socket";
 import { Config } from "../../config";
 import { Dialog, ModalStateContext, Overlay } from "../Overlay/Overlay";
+import SubActionButton from "../SubActionButton/SubActionButton";
+import RunIcon from "../../icons/RunIcon";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import InputNumber from "../ConfigurationPage/components/InputNumber";
+import { Flex, Input } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 export default function TestAlertPopup({ config }: { config: Config }) {
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const state = useContext(ModalStateContext);
 
   function sendTestAlert() {
@@ -17,7 +24,7 @@ export default function TestAlertPopup({ config }: { config: Config }) {
       nickname: nickname ? nickname : "Аноним",
       message: message ? message : "Тестовое сообщение",
       amount: {
-        major: amount ? parseInt(amount) : 40,
+        major: amount,
         minor: 0,
         currency: "RUB",
       },
@@ -27,11 +34,19 @@ export default function TestAlertPopup({ config }: { config: Config }) {
 
   return (
     <ModalStateContext.Provider value={state}>
+      <SecondaryButton
+        onClick={() => {
+          state.show = true;
+        }}
+      >
+        <RunIcon />
+        Тест
+      </SecondaryButton>
       <Overlay>
         <Dialog>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Nickname</div>
-            <input
+            <div className="test-alert-field-label">Ник донатера</div>
+            <Input
               value={nickname}
               placeholder="Аноним"
               autoComplete="off"
@@ -41,8 +56,8 @@ export default function TestAlertPopup({ config }: { config: Config }) {
             />
           </div>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Message</div>
-            <textarea
+            <div className="test-alert-field-label">Сообщение</div>
+            <TextArea
               value={message}
               placeholder="Тестовое сообщение"
               autoComplete="off"
@@ -52,35 +67,31 @@ export default function TestAlertPopup({ config }: { config: Config }) {
             />
           </div>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Amount</div>
-            <input
+            <div className="test-alert-field-label">Сумма доната</div>
+            <InputNumber
               value={amount}
-              placeholder="40"
-              autoComplete="off"
-              onChange={(e) => {
-                setAmount(e.target.value);
+              onChange={(value) => {
+                setAmount(value);
               }}
             />
           </div>
-          <div className="test-alert-buttons">
-            <button
-              className="btn btn-dark"
+          <Flex justify="flex-end" gap={12} style={{ marginTop: "12px" }}>
+            <SecondaryButton
+              onClick={() => {
+                state.show = false;
+              }}
+            >
+              Отменить
+            </SecondaryButton>
+            <PrimaryButton
               onClick={() => {
                 sendTestAlert();
                 state.show = false;
               }}
             >
-              Test alert
-            </button>
-            <button
-              className="btn btn-dark"
-              onClick={() => {
-                state.show = false;
-              }}
-            >
-              Close
-            </button>
-          </div>
+              Запустить алерт
+            </PrimaryButton>
+          </Flex>
         </Dialog>
       </Overlay>
     </ModalStateContext.Provider>
