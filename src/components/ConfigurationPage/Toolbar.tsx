@@ -50,20 +50,20 @@ const buttons: Section[] = [
     nonactive: <RubleIcon color="var(--oda-color-500)" />,
     label: "menu-payment-page-config",
   },
-  {
-    page: Page.GATEWAYS,
-    url: "/configuration/gateways",
-    active: <WalletIcon color="var(--oda-color-800)" />,
-    nonactive: <WalletIcon color="var(--oda-color-500)" />,
-    label: "menu-gateways",
-  },
-  {
-    page: Page.INTEGRATIONS,
-    url: "/configuration/integrations",
-    active: <AutomationIcon color="var(--oda-color-800)" />,
-    nonactive: <AutomationIcon color="var(--oda-color-500)" />,
-    label: "menu-integrations",
-  },
+  //{
+  //  page: Page.GATEWAYS,
+  //  url: "/configuration/gateways",
+  //  active: <WalletIcon color="var(--oda-color-800)" />,
+  //  nonactive: <WalletIcon color="var(--oda-color-500)" />,
+  //  label: "menu-gateways",
+  //},
+  //{
+  //  page: Page.INTEGRATIONS,
+  //  url: "/configuration/integrations",
+  //  active: <AutomationIcon color="var(--oda-color-800)" />,
+  //  nonactive: <AutomationIcon color="var(--oda-color-500)" />,
+  //  label: "menu-integrations",
+  //},
   {
     page: Page.AUTOMATION,
     url: "/configuration/automation-page",
@@ -71,13 +71,13 @@ const buttons: Section[] = [
     nonactive: <AutomationIcon color="var(--oda-color-500)" />,
     label: "menu-automation",
   },
-  {
-    page: Page.GUIDES,
-    url: "/configuration/guides",
-    active: <AutomationIcon color="var(--oda-color-800)" />,
-    nonactive: <AutomationIcon color="var(--oda-color-500)" />,
-    label: "menu-guides",
-  },
+  //{
+  //  page: Page.GUIDES,
+  //  url: "/configuration/guides",
+  //  active: <AutomationIcon color="var(--oda-color-800)" />,
+  //  nonactive: <AutomationIcon color="var(--oda-color-500)" />,
+  //  label: "menu-guides",
+  //},
 ];
 
 export default function Toolbar({ page }: { page: Page }) {
