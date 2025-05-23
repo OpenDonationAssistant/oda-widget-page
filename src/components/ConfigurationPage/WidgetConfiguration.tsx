@@ -46,6 +46,7 @@ import {
 } from "../Overlay/Overlay";
 import CloseIcon from "../../icons/CloseIcon";
 import IconButton from "../IconButton/IconButton";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -338,15 +339,12 @@ export const WidgetConfiguration = observer(
         <div className="widget-header">
           <NameComponent widget={widget} />
           {widget.type === "reel" && (
-            <Button
+            <SecondaryButton
               onClick={() => runReel(widget.id, conf, widget.config)}
-              className="oda-btn-default"
             >
-              <Flex justify="center" align="center" gap={3}>
-                <span className="material-symbols-sharp">poker_chip</span>
-                <div>{t("button-spin")}</div>
-              </Flex>
-            </Button>
+              <span className="material-symbols-sharp">poker_chip</span>
+              <div>{t("button-spin")}</div>
+            </SecondaryButton>
           )}
           {widget.type === "payment-alerts" && <TestAlertPopup config={conf} />}
           <SaveButtons widget={widget} />
