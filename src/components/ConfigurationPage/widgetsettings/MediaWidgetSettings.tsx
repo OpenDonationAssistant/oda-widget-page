@@ -4,7 +4,6 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
-import { DurationProperty } from "../widgetproperties/DurationProperty";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -14,6 +13,11 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
           key: "general",
           title: "Общие",
           properties: [
+            new BooleanProperty({
+              name: "requestsEnabled",
+              value: true,
+              displayName: "Реквесты включены",
+            }),
             new NumberProperty({
               name: "songRequestCost",
               value: 100,
