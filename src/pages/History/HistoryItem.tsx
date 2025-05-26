@@ -39,14 +39,15 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
   return (
     <Flex vertical className="full-width" gap={9}>
       <div>{item.message}</div>
-      <Flex className="full-width" wrap>
+      <Flex className="full-width" wrap gap={9}>
         {item.attachments?.map((attach) => (
-          <Flex key={attach.id} className={`${classes.attachment}`} gap={3}>
-            <SongIcon />
-            <div
+          <Flex key={attach.id} className={`${classes.attachment}`} gap={3}
               onClick={() => {
                 window.open(attach.url);
               }}
+          >
+            <SongIcon />
+            <div
             >
               {attach.title}
             </div>
