@@ -11,6 +11,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
 import { uuidv7 } from "uuidv7";
+import SongIcon from "../../icons/SongIcon";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
@@ -38,6 +39,20 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
   return (
     <Flex vertical className="full-width" gap={9}>
       <div>{item.message}</div>
+      <Flex className="full-width" wrap>
+        {item.attachments?.map((attach) => (
+          <Flex key={attach.id} className={`${classes.attachment}`} gap={3}>
+            <SongIcon />
+            <div
+              onClick={() => {
+                window.open(attach.url);
+              }}
+            >
+              {attach.title}
+            </div>
+          </Flex>
+        ))}
+      </Flex>
       <Flex align="center" justify="space-between" className="full-width">
         <span className={classes.timestamp}>
           {dateTimeFormat.format(new Date(item.authorizationTimestamp))}
