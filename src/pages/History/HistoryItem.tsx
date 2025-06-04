@@ -5,8 +5,6 @@ import DonationGoalIcon from "../../icons/DonationGoalIcon";
 import { observer } from "mobx-react-lite";
 import SubActionButton from "../../components/SubActionButton/SubActionButton";
 import RunIcon from "../../icons/RunIcon";
-import IconButton from "../../components/IconButton/IconButton";
-import CloseIcon from "../../icons/CloseIcon";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
@@ -65,8 +63,7 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
                 repeatAlert(conf.topic.alerts, item);
               }}
             >
-              <RunIcon />
-              <span>Повторить</span>
+              <span style={{ marginLeft: "3px" }}>Повторить</span>
             </SubActionButton>
           </Flex>
         </Flex>

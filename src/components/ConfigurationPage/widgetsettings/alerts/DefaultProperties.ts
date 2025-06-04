@@ -34,6 +34,10 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "name",
     value: "<Без названия>",
   }),
+  new DefaultWidgetProperty({
+    name: "enabled",
+    value: true,
+  }),
   new DurationProperty({
     name: "duration",
   }),

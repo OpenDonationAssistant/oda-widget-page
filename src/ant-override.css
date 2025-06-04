@@ -343,7 +343,7 @@ div.ant-layout-has-sider.ant-layout {
 .ant-select {
   &.ant-select-outlined {
     border: 1px solid var(--oda-secondary-text-color);
-    border-radius: 5px;
+    border-radius: 9px;
     /* background: var(--oda-secondary-text-color); */
     & .ant-select-selection-item {
       text-align: right;

@@ -1,6 +1,4 @@
 .button {
-  border: 1px solid var(--oda-color-250);
-  border-radius: 6px;
   background: transparent;
   width: 30px;
   height: 30px;
@@ -14,4 +12,13 @@
   &:hover {
     transform: translateY(-2px);
   }
+}
+
+.notbordered{
+  border: none;
+}
+
+.bordered{
+  border: 1px solid var(--oda-color-300);
+  border-radius: 6px;
 }

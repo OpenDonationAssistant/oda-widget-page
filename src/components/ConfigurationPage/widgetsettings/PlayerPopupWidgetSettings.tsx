@@ -6,6 +6,8 @@ import classes from "./AbstractWidgetSettings.module.css";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { PresetProperty } from "../widgetproperties/PresetProperty";
+import PlayerPopup from "../../PlayerPopup/PlayerPopup";
+import { DemoPlayerStore } from "../../PlayerPopup/DemoPlayer";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -14,7 +16,9 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
     this.addSection({
       key: "preset",
       title: "Готовые шаблоны",
-      properties: [new PresetProperty({ type: "player-popup", settings: this })],
+      properties: [
+        new PresetProperty({ type: "player-popup", settings: this }),
+      ],
     });
 
     this.addSection({
@@ -88,6 +92,14 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
         name: "boxShadow",
       })
     );
+  }
+
+  public hasDemo() {
+    return true;
+  }
+
+  public demo() {
+    return <PlayerPopup player={new DemoPlayerStore()} settings={this} />;
   }
 
   public help(): ReactNode {

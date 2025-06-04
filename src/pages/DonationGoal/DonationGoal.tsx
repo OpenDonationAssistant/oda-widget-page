@@ -1,13 +1,13 @@
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
-import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { produce } from "immer";
-import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
-import { AbstractDonationGoalState } from "./DonationGoalState";
+import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { log } from "../../logging";
 import { VariableStoreContext } from "../../stores/VariableStore";
+import { AbstractDonationGoalState } from "./DonationGoalState";
 
 export const DonationGoal = observer(
   ({

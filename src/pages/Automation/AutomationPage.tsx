@@ -21,6 +21,12 @@ import {
 } from "../../stores/WidgetStore";
 import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
 import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import {
+  ModalState,
+  ModalStateContext,
+  Overlay,
+  Warning,
+} from "../../components/Overlay/Overlay";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   const state = useContext(AutomationStateContext);
@@ -83,6 +89,9 @@ const RuleList = observer(({}) => {
   const toggleModal = () => {
     setShowModal((old) => !old);
   };
+  const parentModalState = useContext(ModalStateContext);
+  const [deleteRuleDialogState, setDeleteRuleDialogState] =
+    useState<ModalState>(new ModalState(parentModalState.level));
 
   return (
     <Flex vertical className={`${classes.container}`} align="flex-start">
@@ -114,7 +123,16 @@ const RuleList = observer(({}) => {
               </Button>
             </Flex>
             <div>
-              <SubActionButton onClick={() => state.removeRule(index)}>
+              <ModalStateContext.Provider value={deleteRuleDialogState}>
+                <Overlay>
+                  <Warning action={() => state.removeRule(index)}>
+                    Вы точно хотите удалить правило?
+                  </Warning>
+                </Overlay>
+              </ModalStateContext.Provider>
+              <SubActionButton
+                onClick={() => (deleteRuleDialogState.show = true)}
+              >
                 <CloseIcon color="#FF8888" />
                 <span style={{ color: "#FF8888" }}>Удалить</span>
               </SubActionButton>

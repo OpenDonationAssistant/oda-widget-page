@@ -12,6 +12,10 @@
   color: var(--oda-secondary-text-color);
 }
 
+.settingstitle{
+  line-height: 0.9;
+}
+
 .settingssubtitle {
   margin-bottom: 36px;
   padding-left: 3px;

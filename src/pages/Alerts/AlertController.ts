@@ -122,28 +122,30 @@ export class AlertController {
       return;
     }
     log.debug({ alerts: alerts }, "alerts properties");
-    const sorted = alerts.value.sort((a, b) => {
-      const first = a.triggers.at(0);
-      let firstAmount: number | null = null;
-      if (first.type === "fixed-donation-amount") {
-        firstAmount = first.amount;
-      }
-      if (first.type === "at-least-donation-amount") {
-        firstAmount = first.min;
-      }
-      const second = b.triggers.at(0);
-      let secondAmount: number | null = null;
-      if (second.type === "fixed-donation-amount") {
-        secondAmount = second.amount;
-      }
-      if (second.type === "at-least-donation-amount") {
-        secondAmount = second.min;
-      }
-      if (firstAmount === null || secondAmount === null) {
-        return 0;
-      }
-      return firstAmount - secondAmount;
-    });
+    const sorted = alerts.value
+      .filter((alert) => alert.property("enabled"))
+      .sort((a, b) => {
+        const first = a.triggers.at(0);
+        let firstAmount: number | null = null;
+        if (first.type === "fixed-donation-amount") {
+          firstAmount = first.amount;
+        }
+        if (first.type === "at-least-donation-amount") {
+          firstAmount = first.min;
+        }
+        const second = b.triggers.at(0);
+        let secondAmount: number | null = null;
+        if (second.type === "fixed-donation-amount") {
+          secondAmount = second.amount;
+        }
+        if (second.type === "at-least-donation-amount") {
+          secondAmount = second.min;
+        }
+        if (firstAmount === null || secondAmount === null) {
+          return 0;
+        }
+        return firstAmount - secondAmount;
+      });
     this.sortedAlerts = sorted;
     log.debug(`loading audio`);
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));

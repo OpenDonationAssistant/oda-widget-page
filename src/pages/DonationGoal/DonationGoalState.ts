@@ -1,7 +1,7 @@
-import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { makeAutoObservable } from "mobx";
 import { produce } from "immer";
-import { PaymentPageConfig } from "../MediaWidget/PaymentPageConfig";
+import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { log as parent } from "../../logging";
 import { subscribe } from "../../socket";
 import { toJS } from "mobx";

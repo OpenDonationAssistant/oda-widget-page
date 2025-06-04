@@ -121,6 +121,18 @@ export class AbstractWidgetSettings {
     return <div></div>;
   }
 
+  public subactions(): ReactNode {
+    return <></>;
+  }
+
+  public demo(): ReactNode {
+    return <></>;
+  }
+
+  public hasDemo(): ReactNode {
+    return false;
+  }
+
   public get(key: string): WidgetProperty<any> | undefined {
     return this._index.get(key);
   }

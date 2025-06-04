@@ -28,20 +28,20 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const [video, setVideo] = useState<string | null>(null);
   const [amount, setAmount] = useState<number>(() => {
     if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      return alert.triggers.at(0).amount;
+      return (alert.triggers.at(0) as FixedDonationAmountTrigger).amount ?? 0;
     }
     if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      return alert.triggers.at(0).min;
+      return (alert.triggers.at(0) as RangeDonationAmountTrigger).min ?? 0;
     }
     return 0;
   });
   const updateAmount = (amount: number) => {
     log.debug({ triggers: alert.triggers }, "set amount");
     if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      alert.triggers.at(0).amount = amount;
+      (alert.triggers.at(0) as FixedDonationAmountTrigger).amount = amount;
     }
     if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      alert.triggers.at(0).min = amount;
+      (alert.triggers.at(0) as RangeDonationAmountTrigger).min = amount;
     }
     setAmount(amount);
   };
@@ -122,20 +122,20 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
             ]}
           />
         </Flex>
-          {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
-            <div style={{ display: "inline-block", width: "50%" }}>
-              <InputNumber
-                value={alert.triggers.at(0)?.amount}
-                addon="руб."
-                onChange={(newAmount) => {
-                  if (!newAmount) {
-                    return;
-                  }
-                  updateAmount(newAmount);
-                }}
-              />
-            </div>
-          )}
+        {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
+          <div style={{ display: "inline-block", width: "50%" }}>
+            <InputNumber
+              value={alert.triggers.at(0)?.amount}
+              addon="руб."
+              onChange={(newAmount) => {
+                if (!newAmount) {
+                  return;
+                }
+                updateAmount(newAmount);
+              }}
+            />
+          </div>
+        )}
         {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
           <div style={{ display: "inline-block", width: "50%" }}>
             <InputNumber

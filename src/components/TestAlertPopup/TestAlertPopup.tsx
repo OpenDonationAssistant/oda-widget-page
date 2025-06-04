@@ -3,23 +3,34 @@ import { log } from "../../logging";
 import "./TestAlertPopup.css";
 import { publish } from "../../socket";
 import { Config } from "../../config";
-import { Dialog, ModalStateContext, Overlay } from "../Overlay/Overlay";
-import SubActionButton from "../SubActionButton/SubActionButton";
+import {
+  Dialog,
+  ModalState,
+  ModalStateContext,
+  Overlay,
+} from "../Overlay/Overlay";
 import RunIcon from "../../icons/RunIcon";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import InputNumber from "../ConfigurationPage/components/InputNumber";
 import { Flex, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import SubActionButton from "../SubActionButton/SubActionButton";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
 
-export default function TestAlertPopup({ config }: { config: Config }) {
+export default function TestAlertPopup({}: {}) {
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState(0);
-  const state = useContext(ModalStateContext);
+  const { conf } = useLoaderData() as WidgetData;
+  const parentModalState = useContext(ModalStateContext);
+  const [state, setState] = useState<ModalState>(
+    new ModalState(parentModalState.level),
+  );
 
   function sendTestAlert() {
-    publish(config.topic.alerts, {
+    publish(conf.topic.alerts, {
       id: "ae7d3c02-209b-4b69-a95b-2a60de4aff9b",
       nickname: nickname ? nickname : "Аноним",
       message: message ? message : "Тестовое сообщение",
@@ -34,14 +45,13 @@ export default function TestAlertPopup({ config }: { config: Config }) {
 
   return (
     <ModalStateContext.Provider value={state}>
-      <SecondaryButton
+      <SubActionButton
         onClick={() => {
           state.show = true;
         }}
       >
-        <RunIcon />
-        Тест
-      </SecondaryButton>
+        <div style={{ marginLeft: "2px" }}>Тест</div>
+      </SubActionButton>
       <Overlay>
         <Dialog>
           <div className="test-alert-field-container">

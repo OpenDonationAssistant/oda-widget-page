@@ -2,11 +2,14 @@ import WidgetWrapper from "../../WidgetWrapper";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
-import { DonationGoal } from "../../components/DonationGoal/DonationGoal";
+import { DonationGoal } from "./DonationGoal";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
-import { DonationGoalState } from "../../components/DonationGoal/DonationGoalState";
+import { DonationGoalState } from "./DonationGoalState";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
-import { DefaultVariableStore, VariableStoreContext } from "../../stores/VariableStore";
+import {
+  DefaultVariableStore,
+  VariableStoreContext,
+} from "../../stores/VariableStore";
 
 export default function DonatonPage({}) {
   const { widgetId, conf, recipientId, settings } =

@@ -21,12 +21,26 @@
   }
 }
 
+.subtitle {
+  margin-bottom: 12px;
+  color: var(--oda-color-500);
+}
+
+.buttons {
+  color: var(--oda-color-500);
+  margin-top: 30px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
 .grid {
   width: 100%;
   row-gap: 12px;
   column-gap: 12px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 30px;
 }
 
 .iconbackground {

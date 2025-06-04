@@ -2,10 +2,10 @@
   background: transparent;
   height: 30px;
   font-size: 12px;
-  border: 1px solid var(--oda-color-250);
+  border: 1px solid var(--oda-color-300);
   border-radius: 6px;
   color: var(--oda-color-1000);
-  padding-left: 6px;
+  padding-left: 12px;
   padding-right: 12px;
   & span {
     padding-top: 1px;

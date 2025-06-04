@@ -27,6 +27,8 @@ import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { HeightProperty } from "../widgetproperties/HeightProperty";
 import { WidthProperty } from "../widgetproperties/WidthProperty";
+import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
+import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationGoalState";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -265,6 +267,16 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       };
     });
     return settings;
+  }
+
+  public hasDemo() {
+    return true;
+  }
+
+  public demo() {
+    return (
+      <DonationGoal settings={this} state={new DemoDonationGoalState(this)} />
+    );
   }
 
   public help(): ReactNode {

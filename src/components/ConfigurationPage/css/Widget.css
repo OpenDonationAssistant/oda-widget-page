@@ -30,7 +30,7 @@
 }
 
 .widget.collapsed .widget-header:hover {
-  background-color: var(--oda-color-250);
+  background-color: var(--oda-color-200);
 }
 
 .widget.extended {

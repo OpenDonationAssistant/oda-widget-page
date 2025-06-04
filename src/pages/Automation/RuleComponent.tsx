@@ -18,7 +18,7 @@ import {
 import { reaction } from "mobx";
 import CloseIcon from "../../icons/CloseIcon";
 import { log } from "../../logging";
-import IconButton from "../../components/IconButton/IconButton";
+import { BorderedIconButton } from "../../components/IconButton/IconButton";
 
 const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
   const triggerController = useContext(AutomationTriggerControllerContext);
@@ -174,9 +174,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {trigger.name ? trigger.name : "<Не выбрано>"}
                         </div>
-                        <IconButton onClick={() => rule.removeTrigger(index)}>
+                        <BorderedIconButton onClick={() => rule.removeTrigger(index)}>
                           <CloseIcon color="#FF8888" />
-                        </IconButton>
+                        </BorderedIconButton>
                       </Flex>
                       <button
                         onClick={() => {
@@ -224,9 +224,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {action.name ? action.name : "<Не выбрано>"}
                         </div>
-                        <IconButton onClick={() => rule.removeAction(index)}>
+                        <BorderedIconButton onClick={() => rule.removeAction(index)}>
                           <CloseIcon color="#FF8888" />
-                        </IconButton>
+                        </BorderedIconButton>
                       </Flex>
                       <button
                         onClick={() => {

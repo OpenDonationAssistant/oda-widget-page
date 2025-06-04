@@ -16,6 +16,7 @@ import {
 } from "../../widgetproperties/DateTimeProperty";
 import { DonatonPriceProperty } from "./DonatonPriceProperty";
 import { PresetProperty } from "../../widgetproperties/PresetProperty";
+import DonatonWidget from "../../../../pages/Donaton/DonatonWidget";
 
 export class DonatonWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -35,13 +36,13 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
           name: "text",
           value: "Стрим будет идти еще <time>",
           displayName: "widget-donaton-timer-text",
-          help: "Надпись на таймере"
+          help: "Надпись на таймере",
         }),
         new DonatonPriceProperty(),
         new DateTimeProperty({
           name: "timer-end",
           displayName: "widget-donaton-timer-end",
-          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится."
+          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
         }),
       ],
     });
@@ -176,5 +177,13 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
+  }
+
+  public hasDemo() {
+    return true;
+  }
+
+  public demo() {
+    return <DonatonWidget settings={this} />;
   }
 }

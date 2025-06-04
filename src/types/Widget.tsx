@@ -16,11 +16,14 @@ import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetset
 import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
 import { tokenRequest } from "../pages/Login/Login";
 import { HorizontalEventsWidgetSettings } from "../pages/HorizontalEvents/HorizontalEventsWidgetSettings";
+import { ReactNode } from "react";
+import AlertsIcon from "../icons/widgets/Alerts";
 
 export const WIDGET_TYPES = [
   {
     name: "payment-alerts",
     title: "Алерты",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/alert.png",
     description: "Показывает оповещения о получаемых донатах.",
@@ -29,6 +32,7 @@ export const WIDGET_TYPES = [
   {
     name: "donationgoal",
     title: "Цели сбора",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donationgoal.png",
     description:
@@ -38,6 +42,7 @@ export const WIDGET_TYPES = [
   {
     name: "donaters-top-list",
     title: "Список донатеров",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/toplist.png",
     description:
@@ -47,6 +52,7 @@ export const WIDGET_TYPES = [
   {
     name: "media",
     title: "Медиаплеер",
+    icon: <AlertsIcon/>,
     preview: "https://api.oda.digital/assets/mediaplayer.png",
     category: "media",
     description:
@@ -58,6 +64,7 @@ export const WIDGET_TYPES = [
   {
     name: "payments",
     title: "События",
+    icon: <AlertsIcon/>,
     category: "internal",
     preview: "https://api.oda.digital/assets/payments.png",
     description:
@@ -67,6 +74,7 @@ export const WIDGET_TYPES = [
   {
     name: "donation-timer",
     title: "Счётчик времени без поддержки",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donationtimer.png",
     description:
@@ -76,6 +84,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-info",
     title: "Информация для медиаплеера",
+    icon: <AlertsIcon/>,
     category: "media",
     preview: "https://api.oda.digital/assets/playerinfo.png",
     description:
@@ -85,6 +94,7 @@ export const WIDGET_TYPES = [
   {
     name: "donaton",
     title: "Таймер до конца трансляции",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donaton.png",
     description:
@@ -94,6 +104,7 @@ export const WIDGET_TYPES = [
   {
     name: "reel",
     title: "Рулетка",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "",
     description:
@@ -103,6 +114,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-popup",
     title: "Видео из медиаплеера",
+    icon: <AlertsIcon/>,
     category: "media",
     preview: "https://api.oda.digital/assets/popup.png",
     description: "Показывает видео из заказанных медиа в медиаплеере",
@@ -113,6 +125,7 @@ export const WIDGET_TYPES = [
   {
     name: "rutonychat",
     title: "Rutony Chat Integration",
+    icon: <AlertsIcon/>,
     category: "internal",
     preview: "",
     description: "Rutony Chat Integration",
@@ -121,6 +134,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-control",
     title: "Пульт от медиаплеера",
+    icon: <AlertsIcon/>,
     category: "media",
     preview: "",
     description: "Позволяет удалённо управлять медиаплеером",
@@ -129,6 +143,7 @@ export const WIDGET_TYPES = [
   {
     name: "horizontal-events",
     title: "Горизонтальная лента событий",
+    icon: <AlertsIcon/>,
     category: "onscreen",
     preview: "",
     description:
@@ -317,5 +332,8 @@ export class Widget {
   }
   public get config(): AbstractWidgetSettings {
     return this._config;
+  }
+  public get subactions(): ReactNode {
+    return this._config.subactions();
   }
 }

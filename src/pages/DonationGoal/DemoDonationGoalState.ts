@@ -1,5 +1,5 @@
-import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty";
-import { DonationGoalWidgetSettings } from "../ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
+import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { AbstractDonationGoalState } from "./DonationGoalState";
 
 export class DemoDonationGoalState implements AbstractDonationGoalState {

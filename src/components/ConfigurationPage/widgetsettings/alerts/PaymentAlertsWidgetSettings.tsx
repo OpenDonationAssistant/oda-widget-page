@@ -4,6 +4,7 @@ import { PaymentAlertsProperty } from "./PaymentAlertsProperty";
 import { log } from "../../../../logging";
 import { ReactNode } from "react";
 import classes from "../AbstractWidgetSettings.module.css";
+import TestAlertPopup from "../../../TestAlertPopup/TestAlertPopup";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   private _alerts: PaymentAlertsProperty;
@@ -55,6 +56,10 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
+  }
+
+  public subactions(): ReactNode {
+    return <TestAlertPopup/>;
   }
 
   public prepareConfig(): { name: string; value: any }[] {

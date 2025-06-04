@@ -24,6 +24,8 @@ import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BackgroundImageProperty } from "../widgetproperties/BackgroundImageProperty";
 import { WidthProperty } from "../widgetproperties/WidthProperty";
 import { HeightProperty } from "../widgetproperties/HeightProperty";
+import { DonatersTopList } from "../../../pages/DonatersTopList/DonatersTopList";
+import { DemoListStore } from "../../../pages/DonatersTopList/DemoListStore";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -422,6 +424,14 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
 
   public get carousel(): DonatersTopListCarouselProperty {
     return this.get("carousel") as DonatersTopListCarouselProperty;
+  }
+
+  public hasDemo() {
+    return true;
+  }
+
+  public demo() {
+    return <DonatersTopList settings={this} store={new DemoListStore()} />;
   }
 
   public help(): ReactNode {

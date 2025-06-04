@@ -2,6 +2,7 @@ import { DefaultApiFactory } from "@opendonationassistant/oda-automation-service
 import { Variable } from "../pages/Automation/AutomationState";
 import { makeAutoObservable } from "mobx";
 import { createContext } from "react";
+import { log } from "../logging";
 
 export interface VariableStore {
   variables: Variable[];
@@ -44,8 +45,16 @@ export class DefaultVariableStore {
   }
 
   public processTemplate(template: string): string {
+    if (!template) {
+      log.debug("template for processing is null");
+      return template;
+    }
     let result = template;
     this._variables.forEach((variable) => {
+      if (!variable) {
+        log.debug("variable is null in processing");
+        return;
+      }
       result = result.replace(`<${variable.name}>`, String(variable.value));
     });
     return result;

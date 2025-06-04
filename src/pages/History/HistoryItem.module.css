@@ -33,7 +33,7 @@
 
 .attachment {
   font-size: 15px;
-  border: 1px solid var(--oda-color-850);
+  border: 1px solid var(--oda-color-300);
   color: var(--oda-color-1000);
   border-radius: 6px;
   padding: 5px 12px 6px 12px;

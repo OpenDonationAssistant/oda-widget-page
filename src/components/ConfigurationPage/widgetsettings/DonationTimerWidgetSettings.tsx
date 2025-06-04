@@ -18,6 +18,7 @@ import {
   SELECTION_TYPE,
   SingleChoiceProperty,
 } from "../widgetproperties/SingleChoiceProperty";
+import DonationTimer from "../../../pages/DonationTimer/DonationTimer";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -233,5 +234,13 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
+  }
+
+  public hasDemo() {
+    return true;
+  }
+
+  public demo() {
+    return <DonationTimer settings={this} />;
   }
 }

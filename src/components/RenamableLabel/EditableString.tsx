@@ -1,8 +1,10 @@
-import { Button, Flex, Input } from "antd";
-import { MouseEvent, MouseEventHandler, useState } from "react";
+import { Flex, Input } from "antd";
+import { MouseEventHandler, useState } from "react";
 import classes from "./EditableString.module.css";
 import { observer } from "mobx-react-lite";
 import EditIcon from "../../icons/EditIcon";
+import { NotBorderedIconButton } from "../IconButton/IconButton";
+import CheckIcon from "../../icons/CheckIcon";
 
 export const EditableString = observer(
   ({
@@ -28,34 +30,33 @@ export const EditableString = observer(
                 ? placeholder
                 : label}
             </div>
-            <Button
-              className={`${classes.rename} oda-icon-button`}
+            <NotBorderedIconButton
               onClick={() => {
                 setValue(label);
                 setEdit(true);
               }}
             >
               <EditIcon />
-            </Button>
+            </NotBorderedIconButton>
           </Flex>
         )}
         {edit && (
-          <Flex align="center">
+          <Flex align="center" gap={6}>
             <Input
+              style={{ height: "38px" }}
               value={value}
               onChange={(value) => {
                 setValue((old) => value.target.value);
               }}
             />
-            <Button
-              className={`${classes.rename} oda-icon-button`}
+            <NotBorderedIconButton
               onClick={() => {
                 onChange(value ?? "");
                 setEdit(false);
               }}
             >
-              <span className="material-symbols-sharp">done_outline</span>
-            </Button>
+              <CheckIcon color="var(--oda-color-1000)"/>
+            </NotBorderedIconButton>
           </Flex>
         )}
       </>
