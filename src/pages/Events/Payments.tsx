@@ -13,8 +13,11 @@ import EventComponent from "./EventComponent";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./Payments.module.css";
 import Menu from "../../components/Menu/Menu";
-import TestAlertPopup from "../../components/TestAlertPopup/TestAlertPopup";
 import MenuEventButton from "../../components/Menu/MenuEventButton";
+import {
+  HistoryItemData,
+  DefaultApiFactory as HistoryService,
+} from "@opendonationassistant/oda-history-service-client";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -134,15 +137,22 @@ export default function Payments({}: {}) {
   }
 
   function updatePayments() {
-    axios
-      .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
+    HistoryService(
+      undefined,
+      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    ).getHistory(
+      {
+        recipientId: recipientId,
+      },
+      { params: { size: 20, page: 0 } },
+    )
       .then((data) => data.data)
       .then((json) => {
         let updatedDateToPaymentsMap = new Map();
         const today = dateTimeFormat.format(Date.now());
         updatedDateToPaymentsMap.set(today, []);
 
-        const attachQueryString = json
+        const attachQueryString = json.content
           .reduce((attachmentIds, payment) => {
             const paymentAttachIds =
               payment.attachments
@@ -170,7 +180,7 @@ export default function Payments({}: {}) {
             log.debug(`${JSON.stringify(updatedAttachmentTitles)}`);
           });
 
-        json.forEach((payment) => {
+        json.content.forEach((payment) => {
           const paymentDate = new Date(payment.authorizationTimestamp);
           let date = dateTimeFormat.format(paymentDate);
           payment.displayedTime = timeFormat.format(paymentDate);
