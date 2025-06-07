@@ -95,19 +95,15 @@ export default function EventComponent({
         >
           {data.attachments &&
             data.attachments.map((attach) => {
-              const music = attachmentTitles.get(attach);
-              if (!music) {
-                return null;
-              }
               return (
                 <div
                   key={attach}
                   style={musicStyle}
                   className={`${classes.singleattachtitle}`}
-                  onClick={() => window.open(music.url)}
+                  onClick={() => window.open(attach.url)}
                 >
                   <span className="material-symbols-sharp">music_note</span>
-                  {music.title}
+                  {attach.title}
                 </div>
               );
             })}
