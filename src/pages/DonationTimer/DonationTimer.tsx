@@ -8,8 +8,16 @@ import classes from "./DonationTimer.module.css";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { Flex } from "antd";
+import {
+  HistoryItemData,
+  DefaultApiFactory as HistoryService,
+} from "@opendonationassistant/oda-history-service-client";
 
-export default function DonationTimer({ settings }: { settings: DonationTimerWidgetSettings }) {
+export default function DonationTimer({
+  settings,
+}: {
+  settings: DonationTimerWidgetSettings;
+}) {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [lastDonationTime, setLastDonationTime] = useState<number | null>(null);
   const [time, setTime] = useState<String>("");
@@ -53,13 +61,19 @@ export default function DonationTimer({ settings }: { settings: DonationTimerWid
       setLastDonationTime(Date.now());
       return;
     }
-    axios
-      .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
-      .then((response) => response.data)
+
+    HistoryService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+      .getHistory(
+        {
+          recipientId: recipientId,
+        },
+        { params: { size: 20, page: 0 } },
+      )
+      .then((data) => data.data.content)
       .then((data) => {
-        if (data.length > 0) {
-          log.debug(data[0].authorizationTimestamp);
-          setLastDonationTime(data[0].authorizationTimestamp);
+        const timestamp = data.at(0)?.authorizationTimestamp;
+        if (timestamp) {
+          setLastDonationTime(Date.parse(timestamp));
         }
       });
   }
@@ -104,7 +118,7 @@ export default function DonationTimer({ settings }: { settings: DonationTimerWid
             ...roundingStyle,
             ...boxShadowStyle,
             ...heightStyle,
-            ...widthStyle
+            ...widthStyle,
           }}
           className={`${classes.timer}`}
         >
