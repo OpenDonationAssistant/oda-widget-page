@@ -25,9 +25,7 @@ export default function TestAlertPopup({}: {}) {
   const [amount, setAmount] = useState(0);
   const { conf } = useLoaderData() as WidgetData;
   const parentModalState = useContext(ModalStateContext);
-  const [state, setState] = useState<ModalState>(
-    new ModalState(parentModalState.level),
-  );
+  const [state] = useState<ModalState>(new ModalState(parentModalState));
 
   function sendTestAlert() {
     publish(conf.topic.alerts, {

@@ -6,9 +6,7 @@ import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
 
 import { socket } from "../../socket";
-import { Flex, Modal as AntModal, notification } from "antd";
-import { useLoaderData } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
+import { Flex, Modal as AntModal, notification, Switch } from "antd";
 import { Trans, useTranslation } from "react-i18next";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
@@ -17,7 +15,6 @@ import { Widget } from "../../types/Widget";
 import { reaction } from "mobx";
 import WidgetUrlModal from "./WidgetUrlModal";
 import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
-import { WidgetStoreContext } from "../../stores/WidgetStore";
 import {
   ModalState,
   ModalStateContext,
@@ -32,14 +29,15 @@ import {
   BorderedIconButton,
   NotBorderedIconButton,
 } from "../IconButton/IconButton";
-import SubActionButton from "../SubActionButton/SubActionButton";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import LinkIcon from "../../icons/LinkIcon";
 import HelpIcon from "../../icons/HelpIcon";
 import CopyIcon from "../../icons/CopyIcon";
+import { EditableString } from "../RenamableLabel/EditableString";
 
 interface WidgetConfigurationProps {
   widget: Widget;
+  asCards: boolean;
 }
 
 export const SaveButtons = observer(({ widget }: { widget: Widget }) => {
@@ -113,27 +111,45 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
 
 const NameComponent = observer(({ widget }: { widget: Widget }) => {
   const parentModalState = useContext(ModalStateContext);
-  const [modalState] = useState<ModalState>(
-    new ModalState(parentModalState.level),
-  );
+  const [modalState] = useState<ModalState>(new ModalState(parentModalState));
   const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
 
   return (
     <ModalStateContext.Provider value={modalState}>
-      <div
+      <Flex
+        align="center"
         className="widget-header-toogler"
-        onClick={() => {
-          modalState.show = true;
+        onClick={(e) => {
+          console.log(e.target);
+          if (
+            e.target === e.currentTarget ||
+            (e.target as Element).className === "widget-title" ||
+            e.target instanceof SVGElement
+          ) {
+            modalState.show = true;
+          }
         }}
+        gap={12}
       >
-        <img className="widget-icon" src={`/icons/${widget.type}.png`} />
+        {widget.icon}
         <div className="widget-title">{widget.name}</div>
-      </div>
+        <Switch value={widget.enabled} onChange={() => widget.toggle()} />
+      </Flex>
       <Overlay>
         <Panel>
           <Title>
             <Flex justify="space-between" style={{ marginTop: "3px" }}>
-              <div className={`${classes.settingstitle}`}>{widget.name}</div>
+              <Flex justify="flex-start" align="baseline" gap={18}>
+                <EditableString
+                  label={widget.name}
+                  onChange={(value) => widget.rename(value)}
+                  className={`${classes.widgetname}`}
+                />
+                <Switch
+                  value={widget.enabled}
+                  onChange={() => widget.toggle()}
+                />
+              </Flex>
               <Flex gap={9} align="bottom">
                 <Flex>{widget.subactions}</Flex>
                 <WidgetUrlModal
@@ -180,28 +196,20 @@ const NameComponent = observer(({ widget }: { widget: Widget }) => {
               </ResizableBox>
             </Flex>
           )}
-          <Comp widget={widget} />
+          {widget.config.markup()}
         </Panel>
       </Overlay>
     </ModalStateContext.Provider>
   );
 });
 
-const Comp = observer(({ widget }: { widget: Widget }) => (
-  <> {widget.config.markup()} </>
-));
-
 export const WidgetConfiguration = observer(
-  ({ widget }: WidgetConfigurationProps) => {
-    const store = useContext(WidgetStoreContext);
-    const selection = useContext(SelectedIndexContext);
-    const { conf } = useLoaderData() as WidgetData;
-    const { t } = useTranslation();
+  ({ widget, asCards }: WidgetConfigurationProps) => {
     const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
     const [api, context] = notification.useNotification();
     const parentModalState = useContext(ModalStateContext);
-    const [deleteDialogState, setDeleteDialogState] = useState<ModalState>(
-      new ModalState(parentModalState.level),
+    const [deleteDialogState] = useState<ModalState>(
+      new ModalState(parentModalState),
     );
 
     useEffect(() => {
@@ -248,18 +256,50 @@ export const WidgetConfiguration = observer(
           publish: (topic: string, payload: any) => {},
         }}
       >
-        <div
-          className={`widget ${selection.id === widget.id ? "extended" : "collapsed"}`}
-        >
-          {context}
-          <div className="widget-header">
-            <ModalStateContext.Provider value={deleteDialogState}>
-              <Overlay>
-                <Warning action={() => widget.delete()}>
-                  Вы действительно хотите удалить виджет?
-                </Warning>
-              </Overlay>
-            </ModalStateContext.Provider>
+        {context}
+        <ModalStateContext.Provider value={deleteDialogState}>
+          <Overlay>
+            <Warning action={() => widget.delete()}>
+              Вы действительно хотите удалить виджет?
+            </Warning>
+          </Overlay>
+        </ModalStateContext.Provider>
+        {!asCards && (
+          <div className={`widget collapsed`}>
+            <div className="widget-header">
+              <NameComponent widget={widget} />
+              <Flex gap={9}>
+                <div>{widget.subactions}</div>
+                <WidgetUrlModal
+                  open={showUrlModal}
+                  type={widget.type}
+                  id={widget.id}
+                  onClose={() => setShowUrlModal(false)}
+                />
+                <BorderedIconButton onClick={() => setShowUrlModal(true)}>
+                  <LinkIcon />
+                </BorderedIconButton>
+                <BorderedIconButton
+                  onClick={() => {
+                    if (widget.type !== "payment-alerts") {
+                      widget.copy();
+                    }
+                  }}
+                >
+                  <CopyIcon />
+                </BorderedIconButton>
+                <HelpButton widget={widget} />
+                <BorderedIconButton
+                  onClick={() => (deleteDialogState.show = true)}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              </Flex>
+            </div>
+          </div>
+        )}
+        {asCards && (
+          <div className={`${classes.widgetcard}`}>
             <NameComponent widget={widget} />
             <Flex gap={9}>
               <div>{widget.subactions}</div>
@@ -289,7 +329,7 @@ export const WidgetConfiguration = observer(
               </BorderedIconButton>
             </Flex>
           </div>
-        </div>
+        )}
       </WidgetSettingsContext.Provider>
     );
   },

@@ -168,7 +168,7 @@ const InstructionModal = observer(
   }) => {
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
-      new ModalState(parentModalState.level),
+      new ModalState(parentModalState),
     );
 
     reaction(() => configuration.step, () => {
@@ -283,7 +283,7 @@ const ChooseGatewayModal = observer(
   }) => {
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
-      new ModalState(parentModalState.level),
+      new ModalState(parentModalState),
     );
 
     return (

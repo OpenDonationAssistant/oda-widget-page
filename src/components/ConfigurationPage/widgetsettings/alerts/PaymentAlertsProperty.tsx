@@ -13,7 +13,6 @@ import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, toJS } from "mobx";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
-import RunIcon from "../../../../icons/RunIcon";
 import CloseIcon from "../../../../icons/CloseIcon";
 import { EditableString } from "../../../RenamableLabel/EditableString";
 import ArrowUp from "../../../../icons/ArrowUp";
@@ -76,8 +75,8 @@ const PaymentAlertsPropertyComponent = observer(
     const { conf } = useLoaderData() as WidgetData;
     const [opened, setOpened] = useState<string>("");
     const parentModalState = useContext(ModalStateContext);
-    const [deleteDialogState, setDeleteDialogState] = useState<ModalState>(
-      new ModalState(parentModalState.level),
+    const [deleteDialogState] = useState<ModalState>(
+      new ModalState(parentModalState),
     );
     const [alertToDelete, setAlertToDelete] = useState<Alert | null>(null);
 
@@ -152,7 +151,7 @@ const PaymentAlertsPropertyComponent = observer(
                               it.copy();
                             }}
                           >
-                            <CopyIcon/>
+                            <CopyIcon />
                           </BorderedIconButton>
                           <BorderedIconButton
                             onClick={() => {

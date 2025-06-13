@@ -3,6 +3,10 @@ import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/
 import { log } from "../../logging";
 import { subscribe } from "../../socket";
 import { makeAutoObservable } from "mobx";
+import {
+  HistoryItemData,
+  DefaultApiFactory as HistoryService,
+} from "@opendonationassistant/oda-history-service-client";
 
 export interface DonationTimerTopics {
   alerts: string;
@@ -39,6 +43,17 @@ export class DonationTimerStore implements AbstractDonationTimerStore {
       this._lastDonationTime = Date.now();
       return;
     }
+    HistoryService(
+      undefined,
+      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    ).getHistory(
+      {
+        recipientId: recipientId,
+      },
+      { params: { size: 20, page: 0 } },
+    )
+      .then((data) => data.data)
+      .then((json) => {
     axios
       .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
       .then((response) => response.data)

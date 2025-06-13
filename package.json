@@ -13,7 +13,7 @@
     "@opendonationassistant/oda-media-service-client": "^0.5.0",
     "@opendonationassistant/oda-news-service-client": "^0.2.0",
     "@opendonationassistant/oda-payment-service-client": "^0.1.5",
-    "@opendonationassistant/oda-widget-service-client": "^0.5.0",
+    "@opendonationassistant/oda-widget-service-client": "^0.8.0",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -95,6 +95,7 @@
     "@types/react-resizable": "^3.0.8",
     "@types/react-toggle": "^4.0.5",
     "@types/uuid": "^9.0.7",
-    "@types/video.js": "^7.3.56"
+    "@types/video.js": "^7.3.56",
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11"
   }
 }

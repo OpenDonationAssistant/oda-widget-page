@@ -11,12 +11,14 @@ export const EditableString = observer(
     label,
     placeholder,
     onChange,
-    onClick
+    onClick,
+    className
   }: {
     label: string;
     placeholder?: string;
     onChange: (newValue: string) => void;
-    onClick?: MouseEventHandler<HTMLDivElement>
+    onClick?: MouseEventHandler<HTMLDivElement>;
+    className?: string;
   }) => {
     const [edit, setEdit] = useState<boolean>(false);
     const [value, setValue] = useState<string>();
@@ -24,7 +26,7 @@ export const EditableString = observer(
     return (
       <>
         {!edit && (
-          <Flex justify="center" align="center">
+          <Flex justify="center" align="center" className={className}>
             <div className={`${classes.variablename}`} onClick={onClick}>
               {label === null || label === undefined || label === ""
                 ? placeholder
@@ -41,7 +43,7 @@ export const EditableString = observer(
           </Flex>
         )}
         {edit && (
-          <Flex align="center" gap={6}>
+          <Flex align="center" gap={6} className={className}>
             <Input
               style={{ height: "38px" }}
               value={value}

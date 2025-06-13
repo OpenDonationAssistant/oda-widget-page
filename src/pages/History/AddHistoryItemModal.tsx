@@ -31,7 +31,7 @@ export default function AddHistoryItemModal({}) {
 
   const parentModal = useContext(ModalStateContext);
   const [showModal, setShowModal] = useState<ModalState>(
-    new ModalState(parentModal.level),
+    new ModalState(parentModal),
   );
 
   const [nickname, setNickname] = useState<string>("");

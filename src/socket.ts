@@ -10,6 +10,7 @@ interface Listener {
 const socket = new Client({
   brokerURL: process.env.REACT_APP_WS_ENDPOINT,
 });
+
 socket.reconnectDelay = 500;
 log.debug("Creating socket client");
 var listeners: Listener[] = [];
@@ -56,7 +57,7 @@ function unsubscribe(id: string, topic: string) {
 
 function setupCommandListener(widgetId: string, reloadFn: Function) {
   subscribe(widgetId, "/topic/commands", (message) => {
-    log.debug({command: message.body}, `Received widget command`);
+    log.debug({ command: message.body }, `Received widget command`);
     let json = JSON.parse(message.body);
     if (json.id === widgetId || json.id === "all") {
       if (json.command === "reload") {

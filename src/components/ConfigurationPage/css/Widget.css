@@ -1,13 +1,12 @@
 .widget {
   background-color: var(--oda-color-150);
-  border-radius: 16px;
-  margin-bottom: 10px;
+  border-radius: 6px;
   position: relative;
 }
 
 .widget-header {
   display: flex;
-  border-radius: 12px;
+  border-radius: 6px;
   justify-content: space-between;
   align-items: center;
   padding-left: 15px;
@@ -19,14 +18,15 @@
 
 .widget-header-toogler {
   width: 100%;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  & svg {
+    margin-top: 3px;
+  }
 }
 
 .widget.collapsed .widget-header {
   background: none;
   border-bottom: none;
-  padding: 0px 18px;
+  padding: 12px 18px 12px 12px;
 }
 
 .widget.collapsed .widget-header:hover {
@@ -67,7 +67,6 @@
   font-weight: 600;
   font-size: 24px;
   font-family: "Mulish Variable";
-  margin-left: 10px;
 }
 
 .widget-header-toogler:hover {

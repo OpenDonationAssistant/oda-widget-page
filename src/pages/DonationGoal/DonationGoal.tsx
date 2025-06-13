@@ -229,7 +229,7 @@ export const DonationGoal = observer(
                       },
                     }}
                     className={`${classes.goalfilled}`}
-                  ></div>
+                  />
                   <div className={`${classes.goalunfilled}`}></div>
                   {settings.showLabel && (
                     <div

@@ -24,6 +24,32 @@
   --oda-primary-color: #BEC8F8;
 }
 
+/*light theme */
+/*:root {*/
+/*  --oda-color-0: #000000;*/
+/*  --oda-color-50: #050505;*/
+/*  --oda-color-100: #0C0D0E;*/
+/*  --oda-color-150: #161618;*/
+/*  --oda-color-200: #222226;*/
+/*  --oda-color-250: #303036;*/
+/*  --oda-color-300: #3E3E46;*/
+/*  --oda-color-350: #4D4D56;*/
+/*  --oda-color-400: #5B5B67;*/
+/*  --oda-color-450: #696977;*/
+/*  --oda-color-500: #787887;*/
+/*  --oda-color-550: #888896;*/
+/*  --oda-color-600: #9898A4;*/
+/*  --oda-color-650: #A9A9B2;*/
+/*  --oda-color-700: #B9B9C1;*/
+/*  --oda-color-750: #C9C9CF;*/
+/*  --oda-color-800: #D9D9DD;*/
+/*  --oda-color-850: #E7E7E9;*/
+/*  --oda-color-900: #F1F1F3;*/
+/*  --oda-color-950: #F7F7F8;*/
+/*  --oda-color-1000: #000000;*/
+/*  --oda-primary-color: #BEC8F8;*/
+/*}*/
+
 /* mulish-latin-wght-normal */
 @font-face {
   font-family: 'Mulish Variable';

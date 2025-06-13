@@ -23,32 +23,47 @@ import {
 } from "../../stores/SelectedIndexStore";
 import Modal from "../Modal/Modal";
 import AddIcon from "../../icons/AddIcon";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import { NotBorderedIconButton } from "../IconButton/IconButton";
+import LinesIcon from "../../icons/LinesIcon";
+import CardsIcon from "../../icons/CardsIcon";
 
 const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectedIndexContext);
+  const [asCards, setAsCards] = useState<boolean>(false);
+
+      //<Flex className="full-width" justify="flex-end" style={{ marginBottom: "9px" }}>
+      //  <NotBorderedIconButton onClick={() => setAsCards(false)}>
+      //    <LinesIcon />
+      //  </NotBorderedIconButton>
+      //  <NotBorderedIconButton onClick={() => setAsCards(true)}>
+      //    <CardsIcon />
+      //  </NotBorderedIconButton>
+      //</Flex>
 
   return (
     <>
-      {widgetStore.list.map((data, index) => (
-        <Draggable
-          key={data.id}
-          draggableId={data.id}
-          isDragDisabled={selection.id === data.id}
-          index={index}
-        >
-          {(draggable) => (
-            <div
-              ref={draggable.innerRef}
-              {...draggable.draggableProps}
-              {...draggable.dragHandleProps}
-              key={data.id}
-            >
-              <WidgetConfiguration widget={data} />
-            </div>
-          )}
-        </Draggable>
-      ))}
+      <Flex vertical={!asCards} wrap gap={asCards ? 12 : 6}>
+        {widgetStore.list.map((data, index) => (
+          <Draggable
+            key={data.id}
+            draggableId={data.id}
+            isDragDisabled={selection.id === data.id}
+            index={index}
+          >
+            {(draggable) => (
+              <div
+              className={`${classes.widgetdraggablecontainer}`}
+                ref={draggable.innerRef}
+                {...draggable.draggableProps}
+                {...draggable.dragHandleProps}
+                key={data.id}
+              >
+                <WidgetConfiguration widget={data} asCards={asCards} />
+              </div>
+            )}
+          </Draggable>
+        ))}
+      </Flex>
     </>
   );
 });
@@ -174,10 +189,13 @@ const AddWidgetComponent = observer(
           </Flex>
         </Modal>
         {!showAddWidgetPopup && (
-          <SecondaryButton onClick={() => setShowAddWidgetPopup(true)}>
+          <button
+            className={`${classes.addwidgetbutton}`}
+            onClick={() => setShowAddWidgetPopup(true)}
+          >
             <AddIcon color="var(--oda-primary-color)" />
             <div>{t("button-addwidget")}</div>
-          </SecondaryButton>
+          </button>
         )}
       </>
     );
@@ -194,7 +212,6 @@ export default function ConfigurationPage({}: {}) {
       <SelectedIndexContext.Provider value={selection.current}>
         <Flex justify="space-between" align="center">
           <h1 className={`${classes.header}`}>Виджеты</h1>
-          <AddWidgetComponent widgetStore={widgetStore} />
         </Flex>
         {widgetStore?.list && (
           <div className="widget-list">
@@ -203,6 +220,7 @@ export default function ConfigurationPage({}: {}) {
             >
               <WidgetList />
             </PaymentPageConfigContext.Provider>
+            <AddWidgetComponent widgetStore={widgetStore} />
           </div>
         )}
       </SelectedIndexContext.Provider>

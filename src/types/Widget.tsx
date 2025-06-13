@@ -17,13 +17,26 @@ import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
 import { tokenRequest } from "../pages/Login/Login";
 import { HorizontalEventsWidgetSettings } from "../pages/HorizontalEvents/HorizontalEventsWidgetSettings";
 import { ReactNode } from "react";
-import AlertsIcon from "../icons/widgets/Alerts";
+import AlertsIcon from "../icons/widgets/AlertsIcon";
+import { RouletteWidgetSettings } from "../pages/Roulette/RouletteWidgetSettings";
+import DonationGoalIcon from "../icons/DonationGoalIcon";
+import TopListIcon from "../icons/widgets/TopListIcon";
+import SongIcon from "../icons/SongIcon";
+import HistoryIcon from "../icons/HistoryIcon";
+import InfoIcon from "../icons/InfoIcon";
+import ClockIcon from "../icons/widgets/ClockIcon";
+import HourglassIcon from "../icons/widgets/HourglassIcon";
+import ReelIcon from "../icons/ReelIcon";
+import VideoIcon from "../icons/widgets/VideoIcon";
+import IntegrationIcon from "../icons/IntegrationIcon";
+import EventFeedIcon from "../icons/widgets/EventFeedIcon";
+import RouletteIcon from "../icons/widgets/RouletteIcon";
 
 export const WIDGET_TYPES = [
   {
     name: "payment-alerts",
     title: "Алерты",
-    icon: <AlertsIcon/>,
+    icon: <AlertsIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/alert.png",
     description: "Показывает оповещения о получаемых донатах.",
@@ -32,7 +45,7 @@ export const WIDGET_TYPES = [
   {
     name: "donationgoal",
     title: "Цели сбора",
-    icon: <AlertsIcon/>,
+    icon: <DonationGoalIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donationgoal.png",
     description:
@@ -42,7 +55,7 @@ export const WIDGET_TYPES = [
   {
     name: "donaters-top-list",
     title: "Список донатеров",
-    icon: <AlertsIcon/>,
+    icon: <TopListIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/toplist.png",
     description:
@@ -52,7 +65,7 @@ export const WIDGET_TYPES = [
   {
     name: "media",
     title: "Медиаплеер",
-    icon: <AlertsIcon/>,
+    icon: <SongIcon />,
     preview: "https://api.oda.digital/assets/mediaplayer.png",
     category: "media",
     description:
@@ -64,7 +77,7 @@ export const WIDGET_TYPES = [
   {
     name: "payments",
     title: "События",
-    icon: <AlertsIcon/>,
+    icon: <HistoryIcon color="var(--oda-color-1000)" />,
     category: "internal",
     preview: "https://api.oda.digital/assets/payments.png",
     description:
@@ -74,7 +87,7 @@ export const WIDGET_TYPES = [
   {
     name: "donation-timer",
     title: "Счётчик времени без поддержки",
-    icon: <AlertsIcon/>,
+    icon: <ClockIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donationtimer.png",
     description:
@@ -83,8 +96,8 @@ export const WIDGET_TYPES = [
   },
   {
     name: "player-info",
-    title: "Информация для медиаплеера",
-    icon: <AlertsIcon/>,
+    title: "Информация из медиаплеера",
+    icon: <InfoIcon />,
     category: "media",
     preview: "https://api.oda.digital/assets/playerinfo.png",
     description:
@@ -94,7 +107,7 @@ export const WIDGET_TYPES = [
   {
     name: "donaton",
     title: "Таймер до конца трансляции",
-    icon: <AlertsIcon/>,
+    icon: <HourglassIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/donaton.png",
     description:
@@ -104,7 +117,7 @@ export const WIDGET_TYPES = [
   {
     name: "reel",
     title: "Рулетка",
-    icon: <AlertsIcon/>,
+    icon: <ReelIcon />,
     category: "onscreen",
     preview: "",
     description:
@@ -114,7 +127,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-popup",
     title: "Видео из медиаплеера",
-    icon: <AlertsIcon/>,
+    icon: <VideoIcon />,
     category: "media",
     preview: "https://api.oda.digital/assets/popup.png",
     description: "Показывает видео из заказанных медиа в медиаплеере",
@@ -124,8 +137,8 @@ export const WIDGET_TYPES = [
   },
   {
     name: "rutonychat",
-    title: "Rutony Chat Integration",
-    icon: <AlertsIcon/>,
+    title: "Интеграция с Rutony Chat",
+    icon: <IntegrationIcon />,
     category: "internal",
     preview: "",
     description: "Rutony Chat Integration",
@@ -134,7 +147,7 @@ export const WIDGET_TYPES = [
   {
     name: "player-control",
     title: "Пульт от медиаплеера",
-    icon: <AlertsIcon/>,
+    icon: <span className="material-symbols-sharp">settings_remote</span>,
     category: "media",
     preview: "",
     description: "Позволяет удалённо управлять медиаплеером",
@@ -143,12 +156,22 @@ export const WIDGET_TYPES = [
   {
     name: "horizontal-events",
     title: "Горизонтальная лента событий",
-    icon: <AlertsIcon/>,
+    icon: <EventFeedIcon />,
     category: "onscreen",
     preview: "",
     description:
       "Бегущая строка, показывающая последние события (донаты в текущий момент)",
     create: () => new HorizontalEventsWidgetSettings(),
+  },
+  {
+    name: "roulette",
+    title: "Рулетка (Колесо)",
+    icon: <RouletteIcon />,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
+    create: () => new RouletteWidgetSettings(),
   },
 ];
 
@@ -166,6 +189,8 @@ export class Widget {
   private _ownerId: string;
   private _config: AbstractWidgetSettings;
   private _store: WidgetStore;
+  private _icon: ReactNode;
+  private _enabled: boolean;
 
   constructor(params: {
     id: string;
@@ -173,6 +198,8 @@ export class Widget {
     sortOrder: number;
     name: string;
     ownerId: string;
+    enabled: boolean;
+    icon: ReactNode;
     config: AbstractWidgetSettings;
     store: WidgetStore;
   }) {
@@ -183,9 +210,12 @@ export class Widget {
     this._ownerId = params.ownerId;
     this._config = params.config;
     this._store = params.store;
-    makeObservable<Widget, "_name" | "_config">(this, {
+    this._icon = params.icon;
+    this._enabled = params.enabled;
+    makeObservable<Widget, "_name" | "_config" | "_enabled">(this, {
       _name: observable,
       _config: observable,
+      _enabled: observable,
       reload: action,
     });
   }
@@ -242,6 +272,12 @@ export class Widget {
       sortOrder: json.sortOrder,
       name: json.name,
       ownerId: json.ownerId,
+      enabled:
+        json.enabled === null || json.enabled === undefined
+          ? true
+          : json.enabled,
+      icon: WIDGET_TYPES.filter((type) => type.name === json.type).at(0)
+        ?.icon ?? <></>,
       config:
         this.configFromJson(json) ||
         new AbstractWidgetSettings({ sections: [] }),
@@ -329,6 +365,16 @@ export class Widget {
   }
   public get ownerId(): string {
     return this._ownerId;
+  }
+  public get icon(): ReactNode {
+    return this._icon;
+  }
+  public get enabled(): boolean {
+    return this._enabled;
+  }
+  public toggle(): void {
+    this._store.toggleWidget(this._id);
+    this._enabled = !this._enabled;
   }
   public get config(): AbstractWidgetSettings {
     return this._config;

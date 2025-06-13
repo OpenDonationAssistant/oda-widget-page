@@ -385,14 +385,18 @@ div.ant-layout-has-sider.ant-layout {
 }
 
 .ant-switch {
-  background: var(--oda-focus);
+  background-color: #36363D;
   height: 24px;
 
   &.ant-switch-checked {
     background-color: var(--oda-secondary-text-color);
   }
+
   & .ant-switch-handle {
     top: 3px;
+    &::before{
+      background-color: black;
+    }
   }
 
   &:hover:not(.ant-switch-disabled) {

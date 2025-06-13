@@ -47,6 +47,27 @@
   }
 }
 
+.widgetdraggablecontainer {
+  flex-grow: 1;
+}
+
+.addwidgetbutton {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  background-color: var(--oda-color-150);
+  border: none;
+  border-radius: 6px;
+  color: var(--oda-primary-color);
+  height: 64px;
+  &:hover{
+    background-color: var(--oda-color-250);
+  }
+}
+
 .section {
   font-size: 18px;
   color: var(--oda-color-500);

@@ -1,5 +1,5 @@
 import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-client";
-import { Widget } from "../types/Widget";
+import { WIDGET_TYPES, Widget } from "../types/Widget";
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { produce } from "immer";
@@ -10,6 +10,7 @@ export interface WidgetStore {
   addWidget(type: string): Promise<Widget | null>;
   deleteWidget(id: string): Promise<void>;
   moveWidget(originIndex: number, index: number): Promise<void>;
+  toggleWidget(id: string): Promise<Widget | null>;
   search({ type }: { type?: string }): Widget[];
 }
 
@@ -62,9 +63,10 @@ export class DefaultWidgetStore implements WidgetStore {
   }
 
   async addWidget(type: string): Promise<Widget | null> {
-    const response = await this.client().add({
+    const response = await this.client().addWidget({
       type: type,
       sortOrder: this.list.length,
+      name: WIDGET_TYPES.filter((it) => it.name === type).at(0)?.title ?? type,
     });
     log.debug({ response: response.data }, "add widget response");
     const widget = Widget.fromJson(response.data, this);
@@ -88,6 +90,13 @@ export class DefaultWidgetStore implements WidgetStore {
       ids: this.list.map((widget) => widget.id),
     });
   }
+
+  async toggleWidget(id: string): Promise<Widget | null> {
+    return this.client()
+      .toggleWidget({ id: id })
+      .then((response) => response.data)
+      .then(data => Widget.fromJson(data, this))
+  }
 }
 
 export const WidgetStoreContext = createContext<WidgetStore>({
@@ -95,5 +104,6 @@ export const WidgetStoreContext = createContext<WidgetStore>({
   addWidget: (type: string) => Promise.resolve(null),
   deleteWidget: (id: string) => Promise.resolve(),
   moveWidget: (originIndex: number, index: number) => Promise.resolve(),
+  toggleWidget: (id: string) => Promise.resolve(null),
   search: ({ type }: { type?: string }) => [],
 });
