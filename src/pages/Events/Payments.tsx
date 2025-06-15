@@ -97,7 +97,7 @@ export default function Payments({}: {}) {
     log.debug("create subscriptions");
     subscribe(widgetId, conf.topic.alerts, (message) => {
       log.debug(`events widgets received: ${message.body}`);
-      updatePayments();
+      setTimeout(() => updatePayments(), 3000);
       message.ack();
     });
     subscribe(widgetId, conf.topic.alertStatus, (message) => {

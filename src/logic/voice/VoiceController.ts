@@ -60,15 +60,15 @@ export class VoiceController {
       return Promise.resolve();
     }
     if (
-      (data.cleanMessage === undefined ||
-        data.cleanMessage === null ||
-        data.cleanMessage === "") &&
+      (data.message === undefined ||
+        data.message === null ||
+        data.message === "") &&
       !playTitleIfMessageIsEmpty
     ) {
       return Promise.resolve();
     }
 
-    const message = data?.cleanMessage?.trim();
+    const message = data?.message?.trim();
     const headerForVoice = message
       ? alert.property("voiceTextTemplate")
       : alert.property("voiceEmptyTextTemplate");
@@ -80,7 +80,7 @@ export class VoiceController {
         : text;
     const resultText = choosenTemplate
       .trim()
-      .replace("<username>", data.cleanNickname ? data.cleanNickname : "Аноним")
+      .replace("<username>", data.nickname ? data.nickname : "Аноним")
       .replace("<amount>", data.amount.major)
       .replace("<minoramount>", data.amount.major * 100)
       .replace("<streamer>", this.recipientId);
@@ -107,7 +107,7 @@ export class VoiceController {
 
   pronounceMessage(alert: Alert, data: any): Promise<void | AudioBuffer> {
     log.debug("start to pronounce message");
-    if (!data || !data.cleanMessage || data.cleanMessage.length === 0) {
+    if (!data || !data.message || data.message.length === 0) {
       return Promise.resolve();
     }
 
@@ -116,7 +116,7 @@ export class VoiceController {
         if (data.message === "Тестовое сообщение"){
           return this.loadAudio("https://api.oda.digital/public/message.mp3")
         }
-        return this.voiceByGoogle(data.cleanMessage);
+        return this.voiceByGoogle(data.message);
       })
       .then((audio) => {
         return this.pronounce(audio, alert.property("voiceVolume") ?? 100);
