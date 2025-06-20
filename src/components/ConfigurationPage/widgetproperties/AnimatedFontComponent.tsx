@@ -14,7 +14,7 @@ import { ColorPropertyComponent } from "./ColorPropertyComponent";
 import { log } from "../../../logging";
 import InputNumber from "../components/InputNumber";
 import { FontContext } from "../../../stores/FontStore";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 const animationType = ["entire", "by words", "by symbols"];
 
@@ -44,6 +44,11 @@ export const AnimatedFontComponent = observer(
   }) => {
     const { t } = useTranslation();
     const fonts = useContext(FontContext);
+    const [fontList, setFontList] = useState<string[]>([]);
+
+    useEffect(() => {
+      fonts.list().then((list) => setFontList(list));
+    }, [fonts]);
 
     return (
       <>
@@ -78,7 +83,10 @@ export const AnimatedFontComponent = observer(
                 children: (
                   <>
                     <div className="settings-item">
-                      <LabeledContainer displayName="button-font" help={<Trans i18nKey="font-select-help" />}>
+                      <LabeledContainer
+                        displayName="button-font"
+                        help={<Trans i18nKey="font-select-help" />}
+                      >
                         <Select
                           showSearch
                           className="full-width"
@@ -92,12 +100,9 @@ export const AnimatedFontComponent = observer(
                             );
                             if (onChange) onChange(property);
                           }}
-                          options={fonts
-                            .list()
-                            .sort()
-                            .map((font) => {
-                              return { value: font, label: font };
-                            })}
+                          options={fontList.sort().map((font) => {
+                            return { value: font, label: font };
+                          })}
                         />
                       </LabeledContainer>
                     </div>
