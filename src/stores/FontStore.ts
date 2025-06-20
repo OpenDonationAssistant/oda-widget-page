@@ -3,6 +3,7 @@ import {
   FontDto,
 } from "@opendonationassistant/oda-font-service-client";
 import { createContext } from "react";
+import { log } from "../logging";
 
 export class FontStore {
   private _fonts: FontDto[] = [];
@@ -28,6 +29,7 @@ export class FontStore {
   }
 
   public getImportCss(name: string) {
+    log.debug({ name: name }, "Loading font");
     const font = this._fonts.find((font) => font.name === name);
     if (font?.type === "google") {
       return Promise.resolve(`@font-face {

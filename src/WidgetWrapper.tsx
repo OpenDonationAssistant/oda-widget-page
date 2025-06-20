@@ -31,7 +31,6 @@ const fullHeight = (
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
-  const [fontStore, setFontStore] = useState<FontStore>(new FontStore());
 
   console.log("enabled " + settings.enabled);
 
@@ -68,7 +67,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           },
         }}
       >
-        <FontContext.Provider value={fontStore}>
+        <FontContext.Provider value={new FontStore()}>
           {children}
         </FontContext.Provider>
       </WidgetSettingsContext.Provider>
