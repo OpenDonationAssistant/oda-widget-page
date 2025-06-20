@@ -10,10 +10,12 @@ export class FontStore {
 
   constructor(fonts?: FontDto[]) {
     if (fonts === null || fonts === undefined) {
+      log.debug("Loading font list");
       this.client()
         .listFonts()
         .then((response) => {
           this._fonts = response.data;
+          log.debug({ fonts: this._fonts }, "Updated font list");
         });
     } else {
       this._fonts = fonts;
