@@ -29,8 +29,8 @@ export class FontStore {
   }
 
   public getImportCss(name: string) {
-    log.debug({ name: name }, "Loading font");
     const font = this._fonts.find((font) => font.name === name);
+    log.debug({ name: name, font: font }, "Loading font");
     if (font?.type === "google") {
       return Promise.resolve(`@font-face {
                 font-family: '${font.name}';
