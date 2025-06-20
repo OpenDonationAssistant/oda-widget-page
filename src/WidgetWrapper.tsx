@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "./types/WidgetData";
 import { WidgetSettingsContext } from "./contexts/WidgetSettingsContext";
@@ -10,6 +10,7 @@ import {
   unsubscribe,
 } from "./socket";
 import { messageCallbackType } from "@stomp/stompjs";
+import { FontContext, FontStore } from "./stores/FontStore";
 
 const overflowHiddenForRootElement = (
   <style
@@ -30,6 +31,7 @@ const fullHeight = (
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
+  const [fontStore, setFontStore] = useState<FontStore>(new FontStore());
 
   console.log("enabled " + settings.enabled);
 
@@ -66,7 +68,9 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           },
         }}
       >
-        {children}
+        <FontContext.Provider value={fontStore}>
+          {children}
+        </FontContext.Provider>
       </WidgetSettingsContext.Provider>
     </>
   );

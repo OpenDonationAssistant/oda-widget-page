@@ -467,7 +467,9 @@ export class AlertController {
           .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
         log.debug("setting title");
         this.state.title = title;
-        this.state.showTitle = (alert.get("showHeader") as BooleanProperty).value;
+        this.state.showTitle = (
+          alert.get("showHeader") as BooleanProperty
+        ).value;
 
         const headerFont = alert.get("headerFont") as AnimatedFontProperty;
         this.state.fonts.push(headerFont.value.family);
@@ -619,7 +621,9 @@ export class AlertController {
         log.debug("setting message");
         this.state.messageClassName = messageFont.calcClassName() ?? "";
         this.state.message = data.message;
-        this.state.showMessage = (alert.get("showMessage") as BooleanProperty).value;
+        this.state.showMessage = (
+          alert.get("showMessage") as BooleanProperty
+        ).value;
       })
       .then(() => {
         const animation = alert.get("messageAppearance") as AnimationProperty;

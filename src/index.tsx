@@ -46,6 +46,7 @@ import { GuidesPage } from "./pages/Guides/GuidesPage";
 import IntegrationsPage from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/UtilityButton/UtilityButton";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
+import { FontContext, FontStore } from "./stores/FontStore";
 
 async function widgetSettingsLoader({
   params,
@@ -180,7 +181,9 @@ function ConfigurationPageTemplate() {
                 backgroundColor: "var(--oda-color-100)",
               }}
             >
-              <Outlet />
+              <FontContext.Provider value={new FontStore()}>
+                <Outlet />
+              </FontContext.Provider>
             </Content>
           </Flex>
           <div className="right-space" />
