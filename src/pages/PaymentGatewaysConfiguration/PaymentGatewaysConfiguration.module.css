@@ -110,8 +110,11 @@
 .instructioncomment {
   color: var(--oda-color-500);
   font-size: 12px;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 
-  & div {
+  & * {
     -webkit-user-select: text;
     -ms-user-select: text;
     user-select: text;

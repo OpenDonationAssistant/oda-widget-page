@@ -23,6 +23,17 @@
   display: flex;
   align-items: baseline;
   font-size: 18px;
+  & * {
+    -webkit-user-select: text;
+    -ms-user-select: text; /* IE 10 and IE 11 */
+    user-select: text; /* Standard syntax */
+  }
+}
+
+.message {
+  -webkit-user-select: text;
+  -ms-user-select: text; /* IE 10 and IE 11 */
+  user-select: text; /* Standard syntax */
 }
 
 .goals {
