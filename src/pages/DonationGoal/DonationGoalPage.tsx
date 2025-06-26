@@ -19,15 +19,18 @@ export default function DonatonPage({}) {
     settings,
   ) as DonationGoalWidgetSettings;
 
+  const variablesStore = new DefaultVariableStore()
+
   const state = new DonationGoalState({
     widgetId: widgetId,
     conf: conf,
     paymentPageConfig: new PaymentPageConfig(recipientId),
+    variables: variablesStore
   });
 
   return (
     <WidgetWrapper>
-      <VariableStoreContext.Provider value={new DefaultVariableStore()}>
+      <VariableStoreContext.Provider value={variablesStore}>
         <DonationGoal settings={donationGoalSettings} state={state} />
       </VariableStoreContext.Provider>
     </WidgetWrapper>

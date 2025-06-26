@@ -5,6 +5,7 @@ import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfi
 import { log as parent } from "../../logging";
 import { subscribe } from "../../socket";
 import { toJS } from "mobx";
+import { VariableStore } from "../../stores/VariableStore";
 
 export interface AbstractDonationGoalState {
   goals: Goal[];
@@ -17,19 +18,23 @@ export class DonationGoalState implements AbstractDonationGoalState {
   private _widgetId: string;
   private _conf: any;
   private _goals: Goal[] = [];
+  private _variables: VariableStore;
 
   constructor({
     widgetId,
     conf,
     paymentPageConfig,
+    variables
   }: {
     widgetId: string;
     conf: any;
     paymentPageConfig: PaymentPageConfig;
+    variables: VariableStore;
   }) {
     this._widgetId = widgetId;
     this._conf = conf;
     this._goals = paymentPageConfig.goals;
+    this._variables = variables;
     makeAutoObservable(this);
     document.addEventListener("paymentPageUpdated", () => {
       this._goals = paymentPageConfig.goals;
@@ -47,8 +52,10 @@ export class DonationGoalState implements AbstractDonationGoalState {
           .forEach((goal) => {
             this._log.debug({ id: goal.id }, "updating goal");
             goal.accumulatedAmount.major = updatedGoal.accumulatedAmount.major;
+            goal.requiredAmount.major = updatedGoal.requiredAmount.major;
           });
       });
+      this._variables.load();
       this._log.debug({ goals: this._goals }, "updated goals");
       message.ack();
     });

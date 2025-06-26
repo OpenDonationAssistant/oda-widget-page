@@ -7,9 +7,10 @@ import { log } from "../logging";
 export interface VariableStore {
   variables: Variable[];
   processTemplate: (template: string) => string;
+  load: () => void;
 }
 
-export class DefaultVariableStore {
+export class DefaultVariableStore implements VariableStore {
   private _variables: Variable[] = [];
 
   constructor() {
