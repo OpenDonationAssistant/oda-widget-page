@@ -201,8 +201,8 @@ export class PaymentGatewayConfigurationStore {
             {
               statement: "1. Пропишите URL ОДЫ для HTTP уведомлений",
               comment:
-                "В разделе 'Интеграции' -> 'HTTP уведомления' в строке 'URL для уведомлений' вставьте адрес 'https://api.oda.digital/notification/yookassa'",
-              image:
+                "В разделе 'Интеграции' -> 'HTTP уведомления' в строке 'URL для уведомлений' вставьте адрес 'https://api.oda.digital/notification/yookassa', проставив галку у всех событий (payment.succeeded, payment.canceled и т.д.)",
+              screen:
                 "https://api.oda.digital/assets/photo_2024-03-03_10-32-18.jpg",
             },
           ],
