@@ -1,3 +1,3 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 
-export default defineConfig([globalIgnores(["*/videoplayer.js"])]);
+export default defineConfig([globalIgnores(["src/videoplayer.js"])]);
