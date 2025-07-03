@@ -12,7 +12,8 @@ import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
-import "https://widgets.oda.digital/videplayer.js";
+//import "https://widgets.oda.digital/videplayer.js";
+import "https://vk.com/js/api/videoplayer.js"
 import { Flex } from "antd";
 import VideoPopupToggler, { VIDEO_IMPL } from "./VideoPopupToggler";
 
