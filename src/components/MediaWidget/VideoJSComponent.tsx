@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
 import "videojs-youtube";
 import { Provider, Song } from "./types";
@@ -12,7 +12,7 @@ import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
-import "https://widgets.staging.oda.digital/vk-videoplayer.js";
+import "https://widgets.staging.oda.digital/js/api/vk-videoplayer.js";
 import { Flex } from "antd";
 import VideoPopupToggler, { VIDEO_IMPL } from "./VideoPopupToggler";
 
