@@ -1,5 +1,4 @@
-//import "https://widgets.oda.digital/videplayer.js";
-import "https://vk.com/js/api/videoplayer.js"
+import "https://widgets.staging.oda.digital/vk-videoplayer.js";
 import { log } from "../../logging";
 import { Provider, Song } from "../MediaWidget/types";
 import videojs from "video.js";
