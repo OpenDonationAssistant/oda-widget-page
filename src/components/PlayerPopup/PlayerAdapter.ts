@@ -1,4 +1,4 @@
-import "https://widgets.staging.oda.digital/videoplayer.js";
+import "https://widgets.staging.oda.digital/vkplayer.js";
 import { log } from "../../logging";
 import { Provider, Song } from "../MediaWidget/types";
 import videojs from "video.js";

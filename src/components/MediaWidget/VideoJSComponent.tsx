@@ -12,7 +12,7 @@ import { publish, subscribe, unsubscribe } from "../../socket";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { WidgetData } from "../../types/WidgetData";
-import "https://widgets.staging.oda.digital/videoplayer.js";
+import "https://widgets.staging.oda.digital/vkplayer.js";
 import { Flex } from "antd";
 import VideoPopupToggler, { VIDEO_IMPL } from "./VideoPopupToggler";
 
