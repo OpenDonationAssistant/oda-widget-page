@@ -1,19 +1,16 @@
 .container {
-  gap: 9px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
-  min-height: 40px;
   align-items: stretch;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 12px;
+  flex-grow: 1;
 }
 
 .name {
   position: relative;
   flex: 1 1;
-  color: var(--oda-main-text-color);
+  color: var(--oda-color-550);
   & span{
     font-size: 16px;
     color: var(--oda-main-text-color);
@@ -31,6 +28,7 @@
   min-width: 200px;
   align-items: center;
   margin-right: 10px;
+  gap: 9px;
 }
 
 .helpmodal {

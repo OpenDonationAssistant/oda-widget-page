@@ -1,0 +1,39 @@
+.card {
+  flex-grow: 1;
+  border-radius: 9px;
+  background-color: var(--oda-color-150);
+  padding: 15px;
+}
+
+.addcard {
+  border-radius: 9px;
+  border: 1px solid var(--oda-color-150);
+  height: 120px;
+  width: 250px;
+  padding: 15px;
+  color: var(--oda-primary-color);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  & div {
+    text-align: center;
+  }
+}
+
+.edit {
+  background-color: transparent;
+  border: none;
+  color: #707080;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  font-size: 12px;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.list {
+  margin-top: 12px;
+}

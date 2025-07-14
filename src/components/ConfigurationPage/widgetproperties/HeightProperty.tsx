@@ -3,7 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import InputNumber from "../components/InputNumber";
-import { Flex, Switch } from "antd";
+import { Flex, Segmented, Switch } from "antd";
 import classes from "./WidthProperty.module.css";
 
 export class HeightProperty extends DefaultWidgetProperty<number> {
@@ -23,47 +23,47 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
     });
   }
 
-  copy(){
+  copy() {
     return new HeightProperty({
       name: this.name,
       value: this.value,
-      displayName: this.displayName
+      displayName: this.displayName,
     });
   }
 
   comp = observer(() => {
     return (
-      <>
+      <Flex vertical gap={9}>
         <LabeledContainer displayName={this.displayName}>
-          <Flex className="full-width" justify="flex-end">
-            {this.value > -1 && (
-              <div className={`${classes.widthholder}`}>
-                <InputNumber
-                  value={this.value}
-                  addon="px"
-                  onChange={(newValue) => {
-                    if (newValue === null || newValue === undefined) {
-                      return;
-                    }
-                    this.value = newValue;
-                  }}
-                />
-              </div>
-            )}
-            <Switch
-              value={this.value > -1}
-              onChange={(checked) => {
-                if (checked) {
-                  this.value = 100;
-                } else {
-                  this.value = -1;
-                }
-              }}
-            />
-            <div className={`${classes.label}`}>Зафиксировать высоту</div>
-          </Flex>
+          <Segmented
+            className="full-width"
+            options={[
+              { value: 0, label: "Растягивать" },
+              { value: 1, label: "Зафиксировать" },
+            ]}
+            value={this.value > -1 ? 1 : 0}
+            onChange={(checked) => {
+              if (checked) {
+                this.value = 100;
+              } else {
+                this.value = -1;
+              }
+            }}
+          />
         </LabeledContainer>
-      </>
+        {this.value > -1 && (
+          <InputNumber
+            value={this.value}
+            addon="px"
+            onChange={(newValue) => {
+              if (newValue === null || newValue === undefined) {
+                return;
+              }
+              this.value = newValue;
+            }}
+          />
+        )}
+      </Flex>
     );
   });
 

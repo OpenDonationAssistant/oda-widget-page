@@ -8,15 +8,21 @@ export default function InputNumber({
   onChange,
   addon,
   increment,
+  className,
 }: {
   value: number;
   onChange: (value: number) => void;
   addon?: ReactNode;
   increment?: number;
+  className?: string;
 }) {
   return (
     <>
-      <Flex vertical={false} gap={5} className={`${classes.inputcontainer}`}>
+      <Flex
+        vertical={false}
+        gap={5}
+        className={`${classes.inputcontainer} ${className ? className : ""}`}
+      >
         <button
           className={classes.button}
           onClick={() => onChange(value - (increment ? increment : 1))}

@@ -2,15 +2,39 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
-import classes from "./BooleanProperty.module.css";
-import { Switch } from "antd";
+import { Segmented } from "antd";
+import { log } from "../../../logging";
+
+const BooleanPropertyComponent = observer(
+  ({ property }: { property: BooleanProperty }) => {
+    log.debug({ property: property }, "rendering property");
+    return (
+      <LabeledContainer displayName={property.displayName}>
+        <Segmented
+          className="full-width"
+          options={[
+            { value: 0, label: property.labels.off },
+            { value: 1, label: property.labels.on },
+          ]}
+          value={property.value ? 1 : 0}
+          onChange={() => {
+            property.value = !property.value;
+          }}
+        />
+      </LabeledContainer>
+    );
+  },
+);
 
 export class BooleanProperty extends DefaultWidgetProperty<boolean> {
+  private _labels: { on: string; off: string };
+
   constructor(params: {
     name: string;
     value: boolean;
     displayName: string;
     help?: string;
+    labels?: { on: string; off: string };
   }) {
     super({
       name: params.name,
@@ -18,20 +42,10 @@ export class BooleanProperty extends DefaultWidgetProperty<boolean> {
       displayName: params.displayName,
       help: params.help,
     });
+    this._labels = params.labels
+      ? params.labels
+      : { on: "Включено", off: "Выключено" };
   }
-
-  comp = observer(() => (
-    <LabeledContainer help={this.help} displayName={this.displayName}>
-      <div className={classes.checkboxwrapper}>
-        <Switch
-          checked={true === this.value}
-          onChange={() => {
-            this.value = !this.value;
-          }}
-        />
-      </div>
-    </LabeledContainer>
-  ));
 
   copy() {
     return new BooleanProperty({
@@ -43,6 +57,10 @@ export class BooleanProperty extends DefaultWidgetProperty<boolean> {
   }
 
   markup(): ReactNode {
-    return <this.comp />;
+    return <BooleanPropertyComponent property={this} />;
+  }
+
+  public get labels() {
+    return this._labels;
   }
 }

@@ -1,5 +1,5 @@
 import { Flex, Modal } from "antd";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function TextPropertyModal({

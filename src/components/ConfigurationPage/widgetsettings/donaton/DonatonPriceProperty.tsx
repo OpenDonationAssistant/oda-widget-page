@@ -35,17 +35,16 @@ const DonationPricePropertyComponent = observer(
               ]}
             />
             <span className={`${classes.equalsign}`}>=</span>
-            <div>
-              <InputNumber
-                value={property.value.price}
-                addon="RUB"
-                onChange={(value) => {
-                  property.value = produce(toJS(property.value), (draft) => {
-                    draft.price = value;
-                  });
-                }}
-              />
-            </div>
+            <InputNumber
+              className={`${classes.price}`}
+              value={property.value.price}
+              addon="RUB"
+              onChange={(value) => {
+                property.value = produce(toJS(property.value), (draft) => {
+                  draft.price = value;
+                });
+              }}
+            />
           </Flex>
         </LabeledContainer>
       </>

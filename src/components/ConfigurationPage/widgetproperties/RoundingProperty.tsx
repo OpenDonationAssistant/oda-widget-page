@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 
 export interface RoundingValue {
   isSame: boolean | null;
@@ -62,40 +63,30 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
         />
       </LabeledContainer>
       {property.value.isSame === true && (
-        <Row align="middle">
-          <Col span={2} offset={12}>
-            <span>Радиус:</span>
-          </Col>
-          <Col span={6}>
-            <InputNumber
-              value={property.value.topLeft}
-              addon="px"
-              onChange={(newValue) => {
-                if (newValue === undefined || newValue === null) {
-                  return;
-                }
-                const updated = produce(
-                  toJS(property.value),
-                  (draft: RoundingValue) => {
-                    draft.topLeft = newValue;
-                    draft.topRight = newValue;
-                    draft.bottomLeft = newValue;
-                    draft.bottomRight = newValue;
-                  },
-                );
-                property.value = updated;
-              }}
-            />
-          </Col>
-        </Row>
+        <InputNumber
+          value={property.value.topLeft}
+          addon="px"
+          onChange={(newValue) => {
+            if (newValue === undefined || newValue === null) {
+              return;
+            }
+            const updated = produce(
+              toJS(property.value),
+              (draft: RoundingValue) => {
+                draft.topLeft = newValue;
+                draft.topRight = newValue;
+                draft.bottomLeft = newValue;
+                draft.bottomRight = newValue;
+              },
+            );
+            property.value = updated;
+          }}
+        />
       )}
       {property.value.isSame === false && (
         <Flex gap={10} vertical={true} className={`${classes.roundingvalues}`}>
-          <Row>
-            <Col span={3} offset={2}>
-              <span>TopLeft</span>
-            </Col>
-            <Col span={5}>
+          <Flex className="full-width" gap={9}>
+            <SmallLabeledContainer displayName={"TopLeft"}>
               <InputNumber
                 addon="px"
                 value={property.value.topLeft}
@@ -112,11 +103,8 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                   property.value = updated;
                 }}
               />
-            </Col>
-            <Col span={3} offset={2}>
-              <span>TopRight</span>
-            </Col>
-            <Col span={5}>
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName={"TopRight"}>
               <InputNumber
                 addon="px"
                 value={property.value.topRight}
@@ -133,13 +121,10 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                   property.value = updated;
                 }}
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col span={3} offset={2}>
-              <span>BottomLeft</span>
-            </Col>
-            <Col span={5}>
+            </SmallLabeledContainer>
+          </Flex>
+          <Flex className="full-width" gap={9}>
+            <SmallLabeledContainer displayName={"BottomLeft"}>
               <InputNumber
                 addon="px"
                 value={property.value.bottomLeft}
@@ -156,11 +141,8 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                   property.value = updated;
                 }}
               />
-            </Col>
-            <Col span={3} offset={2}>
-              <span>BottomRight</span>
-            </Col>
-            <Col span={5}>
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName={"BottomRight"}>
               <InputNumber
                 addon="px"
                 value={property.value.bottomRight}
@@ -177,8 +159,8 @@ const Comp = observer(({ property }: { property: RoundingProperty }) => {
                   property.value = updated;
                 }}
               />
-            </Col>
-          </Row>
+            </SmallLabeledContainer>
+          </Flex>
         </Flex>
       )}
     </Flex>
@@ -229,7 +211,7 @@ export class RoundingProperty extends DefaultWidgetProperty<RoundingValue> {
     return new RoundingProperty({
       name: this.name,
       displayName: this.displayName,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       help: this.help,
     });
   }

@@ -14,7 +14,6 @@ import { observer } from "mobx-react-lite";
 import { Widget } from "../../types/Widget";
 import { reaction } from "mobx";
 import WidgetUrlModal from "./WidgetUrlModal";
-import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import {
   ModalState,
   ModalStateContext,
@@ -138,7 +137,7 @@ const NameComponent = observer(({ widget }: { widget: Widget }) => {
       <Overlay>
         <Panel>
           <Title>
-            <Flex justify="space-between" style={{ marginTop: "3px" }}>
+            <Flex justify="space-between" gap={51}>
               <Flex justify="flex-start" align="baseline" gap={18}>
                 <EditableString
                   label={widget.name}

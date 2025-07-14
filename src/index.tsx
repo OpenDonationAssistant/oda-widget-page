@@ -47,6 +47,7 @@ import IntegrationsPage from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/UtilityButton/UtilityButton";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
+import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";
 
 async function widgetSettingsLoader({
   params,
@@ -297,6 +298,11 @@ const router = createBrowserRouter([
   {
     path: "/reel/:widgetId",
     element: <ReelWidget />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/roulette/:widgetId",
+    element: <RouletteWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {

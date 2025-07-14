@@ -6,6 +6,7 @@ import TextArea from "antd/es/input/TextArea";
 import { Alert } from "./Alerts";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
+import { TextProperty } from "../../widgetproperties/TextProperty";
 
 export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -22,17 +23,7 @@ export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("headerVoiceDelay") as NumberProperty).markup()}
       </div>
       <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-voice-title-phrase">
-          <TextPropertyModal title="widget-alert-voice-title-phrase">
-            <TextArea
-              className="full-width"
-              value={alert.property("voiceTextTemplate")}
-              onChange={(text) =>
-                alert.update("voiceTextTemplate", text.target.value)
-              }
-            />
-          </TextPropertyModal>
-        </LabeledContainer>
+        {(alert.get("voiceTextTemplate") as TextProperty).markup()}
       </div>
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-voice-if-empty">
@@ -43,17 +34,7 @@ export const VoiceTab = observer(({ alert }: { alert: Alert }) => {
         </LabeledContainer>
       </div>
       <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-voice-empty-alert-phrase">
-          <TextPropertyModal title="widget-alert-voice-empty-alert-phrase">
-            <TextArea
-              className="full-width"
-              value={alert.property("voiceEmptyTextTemplates")}
-              onChange={(text) =>
-                alert.update("voiceEmptyTextTemplates", text.target.value)
-              }
-            />
-          </TextPropertyModal>
-        </LabeledContainer>
+        {(alert.get("voiceEmptyTextTemplates") as TextProperty).markup()}
       </div>
       <div className="settings-item">
         <LabeledContainer displayName="widget-alert-voice-for-message">

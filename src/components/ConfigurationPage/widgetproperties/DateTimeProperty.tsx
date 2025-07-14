@@ -38,6 +38,7 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
         <LabeledContainer help={this.help} displayName={this.name}>
           <DatePicker
             value={dayjs(this.value.timestamp)}
+            className="full-width"
             showTime
             format={dateFormat}
             onChange={(value) => {

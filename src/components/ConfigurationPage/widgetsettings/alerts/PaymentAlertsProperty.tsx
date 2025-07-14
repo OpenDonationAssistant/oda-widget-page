@@ -25,6 +25,7 @@ import {
 } from "../../../Overlay/Overlay";
 import CopyIcon from "../../../../icons/CopyIcon";
 import { BorderedIconButton } from "../../../IconButton/IconButton";
+import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -93,97 +94,98 @@ const PaymentAlertsPropertyComponent = observer(
               Вы точно хотите удалить оповещение?
             </Warning>
           </Overlay>
-          {property.value.length > 0 && (
-            <div className={`${classes.preview}`}>
-              <Collapse
-                activeKey={opened}
-                collapsible="disabled"
-                expandIcon={({ isActive }) => (
-                  <div>{isActive ? <ArrowUp /> : <ArrowDown />}</div>
-                )}
-                expandIconPosition="end"
-                items={property.value.map((it, index) => {
-                  log.debug({ it: it }, "create view for alert");
-                  const switcher = () => {
-                    if (opened === it.id) {
-                      setOpened("");
-                    } else if (opened === String(index)) {
-                      setOpened("");
-                    } else {
-                      setOpened(it.id ?? String(index));
-                    }
-                  };
-                  const clickHandler: MouseEventHandler = (e) => {
-                    if (e.target === e.currentTarget) {
-                      switcher();
-                    }
-                  };
+          <LabeledContainer displayName="Оповещения">
+            {property.value.length > 0 && (
+              <div className={`${classes.preview}`}>
+                <Collapse
+                  activeKey={opened}
+                  collapsible="disabled"
+                  expandIcon={({ isActive }) => (
+                    <div>{isActive ? <ArrowUp /> : <ArrowDown />}</div>
+                  )}
+                  expandIconPosition="end"
+                  items={property.value.map((it, index) => {
+                    log.debug({ it: it }, "create view for alert");
+                    const switcher = () => {
+                      if (opened === it.id) {
+                        setOpened("");
+                      } else if (opened === String(index)) {
+                        setOpened("");
+                      } else {
+                        setOpened(it.id ?? String(index));
+                      }
+                    };
+                    const clickHandler: MouseEventHandler = (e) => {
+                      if (e.target === e.currentTarget) {
+                        switcher();
+                      }
+                    };
 
-                  return {
-                    key: it.id ?? index,
-                    showArrow: false,
-                    label: (
-                      <Flex
-                        key={it.id ?? index}
-                        justify="space-between"
-                        align="center"
-                        onClick={clickHandler}
-                      >
-                        <Flex align="center" gap={18}>
-                          <EditableString
-                            label={it.property("name")}
-                            onChange={(value) => it.set("name", value)}
-                            onClick={switcher}
-                          />
-                          <Switch
-                            value={it.property("enabled")}
-                            onChange={(value) => it.set("enabled", value)}
-                          />
-                        </Flex>
-                        <Flex className={`${classes.alertbuttons}`} gap={9}>
-                          <SubActionButton
-                            onClick={() => testAlert(conf.topic.alerts, it)}
-                          >
-                            <div>Тест</div>
-                          </SubActionButton>
-                          <BorderedIconButton
-                            onClick={() => {
-                              it.copy();
-                            }}
-                          >
-                            <CopyIcon />
-                          </BorderedIconButton>
-                          <BorderedIconButton
-                            onClick={() => {
-                              setAlertToDelete(it);
-                              deleteDialogState.show = true;
-                            }}
-                          >
-                            <CloseIcon color="#FF8888" />
-                          </BorderedIconButton>
-                          <Flex
-                            justify="center"
-                            align="center"
-                            onClick={switcher}
-                          >
-                            {(it.id === opened || String(index) === opened) && (
-                              <ArrowUp />
-                            )}
-                            {it.id !== opened && String(index) !== opened && (
-                              <ArrowDown />
-                            )}
+                    return {
+                      key: it.id ?? index,
+                      showArrow: false,
+                      label: (
+                        <Flex
+                          key={it.id ?? index}
+                          justify="space-between"
+                          align="center"
+                          onClick={clickHandler}
+                        >
+                          <Flex align="center" gap={18}>
+                            <EditableString
+                              label={it.property("name")}
+                              onChange={(value) => it.set("name", value)}
+                              onClick={switcher}
+                            />
+                            <Switch
+                              value={it.property("enabled")}
+                              onChange={(value) => it.set("enabled", value)}
+                            />
+                          </Flex>
+                          <Flex className={`${classes.alertbuttons}`} gap={9}>
+                            <SubActionButton
+                              onClick={() => testAlert(conf.topic.alerts, it)}
+                            >
+                              <div>Тест</div>
+                            </SubActionButton>
+                            <BorderedIconButton
+                              onClick={() => {
+                                it.copy();
+                              }}
+                            >
+                              <CopyIcon />
+                            </BorderedIconButton>
+                            <BorderedIconButton
+                              onClick={() => {
+                                setAlertToDelete(it);
+                                deleteDialogState.show = true;
+                              }}
+                            >
+                              <CloseIcon color="#FF8888" />
+                            </BorderedIconButton>
+                            <Flex
+                              justify="center"
+                              align="center"
+                              onClick={switcher}
+                            >
+                              {(it.id === opened ||
+                                String(index) === opened) && <ArrowUp />}
+                              {it.id !== opened && String(index) !== opened && (
+                                <ArrowDown />
+                              )}
+                            </Flex>
                           </Flex>
                         </Flex>
-                      </Flex>
-                    ),
-                    children: (
-                      <AlertComponent key={it.id ?? index} alert={it} />
-                    ),
-                  };
-                })}
-              />
-            </div>
-          )}
+                      ),
+                      children: (
+                        <AlertComponent key={it.id ?? index} alert={it} />
+                      ),
+                    };
+                  })}
+                />
+              </div>
+            )}
+          </LabeledContainer>
           <button
             className={`${classes.adddalertbutton}`}
             onClick={() => property.addAlert()}

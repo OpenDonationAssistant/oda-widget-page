@@ -12,7 +12,8 @@
 .widgetpreviewcontainer {
   border-radius: 9px;
   background-color: var(--oda-color-150);
-  height: 100%;
+  height: 100;
+  min-height: 180px;
   width: 500px;
   padding: 9px 15px;
   &:hover {
@@ -47,6 +48,23 @@
   }
 }
 
+@media(max-width: 1600px){
+  .addwidgetcontainer {
+    justify-content: center;
+  }
+  .section {
+    text-align: center;
+  }
+}
+@media(min-width: 1600px){
+  .addwidgetcontainer {
+    justify-content: flex-start;
+  }
+  .section {
+    text-align: left;
+  }
+}
+
 .widgetdraggablecontainer {
   flex-grow: 1;
 }
@@ -71,7 +89,6 @@
 .section {
   font-size: 18px;
   color: var(--oda-color-500);
-  text-align: center;
   width: 100%;
 }
 
@@ -92,7 +109,7 @@
 .widgetpreviewtitle {
   font-size: 21px;
   font-weight: 500;
-  color: var(--oda-color-500);
+  color: var(--oda-color-1000);
 }
 
 .widgetpreviewdescription {

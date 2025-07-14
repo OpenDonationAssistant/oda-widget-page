@@ -16,7 +16,8 @@ import { findSetting } from "../../components/utils";
 import { WidgetData } from "../../types/WidgetData";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
-  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -32,6 +33,7 @@ export default function ReelWidget({}) {
   const [active, setActive] = useState<string | null>(null);
   const [highlight, setHighlight] = useState<boolean>(false);
   const [options, setOptions] = useState<string[]>([]);
+  const [image, setImage] = useState<string>("");
 
   function handleSelection(selection: string) {
     if (!glideRef.current?.classList.contains("hidden")) {
@@ -52,7 +54,7 @@ export default function ReelWidget({}) {
     subscribe(widgetId, conf.topic.reel, (message) => {
       log.info({ message: message }, "Received reel command");
       let json = JSON.parse(message.body);
-      if (json.widgetId === widgetId ) {
+      if (json.widgetId === widgetId) {
         handleSelection(json.selection);
       }
       message.ack();
@@ -126,14 +128,34 @@ export default function ReelWidget({}) {
     value: findSetting(
       settings,
       "selectionColor",
-      DEFAULT_BORDER_PROPERTY_VALUE
+      DEFAULT_BORDER_PROPERTY_VALUE,
     ),
   }).calcCss();
 
   const slideStyle = {
     alignItems: "stretch",
   };
-  const backgroundImage = findSetting(settings, "backgroundImage", "");
+  let backgroundImage = findSetting(settings, "backgroundImage", "");
+  const fullUri = (): Promise<string> => {
+    if (!backgroundImage) {
+      return Promise.resolve("");
+    }
+    if (!backgroundImage.startsWith("http")) {
+      backgroundImage = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage}`;
+    }
+    // TODO: вынести в общий модуль
+    return fetch(backgroundImage, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
+    })
+      .then((res) => res.blob())
+      .then((blob) => URL.createObjectURL(blob));
+  };
+
+  useEffect(() => {
+    fullUri().then(setImage);
+  }, [settings]);
 
   function calcItemStyle(option: string) {
     let style = new BorderProperty({
@@ -145,7 +167,7 @@ export default function ReelWidget({}) {
     } else {
       if (backgroundImage) {
         style.backgroundSize = "cover";
-        style.backgroundImage = `url(${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${backgroundImage})`;
+        style.backgroundImage = `url(${image})`;
       }
     }
     log.debug({ style }, "calculated style for slide item");

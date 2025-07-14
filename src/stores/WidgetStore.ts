@@ -57,8 +57,10 @@ export class DefaultWidgetStore implements WidgetStore {
           })
           .flatMap((widget) => {
             const created = Widget.fromJson(widget, this);
+            log.debug({created: created}, "parsed widget");
             return created ? [created] : [];
           });
+        log.debug({list: this._list},"loaded widgets");
       });
   }
 

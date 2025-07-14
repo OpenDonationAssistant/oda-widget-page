@@ -21,6 +21,9 @@ import { produce } from "immer";
 import { toJS } from "mobx";
 import classes from "./ColorPropertyComponent.module.css";
 import InputNumber from "../components/InputNumber";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import { NotBorderedIconButton } from "../../IconButton/IconButton";
+import CloseIcon from "../../../icons/CloseIcon";
 
 const ColorStopComponent = observer(
   ({
@@ -35,62 +38,60 @@ const ColorStopComponent = observer(
     const color = property.value.colors[index];
 
     return (
-      <>
+      <div className={`${classes.colorstopcontainer}`}>
         {color.stop && (
-          <Col span={7} offset={1}>
-            <InputNumber
-              value={color.stop.value}
-              onChange={(value) => {
-                if (value === undefined || value === null) return;
-                const updated = produce(
-                  toJS(property.value),
-                  (draft: ColorPropertyValue) => {
-                    const stop = draft.colors[index].stop;
-                    if (stop) {
-                      stop.value = value;
-                    }
-                  },
-                );
-                property.value = updated;
-                {
-                  onChange && onChange(updated);
-                }
-              }}
-              addon={
-                <Select
-                  value={color.stop.unit}
-                  className={`${classes.selectarrow}`}
-                  options={[
-                    {
-                      value: COLOR_STOP_UNIT.PIXEL,
-                      label: "px",
-                    },
-                    {
-                      value: COLOR_STOP_UNIT.PERCENT,
-                      label: "%",
-                    },
-                  ]}
-                  onChange={(value) => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        const stop = draft.colors[index].stop;
-                        if (stop) {
-                          stop.unit = value;
-                        }
-                      },
-                    );
-                    property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
-                  }}
-                />
+          <InputNumber
+            value={color.stop.value}
+            onChange={(value) => {
+              if (value === undefined || value === null) return;
+              const updated = produce(
+                toJS(property.value),
+                (draft: ColorPropertyValue) => {
+                  const stop = draft.colors[index].stop;
+                  if (stop) {
+                    stop.value = value;
+                  }
+                },
+              );
+              property.value = updated;
+              {
+                onChange && onChange(updated);
               }
-            />
-          </Col>
+            }}
+            addon={
+              <Select
+                value={color.stop.unit}
+                className={`${classes.selectarrow}`}
+                options={[
+                  {
+                    value: COLOR_STOP_UNIT.PIXEL,
+                    label: "px",
+                  },
+                  {
+                    value: COLOR_STOP_UNIT.PERCENT,
+                    label: "%",
+                  },
+                ]}
+                onChange={(value) => {
+                  const updated = produce(
+                    toJS(property.value),
+                    (draft: ColorPropertyValue) => {
+                      const stop = draft.colors[index].stop;
+                      if (stop) {
+                        stop.unit = value;
+                      }
+                    },
+                  );
+                  property.value = updated;
+                  {
+                    onChange && onChange(updated);
+                  }
+                }}
+              />
+            }
+          />
         )}
-      </>
+      </div>
     );
   },
 );
@@ -104,27 +105,25 @@ const AddColorToGradient = observer(
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
     return (
-      <Flex justify="space-around" align="center">
-        <Button
-          className="oda-btn-default"
-          onClick={() => {
-            const updated = produce(
-              toJS(property.value),
-              (draft: ColorPropertyValue) => {
-                draft.colors.push({ color: "#FFFFFF" });
-              },
-            );
-            property.value = updated;
-            {
-              onChange && onChange(updated);
-            }
-          }}
-        >
-          <Flex>
-            <span className={`material-symbols-sharp`}>add</span>Добавить цвет
-          </Flex>
-        </Button>
-      </Flex>
+      <Button
+        className={`${classes.addbutton}`}
+        onClick={() => {
+          const updated = produce(
+            toJS(property.value),
+            (draft: ColorPropertyValue) => {
+              draft.colors.push({ color: "#FFFFFF" });
+            },
+          );
+          property.value = updated;
+          {
+            onChange && onChange(updated);
+          }
+        }}
+      >
+        <Flex>
+          <span className={`material-symbols-sharp`}>add</span>Добавить цвет
+        </Flex>
+      </Button>
     );
   },
 );
@@ -139,96 +138,92 @@ const GradientSettings = observer(
   }) => {
     return (
       <>
-        <Row align={"middle"}>
-          <Col span={22} offset={2}>
-            <Flex align="center" justify="flex-start" gap={20}>
-              <Flex align="center" gap={5}>
-                <span>Градиент:</span>
-                <Segmented
-                  value={property.value.gradientType}
-                  options={[
-                    {
-                      value: GRADIENT_TYPE.LINEAR,
-                      label: "Линейный",
-                    },
-                    {
-                      value: GRADIENT_TYPE.RADIAL,
-                      label: "Круговой",
-                    },
-                    {
-                      value: GRADIENT_TYPE.CONIC,
-                      label: "Конический",
-                    },
-                  ]}
-                  onChange={(value) => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        draft.gradientType = value;
-                      },
-                    );
-                    property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
-                  }}
-                />
-              </Flex>
-              {property.value.gradientType === GRADIENT_TYPE.LINEAR && (
-                <Flex align="center" gap={5}>
-                  <span>Наклон:</span>
-                  <InputNumber
-                    value={property.value.angle}
-                    addon="deg"
-                    onChange={(value) => {
-                      if (value === null || value === undefined) {
-                        return;
-                      }
-                      const updated = produce(
-                        toJS(property.value),
-                        (draft: ColorPropertyValue) => {
-                          draft.angle = value;
-                        },
-                      );
-                      property.value = updated;
-                      {
-                        onChange && onChange(updated);
-                      }
-                    }}
-                  />
-                </Flex>
-              )}
-            </Flex>
-          </Col>
-        </Row>
-        <Row align={"middle"}>
-          <Col span={22} offset={2}>
-            <Flex align="center" gap={5}>
-              <span>Повторять?</span>
-              <Switch
-                value={property.value.repeating}
-                onChange={(value) => {
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: ColorPropertyValue) => {
-                      draft.repeating = value;
-                    },
-                  );
-                  property.value = updated;
-                  {
-                    onChange && onChange(updated);
-                  }
-                }}
-              />
-            </Flex>
-          </Col>
-        </Row>
+        <SmallLabeledContainer displayName="Тип градиента">
+          <Segmented
+            className="full-width"
+            value={property.value.gradientType}
+            options={[
+              {
+                value: GRADIENT_TYPE.LINEAR,
+                label: "Линейный",
+              },
+              {
+                value: GRADIENT_TYPE.RADIAL,
+                label: "Круговой",
+              },
+              {
+                value: GRADIENT_TYPE.CONIC,
+                label: "Конический",
+              },
+            ]}
+            onChange={(value) => {
+              const updated = produce(
+                toJS(property.value),
+                (draft: ColorPropertyValue) => {
+                  draft.gradientType = value;
+                },
+              );
+              property.value = updated;
+              {
+                onChange && onChange(updated);
+              }
+            }}
+          />
+          <Segmented
+            className="full-width"
+            value={property.value.repeating ? 1 : 0}
+            options={[
+              {
+                value: 0,
+                label: "Обычный",
+              },
+              {
+                value: 1,
+                label: "Повторяющийся",
+              },
+            ]}
+            onChange={(value) => {
+              const updated = produce(
+                toJS(property.value),
+                (draft: ColorPropertyValue) => {
+                  draft.repeating = value === 1;
+                },
+              );
+              property.value = updated;
+              {
+                onChange && onChange(updated);
+              }
+            }}
+          />
+        </SmallLabeledContainer>
+        {property.value.gradientType === GRADIENT_TYPE.LINEAR && (
+          <SmallLabeledContainer displayName="Наклон">
+            <InputNumber
+              value={property.value.angle}
+              addon="deg"
+              onChange={(value) => {
+                if (value === null || value === undefined) {
+                  return;
+                }
+                const updated = produce(
+                  toJS(property.value),
+                  (draft: ColorPropertyValue) => {
+                    draft.angle = value;
+                  },
+                );
+                property.value = updated;
+                {
+                  onChange && onChange(updated);
+                }
+              }}
+            />
+          </SmallLabeledContainer>
+        )}
       </>
     );
   },
 );
 
-// TODO: localize
 const GradientColors = observer(
   ({
     property,
@@ -241,45 +236,22 @@ const GradientColors = observer(
       <Flex vertical={true} className="full-width" gap={10}>
         <GradientSettings property={property} />
         {property.value.colors.map((color: ColorStop, index: number) => (
-          <Row align="middle" className="full-width">
-            <Col span={1} offset={2}>
-              #{index + 1}
-            </Col>
-            <Col span={4} offset={1}>
-              <ColorPicker
-                key={index}
-                showText
-                value={color.color}
-                onChange={(value) => {
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: ColorPropertyValue) => {
-                      draft.colors[index].color = value.toRgbString();
-                    },
-                  );
-                  property.value = updated;
-                  {
-                    onChange && onChange(updated);
-                  }
-                }}
-              />
-            </Col>
-            <Col span={3} offset={2}>
-              <Flex gap={5} align="center">
-                <Switch
-                  value={color.stop !== undefined}
+          <Flex vertical gap={9}>
+            <SmallLabeledContainer
+              key={index}
+              displayName={`Цвет #${index + 1}`}
+            >
+              <Flex className={`${classes.gradientcolor}`} gap={9}>
+                <ColorPicker
+                  className={`${classes.color}`}
+                  key={index}
+                  showText
+                  value={color.color}
                   onChange={(value) => {
                     const updated = produce(
                       toJS(property.value),
                       (draft: ColorPropertyValue) => {
-                        if (value) {
-                          draft.colors[index].stop = {
-                            value: 0,
-                            unit: COLOR_STOP_UNIT.PIXEL,
-                          };
-                        } else {
-                          draft.colors[index].stop = undefined;
-                        }
+                        draft.colors[index].color = value.toRgbString();
                       },
                     );
                     property.value = updated;
@@ -288,31 +260,64 @@ const GradientColors = observer(
                     }
                   }}
                 />
-                <span className={classes.colorStopLabel}>Color Stop</span>
+                <Flex
+                  gap={5}
+                  align="center"
+                  className={`${classes.colorstopcontainer}`}
+                  justify="flex-end"
+                >
+                  <Switch
+                    value={color.stop !== undefined}
+                    onChange={(value) => {
+                      const updated = produce(
+                        toJS(property.value),
+                        (draft: ColorPropertyValue) => {
+                          if (value) {
+                            draft.colors[index].stop = {
+                              value: 0,
+                              unit: COLOR_STOP_UNIT.PIXEL,
+                            };
+                          } else {
+                            draft.colors[index].stop = undefined;
+                          }
+                        },
+                      );
+                      property.value = updated;
+                      {
+                        onChange && onChange(updated);
+                      }
+                    }}
+                  />
+                  <span className={classes.colorStopLabel}>
+                    С точкой остановки
+                  </span>
+                </Flex>
+                <NotBorderedIconButton
+                  onClick={() => {
+                    const updated = produce(
+                      toJS(property.value),
+                      (draft: ColorPropertyValue) => {
+                        draft.colors.splice(index, 1);
+                      },
+                    );
+                    property.value = updated;
+                    {
+                      onChange && onChange(updated);
+                    }
+                  }}
+                >
+                  <CloseIcon color="#FF8888" />
+                </NotBorderedIconButton>
               </Flex>
-            </Col>
-            <ColorStopComponent property={property} index={index} />
-            {!color.stop && <Col span={8} />}
-            <Col span={1} offset={1}>
-              <span
-                className={`material-symbols-sharp ${classes.deleteButton}`}
-                onClick={() => {
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: ColorPropertyValue) => {
-                      draft.colors.splice(index, 1);
-                    },
-                  );
-                  property.value = updated;
-                  {
-                    onChange && onChange(updated);
-                  }
-                }}
+            </SmallLabeledContainer>
+            {color.stop && (
+              <SmallLabeledContainer
+                displayName={`Точка остановки цвета #${index + 1}`}
               >
-                delete
-              </span>
-            </Col>
-          </Row>
+                <ColorStopComponent property={property} index={index} />
+              </SmallLabeledContainer>
+            )}
+          </Flex>
         ))}
       </Flex>
     );
@@ -330,49 +335,53 @@ export const ColorPropertyComponent = observer(
     return (
       <Flex gap={10} vertical={true}>
         <LabeledContainer displayName={property.displayName}>
-          <Row align="middle" className="full-width">
-            {!property.value.gradient && (
-              <Col span={10} offset={2}>
-                <ColorPicker
-                  value={property.value.colors[0].color}
-                  showText
-                  onChange={(value) => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        draft.colors[0].color = value.toRgbString();
-                      },
-                    );
-                    property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
-                  }}
-                />
-              </Col>
-            )}
-            <Col span={10} offset={property.value.gradient ? 12 : 0}>
-              <Flex className="full-width" justify="center" gap={5}>
-                <Switch
-                  value={property.value.gradient}
-                  onChange={(value) => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        draft.gradient = value;
-                      },
-                    );
-                    property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
-                  }}
-                />
-                <span>Градиент</span>
-              </Flex>
-            </Col>
-          </Row>
+          <Segmented
+            block
+            className="full-width"
+            options={[
+              {
+                value: 2,
+                label: "Однотонный",
+              },
+              {
+                value: 3,
+                label: "Градиент",
+              },
+            ]}
+            value={property.value.gradient ? 3 : 2}
+            onChange={(value) => {
+              const updated = produce(
+                toJS(property.value),
+                (draft: ColorPropertyValue) => {
+                  draft.gradient = value === 3;
+                },
+              );
+              property.value = updated;
+              {
+                onChange && onChange(updated);
+              }
+            }}
+          />
         </LabeledContainer>
+        {!property.value.gradient && (
+          <ColorPicker
+            className={`${classes.colorpicker}`}
+            value={property.value.colors[0].color}
+            showText
+            onChange={(value) => {
+              const updated = produce(
+                toJS(property.value),
+                (draft: ColorPropertyValue) => {
+                  draft.colors[0].color = value.toRgbString();
+                },
+              );
+              property.value = updated;
+              {
+                onChange && onChange(updated);
+              }
+            }}
+          />
+        )}
         {property.value.gradient && (
           <>
             <GradientColors onChange={onChange} property={property} />
@@ -381,5 +390,5 @@ export const ColorPropertyComponent = observer(
         )}
       </Flex>
     );
-  }
+  },
 );

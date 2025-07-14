@@ -22,7 +22,7 @@
 }
 
 .background {
-  width: calc(100% - 40px);
+  width: 100%;
   height: 100%;
   position: absolute;
   top: 0px;
@@ -33,14 +33,18 @@
 .democontainer {
   position: relative;
   background-color: var(--oda-main-background-color);
-  padding-left: 20px;
-  padding-right: 20px;
+  width: 100%;
+  margin-bottom: 9px;
 }
 
 .modal {
   &[class*="ant-modal"] {
     & [class*="ant-modal-content"] {
       background-color: var(--oda-main-background-color);
+      & [class*="ant-modal-body"] {
+        padding-right: 18px;
+        padding-left: 18px;
+      }
       & [class*="ant-modal-header"] {
         background-color: var(--oda-main-background-color);
         & [class*="ant-modal-title"] {

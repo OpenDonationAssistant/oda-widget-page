@@ -42,6 +42,7 @@ export default function EventComponent({
 
   function resendAlert(data) {
     publish(conf.topic.alerts, {
+      force: true,
       id: data.id,
       nickname: data.nickname ? data.nickname : "Аноним",
       message: data.message,

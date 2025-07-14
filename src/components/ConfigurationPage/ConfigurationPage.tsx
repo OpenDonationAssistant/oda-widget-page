@@ -31,14 +31,14 @@ const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
   const selection = useContext(SelectedIndexContext);
   const [asCards, setAsCards] = useState<boolean>(false);
 
-      //<Flex className="full-width" justify="flex-end" style={{ marginBottom: "9px" }}>
-      //  <NotBorderedIconButton onClick={() => setAsCards(false)}>
-      //    <LinesIcon />
-      //  </NotBorderedIconButton>
-      //  <NotBorderedIconButton onClick={() => setAsCards(true)}>
-      //    <CardsIcon />
-      //  </NotBorderedIconButton>
-      //</Flex>
+  //<Flex className="full-width" justify="flex-end" style={{ marginBottom: "9px" }}>
+  //  <NotBorderedIconButton onClick={() => setAsCards(false)}>
+  //    <LinesIcon />
+  //  </NotBorderedIconButton>
+  //  <NotBorderedIconButton onClick={() => setAsCards(true)}>
+  //    <CardsIcon />
+  //  </NotBorderedIconButton>
+  //</Flex>
 
   return (
     <>
@@ -52,7 +52,7 @@ const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
           >
             {(draggable) => (
               <div
-              className={`${classes.widgetdraggablecontainer}`}
+                className={`${classes.widgetdraggablecontainer}`}
                 ref={draggable.innerRef}
                 {...draggable.draggableProps}
                 {...draggable.dragHandleProps}
@@ -111,12 +111,14 @@ const WidgetPreviewComponent = observer(
     return (
       <Flex
         className={`${classes.widgetpreviewcontainer}`}
-        align="center"
+        align="flex-start"
         gap={12}
       >
-        <div className={`${classes.widgetpreviewimage}`}>
-          {widget.preview && <img src={widget.preview} />}
-        </div>
+        {false && (
+          <div className={`${classes.widgetpreviewimage}`}>
+            {widget.preview && <img src={widget.preview} />}
+          </div>
+        )}
         <Flex vertical gap={9}>
           <div className={`${classes.widgetpreviewtitle}`}>
             {t(widget.title)}
@@ -176,7 +178,6 @@ const AddWidgetComponent = observer(
           <Flex
             gap={12}
             wrap={true}
-            justify="center"
             align="center"
             className={`${classes.addwidgetcontainer} full-width`}
           >

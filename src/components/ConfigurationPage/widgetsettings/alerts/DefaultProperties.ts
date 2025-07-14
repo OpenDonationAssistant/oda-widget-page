@@ -18,6 +18,7 @@ import {
   SELECTION_TYPE,
   SingleChoiceProperty,
 } from "../../widgetproperties/SingleChoiceProperty";
+import { TextProperty } from "../../widgetproperties/TextProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { WidthProperty } from "../../widgetproperties/WidthProperty";
@@ -114,9 +115,10 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new AnimatedFontProperty({
     name: "headerFont",
   }),
-  new DefaultWidgetProperty({
+  new TextProperty({
     name: "nicknameTextTemplate",
     value: "<username> - <amount>",
+    displayName: "Текст",
   }),
   new AnimatedFontProperty({
     name: "font",
@@ -152,7 +154,8 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     displayName: "Задержка озвучки заголовка",
     addon: "ms",
   }),
-  new DefaultWidgetProperty({
+  new TextProperty({
+    displayName: "Фразы для озвучивания заголовка с сообщением",
     name: "voiceTextTemplate",
     value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username> с фразой
@@ -194,7 +197,8 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     name: "enableVoiceWhenMessageIsEmpty",
     value: true,
   }),
-  new DefaultWidgetProperty({
+  new TextProperty({
+    displayName: "Фразы для озвучивания заголовка если нет сообщения",
     name: "voiceEmptyTextTemplates",
     value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username>
@@ -232,7 +236,8 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
   }),
-  new DefaultWidgetProperty({
+  new TextProperty({
+    displayName: "Текст",
     name: "messageTemplate",
     value: "<message>",
   }),

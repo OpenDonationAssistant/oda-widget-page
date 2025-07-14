@@ -24,27 +24,36 @@ export class VoiceController {
   // TODO: использовать axios
   private loadAudio(url: string): Promise<ArrayBuffer> {
     log.debug(`load ${url}`);
-    return fetch(
-      url,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
       },
-    )
-      .then((response) => response.arrayBuffer());
+    }).then((response) => response.arrayBuffer());
   }
 
   playAudio(alert: any): Promise<void | AudioBuffer> {
     const volume = alert.property("audio-volume") ?? 100;
-    return sleep(alert.property("audioDelay"))
-    .then(() => {
-      log.debug({buffer: alert.buffer}, "audio file buffer");
+    return sleep(alert.property("audioDelay")).then(() => {
+      log.debug({ buffer: alert.buffer }, "audio file buffer");
       if (alert.buffer) {
         return this.pronounce(structuredClone(alert.buffer), volume);
       }
     });
+  }
+
+  playSource(src: string): Promise<void | AudioBuffer> {
+    const volume = 100;
+    return fetch(src, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
+    })
+      .then((response) => response.arrayBuffer())
+      .then((buffer) => {
+        this.pronounce(structuredClone(buffer), volume);
+      });
   }
 
   pronounceTitle(alert: Alert, data: any): Promise<void | AudioBuffer> {
@@ -88,8 +97,8 @@ export class VoiceController {
       if (resultText.length > 0) {
         return sleep(alert.property("headerVoiceDelay") as number)
           .then(() => {
-            if (data.nickname === "Тестовый алерт"){
-              return this.loadAudio("https://api.oda.digital/public/title.mp3")
+            if (data.nickname === "Тестовый алерт") {
+              return this.loadAudio("https://api.oda.digital/public/title.mp3");
             }
             return this.voiceByGoogle(resultText);
           })
@@ -113,8 +122,8 @@ export class VoiceController {
 
     return sleep(alert.property("messageVoiceDelay") as number)
       .then(() => {
-        if (data.message === "Тестовое сообщение"){
-          return this.loadAudio("https://api.oda.digital/public/message.mp3")
+        if (data.message === "Тестовое сообщение") {
+          return this.loadAudio("https://api.oda.digital/public/message.mp3");
         }
         return this.voiceByGoogle(data.message);
       })

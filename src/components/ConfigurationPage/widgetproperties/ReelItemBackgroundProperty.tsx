@@ -1,8 +1,55 @@
-import { ChangeEvent, ReactNode } from "react";
+import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import axios from "axios";
 import classes from "./ReelItemBackgroundProperty.module.css";
 import { uuidv7 } from "uuidv7";
+import { observer } from "mobx-react-lite";
+
+const ReelBackgroundComponent = observer(
+  ({ property }: { property: ReelItemBackgroundProperty }) => {
+    const [image, setImage] = useState<string>("");
+
+    const fullUri = (): Promise<string> => {
+      if (!property.value) {
+        return Promise.resolve("");
+      }
+      let url = property.value;
+      if (!property.value.startsWith("http")) {
+        url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${property.value}`;
+      }
+      // TODO: вынести в общий модуль
+      return fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+        .then((res) => res.blob())
+        .then((blob) => URL.createObjectURL(blob));
+    };
+
+    useEffect(() => {
+      fullUri().then(setImage);
+    }, [property.value]);
+
+    return (
+      <>
+        <div className={`${classes.itembackcontainer}`}>
+          <div className={`${classes.itembacklabel}`}>Фон карточек</div>
+          <label className={`upload-button ${classes.itembackuploadbutton}`}>
+            <input
+              type="file"
+              onChange={(e) => property.handleBackgroundImageChange(e)}
+            />
+            Загрузить изображение
+          </label>
+        </div>
+        {property.value && (
+          <img className={`${classes.backgroundimage}`} src={image} />
+        )}
+      </>
+    );
+  },
+);
 
 export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
   string | null
@@ -15,7 +62,7 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
     });
   }
 
-  public copy(){
+  public copy() {
     const copy = new ReelItemBackgroundProperty();
     copy.value = this._value;
     return copy;
@@ -44,25 +91,6 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
   }
 
   markup(): ReactNode {
-    return (
-      <>
-        <div className={`${classes.itembackcontainer}`}>
-          <div className={`${classes.itembacklabel}`}>Фон карточек</div>
-          <label className={`upload-button ${classes.itembackuploadbutton}`}>
-            <input
-              type="file"
-              onChange={(e) => this.handleBackgroundImageChange(e)}
-            />
-            Загрузить изображение
-          </label>
-        </div>
-        {this.value && (
-          <img
-            className={`${classes.backgroundimage}`}
-            src={`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value}`}
-          />
-        )}
-      </>
-    );
+    return <ReelBackgroundComponent property={this} />;
   }
 }

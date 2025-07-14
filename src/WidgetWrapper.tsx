@@ -32,8 +32,6 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
 
-  console.log("enabled " + settings.enabled);
-
   useEffect(() => {
     if (!settings.enabled) {
       return;

@@ -1,0 +1,22 @@
+.footer {
+  margin-top: 36px;
+  color: white;
+}
+
+.cards {
+  margin-top: 36px;
+}
+
+.card {
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
+  padding: 12px 15px 15px 15px;
+  &:hover {
+    cursor: pointer;
+    background-color: var(--oda-color-250);
+  }
+}
+
+.subtitle {
+  font-size: 27px;
+}

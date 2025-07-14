@@ -1,11 +1,12 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Col, Flex, Row, Segmented } from "antd";
+import { Flex, Segmented } from "antd";
 import { produce } from "immer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 
 export interface PaddingPropertyValue {
   isSame: boolean | null;
@@ -26,7 +27,7 @@ export const DEFAULT_PADDING_PROPERTY_VALUE: PaddingPropertyValue = {
 const PaddingPropertyComponent = observer(
   ({ property }: { property: PaddingProperty }) => {
     return (
-      <Flex vertical={true} gap={10}>
+      <Flex vertical={true} gap={12}>
         <LabeledContainer displayName={property.displayName}>
           <Segmented
             block
@@ -38,11 +39,11 @@ const PaddingPropertyComponent = observer(
               },
               {
                 value: true,
-                label: "Общая",
+                label: "Общий",
               },
               {
                 value: false,
-                label: "Стороны",
+                label: "По сторонам",
               },
             ]}
             value={property.value.isSame}
@@ -58,108 +59,105 @@ const PaddingPropertyComponent = observer(
           />
         </LabeledContainer>
         {property.value.isSame === true && (
-          <Row align="middle">
-            <Col span={2} offset={8}>
-              Отступ:
-            </Col>
-            <Col span={6}>
-              <InputNumber
-                value={property.value.top}
-                addon="px"
-                onChange={(value) => {
-                  if (value === null || value === undefined) {
-                    return;
-                  }
-                  const updated = produce(
-                    property.value,
-                    (draft: PaddingPropertyValue) => {
-                      draft.top = value;
-                      draft.right = value;
-                      draft.left = value;
-                      draft.bottom = value;
-                    },
-                  );
-                  property.value = updated;
-                }}
-              />
-            </Col>
-          </Row>
+          <InputNumber
+            value={property.value.top}
+            addon="px"
+            onChange={(value) => {
+              if (value === null || value === undefined) {
+                return;
+              }
+              const updated = produce(
+                property.value,
+                (draft: PaddingPropertyValue) => {
+                  draft.top = value;
+                  draft.right = value;
+                  draft.left = value;
+                  draft.bottom = value;
+                },
+              );
+              property.value = updated;
+            }}
+          />
         )}
         {property.value.isSame === false && (
-          <div style={{ paddingLeft: "40px", paddingRight: "40px" }}>
-            <LabeledContainer displayName="paddingproperty-label-top">
-              <InputNumber
-                value={property.value.top}
-                addon="px"
-                onChange={(value) => {
-                  if (value === null || value === undefined) {
-                    return;
-                  }
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: PaddingPropertyValue) => {
-                      draft.top = value;
-                    },
-                  );
-                  property.value = updated;
-                }}
-              />
-            </LabeledContainer>
-            <LabeledContainer displayName="paddingproperty-label-right">
-              <InputNumber
-                value={property.value.right}
-                addon="px"
-                onChange={(value) => {
-                  if (value === null || value === undefined) {
-                    return;
-                  }
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: PaddingPropertyValue) => {
-                      draft.right = value;
-                    },
-                  );
-                  property.value = updated;
-                }}
-              />
-            </LabeledContainer>
-            <LabeledContainer displayName="paddingproperty-label-bottom">
-              <InputNumber
-                value={property.value.bottom}
-                addon="px"
-                onChange={(value) => {
-                  if (value === null || value === undefined) {
-                    return;
-                  }
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: PaddingPropertyValue) => {
-                      draft.bottom = value;
-                    },
-                  );
-                  property.value = updated;
-                }}
-              />
-            </LabeledContainer>
-            <LabeledContainer displayName="paddingproperty-label-left">
-              <InputNumber
-                value={property.value.left}
-                addon="px"
-                onChange={(value) => {
-                  if (value === null || value === undefined) {
-                    return;
-                  }
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: PaddingPropertyValue) => {
-                      draft.left = value;
-                    },
-                  );
-                  property.value = updated;
-                }}
-              />
-            </LabeledContainer>
-          </div>
+          <Flex vertical className="full-width">
+            <Flex gap={9} className="full-width">
+              <SmallLabeledContainer displayName="paddingproperty-label-top">
+                <InputNumber
+                  value={property.value.top}
+                  addon="px"
+                  onChange={(value) => {
+                    if (value === null || value === undefined) {
+                      return;
+                    }
+                    const updated = produce(
+                      toJS(property.value),
+                      (draft: PaddingPropertyValue) => {
+                        draft.top = value;
+                      },
+                    );
+                    property.value = updated;
+                  }}
+                />
+              </SmallLabeledContainer>
+              <SmallLabeledContainer displayName="paddingproperty-label-right">
+                <InputNumber
+                  value={property.value.right}
+                  addon="px"
+                  onChange={(value) => {
+                    if (value === null || value === undefined) {
+                      return;
+                    }
+                    const updated = produce(
+                      toJS(property.value),
+                      (draft: PaddingPropertyValue) => {
+                        draft.right = value;
+                      },
+                    );
+                    property.value = updated;
+                  }}
+                />
+              </SmallLabeledContainer>
+            </Flex>
+            <Flex gap={9} className="full-width">
+              <SmallLabeledContainer displayName="paddingproperty-label-bottom">
+                <InputNumber
+                  value={property.value.bottom}
+                  addon="px"
+                  onChange={(value) => {
+                    if (value === null || value === undefined) {
+                      return;
+                    }
+                    const updated = produce(
+                      toJS(property.value),
+                      (draft: PaddingPropertyValue) => {
+                        draft.bottom = value;
+                      },
+                    );
+                    property.value = updated;
+                  }}
+                />
+              </SmallLabeledContainer>
+              <SmallLabeledContainer displayName="paddingproperty-label-left">
+                <InputNumber
+                  value={property.value.left}
+                  addon="px"
+                  onChange={(value) => {
+                    if (value === null || value === undefined) {
+                      return;
+                    }
+                    const updated = produce(
+                      toJS(property.value),
+                      (draft: PaddingPropertyValue) => {
+                        draft.left = value;
+                      },
+                    );
+                    property.value = updated;
+                  }}
+                />
+              </SmallLabeledContainer>
+            </Flex>
+          </Flex>
         )}
       </Flex>
     );

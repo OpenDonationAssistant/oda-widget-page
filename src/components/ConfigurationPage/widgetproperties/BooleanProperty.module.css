@@ -3,6 +3,17 @@
   margin-top: 10px;
   height: 36px;
 }
+
+.checkbox {
+  flex-grow: 1;
+}
+
+.label {
+  color: var(--oda-color-1000);
+  font-size: 18px;
+  line-height: 0;
+}
+
 .checkboxwrapper input[type="checkbox"] {
   background-image:
     -webkit-linear-gradient(hsla(0, 0%, 0%, 0.1), hsla(0, 0%, 100%, 0.1)),

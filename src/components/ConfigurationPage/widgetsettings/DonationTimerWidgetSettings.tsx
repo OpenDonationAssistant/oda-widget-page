@@ -124,16 +124,6 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         }),
       ],
     });
-
-    this.addSection({
-      key: "effects",
-      title: "Эффекты",
-      properties: [
-        new BlurProperty({
-          name: "blur",
-        }),
-      ],
-    });
   }
 
   public get boxShadowProperty(): BoxShadowProperty {

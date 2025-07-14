@@ -19,8 +19,8 @@ import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetp
 import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
-import { VolumeProperty } from "../../components/ConfigurationPage/widgetproperties/VolumeProperty";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
+import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
@@ -30,6 +30,8 @@ export class AlertController {
   private ackFunction: Function | null = null;
   private sortedAlerts: Alert[] = [];
   private wait = 0;
+  private _pauseRequests = true;
+  private _premoderation = false;
 
   private voiceController: VoiceController | null = null;
   private _recipientId: string;
@@ -52,6 +54,7 @@ export class AlertController {
           let json = JSON.parse(message.body);
           const alert = this.findAlert(json);
           if (alert) {
+            // TODO: обрабатывать несколько в премодерации
             this.renderAlert(alert, json, () => message.ack());
           }
           log.info("Alert is handled");
@@ -60,12 +63,18 @@ export class AlertController {
   }
 
   protected pausePlayer() {
+    if (this._pauseRequests === false) {
+      return;
+    }
     publish(this.conf.topic.playerCommands, {
       command: "pause",
     });
   }
 
   protected resumePlayer() {
+    if (this._pauseRequests === false) {
+      return;
+    }
     publish(this.conf.topic.playerCommands, {
       command: "resume",
     });
@@ -122,6 +131,12 @@ export class AlertController {
       return;
     }
     log.debug({ alerts: alerts }, "alerts properties");
+    this._premoderation = (
+      this.settings.get("premoderation") as PremoderationProperty
+    ).value.enabled;
+    this._pauseRequests = (
+      this.settings.get("pause-media") as BooleanProperty
+    ).value;
     const sorted = alerts.value
       .filter((alert) => alert.property("enabled"))
       .sort((a, b) => {
@@ -239,12 +254,7 @@ export class AlertController {
   }
 
   protected renderAlert(alert: Alert, data: any, ackFunction: Function) {
-    if (data.media?.url) {
-      this.wait = 10000;
-    }
     // TODO: send after checking for showing?
-    this.sendStartNotification(data.id);
-    this.pausePlayer();
     if (this.showing == true) {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
       log.debug("another alert in play");
@@ -266,6 +276,24 @@ export class AlertController {
     }
     this.showing = true;
     this.ackFunction = ackFunction;
+    this.sendStartNotification(data.id);
+    this.pausePlayer();
+    if (data.media?.url) {
+      this.wait = 10000;
+    }
+
+    log.debug({ data: data }, "alerting data");
+    if (this._premoderation === true && data.force !== true) {
+      return this.voiceController
+        ?.playSource(
+          //`${process.env.REACT_APP_FILE_API_ENDPOINT}/assets/premoderation-sound.wav`,
+          "https://cdn.oda.digital/assets/premoderation-sound.wav",
+        )
+        .then(() => {
+          log.debug("clearing alert");
+          this.interrupt();
+        });
+    }
 
     log.debug({ alert: alert }, "render image for alert");
     this.state.layout = alert.property("layout");

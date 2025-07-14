@@ -45,7 +45,7 @@ export class FontStore {
     if (this._fonts) {
       log.debug("Searching in cached fonts");
       const found = this._fonts.find((font) => font.name === name);
-      font = found ? Promise.resolve(found) : Promise.reject();
+      font = found ? Promise.resolve(found) : null;
     } else {
       log.debug("Refreshing fonts");
       font = this.refreshFonts().then(() => {
@@ -57,7 +57,7 @@ export class FontStore {
       });
     }
     log.debug({ name: name, font: font }, "Loading font");
-    return font.then((it) => {
+    return font?.then((it) => {
       if (it.type === "google") {
         return `@font-face {
                 font-family: '${it.name}';
@@ -151,7 +151,7 @@ export class FontStore {
             );
         }
       }
-    });
+    }) || Promise.resolve("");
   }
 }
 

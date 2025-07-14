@@ -5,6 +5,8 @@ import { log } from "../../../../logging";
 import { ReactNode } from "react";
 import classes from "../AbstractWidgetSettings.module.css";
 import TestAlertPopup from "../../../TestAlertPopup/TestAlertPopup";
+import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
+import { PremoderationProperty } from "./PremoderationProperty";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   private _alerts: PaymentAlertsProperty;
@@ -16,7 +18,15 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
         {
           key: "alerts",
           title: "tab-alert-alerts",
-          properties: [defaultAlert],
+          properties: [
+            new PremoderationProperty({}),
+            new BooleanProperty({
+              name: "pause-media",
+              value: true,
+              displayName: "Паузить медиаплеер",
+            }),
+            defaultAlert,
+          ],
         },
       ],
     });
@@ -59,15 +69,22 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   }
 
   public subactions(): ReactNode {
-    return <TestAlertPopup/>;
+    return <TestAlertPopup />;
   }
 
   public prepareConfig(): { name: string; value: any }[] {
     if (this._alerts === undefined) {
-      log.debug({ settings: this._alerts }, "nullable alerts ");
       return [];
     }
     return [
+      {
+        name: "premoderation",
+        value: toJS(this.get("premoderation")?.value),
+      },
+      {
+        name: "pause-media",
+        value: this.get("pause-media")?.value,
+      },
       {
         name: this._alerts.name,
         value: this._alerts.config(),
@@ -84,12 +101,19 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       if (section.key === "alerts") {
         section.properties = section.properties.map((prop) => {
           if (prop.name === key) {
-            const updated = PaymentAlertsProperty.fromConfig(value);
-            this._alerts = updated;
-            log.debug({ updated: toJS(updated) }, "updated payment alerts");
-            if (asInitialValue) {
-              updated.markSaved();
+            if ("alerts" === key) {
+              const updated = PaymentAlertsProperty.fromConfig(value);
+              this._alerts = updated;
+              log.debug({ updated: toJS(updated) }, "updated payment alerts");
+              if (asInitialValue) {
+                updated.markSaved();
+              }
+              return updated;
             }
+            const updated = prop.copy();
+            updated.value = value;
+            updated.markSaved();
+            log.debug({ updated: toJS(updated), value: value }, "updated payment alerts property");
             return updated;
           }
           return prop;
@@ -98,6 +122,9 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       this.makeIndex();
       return section;
     });
-    log.debug({ sections: this.sections }, "updated settings");
+    log.debug(
+      { sections: this.sections },
+      "updated payment alert widget settings",
+    );
   }
 }

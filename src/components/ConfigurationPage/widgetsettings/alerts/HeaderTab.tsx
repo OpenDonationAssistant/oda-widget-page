@@ -1,8 +1,5 @@
 import { observer } from "mobx-react-lite";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { Alert } from "./Alerts";
-import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
-import TextArea from "antd/es/input/TextArea";
 import { AnimatedFontComponent } from "../../widgetproperties/AnimatedFontComponent";
 import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
@@ -19,6 +16,7 @@ import { Flex } from "antd";
 import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { DurationProperty } from "./DurationProperty";
+import { TextProperty } from "../../widgetproperties/TextProperty";
 
 export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -42,17 +40,7 @@ export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("headerDisappearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-title-template">
-          <TextPropertyModal title="widget-alert-title-template">
-            <TextArea
-              className="full-width"
-              value={alert.property("nicknameTextTemplate")}
-              onChange={(text) =>
-                alert.update("nicknameTextTemplate", text.target.value)
-              }
-            />
-          </TextPropertyModal>
-        </LabeledContainer>
+        {(alert.get("nicknameTextTemplate") as TextProperty).markup()}
       </div>
       <div className="settings-item">
         <AnimatedFontComponent

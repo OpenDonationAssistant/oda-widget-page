@@ -1,14 +1,15 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Col, ColorPicker, Flex, Row, Segmented, Select } from "antd";
-import { Trans } from "react-i18next";
+import { ColorPicker, Flex, Segmented, Select } from "antd";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { produce } from "immer";
 import InputNumber from "../components/InputNumber";
 import { Color } from "antd/es/color-picker";
 import { log } from "../../../logging";
+import classes from "./BorderProperty.module.css";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 
 export interface Border {
   width: number;
@@ -37,6 +38,9 @@ export const DEFAULT_BORDER_PROPERTY_VALUE: BorderPropertyValue = {
   left: DEFAULT_BORDER,
   right: DEFAULT_BORDER,
 };
+//<Col span={4} offset={2}>
+//  {label && <Trans i18nKey={label} />}
+//</Col>
 
 const BorderSideComponent = ({
   type,
@@ -45,7 +49,6 @@ const BorderSideComponent = ({
   onColorChange,
   width,
   onWidthChange,
-  label,
 }: {
   type: string;
   onTypeChange: (value: string) => void;
@@ -53,61 +56,53 @@ const BorderSideComponent = ({
   onColorChange: (value: Color) => void;
   width: number;
   onWidthChange: (value: number) => void;
-  label?: string;
 }) => {
   return (
-    <Row align="middle">
-      <Col span={4} offset={2}>
-        {label && <Trans i18nKey={label} />}
-      </Col>
-      <Col span={4}>
-        <Select
-          className="full-width"
-          value={type}
-          onChange={onTypeChange}
-          options={[
-            {
-              value: "solid",
-              label: "solid",
-            },
-            {
-              value: "dotted",
-              label: "dotted",
-            },
-            {
-              value: "dashed",
-              label: "dashed",
-            },
-            {
-              value: "double",
-              label: "double",
-            },
-            {
-              value: "groove",
-              label: "groove",
-            },
-            {
-              value: "ridge",
-              label: "ridge",
-            },
-            {
-              value: "inset",
-              label: "inset",
-            },
-            {
-              value: "outset",
-              label: "outset",
-            },
-          ]}
-        />
-      </Col>
-      <Col span={5}>
+    <Flex gap={9} className="full-width">
+      <Select
+        className={`${classes.select}`}
+        value={type}
+        onChange={onTypeChange}
+        options={[
+          {
+            value: "solid",
+            label: "solid",
+          },
+          {
+            value: "dotted",
+            label: "dotted",
+          },
+          {
+            value: "dashed",
+            label: "dashed",
+          },
+          {
+            value: "double",
+            label: "double",
+          },
+          {
+            value: "groove",
+            label: "groove",
+          },
+          {
+            value: "ridge",
+            label: "ridge",
+          },
+          {
+            value: "inset",
+            label: "inset",
+          },
+          {
+            value: "outset",
+            label: "outset",
+          },
+        ]}
+      />
+      <InputNumber value={width} addon="px" onChange={onWidthChange} />
+      <Flex className={`${classes.colorpicker}`}>
         <ColorPicker showText value={color} onChange={onColorChange} />
-      </Col>
-      <Col span={6}>
-        <InputNumber value={width} addon="px" onChange={onWidthChange} />
-      </Col>
-    </Row>
+      </Flex>
+    </Flex>
   );
 };
 
@@ -144,7 +139,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
               },
               {
                 value: false,
-                label: "Стороны",
+                label: "По сторонам",
               },
             ]}
             value={this.value.isSame}
@@ -188,103 +183,108 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
           />
         )}
         {this.value.isSame === false && (
-          <Flex vertical={true} gap={5}>
-            <BorderSideComponent
-              type={this.value.top.type}
-              onTypeChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.top.type = value;
-                });
-              }}
-              color={this.value.top.color}
-              onColorChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.top.color = value.toRgbString();
-                });
-              }}
-              width={this.value.top.width}
-              onWidthChange={(value) => {
-                if (value === undefined || value === null) {
-                  return;
-                }
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.top.width = value;
-                });
-              }}
-              label="borderproperty-label-top"
-            />
-            <BorderSideComponent
-              type={this.value.right.type}
-              onTypeChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.right.type = value;
-                });
-              }}
-              color={this.value.right.color}
-              onColorChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.right.color = value.toRgbString();
-                });
-              }}
-              width={this.value.right.width}
-              onWidthChange={(value) => {
-                if (value === undefined || value === null) {
-                  return;
-                }
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.right.width = value;
-                });
-              }}
-              label="borderproperty-label-right"
-            />
-            <BorderSideComponent
-              type={this.value.bottom.type}
-              onTypeChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.bottom.type = value;
-                });
-              }}
-              color={this.value.bottom.color}
-              onColorChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.bottom.color = value.toRgbString();
-                });
-              }}
-              width={this.value.bottom.width}
-              onWidthChange={(value) => {
-                if (value === undefined || value === null) {
-                  return;
-                }
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.bottom.width = value;
-                });
-              }}
-              label="borderproperty-label-bottom"
-            />
-            <BorderSideComponent
-              type={this.value.left.type}
-              onTypeChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.left.type = value;
-                });
-              }}
-              color={this.value.left.color}
-              onColorChange={(value) => {
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.left.color = value.toRgbString();
-                });
-              }}
-              width={this.value.left.width}
-              onWidthChange={(value) => {
-                if (value === undefined || value === null) {
-                  return;
-                }
-                this.value = produce(toJS(this.value), (draft) => {
-                  draft.left.width = value;
-                });
-              }}
-              label="borderproperty-label-left"
-            />
+          <Flex vertical={true} gap={5} className="full-width">
+            <SmallLabeledContainer displayName="borderproperty-label-top">
+              <BorderSideComponent
+                type={this.value.top.type}
+                onTypeChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.top.type = value;
+                  });
+                }}
+                color={this.value.top.color}
+                onColorChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.top.color = value.toRgbString();
+                  });
+                }}
+                width={this.value.top.width}
+                onWidthChange={(value) => {
+                  if (value === undefined || value === null) {
+                    return;
+                  }
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.top.width = value;
+                  });
+                }}
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-right">
+              <BorderSideComponent
+                type={this.value.right.type}
+                onTypeChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.right.type = value;
+                  });
+                }}
+                color={this.value.right.color}
+                onColorChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.right.color = value.toRgbString();
+                  });
+                }}
+                width={this.value.right.width}
+                onWidthChange={(value) => {
+                  if (value === undefined || value === null) {
+                    return;
+                  }
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.right.width = value;
+                  });
+                }}
+                label="borderproperty-label-right"
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-bottom">
+              <BorderSideComponent
+                type={this.value.bottom.type}
+                onTypeChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.bottom.type = value;
+                  });
+                }}
+                color={this.value.bottom.color}
+                onColorChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.bottom.color = value.toRgbString();
+                  });
+                }}
+                width={this.value.bottom.width}
+                onWidthChange={(value) => {
+                  if (value === undefined || value === null) {
+                    return;
+                  }
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.bottom.width = value;
+                  });
+                }}
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-left">
+              <BorderSideComponent
+                type={this.value.left.type}
+                onTypeChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.left.type = value;
+                  });
+                }}
+                color={this.value.left.color}
+                onColorChange={(value) => {
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.left.color = value.toRgbString();
+                  });
+                }}
+                width={this.value.left.width}
+                onWidthChange={(value) => {
+                  if (value === undefined || value === null) {
+                    return;
+                  }
+                  this.value = produce(toJS(this.value), (draft) => {
+                    draft.left.width = value;
+                  });
+                }}
+              />
+            </SmallLabeledContainer>
           </Flex>
         )}
       </Flex>
@@ -321,7 +321,7 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
   copy() {
     return new BorderProperty({
       name: this.name,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       displayName: this.displayName,
       help: this.help,
     });

@@ -18,6 +18,7 @@ import { DurationProperty } from "./DurationProperty";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
 import TextArea from "antd/es/input/TextArea";
+import { TextProperty } from "../../widgetproperties/TextProperty";
 
 export const MessageTab = observer(({ alert }: { alert: Alert }) => {
   return (
@@ -26,17 +27,7 @@ export const MessageTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("showMessage") as BooleanProperty).markup()}
       </div>
       <div className="settings-item">
-        <LabeledContainer displayName="widget-alert-title-template">
-          <TextPropertyModal title="widget-alert-title-template">
-            <TextArea
-              className="full-width"
-              value={alert.property("messageTemplate")}
-              onChange={(text) =>
-                alert.update("messageTemplate", text.target.value)
-              }
-            />
-          </TextPropertyModal>
-        </LabeledContainer>
+        {(alert.get("messageTemplate") as TextProperty).markup()}
       </div>
 
       <div className="settings-item">

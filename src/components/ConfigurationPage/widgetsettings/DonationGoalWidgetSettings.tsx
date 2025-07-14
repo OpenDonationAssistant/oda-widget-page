@@ -246,15 +246,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       ],
     });
 
-    this.addSection({
-      key: "effects",
-      title: "Эффекты",
-      properties: [
-        new BlurProperty({
-          name: "blur",
-        }),
-      ],
-    });
   }
 
   public copy(): DonationGoalWidgetSettings {
