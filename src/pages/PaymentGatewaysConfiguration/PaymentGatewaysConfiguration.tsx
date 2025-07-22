@@ -171,11 +171,14 @@ const InstructionModal = observer(
       new ModalState(parentModalState),
     );
 
-    reaction(() => configuration.step, () => {
-      if (configuration.step === step) {
-        dialogState.show = true;
-      }
-    });
+    reaction(
+      () => configuration.step,
+      () => {
+        if (configuration.step === step) {
+          dialogState.show = true;
+        }
+      },
+    );
 
     return (
       <ModalStateContext.Provider value={dialogState}>

@@ -33,6 +33,7 @@ import LinkIcon from "../../icons/LinkIcon";
 import HelpIcon from "../../icons/HelpIcon";
 import CopyIcon from "../../icons/CopyIcon";
 import { EditableString } from "../RenamableLabel/EditableString";
+import { Card } from "../Cards/CardsComponent";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -298,36 +299,38 @@ export const WidgetConfiguration = observer(
           </div>
         )}
         {asCards && (
-          <div className={`${classes.widgetcard}`}>
-            <NameComponent widget={widget} />
-            <Flex gap={9}>
-              <div>{widget.subactions}</div>
-              <WidgetUrlModal
-                open={showUrlModal}
-                type={widget.type}
-                id={widget.id}
-                onClose={() => setShowUrlModal(false)}
-              />
-              <BorderedIconButton onClick={() => setShowUrlModal(true)}>
-                <LinkIcon />
-              </BorderedIconButton>
-              <BorderedIconButton
-                onClick={() => {
-                  if (widget.type !== "payment-alerts") {
-                    widget.copy();
-                  }
-                }}
-              >
-                <CopyIcon />
-              </BorderedIconButton>
-              <HelpButton widget={widget} />
-              <BorderedIconButton
-                onClick={() => (deleteDialogState.show = true)}
-              >
-                <CloseIcon color="#FF8888" />
-              </BorderedIconButton>
+          <Card onClick={() => {}}>
+            <Flex vertical className="full-width" justify="space-between">
+              <NameComponent widget={widget} />
+              <Flex gap={9}>
+                <div>{widget.subactions}</div>
+                <WidgetUrlModal
+                  open={showUrlModal}
+                  type={widget.type}
+                  id={widget.id}
+                  onClose={() => setShowUrlModal(false)}
+                />
+                <BorderedIconButton onClick={() => setShowUrlModal(true)}>
+                  <LinkIcon />
+                </BorderedIconButton>
+                <BorderedIconButton
+                  onClick={() => {
+                    if (widget.type !== "payment-alerts") {
+                      widget.copy();
+                    }
+                  }}
+                >
+                  <CopyIcon />
+                </BorderedIconButton>
+                <HelpButton widget={widget} />
+                <BorderedIconButton
+                  onClick={() => (deleteDialogState.show = true)}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              </Flex>
             </Flex>
-          </div>
+          </Card>
         )}
       </WidgetSettingsContext.Provider>
     );

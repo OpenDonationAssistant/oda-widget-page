@@ -26,49 +26,59 @@ import AddIcon from "../../icons/AddIcon";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
 import CardsIcon from "../../icons/CardsIcon";
+import { CardButton, CardList } from "../Cards/CardsComponent";
 
-const Widgets = observer(({ widgetStore }: { widgetStore: WidgetStore }) => {
-  const selection = useContext(SelectedIndexContext);
-  const [asCards, setAsCards] = useState<boolean>(false);
+const Widgets = observer(
+  ({
+    widgetStore,
+    asCards,
+  }: {
+    widgetStore: WidgetStore;
+    asCards: boolean;
+  }) => {
+    const selection = useContext(SelectedIndexContext);
 
-  //<Flex className="full-width" justify="flex-end" style={{ marginBottom: "9px" }}>
-  //  <NotBorderedIconButton onClick={() => setAsCards(false)}>
-  //    <LinesIcon />
-  //  </NotBorderedIconButton>
-  //  <NotBorderedIconButton onClick={() => setAsCards(true)}>
-  //    <CardsIcon />
-  //  </NotBorderedIconButton>
-  //</Flex>
-
-  return (
-    <>
-      <Flex vertical={!asCards} wrap gap={asCards ? 12 : 6}>
-        {widgetStore.list.map((data, index) => (
-          <Draggable
-            key={data.id}
-            draggableId={data.id}
-            isDragDisabled={selection.id === data.id}
-            index={index}
-          >
-            {(draggable) => (
-              <div
-                className={`${classes.widgetdraggablecontainer}`}
-                ref={draggable.innerRef}
-                {...draggable.draggableProps}
-                {...draggable.dragHandleProps}
+    return (
+      <>
+        {!asCards && (
+          <Flex vertical wrap gap={asCards ? 12 : 6}>
+            {widgetStore.list.map((data, index) => (
+              <Draggable
                 key={data.id}
+                draggableId={data.id}
+                isDragDisabled={selection.id === data.id}
+                index={index}
               >
-                <WidgetConfiguration widget={data} asCards={asCards} />
-              </div>
-            )}
-          </Draggable>
-        ))}
-      </Flex>
-    </>
-  );
-});
+                {(draggable) => (
+                  <div
+                    className={`${classes.widgetdraggablecontainer}`}
+                    ref={draggable.innerRef}
+                    {...draggable.draggableProps}
+                    {...draggable.dragHandleProps}
+                    key={data.id}
+                  >
+                    <WidgetConfiguration widget={data} asCards={asCards} />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+          </Flex>
+        )}
+        {asCards && (
+          <CardList>
+            {widgetStore.list.map((data, index) => (
+              <WidgetConfiguration widget={data} asCards={asCards} />
+            ))}
+            <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+          </CardList>
+        )}
+      </>
+    );
+  },
+);
 
-const WidgetList = observer(({}) => {
+const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
 
   function onDragEnd(result: any) {
@@ -91,7 +101,7 @@ const WidgetList = observer(({}) => {
         {(provided) => (
           <div id="widgetlistholder" ref={provided.innerRef}>
             <div {...provided.droppableProps}>
-              <Widgets widgetStore={widgetStore} />
+              <Widgets asCards={asCards} widgetStore={widgetStore} />
             </div>
           </div>
         )}
@@ -133,7 +143,13 @@ const WidgetPreviewComponent = observer(
 );
 
 const AddWidgetComponent = observer(
-  ({ widgetStore }: { widgetStore: WidgetStore }) => {
+  ({
+    widgetStore,
+    asCards,
+  }: {
+    widgetStore: WidgetStore;
+    asCards: boolean;
+  }) => {
     const { t } = useTranslation();
     const selection = useContext(SelectedIndexContext);
     const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
@@ -189,7 +205,7 @@ const AddWidgetComponent = observer(
             <NewWidgetSection category="internal" />
           </Flex>
         </Modal>
-        {!showAddWidgetPopup && (
+        {!showAddWidgetPopup && !asCards && (
           <button
             className={`${classes.addwidgetbutton}`}
             onClick={() => setShowAddWidgetPopup(true)}
@@ -197,6 +213,9 @@ const AddWidgetComponent = observer(
             <AddIcon color="var(--oda-primary-color)" />
             <div>{t("button-addwidget")}</div>
           </button>
+        )}
+        {!showAddWidgetPopup && asCards && (
+          <CardButton onClick={() => setShowAddWidgetPopup(true)} />
         )}
       </>
     );
@@ -207,21 +226,33 @@ export default function ConfigurationPage({}: {}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const selection = useRef(new SelectedIndexStore());
   const widgetStore = new DefaultWidgetStore();
+  const [asCards, setAsCards] = useState<boolean>(false);
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
       <SelectedIndexContext.Provider value={selection.current}>
         <Flex justify="space-between" align="center">
           <h1 className={`${classes.header}`}>Виджеты</h1>
+          <Flex
+            className="full-width"
+            justify="flex-end"
+            style={{ marginBottom: "9px" }}
+          >
+            <NotBorderedIconButton onClick={() => setAsCards(false)}>
+              <LinesIcon />
+            </NotBorderedIconButton>
+            <NotBorderedIconButton onClick={() => setAsCards(true)}>
+              <CardsIcon />
+            </NotBorderedIconButton>
+          </Flex>
         </Flex>
         {widgetStore?.list && (
           <div className="widget-list">
             <PaymentPageConfigContext.Provider
               value={new PaymentPageConfig(recipientId)}
             >
-              <WidgetList />
+              <WidgetList asCards={asCards} />
             </PaymentPageConfigContext.Provider>
-            <AddWidgetComponent widgetStore={widgetStore} />
           </div>
         )}
       </SelectedIndexContext.Provider>

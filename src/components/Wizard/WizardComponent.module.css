@@ -1,0 +1,12 @@
+.subtitle {
+  margin-bottom: 12px;
+  color: var(--oda-color-500);
+}
+
+.buttons {
+  color: var(--oda-color-500);
+  margin-top: 30px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-end;
+}

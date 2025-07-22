@@ -8,6 +8,14 @@ import { AlertImage } from "./sections/AlertImage/AlertImage";
 import { MessageTitle } from "./sections/MessageTitle/MessageTitle";
 import { MessageBody } from "./sections/MessageBody/MessageBody";
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { log } from "../../logging";
+import axios from "axios";
+import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { WidgetData } from "../../types/WidgetData";
+import { useLoaderData } from "react-router";
+import { uuidv7 } from "uuidv7";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -404,6 +412,114 @@ function PaymentAlerts({
 }: {
   alertController: AlertController;
 }) {
+  const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
+
+  useEffect(() => {
+    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+      .listTokens({})
+      .then((tokens) => {
+        tokens.data
+          .filter((token) => token.system === "DonationAlerts")
+          .forEach((token) => {
+            axios
+              .get("https://www.donationalerts.com/api/v1/user/oauth", {
+                headers: {
+                  Authorization: `Bearer ${token.token}`,
+                },
+              })
+              .then((response) => {
+                const userId = response.data.data.id;
+                const centrifugoToken =
+                  response.data.data.socket_connection_token;
+
+                const socket = new WebSocket(
+                  "wss://centrifugo.donationalerts.com/connection/websocket",
+                );
+
+                socket.addEventListener("open", (event) => {
+                  log.debug("send auth request to DA");
+                  socket.send(
+                    JSON.stringify({
+                      params: {
+                        token: centrifugoToken,
+                      },
+                      id: 1,
+                    }),
+                  );
+                });
+
+                socket.addEventListener("message", (event) => {
+                  const channel = `$alerts:donation_${userId}`;
+                  const data = JSON.parse(event.data);
+                  console.log({ data: data }, "Message from DA ");
+                  if (
+                    data.result?.channel === channel &&
+                    data.result?.data?.data
+                  ) {
+                    const payment = data.result.data.data;
+                    HistoryService(
+                      undefined,
+                      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                    ).addHistoryItem(
+                      {
+                        recipientId: recipientId,
+                        amount: {
+                          minor: 0,
+                          major: payment.amount_in_user_currency,
+                          currency: "RUB",
+                        },
+                        nickname: payment.username,
+                        message: payment.message,
+                        triggerAlert: true,
+                        triggerReel: false,
+                        goals: [],
+                        addToTop: true,
+                        addToGoal: false,
+                        id: uuidv7(),
+                        paymentId: uuidv7(),
+                        system: "DonationAlerts",
+                        externalId: payment.id,
+                      },
+                      {},
+                    );
+                  }
+                  if (data.id === 1) {
+                    log.debug("getting centrifugo token");
+                    const clientId = data.result.client;
+                    axios
+                      .post(
+                        "https://www.donationalerts.com/api/v1/centrifuge/subscribe",
+                        { channels: [channel], client: clientId },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${token.token}`,
+                          },
+                        },
+                      )
+                      .then((response) => {
+                        const channelToken = response.data.channels[0].token;
+                        log.debug(
+                          { token: channelToken },
+                          "got centrigure channel token",
+                        );
+                        socket.send(
+                          JSON.stringify({
+                            params: {
+                              channel: `$alerts:donation_${userId}`,
+                              token: channelToken,
+                            },
+                            method: 1,
+                            id: 2,
+                          }),
+                        );
+                      });
+                  }
+                });
+              });
+          });
+      });
+  }, [alertController]);
+
   return (
     <AlertStateContext.Provider value={alertController.state}>
       <FontLoader state={alertController.state} />

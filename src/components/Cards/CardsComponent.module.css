@@ -1,0 +1,58 @@
+.sectionname {
+  font-size: 19px;
+  padding-bottom: 8px;
+  color: #707080;
+  margin-top: 18px;
+}
+
+.buttoncard {
+  background-color: transparent !important;
+  color: var(--oda-secondary-text-color) !important;
+  box-shadow: none;
+  flex-grow: 1;
+  width: 30%;
+  min-width: 300px;
+  max-width: 420px;
+  min-height: 200px;
+  height: auto !important;
+  border: 1px solid #36363d;
+  border-radius: 9px;
+  &[class*="ant-btn"][class*="ant-btn-default"] {
+    border: 1px solid #36363d;
+    box-shadow: none;
+    min-height: 200px;
+    border-radius: 9px;
+  }
+}
+
+.card {
+  border-radius: 12px;
+  background-color: var(--oda-color-150);
+  flex-grow: 1;
+  width: 30%;
+  min-width: 300px;
+  max-width: 420px;
+  min-height: 200px;
+  padding: 18px 15px 15px 15px;
+  &:hover {
+    cursor: pointer;
+    background-color: var(--oda-color-200);
+  }
+}
+
+
+.cardtitle {
+  color: var(--oda-color-1000);
+  font-size: 21px;
+}
+
+.notselected {
+  border: 1px solid var(--oda-color-150);
+}
+
+.selected {
+  border: 1px solid var(--oda-primary-color);
+  & .cardtitle {
+    color: var(--oda-primary-color);
+  }
+}
