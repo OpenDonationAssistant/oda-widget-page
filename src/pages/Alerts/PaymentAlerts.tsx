@@ -422,7 +422,7 @@ function PaymentAlerts({
           .filter((token) => token.system === "DonationAlerts")
           .forEach((token) => {
             axios
-              .get("https://www.donationalerts.com/api/v1/user/oauth", {
+              .get("https://api.oda.digital/donationalerts", {
                 headers: {
                   Authorization: `Bearer ${token.token}`,
                 },
