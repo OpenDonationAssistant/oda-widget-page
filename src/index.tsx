@@ -48,6 +48,7 @@ import UtilityButton from "./components/UtilityButton/UtilityButton";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
 import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 
 async function widgetSettingsLoader({
   params,
@@ -73,6 +74,12 @@ async function widgetSettingsLoader({
   const widgetId = params.widgetId ?? "unknown";
 
   return { recipientId, settings, conf, widgetId };
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+if (code){
+  localStorage.setItem("code", code);
 }
 
 function detectPage(path: string): Page {
@@ -320,6 +327,7 @@ const router = createBrowserRouter([
     element: <Login />,
   },
 ]);
+
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
