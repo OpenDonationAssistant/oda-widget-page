@@ -92,7 +92,7 @@ export default function IntegrationsPage({}) {
           handler: () => {
             if (selection.system === "donationalerts") {
               window.open(
-                "https://www.donationalerts.com/oauth/authorize?client_id=13593&redirect_uri=https%3A%2F%2Fwidgets.oda.digital%2Fconfiguration%2Fintegrations%2Fdonationalerts&response_type=code&scope=oauth-donation-subscribe oauth-user-show",
+                "https://www.donationalerts.com/oauth/authorize?client_id=13593&redirect_uri=https%3A%2F%2Fwidgets.oda.digital%2Fconfiguration%2Fintegrations&response_type=code&scope=oauth-donation-subscribe oauth-user-show",
               );
             }
           },

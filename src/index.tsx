@@ -235,11 +235,6 @@ const router = createBrowserRouter([
         loader: widgetSettingsLoader,
       },
       {
-        path: "integrations/donationalerts",
-        element: <IntegrationsPage />,
-        loader: widgetSettingsLoader,
-      },
-      {
         path: "gateways",
         element: <PaymentGatewaysConfiguration />,
         loader: widgetSettingsLoader,
