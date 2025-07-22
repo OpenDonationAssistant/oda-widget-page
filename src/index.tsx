@@ -230,7 +230,7 @@ const router = createBrowserRouter([
         loader: widgetSettingsLoader,
       },
       {
-        path: "integrations",
+        path: "integrations/*",
         element: <IntegrationsPage />,
         loader: widgetSettingsLoader,
       },
