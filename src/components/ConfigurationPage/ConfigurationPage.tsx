@@ -237,8 +237,9 @@ export default function ConfigurationPage({}: {}) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const code = localStorage.get("code");
+    const code = localStorage.getItem("code");
     if (code) {
+      localStorage.removeItem("code");
       RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
         .getDonationAlertsToken({
           authorizationCode: code,
