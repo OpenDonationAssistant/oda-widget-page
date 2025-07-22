@@ -109,99 +109,104 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
   );
 });
 
-const NameComponent = observer(({ widget }: { widget: Widget }) => {
-  const parentModalState = useContext(ModalStateContext);
-  const [modalState] = useState<ModalState>(new ModalState(parentModalState));
-  const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
+const NameComponent = observer(
+  ({ widget, asCards }: { widget: Widget; asCards: boolean }) => {
+    const parentModalState = useContext(ModalStateContext);
+    const [modalState] = useState<ModalState>(new ModalState(parentModalState));
+    const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
 
-  return (
-    <ModalStateContext.Provider value={modalState}>
-      <Flex
-        align="center"
-        className="widget-header-toogler"
-        onClick={(e) => {
-          console.log(e.target);
-          if (
-            e.target === e.currentTarget ||
-            (e.target as Element).className === "widget-title" ||
-            e.target instanceof SVGElement
-          ) {
-            modalState.show = true;
-          }
-        }}
-        gap={12}
-      >
-        {widget.icon}
-        <div className="widget-title">{widget.name}</div>
-        <Switch value={widget.enabled} onChange={() => widget.toggle()} />
-      </Flex>
-      <Overlay>
-        <Panel>
-          <Title>
-            <Flex justify="space-between" gap={51}>
-              <Flex justify="flex-start" align="baseline" gap={18}>
-                <EditableString
-                  label={widget.name}
-                  onChange={(value) => widget.rename(value)}
-                  className={`${classes.widgetname}`}
-                />
-                <Switch
-                  value={widget.enabled}
-                  onChange={() => widget.toggle()}
-                />
+    return (
+      <ModalStateContext.Provider value={modalState}>
+        <Flex
+          align="baseline"
+          className="widget-header-toogler"
+          onClick={(e) => {
+            console.log(e.target);
+            if (
+              e.target === e.currentTarget ||
+              (e.target as Element).className === "widget-title" ||
+              e.target instanceof SVGElement
+            ) {
+              modalState.show = true;
+            }
+          }}
+          justify={asCards ? "space-between" : "flex-start"}
+          gap={12}
+        >
+          <Flex align="center" gap={12}>
+            {widget.icon}
+            <div className="widget-title">{widget.name}</div>
+          </Flex>
+          <Switch value={widget.enabled} onChange={() => widget.toggle()} />
+        </Flex>
+        <Overlay>
+          <Panel>
+            <Title>
+              <Flex justify="space-between" gap={51}>
+                <Flex justify="flex-start" align="baseline" gap={18}>
+                  <EditableString
+                    label={widget.name}
+                    onChange={(value) => widget.rename(value)}
+                    className={`${classes.widgetname}`}
+                  />
+                  <Switch
+                    value={widget.enabled}
+                    onChange={() => widget.toggle()}
+                  />
+                </Flex>
+                <Flex gap={9} align="bottom">
+                  <Flex>{widget.subactions}</Flex>
+                  <WidgetUrlModal
+                    open={showUrlModal}
+                    type={widget.type}
+                    id={widget.id}
+                    onClose={() => setShowUrlModal(false)}
+                  />
+                  <BorderedIconButton onClick={() => setShowUrlModal(true)}>
+                    <LinkIcon />
+                  </BorderedIconButton>
+                  <BorderedIconButton
+                    onClick={() => {
+                      if (widget.type !== "payment-alerts") {
+                        widget.copy();
+                      }
+                    }}
+                  >
+                    <CopyIcon />
+                  </BorderedIconButton>
+                  <HelpButton widget={widget} />
+                  <NotBorderedIconButton
+                    onClick={() => {
+                      modalState.show = false;
+                    }}
+                  >
+                    <CloseIcon color="var(--oda-color-1000)" />
+                  </NotBorderedIconButton>
+                </Flex>
               </Flex>
-              <Flex gap={9} align="bottom">
-                <Flex>{widget.subactions}</Flex>
-                <WidgetUrlModal
-                  open={showUrlModal}
-                  type={widget.type}
-                  id={widget.id}
-                  onClose={() => setShowUrlModal(false)}
-                />
-                <BorderedIconButton onClick={() => setShowUrlModal(true)}>
-                  <LinkIcon />
-                </BorderedIconButton>
-                <BorderedIconButton
-                  onClick={() => {
-                    if (widget.type !== "payment-alerts") {
-                      widget.copy();
-                    }
-                  }}
+            </Title>
+            <Subtitle className={`${classes.settingssubtitle}`}>
+              Настройки виджета
+            </Subtitle>
+            {widget.config.hasDemo() && (
+              <Flex justify="space-around" className={`${classes.preview}`}>
+                <ResizableBox
+                  height={250}
+                  className={`${classes.resizable}`}
+                  axis="y"
+                  minConstraints={[650, 100]}
                 >
-                  <CopyIcon />
-                </BorderedIconButton>
-                <HelpButton widget={widget} />
-                <NotBorderedIconButton
-                  onClick={() => {
-                    modalState.show = false;
-                  }}
-                >
-                  <CloseIcon color="var(--oda-color-1000)" />
-                </NotBorderedIconButton>
+                  <div style={{ maxWidth: "100%" }}>{widget.config.demo()}</div>
+                </ResizableBox>
               </Flex>
-            </Flex>
-          </Title>
-          <Subtitle className={`${classes.settingssubtitle}`}>
-            Настройки виджета
-          </Subtitle>
-          {widget.config.hasDemo() && (
-            <Flex justify="space-around" className={`${classes.preview}`}>
-              <ResizableBox
-                height={250}
-                className={`${classes.resizable}`}
-                axis="both"
-                minConstraints={[650, 100]}
-              >
-                <div style={{ maxWidth: "100%" }}>{widget.config.demo()}</div>
-              </ResizableBox>
-            </Flex>
-          )}
-          {widget.config.markup()}
-        </Panel>
-      </Overlay>
-    </ModalStateContext.Provider>
-  );
-});
+            )}
+            {widget.config.markup()}
+          </Panel>
+        </Overlay>
+      </ModalStateContext.Provider>
+    );
+  },
+);
 
 export const WidgetConfiguration = observer(
   ({ widget, asCards }: WidgetConfigurationProps) => {
@@ -267,7 +272,7 @@ export const WidgetConfiguration = observer(
         {!asCards && (
           <div className={`widget collapsed`}>
             <div className="widget-header">
-              <NameComponent widget={widget} />
+              <NameComponent asCards={asCards} widget={widget} />
               <Flex gap={9}>
                 <div>{widget.subactions}</div>
                 <WidgetUrlModal
@@ -301,7 +306,7 @@ export const WidgetConfiguration = observer(
         {asCards && (
           <Card onClick={() => {}}>
             <Flex vertical className="full-width" justify="space-between">
-              <NameComponent widget={widget} />
+              <NameComponent asCards={asCards} widget={widget} />
               <Flex gap={9}>
                 <div>{widget.subactions}</div>
                 <WidgetUrlModal

@@ -8,24 +8,18 @@ import {
 } from "../../components/Cards/CardsComponent";
 import {
   Wizard,
-  WizardConfiguration,
-  WizardConfigurationStep,
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { makeAutoObservable } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+
 import {
-  Dialog,
-  ModalState,
-  ModalStateContext,
-  Overlay,
-  Title,
-} from "../../components/Overlay/Overlay";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
-import { Flex } from "antd";
+  DefaultApiFactory as RecipientService,
+  TokenControllerTokenDto,
+} from "@opendonationassistant/oda-recipient-service-client";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
 
 class IntegrationWizardStore {
   private _system: "donationalerts" | "donatepay" | null = null;
@@ -64,6 +58,16 @@ const ChooseDonationPlatformComponent = observer(
 
 export default function IntegrationsPage({}) {
   const selection = new IntegrationWizardStore();
+  const { recipientId } = useLoaderData() as WidgetData;
+  const [tokens, setTokens] = useState<TokenControllerTokenDto[]>([]);
+
+  useEffect(() => {
+    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+      .listTokens()
+      .then((tokens) => {
+        setTokens(tokens.data);
+      });
+  }, [recipientId]);
 
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     new WizardConfigurationStore({
@@ -90,6 +94,11 @@ export default function IntegrationsPage({}) {
       <CardSection>
         <CardSectionTitle>Донатные платформы</CardSectionTitle>
         <CardList>
+          {tokens.map((token) => (
+            <Card onClick={() => {}}>
+              <CardTitle>{token.system}</CardTitle>
+            </Card>
+          ))}
           <CardButton
             onClick={() => {
               wizardConfiguration.next();
