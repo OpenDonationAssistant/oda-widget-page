@@ -1,6 +1,7 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
@@ -27,6 +28,9 @@ import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
 import CardsIcon from "../../icons/CardsIcon";
 import { CardButton, CardList } from "../Cards/CardsComponent";
+import { useSearchParams } from "react-router-dom";
+import { Dialog, ModalState, ModalStateContext, Overlay, Title } from "../Overlay/Overlay";
+import PrimaryButton from "../PrimaryButton/PrimaryButton";
 
 const Widgets = observer(
   ({
@@ -227,9 +231,43 @@ export default function ConfigurationPage({}: {}) {
   const selection = useRef(new SelectedIndexStore());
   const widgetStore = new DefaultWidgetStore();
   const [asCards, setAsCards] = useState<boolean>(false);
+  const [params] = useSearchParams();
+  const parentModalState = useContext(ModalStateContext);
+  const [state] = useState<ModalState>(new ModalState(parentModalState));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const code = params.get("code");
+    if (code) {
+      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+        .getDonationAlertsToken({
+          authorizationCode: code,
+        })
+        .then((response) => {
+          state.show = true;
+        });
+    }
+  }, [params]);
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
+      <ModalStateContext.Provider value={state}>
+        <Overlay>
+          <Dialog>
+            <Title>Подключение успешно</Title>
+            <div style={{ height: "200px" }}></div>
+            <Flex className="full-width" justify="flex-end">
+              <PrimaryButton
+                onClick={() => {
+                  navigate(0);
+                }}
+              >
+                Ok
+              </PrimaryButton>
+            </Flex>
+          </Dialog>
+        </Overlay>
+      </ModalStateContext.Provider>
       <SelectedIndexContext.Provider value={selection.current}>
         <Flex justify="space-between" align="center">
           <h1 className={`${classes.header}`}>Виджеты</h1>

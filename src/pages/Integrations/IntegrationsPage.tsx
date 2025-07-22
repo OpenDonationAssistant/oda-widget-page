@@ -64,23 +64,6 @@ const ChooseDonationPlatformComponent = observer(
 
 export default function IntegrationsPage({}) {
   const selection = new IntegrationWizardStore();
-  const [params] = useSearchParams();
-  const parentModalState = useContext(ModalStateContext);
-  const [state] = useState<ModalState>(new ModalState(parentModalState));
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const code = params.get("code");
-    if (code) {
-      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .getDonationAlertsToken({
-          authorizationCode: code,
-        })
-        .then((response) => {
-          state.show = true;
-        });
-    }
-  }, [params]);
 
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     new WizardConfigurationStore({
@@ -115,23 +98,6 @@ export default function IntegrationsPage({}) {
         </CardList>
       </CardSection>
       <Wizard configurationStore={wizardConfiguration} />
-      <ModalStateContext.Provider value={state}>
-        <Overlay>
-          <Dialog>
-            <Title>Подключение успешно</Title>
-            <div style={{ height: "200px" }}></div>
-            <Flex className="full-width" justify="flex-end">
-              <PrimaryButton
-                onClick={() => {
-                  navigate(0);
-                }}
-              >
-                Ok
-              </PrimaryButton>
-            </Flex>
-          </Dialog>
-        </Overlay>
-      </ModalStateContext.Provider>
     </>
   );
 }
