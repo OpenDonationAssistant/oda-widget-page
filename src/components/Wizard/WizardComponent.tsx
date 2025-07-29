@@ -24,6 +24,7 @@ export interface WizardConfigurationStep {
 
 export interface WizardConfiguration {
   steps: WizardConfigurationStep[];
+  dynamicStepAmount: boolean;
 }
 
 export class WizardConfigurationStore {
@@ -49,6 +50,9 @@ export class WizardConfigurationStore {
   }
 
   public get stepAmount(): number | null {
+    if (this._configuration.dynamicStepAmount) {
+      return null;
+    }
     return this._configuration.steps.length;
   }
 
@@ -57,6 +61,14 @@ export class WizardConfigurationStore {
       this.step.handler();
     }
     this._index = this._index + 1;
+    log.debug(
+      {
+        index: this._index,
+        len: this._configuration.steps.length,
+        steps: this._configuration.steps,
+      },
+      "Step index",
+    );
     if (this._index >= this._configuration.steps.length) {
       this.reset();
     }

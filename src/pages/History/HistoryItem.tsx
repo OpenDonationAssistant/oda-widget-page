@@ -4,7 +4,6 @@ import classes from "./HistoryItem.module.css";
 import DonationGoalIcon from "../../icons/DonationGoalIcon";
 import { observer } from "mobx-react-lite";
 import SubActionButton from "../../components/SubActionButton/SubActionButton";
-import RunIcon from "../../icons/RunIcon";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
@@ -39,16 +38,16 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
       <div className={`${classes.message}`}>{item.message}</div>
       <Flex className="full-width" wrap gap={9}>
         {item.attachments?.map((attach) => (
-          <Flex key={attach.id} className={`${classes.attachment}`} gap={3}
-              onClick={() => {
-                window.open(attach.url);
-              }}
+          <Flex
+            key={attach.id}
+            className={`${classes.attachment}`}
+            gap={3}
+            onClick={() => {
+              window.open(attach.url);
+            }}
           >
             <SongIcon />
-            <div
-            >
-              {attach.title}
-            </div>
+            <div>{attach.title}</div>
           </Flex>
         ))}
       </Flex>

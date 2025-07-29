@@ -59,21 +59,6 @@ function HistoryItemList({}: {}) {
 }
 
 export default function HistoryPage({}) {
-
-function testAlert(topic: string, alert: Alert) {
-  publish(topic, {
-    id: uuidv7(), // TODO: сделать опциональным
-    alertId: alert.id,
-    nickname: "Тестовый алерт",
-    message: "Тестовое сообщение",
-    amount: {
-      major: 100,
-      minor: 0,
-      currency: "RUB",
-    },
-  });
-}
-
   return (
     <>
       <Flex

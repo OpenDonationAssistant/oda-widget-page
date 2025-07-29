@@ -4,6 +4,7 @@ import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
+import { Preset } from "../../../types/Preset";
 
 export interface SettingsSection {
   key: string;
@@ -76,6 +77,15 @@ export class AbstractWidgetSettings {
     log.debug({ preparedConfig: prepared });
     return prepared;
   }
+
+  // public makePreset(previewUrl: string | void): Preset {
+  //   var config = this._sections;
+  //   return new Preset({
+  //     name: "test",
+  //     showcase: previewUrl ?? "",
+  //     properties: [],
+  //   });
+  // }
 
   protected makeIndex() {
     this._sections

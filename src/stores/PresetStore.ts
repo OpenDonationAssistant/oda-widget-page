@@ -4,7 +4,6 @@ import { DefaultApiFactory as WidgetApiFactory } from "@opendonationassistant/od
 
 export class PresetStore {
   public async for(type: string | null | undefined): Promise<Preset[]> {
-    log.debug({ type: type }, "checking presets");
     if (!type) {
       return Promise.resolve([]);
     }
@@ -26,5 +25,8 @@ export class PresetStore {
           });
         });
       });
+  }
+
+  public save(preset: Preset){
   }
 }

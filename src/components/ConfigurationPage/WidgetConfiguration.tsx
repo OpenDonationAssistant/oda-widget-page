@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import "./css/Widget.css";
 import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
+import html2canvas from "@html2canvas/html2canvas";
 
 import { socket } from "../../socket";
 import { Flex, Modal as AntModal, notification, Switch } from "antd";
@@ -34,6 +35,8 @@ import HelpIcon from "../../icons/HelpIcon";
 import CopyIcon from "../../icons/CopyIcon";
 import { EditableString } from "../RenamableLabel/EditableString";
 import { Card } from "../Cards/CardsComponent";
+import axios from "axios";
+import SubActionButton from "../SubActionButton/SubActionButton";
 
 interface WidgetConfigurationProps {
   widget: Widget;
@@ -109,11 +112,35 @@ export const HelpButton = observer(({ widget }: { widget: Widget }) => {
   );
 });
 
+function uploadBlob(data: Blob, name: string) {
+  return axios.put(
+    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
+    { file: data },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+}
+
 const NameComponent = observer(
   ({ widget, asCards }: { widget: Widget; asCards: boolean }) => {
     const parentModalState = useContext(ModalStateContext);
     const [modalState] = useState<ModalState>(new ModalState(parentModalState));
     const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
+    const preview = useRef<HTMLElement | null>(null);
+
+    function convert(): Promise<string | void> {
+      if (!preview.current) {
+        return Promise.resolve();
+      }
+      return html2canvas(preview.current).then((canvas) =>
+        canvas.toBlob((it) => {
+          it && uploadBlob(it, "test.png");
+        }),
+      );
+    }
 
     return (
       <ModalStateContext.Provider value={modalState}>
@@ -189,15 +216,37 @@ const NameComponent = observer(
               Настройки виджета
             </Subtitle>
             {widget.config.hasDemo() && (
-              <Flex justify="space-around" className={`${classes.preview}`}>
-                <ResizableBox
-                  height={250}
-                  className={`${classes.resizable}`}
-                  axis="y"
-                  minConstraints={[650, 100]}
+              <Flex vertical gap={9}>
+                {false && (
+                  <Flex
+                    justify="flex-start"
+                    className={`${classes.previewcontainer}`}
+                  >
+                    <SubActionButton
+                      onClick={() =>
+                        convert().then((url) => widget.config.makePreset(url))
+                      }
+                    >
+                      Создать шаблон
+                    </SubActionButton>
+                  </Flex>
+                )}
+                <Flex
+                  ref={preview}
+                  justify="space-around"
+                  className={`${classes.preview}`}
                 >
-                  <div style={{ maxWidth: "100%" }}>{widget.config.demo()}</div>
-                </ResizableBox>
+                  <ResizableBox
+                    height={250}
+                    className={`${classes.resizable}`}
+                    axis="y"
+                    minConstraints={[650, 100]}
+                  >
+                    <div style={{ maxWidth: "100%" }}>
+                      {widget.config.demo()}
+                    </div>
+                  </ResizableBox>
+                </Flex>
               </Flex>
             )}
             {widget.config.markup()}

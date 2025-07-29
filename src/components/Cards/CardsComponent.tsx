@@ -21,8 +21,8 @@ export function Card({
   );
 }
 
-export function CardTitle({ children }: { children: ReactNode }) {
-  return <Flex className={`${classes.cardtitle}`}>{children}</Flex>;
+export function CardTitle({ children, cssClass }: { children: ReactNode, cssClass?:string }) {
+  return <Flex className={`${classes.cardtitle} ${cssClass ?? ""}`}>{children}</Flex>;
 }
 
 export function CardSection({ children }: { children: ReactNode }) {

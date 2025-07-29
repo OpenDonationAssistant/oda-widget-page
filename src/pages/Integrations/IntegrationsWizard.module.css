@@ -1,0 +1,8 @@
+.instruction{
+  color: var(--oda-color-1000);
+}
+
+.content{
+  margin-top: 12px;
+  width: 100%;
+}

@@ -6,6 +6,11 @@
   margin-top: 0px;
 }
 
+.previewcontainer{
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
 .widgetcard {
   min-width: 380px;
   width: 100%;

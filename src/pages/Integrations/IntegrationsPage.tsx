@@ -10,64 +10,33 @@ import {
   Wizard,
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
-import { createContext, useEffect, useState } from "react";
-import { makeAutoObservable } from "mobx";
+import { useContext, useState } from "react";
+
+import { Flex, Switch } from "antd";
+import { BorderedIconButton } from "../../components/IconButton/IconButton";
+import CloseIcon from "../../icons/CloseIcon";
+import classes from "./IntegrationsPage.module.css";
+import {
+  AddDonatePayTokenComponent,
+  ChooseDonationPlatformComponent,
+  IntegrationWizardStoreContext,
+} from "./IntegrationsWizard";
+import { DefaultTokenStore } from "../../stores/TokenStore";
+import {
+  ModalState,
+  ModalStateContext,
+  Overlay,
+  Warning,
+} from "../../components/Overlay/Overlay";
 import { observer } from "mobx-react-lite";
 
-import {
-  DefaultApiFactory as RecipientService,
-  TokenControllerTokenDto,
-} from "@opendonationassistant/oda-recipient-service-client";
-import { useLoaderData } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
-
-class IntegrationWizardStore {
-  private _system: "donationalerts" | "donatepay" | null = null;
-
-  constructor() {
-    makeAutoObservable(this);
-  }
-
-  public set system(system: "donationalerts" | "donatepay" | null) {
-    this._system = system;
-  }
-
-  public get system() {
-    return this._system;
-  }
-}
-
-const IntegrationWizardStoreContext = createContext(
-  new IntegrationWizardStore(),
-);
-
-const ChooseDonationPlatformComponent = observer(
-  ({ context }: { context: IntegrationWizardStore }) => {
-    return (
-      <CardList>
-        <Card
-          selected={context.system === "donationalerts"}
-          onClick={() => (context.system = "donationalerts")}
-        >
-          <CardTitle>DonationAlerts</CardTitle>
-        </Card>
-      </CardList>
-    );
-  },
-);
-
-export default function IntegrationsPage({}) {
-  const selection = new IntegrationWizardStore();
-  const { recipientId } = useLoaderData() as WidgetData;
-  const [tokens, setTokens] = useState<TokenControllerTokenDto[]>([]);
-
-  useEffect(() => {
-    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-      .listTokens()
-      .then((tokens) => {
-        setTokens(tokens.data);
-      });
-  }, [recipientId]);
+export const IntegrationsPage = observer(({}) => {
+  const selection = useContext(IntegrationWizardStoreContext);
+  const [tokenStore] = useState(new DefaultTokenStore());
+  const parentModalState = useContext(ModalStateContext);
+  const [deleteRuleDialogState] = useState<ModalState>(
+    new ModalState(parentModalState),
+  );
 
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     new WizardConfigurationStore({
@@ -75,7 +44,7 @@ export default function IntegrationsPage({}) {
         {
           title: "Добавить донатную платформу",
           subtitle: "Выберите донатную платформу, которую хотите добавить",
-          content: <ChooseDonationPlatformComponent context={selection} />,
+          content: <ChooseDonationPlatformComponent />,
           handler: () => {
             if (selection.system === "donationalerts") {
               window.open(
@@ -84,19 +53,67 @@ export default function IntegrationsPage({}) {
             }
           },
         },
+        {
+          title: "Добавить донатную платформу",
+          subtitle: "Введите информацию для подключения",
+          content: <AddDonatePayTokenComponent />,
+          handler: () => {
+            if (selection.system === "donatepay") {
+              tokenStore.addToken("DonatePay", selection.accessToken);
+            }
+          },
+        },
       ],
+      dynamicStepAmount: true,
     }),
   );
 
   return (
     <>
+      <ModalStateContext.Provider value={deleteRuleDialogState}>
+        <Overlay>
+          <Warning
+            action={() => {
+              deleteRuleDialogState.show = false;
+              tokenStore.deleteToken(selection.accessToken);
+            }}
+          >
+            Вы точно хотите удалить интеграцию?
+          </Warning>
+        </Overlay>
+      </ModalStateContext.Provider>
       <h1>Интеграции</h1>
       <CardSection>
         <CardSectionTitle>Донатные платформы</CardSectionTitle>
         <CardList>
-          {tokens.map((token) => (
-            <Card onClick={() => {}}>
-              <CardTitle>{token.system}</CardTitle>
+          {tokenStore.tokens.map((token) => (
+            <Card key={token.id} onClick={() => {}}>
+              <Flex
+                style={{ height: "fit-content" }}
+                justify="space-between"
+                className="full-width"
+                align="center"
+              >
+                <Flex gap={9} align="center" style={{ height: "fit-content" }}>
+                  <CardTitle cssClass={`${classes.title}`}>
+                    {token.system}
+                  </CardTitle>
+                  <Switch
+                    value={token.enabled}
+                    onChange={() =>
+                      tokenStore.toggleToken(token.id, !token.enabled)
+                    }
+                  />
+                </Flex>
+                <BorderedIconButton
+                  onClick={() => {
+                    selection.accessToken = token.id;
+                    deleteRuleDialogState.show = true;
+                  }}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              </Flex>
             </Card>
           ))}
           <CardButton
@@ -109,4 +126,4 @@ export default function IntegrationsPage({}) {
       <Wizard configurationStore={wizardConfiguration} />
     </>
   );
-}
+});

@@ -16,6 +16,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData } from "react-router";
 import { uuidv7 } from "uuidv7";
+import Centrifuge from "centrifuge";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -417,8 +418,9 @@ function PaymentAlerts({
   useEffect(() => {
     RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
       .listTokens({})
+      .then((tokens) => tokens.data.filter((token) => token.enabled))
       .then((tokens) => {
-        tokens.data
+        tokens
           .filter((token) => token.system === "DonationAlerts")
           .forEach((token) => {
             axios
@@ -515,6 +517,110 @@ function PaymentAlerts({
                       });
                   }
                 });
+              });
+          });
+        tokens
+          .filter((token) => token.system === "DonatePay")
+          .forEach((token) => {
+            axios
+              .get(
+                `https://donatepay.ru/api/v1/user?access_token=${token.token}`,
+              )
+              .then((response) => response.data.data.id)
+              .then((id) => {
+                log.debug("id: " + id);
+                axios
+                  .post("https://donatepay.ru/api/v2/socket/token", {
+                    access_token: token.token
+                  })
+                  .then((response) => response.data.token)
+                  .then((centrifugoToken) => {
+                    log.debug(
+                      { token: centrifugoToken },
+                      "Got DonatePay socket token",
+                    );
+
+                    const socket = new WebSocket(
+                      "wss://centrifugo.donatepay.ru:443/connection/websocket",
+                    );
+
+                    socket.addEventListener("open", (event) => {
+                      log.debug("send auth request to DonatePay");
+                      socket.send(
+                        JSON.stringify({
+                          params: {
+                            token: centrifugoToken,
+                          },
+                          id: 1,
+                        }),
+                      );
+                    });
+
+                    socket.addEventListener("message", (event) => {
+                      const channel = `$public:${id}`;
+                      const data = JSON.parse(event.data);
+                      console.log({ data: data }, "Message from DonatePay");
+                      if (data.id === 1) {
+                        log.debug("getting centrifugo token");
+                        const clientId = data.result.client;
+                        axios
+                          .post("https://donatepay.ru/api/v2/socket/token", {
+                            access_token: token.token,
+                            channels: [channel],
+                            client: clientId,
+                          })
+                          .then((response) => {
+                            const channelToken =
+                              response.data.channels[0].token;
+                            log.debug(
+                              { token: channelToken },
+                              "got centrigure channel token",
+                            );
+                            socket.send(
+                              JSON.stringify({
+                                params: {
+                                  channel: channel,
+                                  token: channelToken,
+                                },
+                                method: 1,
+                                id: 2,
+                              }),
+                            );
+                          });
+                      }
+                        if (
+                          data.result?.channel === channel &&
+                          data.result?.data?.data?.notification
+                        ) {
+                          const payment = data.result.data.data.notification;
+                          HistoryService(
+                            undefined,
+                            process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                          ).addHistoryItem(
+                            {
+                              recipientId: recipientId,
+                              amount: {
+                                minor: 0,
+                                major: payment.vars.sum,
+                                currency: payment.vars.currency
+                              },
+                              nickname: payment.vars.name,
+                              message: payment.vars.comment,
+                              triggerAlert: true,
+                              triggerReel: false,
+                              goals: [],
+                              addToTop: true,
+                              addToGoal: false,
+                              id: uuidv7(),
+                              paymentId: uuidv7(),
+                              system: "DonatePay",
+                              externalId: payment.id,
+                            },
+                            {},
+                          );
+                        }
+                    });
+                  });
               });
           });
       });

@@ -230,7 +230,13 @@ export default function ConfigurationPage({}: {}) {
   const { recipientId } = useLoaderData() as WidgetData;
   const selection = useRef(new SelectedIndexStore());
   const widgetStore = new DefaultWidgetStore();
-  const [asCards, setAsCards] = useState<boolean>(false);
+  const [asCards, setAsCards] = useState<boolean>(() => {
+    const value = localStorage.getItem("asCards");
+    if (value === null || value === undefined){
+      return false;
+    }
+    return JSON.parse(value);
+  });
   const [params] = useSearchParams();
   const parentModalState = useContext(ModalStateContext);
   const [state] = useState<ModalState>(new ModalState(parentModalState));
@@ -277,10 +283,16 @@ export default function ConfigurationPage({}: {}) {
             justify="flex-end"
             style={{ marginBottom: "9px" }}
           >
-            <NotBorderedIconButton onClick={() => setAsCards(false)}>
+            <NotBorderedIconButton onClick={() => {
+              setAsCards(false);
+              localStorage.setItem("asCards", JSON.stringify(false));
+            }}>
               <LinesIcon />
             </NotBorderedIconButton>
-            <NotBorderedIconButton onClick={() => setAsCards(true)}>
+            <NotBorderedIconButton onClick={() => {
+              setAsCards(true);
+              localStorage.setItem("asCards", JSON.stringify(true));
+            }}>
               <CardsIcon />
             </NotBorderedIconButton>
           </Flex>
