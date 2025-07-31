@@ -14,9 +14,8 @@ import axios from "axios";
 import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetData } from "../../types/WidgetData";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { uuidv7 } from "uuidv7";
-import Centrifuge from "centrifuge";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -414,6 +413,7 @@ function PaymentAlerts({
   alertController: AlertController;
 }) {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
+  const navigate = useNavigate();
 
   useEffect(() => {
     RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
@@ -437,6 +437,10 @@ function PaymentAlerts({
                 const socket = new WebSocket(
                   "wss://centrifugo.donationalerts.com/connection/websocket",
                 );
+
+                socket.addEventListener("error", (event) => {
+                  navigate(0);
+                });
 
                 socket.addEventListener("open", (event) => {
                   log.debug("send auth request to DA");
@@ -531,7 +535,7 @@ function PaymentAlerts({
                 log.debug("id: " + id);
                 axios
                   .post("https://donatepay.ru/api/v2/socket/token", {
-                    access_token: token.token
+                    access_token: token.token,
                   })
                   .then((response) => response.data.token)
                   .then((centrifugoToken) => {
@@ -543,6 +547,10 @@ function PaymentAlerts({
                     const socket = new WebSocket(
                       "wss://centrifugo.donatepay.ru:443/connection/websocket",
                     );
+
+                    socket.addEventListener("error", (event) => {
+                      navigate(0);
+                    });
 
                     socket.addEventListener("open", (event) => {
                       log.debug("send auth request to DonatePay");
@@ -588,37 +596,37 @@ function PaymentAlerts({
                             );
                           });
                       }
-                        if (
-                          data.result?.channel === channel &&
-                          data.result?.data?.data?.notification
-                        ) {
-                          const payment = data.result.data.data.notification;
-                          HistoryService(
-                            undefined,
-                            process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                          ).addHistoryItem(
-                            {
-                              recipientId: recipientId,
-                              amount: {
-                                minor: 0,
-                                major: payment.vars.sum,
-                                currency: payment.vars.currency
-                              },
-                              nickname: payment.vars.name,
-                              message: payment.vars.comment,
-                              triggerAlert: true,
-                              triggerReel: false,
-                              goals: [],
-                              addToTop: true,
-                              addToGoal: false,
-                              id: uuidv7(),
-                              paymentId: uuidv7(),
-                              system: "DonatePay",
-                              externalId: payment.id,
+                      if (
+                        data.result?.channel === channel &&
+                        data.result?.data?.data?.notification
+                      ) {
+                        const payment = data.result.data.data.notification;
+                        HistoryService(
+                          undefined,
+                          process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                        ).addHistoryItem(
+                          {
+                            recipientId: recipientId,
+                            amount: {
+                              minor: 0,
+                              major: payment.vars.sum,
+                              currency: payment.vars.currency,
                             },
-                            {},
-                          );
-                        }
+                            nickname: payment.vars.name,
+                            message: payment.vars.comment,
+                            triggerAlert: true,
+                            triggerReel: false,
+                            goals: [],
+                            addToTop: true,
+                            addToGoal: false,
+                            id: uuidv7(),
+                            paymentId: uuidv7(),
+                            system: "DonatePay",
+                            externalId: payment.id,
+                          },
+                          {},
+                        );
+                      }
                     });
                   });
               });
