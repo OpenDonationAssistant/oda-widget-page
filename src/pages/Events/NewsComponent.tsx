@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
 import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
@@ -87,8 +86,12 @@ export default function NewsComponent({}: {}) {
             vertical={false}
             justify="space-around"
           >
-            <button onClick={() => sendFeedback(10)} ><VoteUp/></button>
-            <button onClick={() => sendFeedback(0)} ><VoteDown/></button>
+            <button onClick={() => sendFeedback(10)}>
+              <VoteUp />
+            </button>
+            <button onClick={() => sendFeedback(0)}>
+              <VoteDown />
+            </button>
           </Flex>
         </Flex>
       )}

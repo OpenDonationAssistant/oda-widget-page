@@ -1,0 +1,22 @@
+.container {
+  color: var(--oda-color-500);
+  background-color:  var(--oda-color-100);
+  border: 1px solid var(--oda-color-100);
+  border-radius: 9px;
+  padding: 12px 15px;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.lightcontainer {
+  border: none;
+  color: var(--oda-color-500);
+  padding: 12px 15px;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.selected {
+  color: var(--oda-primary-color);
+  border-color: var(--oda-primary-color);
+}

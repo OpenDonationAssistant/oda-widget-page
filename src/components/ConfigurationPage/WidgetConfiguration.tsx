@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
 import "./css/Widget.css";
-import "./css/WidgetList.css";
 import "./css/WidgetButton.css";
 import "./css/WidgetSettings.css";
 import html2canvas from "@html2canvas/html2canvas";
@@ -127,7 +126,7 @@ function uploadBlob(data: Blob, name: string) {
 const NameComponent = observer(
   ({ widget, asCards }: { widget: Widget; asCards: boolean }) => {
     const parentModalState = useContext(ModalStateContext);
-    const [modalState] = useState<ModalState>(new ModalState(parentModalState));
+    const [modalState] = useState<ModalState>(() => new ModalState(parentModalState));
     const [showUrlModal, setShowUrlModal] = useState<boolean>(false);
     const preview = useRef<HTMLElement | null>(null);
 

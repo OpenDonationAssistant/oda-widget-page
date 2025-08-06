@@ -1,6 +1,5 @@
 import { DefaultApiFactory } from "@opendonationassistant/oda-recipient-service-client";
 import { makeAutoObservable } from "mobx";
-import { createContext } from "react";
 import { log } from "../logging";
 import { uuidv7 } from "uuidv7";
 

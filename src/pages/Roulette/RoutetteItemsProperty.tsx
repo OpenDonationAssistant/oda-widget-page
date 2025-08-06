@@ -16,7 +16,7 @@ import {
 
 const ItemModal = observer(() => {
   const parentModalState = useContext(ModalStateContext);
-  const [modalState] = useState<ModalState>(new ModalState(parentModalState));
+  const [modalState] = useState<ModalState>(() => new ModalState(parentModalState));
 
   return (
     <>

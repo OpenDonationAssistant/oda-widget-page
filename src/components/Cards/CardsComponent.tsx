@@ -21,8 +21,16 @@ export function Card({
   );
 }
 
-export function CardTitle({ children, cssClass }: { children: ReactNode, cssClass?:string }) {
-  return <Flex className={`${classes.cardtitle} ${cssClass ?? ""}`}>{children}</Flex>;
+export function CardTitle({
+  children,
+  cssClass,
+}: {
+  children: ReactNode;
+  cssClass?: string;
+}) {
+  return (
+    <Flex className={`${classes.cardtitle} ${cssClass ?? ""}`}>{children}</Flex>
+  );
 }
 
 export function CardSection({ children }: { children: ReactNode }) {
@@ -38,11 +46,7 @@ export function CardSectionTitle({ children }: { children: ReactNode }) {
 }
 
 export function CardList({ children }: { children: ReactNode }) {
-  return (
-    <Flex gap={12} wrap className="full-width">
-      {children}
-    </Flex>
-  );
+  return <div className={`${classes.cardlist}`}>{children}</div>;
 }
 
 export function CardButton({

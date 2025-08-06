@@ -19,7 +19,7 @@ export interface WizardConfigurationStep {
   title: ReactNode;
   subtitle: string;
   content: ReactNode;
-  handler?: () => void;
+  handler?: () => boolean;
 }
 
 export interface WizardConfiguration {
@@ -57,18 +57,22 @@ export class WizardConfigurationStore {
   }
 
   public next() {
-    if (this.index > -1 && this.step.handler) {
-      this.step.handler();
-    }
-    this._index = this._index + 1;
     log.debug(
       {
         index: this._index,
         len: this._configuration.steps.length,
         steps: this._configuration.steps,
       },
-      "Step index",
+      "Calling next step",
     );
+    if (this.index > -1 && this.step.handler) {
+      const result = this.step.handler();
+      if (!result) {
+        this._index = -1;
+        return;
+      }
+    }
+    this._index = this._index + 1;
     if (this._index >= this._configuration.steps.length) {
       this.reset();
     }
@@ -87,7 +91,11 @@ const Wizard = observer(
   }) => {
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
-      new ModalState(parentModalState),
+      () =>
+        new ModalState(parentModalState, () => {
+          configurationStore.reset();
+          log.debug({ index: configurationStore.index }, "closed wizard");
+        }),
     );
 
     useEffect(() => {
@@ -96,7 +104,7 @@ const Wizard = observer(
         () => {
           dialogState.show = configurationStore.index > -1;
           log.debug(
-            { state: dialogState.show, index: configurationStore.index },
+            { show: dialogState.show, index: configurationStore.index },
             "reaction to wizard index",
           );
         },

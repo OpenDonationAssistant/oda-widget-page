@@ -1,5 +1,4 @@
-import { Flex, List } from "antd";
-import { HistoryItemData } from "@opendonationassistant/oda-history-service-client";
+import { Flex } from "antd";
 import classes from "./HistoryItem.module.css";
 import DonationGoalIcon from "../../icons/DonationGoalIcon";
 import { observer } from "mobx-react-lite";
@@ -7,30 +6,26 @@ import SubActionButton from "../../components/SubActionButton/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
-import { uuidv7 } from "uuidv7";
 import SongIcon from "../../icons/SongIcon";
+import { HistoryItem } from "./HistoryStore";
+import ReelIcon from "../../icons/ReelIcon";
 
-const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
-  year: "numeric",
-  month: "numeric",
-  day: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-});
+function interruptAlert(conf: any) {
+  publish(conf.topic.alertWidgetCommans, {
+    command: "interrupt",
+  });
+}
 
-function repeatAlert(topic: string, data: HistoryItemData) {
+function repeatAlert(topic: string, data: HistoryItem) {
   publish(topic, {
-    id: uuidv7(), // TODO: сделать опциональным
+    id: data.originId,
     nickname: data.nickname,
     message: data.message,
     amount: data.amount,
   });
 }
 
-const Description = observer(({ item }: { item: HistoryItemData }) => {
-  //<IconButton onClick={() => {}}>
-  //  <CloseIcon color="#FF8888" />
-  //</IconButton>
+const Description = observer(({ item }: { item: HistoryItem }) => {
   const { conf } = useLoaderData() as WidgetData;
 
   return (
@@ -51,19 +46,31 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
           </Flex>
         ))}
       </Flex>
-      <Flex align="center" justify="space-between" className="full-width">
-        <span className={classes.timestamp}>
-          {dateTimeFormat.format(new Date(item.authorizationTimestamp))}
-        </span>
-        <Flex align="center" justify="flex-end" className="full-width">
+      <Flex align="center" justify="space-between" className="full-width" wrap>
+        <Flex align="center" gap={6}>
+          <div className={classes.timestamp}>{item.time}</div>
+          <div className={`${classes.system}`}>{item.system ?? "ODA"}</div>
+        </Flex>
+        <Flex align="center" justify="flex-end">
           <Flex align="center" justify="flex-end" gap={9}>
-            <SubActionButton
-              onClick={() => {
-                repeatAlert(conf.topic.alerts, item);
-              }}
-            >
-              <span style={{ marginLeft: "3px" }}>Повторить</span>
-            </SubActionButton>
+            {item.active && (
+              <SubActionButton
+                onClick={() => {
+                  interruptAlert(conf);
+                }}
+              >
+                Прервать
+              </SubActionButton>
+            )}
+            {!item.active && (
+              <SubActionButton
+                onClick={() => {
+                  repeatAlert(conf.topic.alerts, item);
+                }}
+              >
+                Повторить
+              </SubActionButton>
+            )}
           </Flex>
         </Flex>
       </Flex>
@@ -71,31 +78,41 @@ const Description = observer(({ item }: { item: HistoryItemData }) => {
   );
 });
 
-export default function HistoryItem({ item }: { item: HistoryItemData }) {
-  return (
-    <>
-      <List.Item>
-        <List.Item.Meta
-          title={
-            <Flex justify="space-between">
-              <span className={classes.title}>
-                <span className={`${classes.amount}`}>
-                  {item.amount?.major}
-                  {`\u20BD`}
-                </span>
-                <span> от {item.nickname ?? "Аноним"}</span>
-              </span>
-              {item.goals && (
-                <Flex align="center" className={`${classes.goals}`} gap={12}>
-                  <DonationGoalIcon />
-                  <div>{item.goals?.map((goal) => goal.goalTitle)}</div>
-                </Flex>
-              )}
-            </Flex>
-          }
-          description={<Description item={item} />}
-        />
-      </List.Item>
-    </>
-  );
-}
+export const HistoryItemComponent = observer(
+  ({ item }: { item: HistoryItem }) => {
+    return (
+      <Flex
+        vertical
+        className={`${classes.item} ${item.active ? classes.active : ""}`}
+        justify="space-between"
+      >
+        <Flex justify="space-between">
+          <span className={classes.title}>
+            <span className={`${classes.amount}`}>
+              {item.amount?.major}
+              {`\u20BD`}
+            </span>
+            <span> от {item.nickname ?? "Аноним"}</span>
+          </span>
+          <Flex gap={6}>
+            {item.rouletteResults && item.rouletteResults.length > 0 && (
+              <Flex align="center" className={`${classes.goals}`} gap={6}>
+                <ReelIcon />
+                <div className={`${classes.rouletteresult}`}>
+                  {item.rouletteResults?.map((result) => result.title)}
+                </div>
+              </Flex>
+            )}
+            {item.goals && item.goals.length > 0 && (
+              <Flex align="center" className={`${classes.goals}`} gap={6}>
+                <DonationGoalIcon />
+                <div>{item.goals?.map((goal) => goal.goalTitle)}</div>
+              </Flex>
+            )}
+          </Flex>
+        </Flex>
+        <Description item={item} />
+      </Flex>
+    );
+  },
+);

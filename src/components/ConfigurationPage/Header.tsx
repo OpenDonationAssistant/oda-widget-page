@@ -29,7 +29,7 @@ export default function Header({}) {
     <div className={`${classes.headercontainer}`}>
       <ODALogo />
       <div className={`${classes.buttons}`}>
-        <a onClick={(e) => window.open("https://t.me/opendonationassistant")}>
+        <a onClick={(e) => window.open("https://t.me/+mM61pLIJkZM2Y2E6")}>
           <TelegramIcon/>
         </a>
         <a onClick={(e) => window.open("https://oda.digital/news")}>

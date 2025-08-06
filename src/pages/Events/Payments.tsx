@@ -15,7 +15,6 @@ import classes from "./Payments.module.css";
 import Menu from "../../components/Menu/Menu";
 import MenuEventButton from "../../components/Menu/MenuEventButton";
 import {
-  HistoryItemData,
   DefaultApiFactory as HistoryService,
 } from "@opendonationassistant/oda-history-service-client";
 

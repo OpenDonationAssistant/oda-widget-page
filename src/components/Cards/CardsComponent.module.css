@@ -1,3 +1,10 @@
+.cardlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* grid-template-columns: masonry; */
+  width: 100%;
+  gap: 12px;
+}
 .sectionname {
   font-size: 19px;
   padding-bottom: 8px;
@@ -10,9 +17,6 @@
   color: var(--oda-secondary-text-color) !important;
   box-shadow: none;
   flex-grow: 1;
-  width: 30%;
-  min-width: 300px;
-  max-width: 420px;
   min-height: 200px;
   height: auto !important;
   border: 1px solid #36363d;
@@ -28,10 +32,6 @@
 .card {
   border-radius: 12px;
   background-color: var(--oda-color-150);
-  flex-grow: 1;
-  width: 30%;
-  min-width: 300px;
-  max-width: 420px;
   min-height: 200px;
   padding: 18px 15px 15px 15px;
   &:hover {

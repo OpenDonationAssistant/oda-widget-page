@@ -14,11 +14,15 @@ export class ModalState {
   private _level: number;
   private _onTop: boolean = false;
   private _parent: ModalState | null;
+  private _onClose: () => void = () => {};
 
-  constructor(parent?: ModalState) {
+  constructor(parent?: ModalState, onClose?: () => void) {
     this._onTop = false;
     this._level = (parent?.level ?? -2) + 1;
     this._parent = parent ?? null;
+    if (onClose) {
+      this._onClose = onClose;
+    }
     makeAutoObservable(this);
   }
   public handleEscape() {
@@ -53,6 +57,10 @@ export class ModalState {
   public get level() {
     return this._level;
   }
+  public onClose() {
+    log.debug("calling on close");
+    this._onClose();
+  }
 }
 
 export const ModalStateContext = createContext(new ModalState());
@@ -76,8 +84,10 @@ export const Panel = ({ children }: { children: ReactNode }) => {
         "handling click outside",
       );
       if (event.target === backRef.current && state.show) {
-        log.debug("closing modal");
+        log.debug("closing modal panel");
+        state.onClose();
         state.show = false;
+        event.stopPropagation();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -195,8 +205,9 @@ export const Overlay = observer(({ children }: { children: ReactNode }) => {
         "handling click outside",
       );
       if (event.target === backRef.current && state.show) {
-        log.debug("closing modal");
+        state.onClose();
         state.show = false;
+        event.stopPropagation();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);

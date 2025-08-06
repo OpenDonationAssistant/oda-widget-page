@@ -43,7 +43,7 @@ function testAlert(topic: string, alert: Alert) {
 
 export const RenameButton = observer(({ alert }: { alert: Alert }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [newName, setNewName] = useState<string>(alert.property("name"));
+  const [newName, setNewName] = useState<string>(() => alert.property("name"));
 
   const toggleModal = () => {
     setShowModal((old) => !old);
@@ -77,7 +77,7 @@ const PaymentAlertsPropertyComponent = observer(
     const [opened, setOpened] = useState<string>("");
     const parentModalState = useContext(ModalStateContext);
     const [deleteDialogState] = useState<ModalState>(
-      new ModalState(parentModalState),
+      () => new ModalState(parentModalState),
     );
     const [alertToDelete, setAlertToDelete] = useState<Alert | null>(null);
 

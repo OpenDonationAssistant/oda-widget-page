@@ -29,10 +29,12 @@ import {
   Warning,
 } from "../../components/Overlay/Overlay";
 import { observer } from "mobx-react-lite";
+import { log } from "../../logging";
+import { uuidv7 } from "uuidv7";
 
 export const IntegrationsPage = observer(({}) => {
   const selection = useContext(IntegrationWizardStoreContext);
-  const [tokenStore] = useState(new DefaultTokenStore());
+  const [tokenStore] = useState(() => new DefaultTokenStore());
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(
     new ModalState(parentModalState),
@@ -51,6 +53,10 @@ export const IntegrationsPage = observer(({}) => {
                 "https://www.donationalerts.com/oauth/authorize?client_id=13593&redirect_uri=https%3A%2F%2Fwidgets.oda.digital&response_type=code&scope=oauth-donation-subscribe oauth-user-show",
               );
             }
+            if (selection.system === "donate.stream") {
+              selection.accessToken = uuidv7();
+            }
+            return selection.system !== null;
           },
         },
         {
@@ -58,9 +64,19 @@ export const IntegrationsPage = observer(({}) => {
           subtitle: "Введите информацию для подключения",
           content: <AddDonatePayTokenComponent />,
           handler: () => {
-            if (selection.system === "donatepay") {
+            if (selection.system === "donatepay.ru") {
               tokenStore.addToken("DonatePay", selection.accessToken);
+              return true;
             }
+            if (selection.system === "donatepay.eu") {
+              tokenStore.addToken("DonatePay.eu", selection.accessToken);
+              return true;
+            }
+            if (selection.system === "donate.stream") {
+              tokenStore.addToken("Donate.Stream", selection.accessToken);
+              return true;
+            }
+            return false;
           },
         },
       ],
@@ -118,6 +134,10 @@ export const IntegrationsPage = observer(({}) => {
           ))}
           <CardButton
             onClick={() => {
+              log.debug(
+                { conf: wizardConfiguration.index },
+                "click on add button",
+              );
               wizardConfiguration.next();
             }}
           />

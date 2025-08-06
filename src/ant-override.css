@@ -233,10 +233,10 @@
 
 .ant-collapse {
 
-  background-color: var(--oda-color-150);
   font-family: "Mulish Variable";
   border: none;
   margin-bottom: 9px;
+  background-color: unset;
 
   & .ant-collapse-content {
     background-color: var(--oda-color-150);
@@ -250,6 +250,18 @@
 
   & > .ant-collapse-item {
     border-bottom: 1px solid var(--oda-panel-backgroun-color);
+    background-color: var(--oda-color-150);
+    margin-bottom: 3px;
+
+    &:first-of-type{
+      border-top-left-radius: 9px;
+      border-top-right-radius: 9px;
+    }
+    &:last-of-type{
+      border-bottom-left-radius: 9px;
+      border-bottom-right-radius: 9px;
+    }
+
     & > .ant-collapse-header {
       border-radius: 12px!important;
       font-family: "Mulish Variable";

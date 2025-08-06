@@ -10,14 +10,26 @@ import { Flex, Input } from "antd";
 import classes from "./IntegrationsWizard.module.css";
 
 export class IntegrationWizardStore {
-  private _system: "donationalerts" | "donatepay" | null = null;
+  private _system:
+    | "donationalerts"
+    | "donatepay.ru"
+    | "donatepay.eu"
+    | "donate.stream"
+    | null = null;
   private _accessToken: string = "";
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  public set system(system: "donationalerts" | "donatepay" | null) {
+  public set system(
+    system:
+      | "donationalerts"
+      | "donatepay.ru"
+      | "donatepay.eu"
+      | "donate.stream"
+      | null,
+  ) {
     this._system = system;
   }
 
@@ -50,10 +62,16 @@ export const ChooseDonationPlatformComponent = observer(({}: {}) => {
         <CardTitle>DonationAlerts</CardTitle>
       </Card>
       <Card
-        selected={context.system === "donatepay"}
-        onClick={() => (context.system = "donatepay")}
+        selected={context.system === "donatepay.ru"}
+        onClick={() => (context.system = "donatepay.ru")}
       >
-        <CardTitle>DonatePay</CardTitle>
+        <CardTitle>DonatePay.ru</CardTitle>
+      </Card>
+      <Card
+        selected={context.system === "donatepay.eu"}
+        onClick={() => (context.system = "donatepay.eu")}
+      >
+        <CardTitle>DonatePay.eu</CardTitle>
       </Card>
     </CardList>
   );
@@ -64,18 +82,34 @@ export const AddDonatePayTokenComponent = observer(({}: {}) => {
 
   return (
     <Flex vertical className={`${classes.content}`}>
-      <Flex className="full-width" gap={12} vertical>
-        <div className={`${classes.instruction}`}>
-          1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
-          <a href="https://donatepay.ru/page/api">API DonatePay</a>
-        </div>
-        <Input
-          value={context.accessToken}
-          onChange={(value) => {
-            context.accessToken = value.target.value;
-          }}
-        />
-      </Flex>
+      {context.system === "donatepay.eu" && (
+        <Flex className="full-width" gap={12} vertical>
+          <div className={`${classes.instruction}`}>
+            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
+            <a href="https://donatepay.eu/page/api">API DonatePay.eu</a>
+          </div>
+          <Input
+            value={context.accessToken}
+            onChange={(value) => {
+              context.accessToken = value.target.value;
+            }}
+          />
+        </Flex>
+      )}
+      {context.system === "donatepay.ru" && (
+        <Flex className="full-width" gap={12} vertical>
+          <div className={`${classes.instruction}`}>
+            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
+            <a href="https://donatepay.ru/page/api">API DonatePay.ru</a>
+          </div>
+          <Input
+            value={context.accessToken}
+            onChange={(value) => {
+              context.accessToken = value.target.value;
+            }}
+          />
+        </Flex>
+      )}
     </Flex>
   );
 });

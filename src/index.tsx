@@ -6,6 +6,7 @@ import {
   Navigate,
   Outlet,
   RouterProvider,
+  useLoaderData,
   useLocation,
 } from "react-router-dom";
 import { Header as AntHeader, Content } from "antd/es/layout/layout";
@@ -24,7 +25,7 @@ import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
 import ReelWidget from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
-import HistoryPage from "./pages/History/HistoryPage";
+import { HistoryPage } from "./pages/History/HistoryPage";
 import { ConfigProvider, Flex, theme } from "antd";
 import "./i18n";
 import "animate.css";
@@ -48,6 +49,17 @@ import UtilityButton from "./components/UtilityButton/UtilityButton";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
 import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";
+import { useState } from "react";
+import {
+  DefaultWidgetStore,
+  WidgetStore,
+  WidgetStoreContext,
+} from "./stores/WidgetStore";
+import {
+  PaymentPageConfig,
+  PaymentPageConfigContext,
+} from "./components/MediaWidget/PaymentPageConfig";
+import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 
 async function widgetSettingsLoader({
   params,
@@ -76,8 +88,8 @@ async function widgetSettingsLoader({
 }
 
 const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get('code');
-if (code){
+const code = urlParams.get("code");
+if (code) {
   localStorage.setItem("code", code);
 }
 
@@ -104,8 +116,14 @@ function detectPage(path: string): Page {
 }
 
 function ConfigurationPageTemplate() {
+  const { recipientId } = useLoaderData() as WidgetData;
   const location = useLocation();
   const page = detectPage(location.pathname);
+  const [fontStore] = useState<FontStore>(() => new FontStore());
+  const [widgetStore] = useState<WidgetStore>(() => new DefaultWidgetStore());
+  const [paymentPageConfig] = useState<PaymentPageConfig>(
+    () => new PaymentPageConfig(recipientId),
+  );
 
   return (
     <>
@@ -125,7 +143,7 @@ function ConfigurationPageTemplate() {
           Поддержать
         </UtilityButton>
         <UtilityButton
-          onClick={() => window.open("https://t.me/opendonationassistant")}
+          onClick={() => window.open("https://t.me/+mM61pLIJkZM2Y2E6")}
         >
           Обратная связь
         </UtilityButton>
@@ -157,17 +175,17 @@ function ConfigurationPageTemplate() {
             dangerouslySetInnerHTML={{
               __html: `
         body::before {
-    content: "";
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    display: block;
-    background-color: #2d3436;
-    background-image: linear-gradient(345deg, #2d3436 0%, #000000 58%);
-    width: 100%;
-    height: 100%;
-  }`,
+          content: "";
+          position: fixed;
+          left: 0;
+          right: 0;
+          z-index: -1;
+          display: block;
+          background-color: #2d3436;
+          background-image: linear-gradient(345deg, #2d3436 0%, #000000 58%);
+          width: 100%;
+          height: 100%;
+        }`,
             }}
           />
           <Toolbar page={page} />
@@ -188,8 +206,12 @@ function ConfigurationPageTemplate() {
                 backgroundColor: "var(--oda-color-100)",
               }}
             >
-              <FontContext.Provider value={new FontStore()}>
-                <Outlet />
+              <FontContext.Provider value={fontStore}>
+                <WidgetStoreContext.Provider value={widgetStore}>
+                  <PaymentPageConfigContext.Provider value={paymentPageConfig}>
+                    <Outlet />
+                  </PaymentPageConfigContext.Provider>
+                </WidgetStoreContext.Provider>
               </FontContext.Provider>
             </Content>
           </Flex>
@@ -259,7 +281,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/payments/:widgetId",
-    element: <EventsPage />,
+    element: <HistoryWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {
@@ -326,7 +348,6 @@ const router = createBrowserRouter([
     element: <Login />,
   },
 ]);
-
 
 const rootElement = document.getElementById("root");
 if (rootElement) {

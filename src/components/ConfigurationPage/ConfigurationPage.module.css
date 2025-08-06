@@ -9,6 +9,10 @@
   background-color: var(--oda-color-100);
 }
 
+.widgetlist {
+  flex: 1 1 auto;
+}
+
 .widgetpreviewcontainer {
   border-radius: 9px;
   background-color: var(--oda-color-150);

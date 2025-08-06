@@ -5,18 +5,10 @@ import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
-import {
-  DefaultWidgetStore,
-  WidgetStore,
-  WidgetStoreContext,
-} from "../../stores/WidgetStore";
+import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import {
-  PaymentPageConfig,
-  PaymentPageConfigContext,
-} from "../MediaWidget/PaymentPageConfig";
 import classes from "./ConfigurationPage.module.css";
 import {
   SelectedIndexContext,
@@ -29,58 +21,57 @@ import LinesIcon from "../../icons/LinesIcon";
 import CardsIcon from "../../icons/CardsIcon";
 import { CardButton, CardList } from "../Cards/CardsComponent";
 import { useSearchParams } from "react-router-dom";
-import { Dialog, ModalState, ModalStateContext, Overlay, Title } from "../Overlay/Overlay";
+import {
+  Dialog,
+  ModalState,
+  ModalStateContext,
+  Overlay,
+  Title,
+} from "../Overlay/Overlay";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 
-const Widgets = observer(
-  ({
-    widgetStore,
-    asCards,
-  }: {
-    widgetStore: WidgetStore;
-    asCards: boolean;
-  }) => {
-    const selection = useContext(SelectedIndexContext);
+const Widgets = observer(({ asCards }: { asCards: boolean }) => {
+  const selection = useContext(SelectedIndexContext);
+  const widgetStore = useContext(WidgetStoreContext);
 
-    return (
-      <>
-        {!asCards && (
-          <Flex vertical wrap gap={asCards ? 12 : 6}>
-            {widgetStore.list.map((data, index) => (
-              <Draggable
-                key={data.id}
-                draggableId={data.id}
-                isDragDisabled={selection.id === data.id}
-                index={index}
-              >
-                {(draggable) => (
-                  <div
-                    className={`${classes.widgetdraggablecontainer}`}
-                    ref={draggable.innerRef}
-                    {...draggable.draggableProps}
-                    {...draggable.dragHandleProps}
-                    key={data.id}
-                  >
-                    <WidgetConfiguration widget={data} asCards={asCards} />
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
-          </Flex>
-        )}
-        {asCards && (
-          <CardList>
-            {widgetStore.list.map((data, index) => (
-              <WidgetConfiguration widget={data} asCards={asCards} />
-            ))}
-            <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
-          </CardList>
-        )}
-      </>
-    );
-  },
-);
+  return (
+    <>
+      {!asCards && (
+        <Flex vertical wrap gap={asCards ? 12 : 6}>
+          {widgetStore.list.map((data, index) => (
+            <Draggable
+              key={data.id}
+              draggableId={data.id}
+              isDragDisabled={selection.id === data.id}
+              index={index}
+            >
+              {(draggable) => (
+                <div
+                  className={`${classes.widgetdraggablecontainer}`}
+                  ref={draggable.innerRef}
+                  {...draggable.draggableProps}
+                  {...draggable.dragHandleProps}
+                  key={data.id}
+                >
+                  <WidgetConfiguration widget={data} asCards={asCards} />
+                </div>
+              )}
+            </Draggable>
+          ))}
+          <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+        </Flex>
+      )}
+      {asCards && (
+        <CardList>
+          {widgetStore.list.map((data, index) => (
+            <WidgetConfiguration widget={data} asCards={asCards} />
+          ))}
+          <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+        </CardList>
+      )}
+    </>
+  );
+});
 
 const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
@@ -99,18 +90,22 @@ const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
     widgetStore.moveWidget(source.index, destination.index);
   }
 
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="widgetlist">
-        {(provided) => (
-          <div id="widgetlistholder" ref={provided.innerRef}>
-            <div {...provided.droppableProps}>
-              <Widgets asCards={asCards} widgetStore={widgetStore} />
+  return widgetStore?.list && widgetStore?.list.length > 0 ? (
+    <div className={`${classes.widgetlist}`}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="widgetlist">
+          {(provided) => (
+            <div id="widgetlistholder" ref={provided.innerRef}>
+              <div {...provided.droppableProps}>
+                <Widgets asCards={asCards} />
+              </div>
             </div>
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
+  ) : (
+    <></>
   );
 });
 
@@ -227,19 +222,17 @@ const AddWidgetComponent = observer(
 );
 
 export default function ConfigurationPage({}: {}) {
-  const { recipientId } = useLoaderData() as WidgetData;
   const selection = useRef(new SelectedIndexStore());
-  const widgetStore = new DefaultWidgetStore();
   const [asCards, setAsCards] = useState<boolean>(() => {
     const value = localStorage.getItem("asCards");
-    if (value === null || value === undefined){
+    if (value === null || value === undefined) {
       return false;
     }
     return JSON.parse(value);
   });
   const [params] = useSearchParams();
   const parentModalState = useContext(ModalStateContext);
-  const [state] = useState<ModalState>(new ModalState(parentModalState));
+  const [state] = useState<ModalState>(() => new ModalState(parentModalState));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -257,7 +250,7 @@ export default function ConfigurationPage({}: {}) {
   }, [params]);
 
   return (
-    <WidgetStoreContext.Provider value={widgetStore}>
+    <>
       <ModalStateContext.Provider value={state}>
         <Overlay>
           <Dialog>
@@ -283,30 +276,26 @@ export default function ConfigurationPage({}: {}) {
             justify="flex-end"
             style={{ marginBottom: "9px" }}
           >
-            <NotBorderedIconButton onClick={() => {
-              setAsCards(false);
-              localStorage.setItem("asCards", JSON.stringify(false));
-            }}>
+            <NotBorderedIconButton
+              onClick={() => {
+                setAsCards(false);
+                localStorage.setItem("asCards", JSON.stringify(false));
+              }}
+            >
               <LinesIcon />
             </NotBorderedIconButton>
-            <NotBorderedIconButton onClick={() => {
-              setAsCards(true);
-              localStorage.setItem("asCards", JSON.stringify(true));
-            }}>
+            <NotBorderedIconButton
+              onClick={() => {
+                setAsCards(true);
+                localStorage.setItem("asCards", JSON.stringify(true));
+              }}
+            >
               <CardsIcon />
             </NotBorderedIconButton>
           </Flex>
         </Flex>
-        {widgetStore?.list && (
-          <div className="widget-list">
-            <PaymentPageConfigContext.Provider
-              value={new PaymentPageConfig(recipientId)}
-            >
-              <WidgetList asCards={asCards} />
-            </PaymentPageConfigContext.Provider>
-          </div>
-        )}
+        <WidgetList asCards={asCards} />
       </SelectedIndexContext.Provider>
-    </WidgetStoreContext.Provider>
+    </>
   );
 }

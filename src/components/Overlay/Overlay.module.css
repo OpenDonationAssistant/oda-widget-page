@@ -3,6 +3,7 @@
   height: calc(max(100%,100vh));
   position: absolute;
   top: 0;
+  left: 0;
   z-index: 200;
 }
 
@@ -59,16 +60,23 @@
   color: var(--oda-color-500);
 }
 
-@media(min-width: 1600px){
+@media(min-width: 1600px) {
   .big {
     width: 1200px;
     left: calc(50% - 600px);
   }
 }
 
-@media(max-width: 1600px){
+@media(min-width: 750px) and (max-width: 1600px) {
   .big {
     width: 750px;
     left: calc(50% - 330px);
+  }
+}
+
+@media(max-width: 750px) {
+  .big {
+    width: unset;
+    left: 0;
   }
 }

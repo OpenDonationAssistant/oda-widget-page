@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import { Segmented } from "antd";
+import { toJS } from "mobx";
+import { Flex } from "antd";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import { produce } from "immer";
+import { LightLabeledSwitchComponent } from "../../../LabeledSwitch/LabeledSwitchComponent";
 
 export interface PremoderationPropertyValue {
   enabled: boolean;
@@ -20,21 +21,17 @@ export class PremoderationProperty extends DefaultWidgetProperty<PremoderationPr
   }
 
   comp = observer(() => (
-    <LabeledContainer displayName="Режим премодерации">
-      <Segmented
-        className="full-width"
-        options={[
-          { value: 0, label: "Выключен" },
-          { value: 1, label: "Включен" },
-        ]}
-        value={this.value.enabled ? 1 : 0}
+    <Flex>
+      <LightLabeledSwitchComponent
+        label="Режим премодерации"
+        value={this.value.enabled}
         onChange={(newValue) => {
-          this.value = produce(this.value, (draft) => {
-            draft.enabled = newValue === 1;
+          this.value = produce(toJS(this.value), (draft) => {
+            draft.enabled = newValue;
           });
         }}
       />
-    </LabeledContainer>
+    </Flex>
   ));
 
   copy() {

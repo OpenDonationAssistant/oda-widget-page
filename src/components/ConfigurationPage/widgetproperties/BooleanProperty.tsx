@@ -1,27 +1,23 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
-import { Segmented } from "antd";
+import { Flex } from "antd";
 import { log } from "../../../logging";
+import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 
 const BooleanPropertyComponent = observer(
   ({ property }: { property: BooleanProperty }) => {
     log.debug({ property: property }, "rendering property");
     return (
-      <LabeledContainer displayName={property.displayName}>
-        <Segmented
-          className="full-width"
-          options={[
-            { value: 0, label: property.labels.off },
-            { value: 1, label: property.labels.on },
-          ]}
-          value={property.value ? 1 : 0}
+      <Flex>
+        <LightLabeledSwitchComponent
+          value={property.value}
+          label={property.displayName}
           onChange={() => {
             property.value = !property.value;
           }}
         />
-      </LabeledContainer>
+      </Flex>
     );
   },
 );

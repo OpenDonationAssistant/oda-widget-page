@@ -25,7 +25,7 @@ export default function MediaWidget({}: {}) {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
 
   const [playlist, setPlaylist] = useState<Playlist>(
-    new Playlist(PLAYLIST_TYPE.REQUESTED, conf.topic.player),
+    () => new Playlist(PLAYLIST_TYPE.REQUESTED, conf.topic.player),
   );
   const [playlistSize, setPlaylistSize] = useState<number>(0);
   const [index, setIndex] = useState<number | null>(null);

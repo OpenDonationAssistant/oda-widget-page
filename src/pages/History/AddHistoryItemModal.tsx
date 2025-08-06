@@ -1,20 +1,16 @@
 import { useContext, useRef, useState } from "react";
-import Modal from "../../components/Modal/Modal";
 import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
-import { Flex, Input, InputNumber, Select, Switch } from "antd";
+import { Flex, Input, Select, Switch } from "antd";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { uuidv7 } from "uuidv7";
 import { useTranslation } from "react-i18next";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
-import AddIcon from "../../icons/AddIcon";
 import {
-  Dialog,
   ModalState,
   ModalStateContext,
   Overlay,
+  Panel,
   Title,
 } from "../../components/Overlay/Overlay";
 import CloseIcon from "../../icons/CloseIcon";
@@ -23,16 +19,18 @@ import {
   BorderedIconButton,
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
+import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import AddIcon from "../../icons/AddIcon";
+import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
+import classes from "./AddHistoryItemModal.module.css";
+import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 
-export default function AddHistoryItemModal({}) {
+export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const { recipientId } = useLoaderData() as WidgetData;
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const parentModal = useContext(ModalStateContext);
-  const [showModal, setShowModal] = useState<ModalState>(
-    new ModalState(parentModal),
-  );
+  const [showModal] = useState<ModalState>(() => new ModalState(parentModal));
 
   const [nickname, setNickname] = useState<string>("");
   const [amount, setAmount] = useState<number>(0);
@@ -76,18 +74,23 @@ export default function AddHistoryItemModal({}) {
       id: uuidv7(),
       paymentId: uuidv7(),
     });
-    navigate(0);
   }
 
   return (
     <>
-      <SecondaryButton onClick={() => (showModal.show = true)}>
-        <AddIcon color="var(--oda-primary-color)" />
-        {t("button-add-historyitem")}
-      </SecondaryButton>
+      {!compact && (
+        <SubActionButton onClick={() => (showModal.show = true)}>
+          {t("button-add-historyitem")}
+        </SubActionButton>
+      )}
+      {compact && (
+        <BorderedIconButton onClick={() => (showModal.show = true)}>
+          <AddIcon color="var(--oda-color-1000)" />
+        </BorderedIconButton>
+      )}
       <ModalStateContext.Provider value={showModal}>
         <Overlay>
-          <Dialog>
+          <Panel>
             <Title>
               <Flex justify="space-between" style={{ marginBottom: "30px" }}>
                 <Flex>
@@ -105,25 +108,29 @@ export default function AddHistoryItemModal({}) {
               </Flex>
             </Title>
             <Flex vertical className="full-width">
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-nickname">
+              <Flex vertical className={`${classes.section}`} gap={12}>
+                <div className={`${classes.sectiontitle}`}>Основное</div>
+                <Flex vertical>
+                  <div className={`${classes.label}`}>Ник поддержавшего</div>
                   <Input
                     value={nickname}
                     onChange={(value) => setNickname(value.target.value)}
                   />
-                </LabeledContainer>
-              </div>
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-amount">
+                </Flex>
+                {/* <Flex displayNam="dialog-add-donation-amount"> */}
+                <Flex vertical>
+                  <div className={`${classes.label}`}>Сумма</div>
                   <InputNumber
                     className={`full-width`}
                     value={amount}
                     onChange={(value) => setAmount(value ?? 0)}
                   />
-                </LabeledContainer>
-              </div>
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-count-in-goal">
+                </Flex>
+                {/* <Flex displayName="dialog-add-donation-count-in-goal"> */}
+                <Flex vertical>
+                  <div className={`${classes.label}`}>
+                    Учитывать в сборе средств
+                  </div>
                   <Select
                     className="full-width"
                     value={goalId}
@@ -132,44 +139,38 @@ export default function AddHistoryItemModal({}) {
                       return { value: goal.id, label: goal.briefDescription };
                     })}
                   />
-                </LabeledContainer>
-              </div>
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-show-alert">
-                  <Switch
+                </Flex>
+              </Flex>
+              <Flex vertical className={`${classes.section}`}>
+                <div className={`${classes.sectiontitle}`}>Дополнительно</div>
+                <Flex wrap gap={6}>
+                  <LabeledSwitchComponent
+                    label="dialog-add-donation-show-alert"
                     value={showAlert}
                     onChange={() => setShowAlert((old) => !old)}
                   />
-                </LabeledContainer>
-              </div>
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-count-in-top">
-                  <Switch
+                  <LabeledSwitchComponent
+                    label="dialog-add-donation-count-in-top"
                     value={countInTop}
                     onChange={() => setCountInTop((old) => !old)}
                   />
-                </LabeledContainer>
-              </div>
-              <div className="settings-item">
-                <LabeledContainer displayName="dialog-add-donation-trigger-reel">
-                  <Switch
+                  <LabeledSwitchComponent
+                    label="dialog-add-donation-trigger-reel"
                     value={triggerReel}
                     onChange={() => setTriggerReel((old) => !old)}
                   />
-                </LabeledContainer>
-              </div>
-              <Flex className="full-width" justify="flex-end">
-                <PrimaryButton
-                  onClick={() => {
-                    addItem();
-                    showModal.show = false;
-                  }}
-                >
-                  Добавить
-                </PrimaryButton>
+                </Flex>
               </Flex>
+              <PrimaryButton
+                onClick={() => {
+                  addItem();
+                  showModal.show = false;
+                }}
+              >
+                Добавить
+              </PrimaryButton>
             </Flex>
-          </Dialog>
+          </Panel>
         </Overlay>
       </ModalStateContext.Provider>
     </>

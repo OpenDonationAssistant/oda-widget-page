@@ -1,3 +1,20 @@
+.item {
+  min-height: 100px;
+  background-color: var(--oda-color-150);
+  border-radius: 16px;
+  padding: 12px 15px;
+}
+
+.active {
+  background-color: var(--oda-color-250);
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.system {
+  color: var(--oda-color-500);
+}
+
 .little {
   font-size: 16px;
   color: rgb(120, 133, 189);
@@ -10,7 +27,11 @@
   text-align: right;
   flex: 1 0 auto;
   color: var(--oda-color-800);
-  margin-top: 10px;
+}
+
+.rouletteresult {
+  margin-top: -2px;
+  color: var(--oda-color-950);
 }
 
 .amount {
@@ -23,6 +44,7 @@
   display: flex;
   align-items: baseline;
   font-size: 18px;
+  color: rgba(255,255,255,1);
   & * {
     -webkit-user-select: text;
     -ms-user-select: text; /* IE 10 and IE 11 */
@@ -34,12 +56,15 @@
   -webkit-user-select: text;
   -ms-user-select: text; /* IE 10 and IE 11 */
   user-select: text; /* Standard syntax */
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .goals {
   font-size: 18px;
   flex-grow: 1;
   justify-content: flex-end;
+  color: var(--oda-color-950);
 }
 
 .attachment {

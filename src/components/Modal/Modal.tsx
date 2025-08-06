@@ -61,8 +61,8 @@ export default function Modal({
         },
         "handling click outside",
       );
-      if (backRef.current?.contains(event.target) && show) {
-        log.debug("closing modal");
+      if (event.target === backRef.current && show) {
+        log.debug("closing old modal");
         onDecline();
       }
     }

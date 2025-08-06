@@ -31,6 +31,7 @@ import VideoIcon from "../icons/widgets/VideoIcon";
 import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
+import { socket } from "../socket";
 
 export const WIDGET_TYPES = [
   {
@@ -334,6 +335,15 @@ export class Widget {
       )
       .then(() => {
         this.config.markSaved();
+      })
+      .then(() => {
+        socket.publish({
+          destination: "/topic/commands",
+          body: JSON.stringify({
+            id: this.id,
+            command: "reload",
+          }),
+        });
       });
   }
 

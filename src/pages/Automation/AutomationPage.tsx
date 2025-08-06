@@ -91,7 +91,7 @@ const RuleList = observer(({}) => {
   };
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState, setDeleteRuleDialogState] =
-    useState<ModalState>(new ModalState(parentModalState));
+    useState<ModalState>(() => new ModalState(parentModalState));
 
   return (
     <Flex vertical className={`${classes.container}`} align="flex-start">

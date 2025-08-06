@@ -740,7 +740,7 @@ function PaymentAlerts({
                             addToGoal: false,
                             id: uuidv7(),
                             paymentId: uuidv7(),
-                            system: "DonatePay",
+                            system: "DonatePay.eu",
                             externalId: payment.id,
                           },
                           {},
