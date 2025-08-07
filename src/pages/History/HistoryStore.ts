@@ -72,7 +72,7 @@ export class HistoryStore {
   private readValue(key: string) {
     const value = localStorage.getItem(key);
     if (value === undefined || value === null) {
-      return false;
+      return true;
     }
     return JSON.parse(value);
   }
