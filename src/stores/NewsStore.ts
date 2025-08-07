@@ -49,5 +49,6 @@ export class DefaultNewsStore {
     this.client().markAsRead({
       newsId: id,
     });
+    this._news = [];
   }
 }
