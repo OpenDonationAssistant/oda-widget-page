@@ -7,8 +7,6 @@
 
 .active {
   background-color: var(--oda-color-250);
-  margin-top: 15px;
-  margin-bottom: 15px;
 }
 
 .system {
