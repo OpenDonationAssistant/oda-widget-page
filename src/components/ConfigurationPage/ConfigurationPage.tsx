@@ -1,8 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
-import { useLoaderData, useNavigate } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
+import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { WIDGET_TYPES } from "../../types/Widget";
 import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
@@ -90,7 +89,7 @@ const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
     widgetStore.moveWidget(source.index, destination.index);
   }
 
-  return widgetStore?.list && widgetStore?.list.length > 0 ? (
+  return widgetStore?.list ? (
     <div className={`${classes.widgetlist}`}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="widgetlist">
