@@ -22,6 +22,7 @@ function repeatAlert(topic: string, data: HistoryItem) {
     nickname: data.nickname,
     message: data.message,
     amount: data.amount,
+    force: true
   });
 }
 
