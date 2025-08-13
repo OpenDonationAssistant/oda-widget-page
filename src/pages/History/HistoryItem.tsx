@@ -56,6 +56,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
             {item.active && (
               <SubActionButton
                 onClick={() => {
+                  item.active = false;
                   interruptAlert(conf);
                 }}
               >
