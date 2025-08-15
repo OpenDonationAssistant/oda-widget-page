@@ -287,7 +287,7 @@ export class AlertController {
       return this.voiceController
         ?.playSource(
           //`${process.env.REACT_APP_FILE_API_ENDPOINT}/assets/premoderation-sound.wav`,
-          "https://cdn.oda.digital/assets/bonk.mp3",
+          this._recipientId === "tabularussia" ? "https://cdn.oda.digital/assets/100new.mp3" : "https://cdn.oda.digital/assets/bonk.mp3",
         )
         .then(() => {
           log.debug("clearing alert");
