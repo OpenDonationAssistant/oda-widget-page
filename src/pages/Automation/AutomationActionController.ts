@@ -5,6 +5,7 @@ import { Renderable } from "../../utils";
 import { IncreaseVariableAction } from "./AutomationAction/IncreaseVariableAction";
 import { IncreaseDonationGoalAction } from "./AutomationAction/IncreaseDonationGoalAction";
 import { RefreshDonationGoalAction } from "./AutomationAction/RefreshDonationGoalAction";
+import { RunReelAction } from "./AutomationAction/RunReelAction";
 
 export class AutomationActionController {
   public get actions(): (AutomationAction & Renderable)[] {
@@ -13,6 +14,7 @@ export class AutomationActionController {
       new IncreaseVariableAction(),
       new IncreaseDonationGoalAction(),
       new RefreshDonationGoalAction(),
+      new RunReelAction(),
     ];
   }
 
