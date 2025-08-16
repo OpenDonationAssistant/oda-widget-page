@@ -32,6 +32,12 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
               addon: "₽",
               displayName: "widget-reel-required-amount",
             }),
+            new NumberProperty({
+              name: "stepAmount",
+              value: 0,
+              addon: "₽",
+              displayName: "Шаг увеличения суммы",
+            }),
             new AnimatedFontProperty({
               name: "titleFont",
             }),
