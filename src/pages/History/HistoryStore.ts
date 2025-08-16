@@ -178,15 +178,11 @@ export class HistoryStore {
               goals: item.goals ?? [],
               message: item.message ?? "",
               attachments: item.attachments ?? [],
-              date: dateTimeFormat.format(
-                new Date(item.authorizationTimestamp ?? ""),
-              ),
+              date: dateTimeFormat.format(item.authorizationTimestamp ? new Date(item.authorizationTimestamp) : new Date()),
               active: item.paymentId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
-              time: timeFormat.format(
-                new Date(item.authorizationTimestamp ?? ""),
-              ),
+              time: timeFormat.format(item.authorizationTimestamp ? new Date(item.authorizationTimestamp) : new Date()),
             };
           }),
         ];
