@@ -272,5 +272,7 @@
   "button-add-number-variable-rule": "Добавить числовую переменную",
   "button-copy-widget": "Сделать копию",
   "Entire":"Весь виджет",
-  "tab-alert-configs": "Настройки"
+  "tab-alert-configs": "Настройки",
+  "blink": "Мигание",
+  "none": "Нет"
 }

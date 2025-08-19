@@ -271,5 +271,7 @@
   "button-add-number-variable-rule":"Add number variable",
   "button-copy-widget": "Make a copy",
   "Entire":"Entire widget",
-  "tab-alert-configs": "Settings"
+  "tab-alert-configs": "Settings",
+  "blink": "Blink",
+  "none": "None"
 }

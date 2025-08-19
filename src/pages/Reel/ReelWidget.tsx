@@ -7,11 +7,6 @@ import classes from "./ReelWidget.module.css";
 import { log } from "../../logging";
 import { findSetting } from "../../components/utils";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { DEFAULT_BORDER_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { ReelWidgetSettings } from "./ReelWidgetSettings";
 import { ReelStore } from "../../stores/ReelStore";
 import { observer } from "mobx-react-lite";
