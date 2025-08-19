@@ -24,6 +24,7 @@ import {
   ColorPropertyTarget,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { getRndInteger } from "../../utils";
+import { ReelWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/ReelWidgetSettings";
 
 export default function ReelWidget({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
@@ -162,6 +163,14 @@ export default function ReelWidget({}) {
       name: "cardBorder",
       value: findSetting(settings, "cardBorder", DEFAULT_BORDER_PROPERTY_VALUE),
     }).calcCss();
+    const winningEffect = findSetting(settings, "reelWinningEffect", {
+      id: "blink",
+    });
+    if (winningEffect.id === "blink") {
+      if (highlight && active === option) {
+        style = { ...style, ...{ animation: "blinker 1s linear infinite" } };
+      }
+    }
     if (highlight && active === option) {
       style = { ...selectionStyle, ...style };
     } else {

@@ -20,6 +20,9 @@
 .active {
   background-color: green;
   color: white;
+}
+
+.useblink {
   animation: blinker 1s linear infinite;
 }
 

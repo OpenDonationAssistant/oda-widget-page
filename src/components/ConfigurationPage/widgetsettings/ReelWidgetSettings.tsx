@@ -17,6 +17,8 @@ import { useTranslation } from "react-i18next";
 import { publish } from "../../../socket";
 import { getRndInteger } from "../../../utils";
 import { WidgetSettingsContext } from "../../../contexts/WidgetSettingsContext";
+import { ReelWinningEffectProperty } from "../../../pages/Reel/ReelWinningEffectProperty";
+import { log } from "../../../logging";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -52,6 +54,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
               displayName: "widget-reel-background-color",
               target: ColorPropertyTarget.BACKGROUND,
             }),
+            new ReelWinningEffectProperty(),
             new NumberProperty({
               name: "perView",
               value: 5,
@@ -82,6 +85,11 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
         },
       ],
     });
+  }
+
+  public get reelWinningEffectProperty() {
+    log.debug({ settings: this }, "searching reelWinningEffectProperty");
+    return this.get("reelWinningEffect") as ReelWinningEffectProperty;
   }
 
   runReel(id: string, conf: any) {
