@@ -7,24 +7,30 @@ import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import AddIcon from "../../icons/AddIcon";
 import {
+  CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
   Panel,
   Title,
 } from "../../components/Overlay/Overlay";
+import { RouletteItem } from "../../stores/ReelStore";
 
 const ItemModal = observer(() => {
   const parentModalState = useContext(ModalStateContext);
-  const [modalState] = useState<ModalState>(() => new ModalState(parentModalState));
+  const [modalState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
 
   return (
     <>
       <ModalStateContext.Provider value={modalState}>
         <Overlay>
           <Panel>
-            <Title>Настройки лота</Title>
-            <Flex></Flex>
+            <Flex>
+              <Title>Настройки лота</Title>
+              <CloseOverlayButton />
+            </Flex>
           </Panel>
         </Overlay>
         <button
@@ -78,12 +84,6 @@ const RouletteItemsPropertyComponent = observer(
     );
   },
 );
-
-interface RouletteItem {
-  id: string;
-  name: string;
-  weight: number;
-}
 
 export class RouletteItemsProperty extends DefaultWidgetProperty<
   RouletteItem[]

@@ -4,7 +4,6 @@ import { log } from "../../logging";
 import { subscribe } from "../../socket";
 import { makeAutoObservable } from "mobx";
 import {
-  HistoryItemData,
   DefaultApiFactory as HistoryService,
 } from "@opendonationassistant/oda-history-service-client";
 
@@ -54,14 +53,15 @@ export class DonationTimerStore implements AbstractDonationTimerStore {
     )
       .then((data) => data.data)
       .then((json) => {
-    axios
-      .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
-      .then((response) => response.data)
-      .then((data) => {
-        if (data.length > 0) {
-          log.debug(data[0].authorizationTimestamp);
-          this._lastDonationTime = data[0].authorizationTimestamp;
-        }
+        axios
+          .get(`${process.env.REACT_APP_API_ENDPOINT}/payments`)
+          .then((response) => response.data)
+          .then((data) => {
+            if (data.length > 0) {
+              log.debug(data[0].authorizationTimestamp);
+              this._lastDonationTime = data[0].authorizationTimestamp;
+            }
+          });
       });
   }
 

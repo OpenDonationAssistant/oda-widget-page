@@ -17,6 +17,7 @@ import classes from "./ImageTab.module.css";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { uuidv7 } from "uuidv7";
+import { fullUri } from "../../../../utils";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -40,23 +41,6 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     return name;
   });
 };
-
-async function fullUri(url: string | null): Promise<string> {
-  if (!url) {
-    return Promise.resolve("");
-  }
-  if (!url.startsWith("http")) {
-    url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${url}`;
-  }
-  // TODO: вынести в общий модуль
-  return fetch(url, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-    },
-  })
-    .then((res) => res.blob())
-    .then((blob) => URL.createObjectURL(blob));
-}
 
 const ImageTab = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();

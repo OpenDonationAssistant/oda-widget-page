@@ -4,11 +4,49 @@
   border-radius: 9px;
   margin: 12px;
   margin-top: 0px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.previewcard {
+  max-width: 380px;
+  max-height: 600px;
 }
 
 .previewcontainer{
-  margin-right: 30px;
-  margin-left: 30px;
+  margin-left: 12px;
+}
+
+.previewbuttons {
+  margin-bottom: 12px;
+  padding-right: 36px;
+  width: 100%;
+}
+
+.presetsubtitle {
+  margin-bottom: 18px;
+}
+
+.cardlistcontainer {
+  margin-bottom: 32px;
+}
+
+.configcontainer {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  height: 100%;
+
+  & [class*="ant-tabs-content-holder"] {
+    overflow-y: scroll;
+    height: 80vh;
+    & [class*="ant-tabs-content-holder"] {
+      height: unset;
+      overflow-y: auto;
+    }
+  }
 }
 
 .widgetcard {
@@ -49,9 +87,10 @@
 
 .resizable {
   border-radius: 6px;
-  background: url(https://cdn.oda.digital/assets/back.png);
+  background: url(https://cdn.oda.digital/assets/preview-background.jpg);
   background-size: cover;
   display: flex;
+  height: 100%;
   justify-content: center;
   align-items: center;
   overflow: hidden;
@@ -115,7 +154,7 @@
 .helplist {
   margin: 0;
   padding: 10px 0 0px 10px;
-  & li{
+  & li {
     margin-left: 0.5rem;
     list-style: none;
     & a {
@@ -129,4 +168,12 @@
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.widgettitle {
+  color: var(--oda-main-text-color);
+  line-height: 24px;
+  font-weight: 600;
+  font-size: 24px;
+  font-family: "Mulish Variable";
 }

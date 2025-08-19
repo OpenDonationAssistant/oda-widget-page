@@ -7,12 +7,19 @@ export interface Token {
   id: string;
   system: string;
   enabled: boolean;
+  token: string;
 }
 
 export interface TokenStore {
   tokens: Token[];
   deleteToken: (tokenId: string) => void;
   toggleToken: (tokenId: string, enabled: boolean) => void;
+}
+
+export class DemoTokenStore{
+  tokens: Token[] = [];
+  deleteToken: (tokenId: string) => void = () => {};
+  toggleToken: (tokenId: string, enabled: boolean) => void = () => {};
 }
 
 export class DefaultTokenStore implements TokenStore {
@@ -39,6 +46,7 @@ export class DefaultTokenStore implements TokenStore {
             id: token.id,
             system: token.system,
             enabled: token.enabled,
+            token: token.token
           };
         });
       })

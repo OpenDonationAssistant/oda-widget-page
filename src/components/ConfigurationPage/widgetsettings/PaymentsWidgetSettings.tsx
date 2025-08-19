@@ -5,7 +5,7 @@ import {
   DEFAULT_FONT_PROPERTY_VALUE,
 } from "../widgetproperties/AnimatedFontProperty";
 import classes from "./AbstractWidgetSettings.module.css";
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 
 export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -88,7 +88,3 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
     );
   }
 }
-
-export const PaymentsWidgetSettingsContext = createContext(
-  new PaymentsWidgetSettings(),
-);

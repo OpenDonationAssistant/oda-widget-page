@@ -1,22 +1,24 @@
 import { ReactNode, useContext } from "react";
-import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
-import { BorderProperty } from "../widgetproperties/BorderProperty";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
   ColorPropertyTarget,
-} from "../widgetproperties/ColorProperty";
-import { NumberProperty } from "../widgetproperties/NumberProperty";
-import { ReelItemBackgroundProperty } from "../widgetproperties/ReelItemBackgroundProperty";
-import { ReelItemListProperty } from "../widgetproperties/ReelItemListProperty";
-import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
-import classes from "./AbstractWidgetSettings.module.css";
-import SubActionButton from "../../SubActionButton/SubActionButton";
+} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
+import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
+import { ReelItemBackgroundProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemBackgroundProperty";
+import { ReelItemListProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemListProperty";
+import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
+import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
+import SubActionButton from "../../components/SubActionButton/SubActionButton";
 import { useLoaderData } from "react-router";
-import { WidgetData } from "../../../types/WidgetData";
+import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
-import { publish } from "../../../socket";
-import { getRndInteger } from "../../../utils";
-import { WidgetSettingsContext } from "../../../contexts/WidgetSettingsContext";
+import { publish } from "../../socket";
+import { getRndInteger } from "../../utils";
+import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import { ReelWidget } from "./ReelWidget";
+import { DemoReelStore } from "../../stores/ReelStore";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -31,12 +33,6 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
               value: 100,
               addon: "₽",
               displayName: "widget-reel-required-amount",
-            }),
-            new NumberProperty({
-              name: "stepAmount",
-              value: 0,
-              addon: "₽",
-              displayName: "Шаг увеличения суммы",
             }),
             new AnimatedFontProperty({
               name: "titleFont",
@@ -84,8 +80,39 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
+  public get titleFontProperty() {
+    return this.get("titleFont") as AnimatedFontProperty;
+  }
+  public get widgetBorderProperty() {
+    return this.get("widgetBorder") as BorderProperty;
+  }
+
+  public get cardBorderProperty() {
+    return this.get("cardBorder") as BorderProperty;
+  }
+
+  public get selectionColorProperty() {
+    return this.get("selectionColor") as ColorProperty;
+  }
+
+  public get perViewProperty() {
+    return this.get("perView") as NumberProperty;
+  }
+
+  public get speedProperty() {
+    return this.get("speed") as NumberProperty;
+  }
+
+  public get timeProperty() {
+    return this.get("time") as NumberProperty;
+  }
+
+  public get optionListProperty() {
+    return this.get("optionList") as ReelItemListProperty;
+  }
+
   runReel(id: string, conf: any) {
-    const optionList = this.get("optionList")?.value ?? [];
+    const optionList = this.optionListProperty.value;
     const choosenIndex = getRndInteger(0, optionList.length - 1);
     publish(conf.topic.reel, {
       type: "trigger",
@@ -135,6 +162,26 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           </ul>
         </div>
       </>
+    );
+  }
+
+  public hasDemo(): boolean {
+    return true;
+  }
+
+  public demo(): ReactNode {
+    return (
+      <ReelWidget
+        settings={this}
+        store={
+          new DemoReelStore(
+            20000,
+            this.optionListProperty.value.map((name) => {
+              return { id: name, name: name, weight: 1 };
+            }),
+          )
+        }
+      />
     );
   }
 }

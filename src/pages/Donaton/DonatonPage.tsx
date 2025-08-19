@@ -1,5 +1,5 @@
 import WidgetWrapper from "../../WidgetWrapper";
-import DonatonWidget from "./DonatonWidget";
+import { DonatonWidget } from "./DonatonWidget";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";

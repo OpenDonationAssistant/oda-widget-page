@@ -29,12 +29,28 @@ export interface HistoryItem {
   rouletteResults: ReelResult[];
   message: string;
   attachments: Attachment[];
+  timestamp: Date;
   date: string;
   time: string;
   active: boolean;
 }
 
-export class HistoryStore {
+export interface HistoryStore {
+  today: string;
+  load(): void;
+  next(): void;
+  pageSize: number;
+  pageNumber: number;
+  items: HistoryItem[];
+  isRefreshing: boolean;
+  showODA: boolean;
+  showDonationAlerts: boolean;
+  showDonatePay: boolean;
+  showDonatePayEu: boolean;
+  showDonateStream: boolean;
+}
+
+export class DefaultHistoryStore implements HistoryStore {
   private _recipientId: string;
   private _pageSize: number;
   private _pageNumber: number;
@@ -134,7 +150,7 @@ export class HistoryStore {
     this.load();
   }
 
-  private load() {
+  public load() {
     this._refreshing = true;
     log.debug(
       {
@@ -178,11 +194,22 @@ export class HistoryStore {
               goals: item.goals ?? [],
               message: item.message ?? "",
               attachments: item.attachments ?? [],
-              date: dateTimeFormat.format(item.authorizationTimestamp ? new Date(item.authorizationTimestamp) : new Date()),
+              timestamp: item.authorizationTimestamp
+                ? new Date(item.authorizationTimestamp)
+                : new Date(),
+              date: dateTimeFormat.format(
+                item.authorizationTimestamp
+                  ? new Date(item.authorizationTimestamp)
+                  : new Date(),
+              ),
+              time: timeFormat.format(
+                item.authorizationTimestamp
+                  ? new Date(item.authorizationTimestamp)
+                  : new Date(),
+              ),
               active: item.paymentId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
-              time: timeFormat.format(item.authorizationTimestamp ? new Date(item.authorizationTimestamp) : new Date()),
             };
           }),
         ];

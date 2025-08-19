@@ -16,6 +16,11 @@ import InputNumber from "../components/InputNumber";
 import { produce } from "immer";
 import { toJS } from "mobx";
 import { uuidv7 } from "uuidv7";
+import CloseIcon from "../../../icons/CloseIcon";
+import SubActionButton from "../../SubActionButton/SubActionButton";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
+import { fullUri } from "../../../utils";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -36,23 +41,37 @@ const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files[0];
   const name = uuidv7();
   return uploadFile(file, name).then((ignore: any) => {
-    return name;
+    return { name: file.name, url: name };
   });
 };
 
 export interface ImagePropertyValue {
+  name: string | null;
   url: string | null;
   size: string;
   repeat: boolean;
   opacity: number;
 }
 
-const ImagePropertyComponent = observer(
-  ({ property }: { property: BackgroundImageProperty }) => {
+export const DEFAULT_IMAGE_PROPERTY_VALUE = {
+  url: null,
+  size: "auto",
+  repeat: false,
+  opacity: 1,
+};
+
+export const ImagePropertyComponent = observer(
+  ({
+    property,
+    onChange,
+  }: {
+    property: { value: ImagePropertyValue; displayName: string };
+    onChange?: (value: ImagePropertyValue) => void;
+  }) => {
     const [image, setImage] = useState<string>(property.value.url ?? "");
 
     useEffect(() => {
-      property.fullUri().then(setImage);
+      fullUri(property.value.url).then(setImage);
     }, [property.value.url]);
 
     return (
@@ -63,8 +82,12 @@ const ImagePropertyComponent = observer(
               <input
                 type="file"
                 onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    property.value = { ...property.value, ...{ url: name } };
+                  handleFileUpload(e).then((result) => {
+                    property.value = {
+                      ...property.value,
+                      ...{ url: result.url, name: result.name },
+                    };
+                    onChange?.(property.value);
                   })
                 }
               />
@@ -73,10 +96,56 @@ const ImagePropertyComponent = observer(
             </label>
           )}
           {property.value.url && (
-            <Flex gap={10}>
-              <Flex vertical={true} justify="space-around">
-                <Flex gap={10} align="center">
-                  <span>Прозрачность</span>
+            <Flex vertical={true} className="full-width" justify="space-around">
+              <Flex
+                gap={10}
+                align="center"
+                className={`${classes.previewcontainer}`}
+                justify="space-between"
+              >
+                <div>{property.value.name}</div>
+                <Flex align="center" gap={6}>
+                  <Image.PreviewGroup>
+                    <Image
+                      width={200}
+                      height={28}
+                      className={`${classes.preview}`}
+                      src={`${image}`}
+                    />
+                  </Image.PreviewGroup>
+                  <SubActionButton
+                    onClick={() => {
+                      property.value = {
+                        name: null,
+                        url: null,
+                        size: "auto",
+                        repeat: false,
+                        opacity: 1,
+                      };
+                      onChange?.(property.value);
+                    }}
+                  >
+                    <div>Загрузить</div>
+                  </SubActionButton>
+                  <SubActionButton
+                    onClick={() => {
+                      property.value = {
+                        name: null,
+                        url: null,
+                        size: "auto",
+                        repeat: false,
+                        opacity: 1,
+                      };
+                      onChange?.(property.value);
+                    }}
+                  >
+                    <CloseIcon color="#FF8888" />
+                    <div>Удалить</div>
+                  </SubActionButton>
+                </Flex>
+              </Flex>
+              <Flex gap={6} align="bottom">
+                <SmallLabeledContainer displayName="Прозрачность">
                   <InputNumber
                     value={property.value.opacity}
                     onChange={(value) => {
@@ -84,11 +153,11 @@ const ImagePropertyComponent = observer(
                         return;
                       }
                       property.value = { ...property.value, opacity: value };
+                      onChange?.(property.value);
                     }}
                   />
-                </Flex>
-                <Flex gap={10} align="center">
-                  <span>Размер</span>
+                </SmallLabeledContainer>
+                <SmallLabeledContainer displayName="Размер">
                   <Select
                     className={`${classes.size}`}
                     value={property.value.size}
@@ -100,44 +169,23 @@ const ImagePropertyComponent = observer(
                     ]}
                     onChange={(value) => {
                       property.value = { ...property.value, size: value };
+                      onChange?.(property.value);
                     }}
                   />
-                </Flex>
-                <Flex gap={10} align="center">
-                  <span>Повтор</span>
-                  <Switch
-                    checked={property.value.repeat}
+                </SmallLabeledContainer>
+                <SmallLabeledContainer displayName="Повтор">
+                  <LightLabeledSwitchComponent
+                    label="Если размер меньше"
+                    value={property.value.repeat}
                     onChange={(checked) => {
                       property.value = {
                         ...property.value,
                         repeat: checked,
                       };
+                      onChange?.(property.value);
                     }}
                   />
-                </Flex>
-              </Flex>
-              <Image.PreviewGroup>
-                <Image
-                  width={200}
-                  height={120}
-                  className={`${classes.preview}`}
-                  src={`${image}`}
-                />
-              </Image.PreviewGroup>
-              <Flex vertical={true} justify="flex-start" align="flex-start">
-                <Button
-                  className={`${classes.deletebutton}`}
-                  onClick={() =>
-                    (property.value = {
-                      url: null,
-                      size: "auto",
-                      repeat: false,
-                      opacity: 1,
-                    })
-                  }
-                >
-                  <span className="material-symbols-sharp">delete</span>
-                </Button>
+                </SmallLabeledContainer>
               </Flex>
             </Flex>
           )}
@@ -170,29 +218,11 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
     });
   }
 
-  public async fullUri(): Promise<string> {
-    if (!this.value.url) {
-      return Promise.resolve("");
-    }
-    let url = this.value.url;
-    if (!this.value.url.startsWith("http")) {
-      url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${this.value.url}`;
-    }
-    // TODO: вынести в общий модуль
-    return fetch(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-      },
-    })
-      .then((res) => res.blob())
-      .then((blob) => URL.createObjectURL(blob));
-  }
-
   public async calcCss(): Promise<CSSProperties> {
     if (!this.value.url) {
       return Promise.resolve({});
     }
-    return this.fullUri().then((url) => {
+    return fullUri(this.value.url).then((url) => {
       return {
         backgroundImage: `url(${url})`,
         backgroundSize: this.value.size,

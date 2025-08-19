@@ -13,11 +13,9 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { log } from "../../logging";
 import CloseIcon from "../../icons/CloseIcon";
+import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import {
-  BorderedIconButton,
-  NotBorderedIconButton,
-} from "../../components/IconButton/IconButton";
-import {
+  CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
@@ -118,13 +116,7 @@ const ModalWrapper = observer(
           <Title>
             <Flex className="full-width" justify="space-between">
               <div>Добавить способ оплаты</div>
-              <NotBorderedIconButton
-                onClick={() => {
-                  dialogState.show = false;
-                }}
-              >
-                <CloseIcon color="var(--oda-color-1000)" />
-              </NotBorderedIconButton>
+              <CloseOverlayButton />
             </Flex>
           </Title>
           <div className={`${classes.subtitle}`}>{subtitle}</div>
@@ -297,13 +289,7 @@ const ChooseGatewayModal = observer(
               <Title>
                 <Flex className="full-width" justify="space-between">
                   <div>Добавить способ оплаты</div>
-                  <NotBorderedIconButton
-                    onClick={() => {
-                      dialogState.show = false;
-                    }}
-                  >
-                    <CloseIcon color="var(--oda-color-1000)" />
-                  </NotBorderedIconButton>
+                  <CloseOverlayButton />
                 </Flex>
               </Title>
               <div className={`${classes.subtitle}`}>

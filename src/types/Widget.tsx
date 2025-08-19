@@ -9,7 +9,6 @@ import { PlayerInfoWidgetSettings } from "../components/ConfigurationPage/widget
 import { DonatersTopListWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
 import { DonationTimerWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { DonationGoalWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
-import { ReelWidgetSettings } from "../components/ConfigurationPage/widgetsettings/ReelWidgetSettings";
 import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { PlayerControlWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerControlWidgetSettings";
 import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
@@ -32,6 +31,7 @@ import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
 import { socket } from "../socket";
+import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -116,6 +116,16 @@ export const WIDGET_TYPES = [
     create: () => new DonatonWidgetSettings(),
   },
   {
+    name: "horizontal-events",
+    title: "Горизонтальная лента событий",
+    icon: <EventFeedIcon />,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Бегущая строка, показывающая последние события (донаты в текущий момент)",
+    create: () => new HorizontalEventsWidgetSettings(),
+  },
+  {
     name: "reel",
     title: "Рулетка",
     icon: <ReelIcon />,
@@ -153,16 +163,6 @@ export const WIDGET_TYPES = [
     preview: "",
     description: "Позволяет удалённо управлять медиаплеером",
     create: () => new PlayerControlWidgetSettings(),
-  },
-  {
-    name: "horizontal-events",
-    title: "Горизонтальная лента событий",
-    icon: <EventFeedIcon />,
-    category: "onscreen",
-    preview: "",
-    description:
-      "Бегущая строка, показывающая последние события (донаты в текущий момент)",
-    create: () => new HorizontalEventsWidgetSettings(),
   },
   {
     name: "roulette",

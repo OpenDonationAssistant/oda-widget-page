@@ -242,6 +242,7 @@
     background-color: var(--oda-color-150);
     border: none;
     border-radius: 0px;
+    padding: 12px 15px;
 
     & > .ant-collapse-content-box {
       padding: 0px;

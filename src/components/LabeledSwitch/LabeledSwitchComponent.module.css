@@ -9,11 +9,19 @@
 }
 
 .lightcontainer {
-  border: none;
+  align-items: center;
+  font-size: 21px;
+  border: 1px solid var(--oda-color-250);
   color: var(--oda-color-500);
-  padding: 12px 15px;
   flex-grow: 1;
   flex-shrink: 1;
+  padding: 9px 12px;
+  height: 48px;
+  border-radius: 9px;
+  &.selected{
+    color: var(--oda-color-1000);
+    border-color: var(--oda-color-250);
+  }
 }
 
 .selected {

@@ -50,7 +50,7 @@ export default function Modal({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (!event.target){
+      if (!event.target) {
         return;
       }
       log.debug(

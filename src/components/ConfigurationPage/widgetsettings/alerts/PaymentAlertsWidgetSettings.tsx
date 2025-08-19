@@ -18,6 +18,11 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
         {
           key: "alerts",
           title: "tab-alert-alerts",
+          properties: [defaultAlert],
+        },
+        {
+          key: "configs",
+          title: "tab-alert-configs",
           properties: [
             new PremoderationProperty({}),
             new BooleanProperty({
@@ -25,7 +30,6 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
               value: true,
               displayName: "Паузить медиаплеер",
             }),
-            defaultAlert,
           ],
         },
       ],
@@ -113,7 +117,10 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
             const updated = prop.copy();
             updated.value = value;
             updated.markSaved();
-            log.debug({ updated: toJS(updated), value: value }, "updated payment alerts property");
+            log.debug(
+              { updated: toJS(updated), value: value },
+              "updated payment alerts property",
+            );
             return updated;
           }
           return prop;
@@ -126,5 +133,9 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       { sections: this.sections },
       "updated payment alert widget settings",
     );
+  }
+
+  public hasDemo(): boolean {
+    return false;
   }
 }

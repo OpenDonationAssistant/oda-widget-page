@@ -1,10 +1,5 @@
-import {
-  Alert,
-  FixedDonationAmountTrigger,
-  RangeDonationAmountTrigger,
-  UnknownTrigger,
-} from "./Alerts";
-import { Trans, useTranslation } from "react-i18next";
+import { Alert } from "./Alerts";
+import { useTranslation } from "react-i18next";
 import { Tabs as AntTabs, Flex, Select } from "antd";
 import { observer } from "mobx-react-lite";
 import { log } from "../../../../logging";
@@ -15,188 +10,119 @@ import { HeaderTab } from "./HeaderTab";
 import { MessageTab } from "./MessageTab";
 import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
-import PresetTab from "./PresetTab";
 import { LayoutTab } from "./LayoutTab";
-import { useEffect, useState } from "react";
-import InputNumber from "../../components/InputNumber";
 import classes from "./AlertComponent.module.css";
+import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { EditableString } from "../../../RenamableLabel/EditableString";
+import SubActionButton from "../../../SubActionButton/SubActionButton";
+import { ResizableBox } from "react-resizable";
+import SecondaryButton from "../../../SecondaryButton/SecondaryButton";
+import PrimaryButton from "../../../PrimaryButton/PrimaryButton";
+import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
+import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
+import { DemoTokenStore } from "../../../../stores/TokenStore";
+
+const SaveButtons = () => {
+  return (
+    <Flex className="full-width" justify="flex-end" gap={9}>
+      <SecondaryButton onClick={() => {}}>Отменить</SecondaryButton>
+      <PrimaryButton onClick={() => {}}>Сохранить</PrimaryButton>
+    </Flex>
+  );
+};
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
   log.debug({ alert: toJS(alert) }, "render alert");
-  const [image, setImage] = useState<string | null>(null);
-  const [video, setVideo] = useState<string | null>(null);
-  const [amount, setAmount] = useState<number>(() => {
-    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      return (alert.triggers.at(0) as FixedDonationAmountTrigger).amount ?? 0;
-    }
-    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      return (alert.triggers.at(0) as RangeDonationAmountTrigger).min ?? 0;
-    }
-    return 0;
-  });
-  const updateAmount = (amount: number) => {
-    log.debug({ triggers: alert.triggers }, "set amount");
-    if (alert.triggers.at(0)?.type === "fixed-donation-amount") {
-      (alert.triggers.at(0) as FixedDonationAmountTrigger).amount = amount;
-    }
-    if (alert.triggers.at(0)?.type === "at-least-donation-amount") {
-      (alert.triggers.at(0) as RangeDonationAmountTrigger).min = amount;
-    }
-    setAmount(amount);
-  };
-
-  useEffect(() => {
-    if (alert.image) {
-      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.image}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-      })
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob))
-        .then((url) => {
-          setImage((old) => url);
-        });
-    } else {
-      setImage(null);
-    }
-    if (alert.video) {
-      fetch(`${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.video}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-      })
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob))
-        .then((url) => {
-          setVideo((old) => url);
-        });
-    } else {
-      setVideo(null);
-    }
-  }, [alert.image, alert.video]);
 
   return (
-    <div key={alert.id} className="payment-alerts-previews-item">
-      <div className={`${classes.littletitle}`}>Срабатывает</div>
-      <Flex gap={12} justify="space-around" style={{ marginBottom: "18px" }}>
-        <Flex className="full-width">
-          <Select
-            value={alert.triggers.at(0)?.type}
-            className="full-width"
-            onChange={(e) => {
-              switch (e) {
-                case "fixed-donation-amount":
-                  alert.triggers.splice(
-                    0,
-                    1,
-                    new FixedDonationAmountTrigger({ amount: amount }),
-                  );
-                  break;
-                case "at-least-donation-amount":
-                  alert.triggers.splice(
-                    0,
-                    1,
-                    new RangeDonationAmountTrigger({ min: amount, max: null }),
-                  );
-                  break;
-                default:
-                  alert.triggers.splice(0, 1, new UnknownTrigger());
-                  break;
-              }
-            }}
-            options={[
+    <Flex key={alert.id} vertical style={{ height: "100%" }}>
+      <Flex
+        justify="space-between"
+        className={`${classes.alerttitle}`}
+        align="top"
+      >
+        <EditableString
+          label={alert.property("name")}
+          onChange={(value) => alert.set("name", value)}
+        />
+        <CloseOverlayButton />
+      </Flex>
+      <Flex gap={12} className={`${classes.alertcontainer}`}>
+        <Flex vertical className={`${classes.alertsettings}`}>
+          <AntTabs
+            size="small"
+            type="card"
+            tabPosition="top"
+            items={[
               {
-                value: "fixed-donation-amount",
-                label: <Trans i18nKey={"когда сумма доната равна"} />,
+                key: "trigger",
+                label: t("General"),
+                children: [<GeneralTab alert={alert} />],
               },
               {
-                value: "at-least-donation-amount",
-                label: <Trans i18nKey={"когда сумма доната больше"} />,
+                key: "layout",
+                label: t("Layout"),
+                children: [<LayoutTab alert={alert} />],
               },
               {
-                value: "never",
-                label: <Trans i18nKey={"никогда"} />,
+                key: "sound",
+                label: t("tab-alert-audio"),
+                children: [<SoundTab alert={alert} />],
+              },
+              {
+                key: "image",
+                label: t("tab-alert-image"),
+                children: [<ImageTab alert={alert} />],
+              },
+              {
+                key: "header",
+                label: t("tab-alert-title"),
+                children: [<HeaderTab alert={alert} />],
+              },
+              {
+                key: "message",
+                label: t("tab-alert-message"),
+                children: [<MessageTab alert={alert} />],
+              },
+              {
+                key: "voice",
+                label: t("tab-alert-voice"),
+                children: [<VoiceTab alert={alert} />],
               },
             ]}
           />
         </Flex>
-        {alert.triggers.at(0)?.type === "fixed-donation-amount" && (
-          <div style={{ display: "inline-block", width: "50%" }}>
-            <InputNumber
-              value={alert.triggers.at(0)?.amount}
-              addon="руб."
-              onChange={(newAmount) => {
-                if (!newAmount) {
-                  return;
-                }
-                updateAmount(newAmount);
-              }}
-            />
-          </div>
-        )}
-        {alert.triggers.at(0)?.type === "at-least-donation-amount" && (
-          <div style={{ display: "inline-block", width: "50%" }}>
-            <InputNumber
-              value={alert.triggers.at(0)?.min}
-              addon="руб."
-              onChange={(newAmount) => {
-                if (!newAmount) {
-                  return;
-                }
-                updateAmount(newAmount);
-              }}
-            />
-          </div>
-        )}
+        <Flex vertical className={`${classes.alertpreview}`} gap={9}>
+          <Flex
+            justify="flex-start"
+            gap={9}
+            className={`${classes.previewcontainer}`}
+          >
+            <SubActionButton onClick={() => {}}>Создать шаблон</SubActionButton>
+            <SubActionButton onClick={() => {}}>
+              Применить шаблон
+            </SubActionButton>
+          </Flex>
+          <Flex justify="space-around" className={`${classes.preview}`}>
+            <ResizableBox
+              height={-1}
+              width={-1}
+              className={`${classes.resizable}`}
+              axis="both"
+              minConstraints={[400, 100]}
+            >
+              <div style={{ margin: "auto" }}>
+                <PaymentAlerts
+                  alertController={new DemoAlertController(alert, "")}
+                  tokenStore={new DemoTokenStore()}
+                />
+              </div>
+            </ResizableBox>
+          </Flex>
+          <SaveButtons />
+        </Flex>
       </Flex>
-      <AntTabs
-        type="card"
-        tabPosition="top"
-        items={[
-          {
-            key: "preset",
-            label: "Готовые шаблоны",
-            children: [<PresetTab alert={alert} />],
-          },
-          {
-            key: "trigger",
-            label: t("General"),
-            children: [<GeneralTab alert={alert} />],
-          },
-          {
-            key: "layout",
-            label: t("Layout"),
-            children: [<LayoutTab alert={alert} />],
-          },
-          {
-            key: "sound",
-            label: t("tab-alert-audio"),
-            children: [<SoundTab alert={alert} />],
-          },
-          {
-            key: "image",
-            label: t("tab-alert-image"),
-            children: [<ImageTab alert={alert} />],
-          },
-          {
-            key: "header",
-            label: t("tab-alert-title"),
-            children: [<HeaderTab alert={alert} />],
-          },
-          {
-            key: "message",
-            label: t("tab-alert-message"),
-            children: [<MessageTab alert={alert} />],
-          },
-          {
-            key: "voice",
-            label: t("tab-alert-voice"),
-            children: [<VoiceTab alert={alert} />],
-          },
-        ]}
-      />
-    </div>
+    </Flex>
   );
 });

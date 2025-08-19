@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import { DefaultWidgetProperty, WidgetProperty } from "./WidgetProperty";
+import { DefaultWidgetProperty } from "./WidgetProperty";
 import { AbstractWidgetSettings } from "../widgetsettings/AbstractWidgetSettings";
-import { PresetStore } from "../../../stores/PresetStore";
+import { DefaultPresetStore, PresetStore } from "../../../stores/PresetStore";
 import PresetPropertyComponent from "./PresetPropertyComponent";
 import { Preset } from "../../../types/Preset";
 import { log } from "../../../logging";
@@ -20,7 +20,7 @@ export class PresetProperty extends DefaultWidgetProperty<string> {
   }) {
     super({ name: "preset", value: type, displayName: "widget-preset" });
     this._settings = settings;
-    this._store = new PresetStore();
+    this._store = new DefaultPresetStore();
   }
   protected _name: string = "preset";
   protected _initialValue: string = "unknown";

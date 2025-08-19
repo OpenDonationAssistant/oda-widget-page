@@ -2,14 +2,12 @@ import { useContext, useState } from "react";
 import { log } from "../../logging";
 import "./TestAlertPopup.css";
 import { publish } from "../../socket";
-import { Config } from "../../config";
 import {
   Dialog,
   ModalState,
   ModalStateContext,
   Overlay,
 } from "../Overlay/Overlay";
-import RunIcon from "../../icons/RunIcon";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import InputNumber from "../ConfigurationPage/components/InputNumber";

@@ -15,18 +15,13 @@ import {
   DateTimePropertyValue,
 } from "../../widgetproperties/DateTimeProperty";
 import { DonatonPriceProperty } from "./DonatonPriceProperty";
-import { PresetProperty } from "../../widgetproperties/PresetProperty";
-import DonatonWidget from "../../../../pages/Donaton/DonatonWidget";
+import { DonatonWidget } from "../../../../pages/Donaton/DonatonWidget";
+import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
+import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
 
 export class DonatonWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
-
-    this.addSection({
-      key: "preset",
-      title: "Готовые шаблоны",
-      properties: [new PresetProperty({ type: "donaton", settings: this })],
-    });
 
     this.addSection({
       key: "general",
@@ -94,6 +89,7 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
             gradientType: 0,
           },
         }),
+        new BackgroundImageProperty({ name: "backgroundImage" }),
         new BorderProperty({
           name: "border",
         }),
@@ -103,6 +99,7 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           name: "rounding",
         }),
+        new BoxShadowProperty({ name: "shadow" }),
       ],
     });
   }
@@ -155,6 +152,20 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
     return (
       (this.get("rounding") as RoundingProperty) ||
       new RoundingProperty({ name: "rounding" })
+    );
+  }
+
+  public get shadowProperty(): BoxShadowProperty {
+    return (
+      (this.get("shadow") as BoxShadowProperty) ||
+      new BoxShadowProperty({ name: "shadow" })
+    );
+  }
+
+  public get backgroundImageProperty(): BackgroundImageProperty {
+    return (
+      (this.get("backgroundImage") as BackgroundImageProperty) ||
+      new BackgroundImageProperty({ name: "backgroundImage" })
     );
   }
 

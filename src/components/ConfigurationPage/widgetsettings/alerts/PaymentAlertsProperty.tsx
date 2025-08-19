@@ -5,7 +5,7 @@ import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { AlertComponent } from "./AlertComponent";
-import { Collapse, Flex, Input, Modal, Switch } from "antd";
+import { Flex, Switch } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
@@ -15,9 +15,8 @@ import { extendObservable, observable, toJS } from "mobx";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";
 import { EditableString } from "../../../RenamableLabel/EditableString";
-import ArrowUp from "../../../../icons/ArrowUp";
-import ArrowDown from "../../../../icons/ArrowDown";
 import {
+  FullscreenPanel,
   ModalState,
   ModalStateContext,
   Overlay,
@@ -25,7 +24,7 @@ import {
 } from "../../../Overlay/Overlay";
 import CopyIcon from "../../../../icons/CopyIcon";
 import { BorderedIconButton } from "../../../IconButton/IconButton";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
+import { AddListItemButton, List, ListItem } from "../../../List/List";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -41,161 +40,89 @@ function testAlert(topic: string, alert: Alert) {
   });
 }
 
-export const RenameButton = observer(({ alert }: { alert: Alert }) => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [newName, setNewName] = useState<string>(() => alert.property("name"));
-
-  const toggleModal = () => {
-    setShowModal((old) => !old);
-  };
+const AlertItemComponent = observer(({ alert }: { alert: Alert }) => {
+  const { conf } = useLoaderData() as WidgetData;
+  const parentModalState = useContext(ModalStateContext);
+  const [deleteDialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
+  const [alertDialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
 
   return (
-    <>
-      <Modal
-        title="Help"
-        open={showModal}
-        onCancel={toggleModal}
-        onClose={toggleModal}
-        onOk={() => {
-          alert.update("name", newName);
-          toggleModal();
-        }}
-      >
-        <Input value={newName} onChange={(e) => setNewName(e.target.value)} />
-      </Modal>
-      <button className="menu-button" onClick={toggleModal}>
-        <span className="material-symbols-sharp">stylus</span>
-      </button>
-    </>
+    <ModalStateContext.Provider value={alertDialogState}>
+      <ListItem
+        onClick={() => (alertDialogState.show = true)}
+        first={
+          <Flex align="center" gap={18}>
+            <div className={`${classes.alerttitle}`}>
+              {alert.property("name")}
+            </div>
+            <Switch
+              value={alert.property("enabled")}
+              onChange={(value) => alert.set("enabled", value)}
+            />
+          </Flex>
+        }
+        second={
+          <Flex className={`${classes.alertbuttons}`} gap={9}>
+            <SubActionButton
+              onClick={() => testAlert(conf.topic.alerts, alert)}
+            >
+              <div>Тест</div>
+            </SubActionButton>
+            <BorderedIconButton
+              onClick={() => {
+                alert.copy();
+              }}
+            >
+              <CopyIcon />
+            </BorderedIconButton>
+            <ModalStateContext.Provider value={deleteDialogState}>
+              <Overlay>
+                <Warning
+                  action={() => {
+                    deleteDialogState.show = false;
+                    alert.delete();
+                  }}
+                >
+                  Вы точно хотите удалить оповещение?
+                </Warning>
+              </Overlay>
+              <BorderedIconButton
+                onClick={() => (deleteDialogState.show = true)}
+              >
+                <CloseIcon color="#FF8888" />
+              </BorderedIconButton>
+            </ModalStateContext.Provider>
+          </Flex>
+        }
+      />
+      <Overlay>
+        <FullscreenPanel>
+          <AlertComponent alert={alert} />
+        </FullscreenPanel>
+      </Overlay>
+    </ModalStateContext.Provider>
   );
 });
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
     const { t } = useTranslation();
-    const { conf } = useLoaderData() as WidgetData;
-    const [opened, setOpened] = useState<string>("");
-    const parentModalState = useContext(ModalStateContext);
-    const [deleteDialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
-    const [alertToDelete, setAlertToDelete] = useState<Alert | null>(null);
 
     return (
       <>
-        <ModalStateContext.Provider value={deleteDialogState}>
-          <Overlay>
-            <Warning
-              action={() => {
-                deleteDialogState.show = false;
-                alertToDelete?.delete();
-              }}
-            >
-              Вы точно хотите удалить оповещение?
-            </Warning>
-          </Overlay>
-          <LabeledContainer displayName="Оповещения">
-            {property.value.length > 0 && (
-              <div className={`${classes.preview}`}>
-                <Collapse
-                  activeKey={opened}
-                  collapsible="disabled"
-                  expandIcon={({ isActive }) => (
-                    <div>{isActive ? <ArrowUp /> : <ArrowDown />}</div>
-                  )}
-                  expandIconPosition="end"
-                  items={property.value.map((it, index) => {
-                    log.debug({ it: it }, "create view for alert");
-                    const switcher = () => {
-                      if (opened === it.id) {
-                        setOpened("");
-                      } else if (opened === String(index)) {
-                        setOpened("");
-                      } else {
-                        setOpened(it.id ?? String(index));
-                      }
-                    };
-                    const clickHandler: MouseEventHandler = (e) => {
-                      if (e.target === e.currentTarget) {
-                        switcher();
-                      }
-                    };
-
-                    return {
-                      key: it.id ?? index,
-                      showArrow: false,
-                      label: (
-                        <Flex
-                          key={it.id ?? index}
-                          justify="space-between"
-                          align="center"
-                          onClick={clickHandler}
-                        >
-                          <Flex align="center" gap={18}>
-                            <EditableString
-                              label={it.property("name")}
-                              onChange={(value) => it.set("name", value)}
-                              onClick={switcher}
-                            />
-                            <Switch
-                              value={it.property("enabled")}
-                              onChange={(value) => it.set("enabled", value)}
-                            />
-                          </Flex>
-                          <Flex className={`${classes.alertbuttons}`} gap={9}>
-                            <SubActionButton
-                              onClick={() => testAlert(conf.topic.alerts, it)}
-                            >
-                              <div>Тест</div>
-                            </SubActionButton>
-                            <BorderedIconButton
-                              onClick={() => {
-                                it.copy();
-                              }}
-                            >
-                              <CopyIcon />
-                            </BorderedIconButton>
-                            <BorderedIconButton
-                              onClick={() => {
-                                setAlertToDelete(it);
-                                deleteDialogState.show = true;
-                              }}
-                            >
-                              <CloseIcon color="#FF8888" />
-                            </BorderedIconButton>
-                            <Flex
-                              justify="center"
-                              align="center"
-                              onClick={switcher}
-                            >
-                              {(it.id === opened ||
-                                String(index) === opened) && <ArrowUp />}
-                              {it.id !== opened && String(index) !== opened && (
-                                <ArrowDown />
-                              )}
-                            </Flex>
-                          </Flex>
-                        </Flex>
-                      ),
-                      children: (
-                        <AlertComponent key={it.id ?? index} alert={it} />
-                      ),
-                    };
-                  })}
-                />
-              </div>
-            )}
-          </LabeledContainer>
-          <button
-            className={`${classes.adddalertbutton}`}
+        <List>
+          {property.value.map((alert) => (
+            <AlertItemComponent key={alert.id} alert={alert} />
+          ))}
+          <AddListItemButton
+            label="button-add-alert"
             onClick={() => property.addAlert()}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">add</span>
-              <div>{t("button-add-alert")}</div>
-            </Flex>
-          </button>
-        </ModalStateContext.Provider>
+          />
+        </List>
       </>
     );
   },

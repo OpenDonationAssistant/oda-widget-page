@@ -7,5 +7,29 @@
 }
 
 .shadowitem {
-  margin-top: 20px;
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
+  padding: 12px 15px;
+}
+
+.shadowtype {
+  flex: 1 1 auto;
+}
+
+.colorcontainer {
+  border: 1px solid var(--oda-color-250);
+  padding: 6px 9px;
+  border-radius: 9px;
+}
+
+.addbutton {
+  background-color: var(--oda-color-150);
+  padding: 12px 15px;
+  border-radius: 9px;
+  border: none;
+  font-size: 16px;
+  color: var(--oda-color-950);
+  &:hover {
+    transform: translateY(-2px);
+  }
 }

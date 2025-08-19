@@ -16,8 +16,15 @@
   font-size: 14px;
   font-weight: 900;
 
+  &:disabled {
+    color: var(--oda-color-150);
+    background-color: var(--oda-color-250);
+    border-color: var(--oda-color-250);
+  }
+
   &:hover {
     transform: translateY(-2px);
   }
+  
 
 }

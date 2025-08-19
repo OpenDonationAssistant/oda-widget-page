@@ -1,28 +1,26 @@
+import { AdvancedTextProperty } from "../../components/ConfigurationPage/widgetproperties/AdvancedText/AdvancedTextProperty";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
 import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
+import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
 import {
   ColorProperty,
   ColorPropertyTarget,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
+import { ListProperty } from "../../components/ConfigurationPage/widgetproperties/List/ListProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { TextProperty } from "../../components/ConfigurationPage/widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
+import { DemoHistoryStore } from "../History/DemoHistoryStore";
 import { HorizontalEventsModeProperty } from "./HorizontalEventsModeProperty";
+import { HorizontalEventsWidget } from "./HorizontalEventsWidget";
 
 export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
-
-    //this.addSection({
-    //  key: "preset",
-    //  title: "Готовые шаблоны",
-    //  properties: [
-    //    new PresetProperty({ type: "horizontal-events", settings: this }),
-    //  ],
-    //});
 
     this.addSection({
       key: "general",
@@ -42,6 +40,15 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
       key: "header",
       title: "Заголовок",
       properties: [
+        new ListProperty({
+          name: "headerItems",
+          displayName: "Элементы заголовка",
+          value: [
+            new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
+          ],
+          factoryMethod: () =>
+            new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
+        }),
         new BooleanProperty({
           name: "showHeader",
           value: true,
@@ -96,6 +103,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
             gradientType: 0,
           },
         }),
+        new BackgroundImageProperty({ name: "headerBackgroundImage" }),
         new BorderProperty({
           name: "headerBorder",
         }),
@@ -105,6 +113,9 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           name: "headerRounding",
         }),
+        new BoxShadowProperty({
+          name: "headerShadow",
+        }),
       ],
     });
 
@@ -113,48 +124,9 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
       title: "Событие",
       properties: [
         new BooleanProperty({
-          name: "showMessage",
+          name: "showNickname",
           value: true,
-          displayName: "Показывать сообщение",
-        }),
-        new BooleanProperty({
-          name: "showAmount",
-          value: true,
-          displayName: "Показывать сумму",
-        }),
-        new NumberProperty({
-          name: "eventGap",
-          value: 12,
-          displayName: "Отступ между событиями",
-        }),
-        new AnimatedFontProperty({
-          name: "eventsAmountFont",
-          label: "Шрифт суммы",
-          value: {
-            outline: { enabled: false, width: 0, color: "#000000" },
-            size: 24,
-            color: {
-              angle: 0,
-              colors: [
-                {
-                  color: "#684aff",
-                },
-              ],
-              gradient: false,
-              repeating: false,
-              gradientType: 0,
-            },
-            family: "Play",
-            italic: false,
-            weight: true,
-            animation: "none",
-            underline: false,
-            shadowColor: "rgb(255, 255, 255)",
-            shadowWidth: 0,
-            animationType: "entire",
-            shadowOffsetX: 0,
-            shadowOffsetY: 0,
-          },
+          displayName: "Показывать никнейм",
         }),
         new AnimatedFontProperty({
           name: "eventsNicknameFont",
@@ -185,6 +157,11 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
             shadowOffsetY: 0,
           },
         }),
+        new BooleanProperty({
+          name: "showMessage",
+          value: true,
+          displayName: "Показывать сообщение",
+        }),
         new AnimatedFontProperty({
           name: "eventsMessageFont",
           label: "Шрифт сообщения доната",
@@ -214,6 +191,45 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
             shadowOffsetY: 0,
           },
         }),
+        new BooleanProperty({
+          name: "showAmount",
+          value: true,
+          displayName: "Показывать сумму",
+        }),
+        new AnimatedFontProperty({
+          name: "eventsAmountFont",
+          label: "Шрифт суммы",
+          value: {
+            outline: { enabled: false, width: 0, color: "#000000" },
+            size: 24,
+            color: {
+              angle: 0,
+              colors: [
+                {
+                  color: "#684aff",
+                },
+              ],
+              gradient: false,
+              repeating: false,
+              gradientType: 0,
+            },
+            family: "Play",
+            italic: false,
+            weight: true,
+            animation: "none",
+            underline: false,
+            shadowColor: "rgb(255, 255, 255)",
+            shadowWidth: 0,
+            animationType: "entire",
+            shadowOffsetX: 0,
+            shadowOffsetY: 0,
+          },
+        }),
+        new NumberProperty({
+          name: "eventGap",
+          value: 12,
+          displayName: "Отступ между событиями",
+        }),
         new ColorProperty({
           name: "eventsBackgroundColor",
           displayName: "background-color",
@@ -230,6 +246,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
             gradientType: 0,
           },
         }),
+        new BackgroundImageProperty({ name: "eventsBackgroundImage" }),
         new BorderProperty({
           name: "eventsBorder",
         }),
@@ -239,6 +256,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new RoundingProperty({
           name: "eventsRounding",
         }),
+        new BoxShadowProperty({ name: "eventsShadow" }),
       ],
     });
 
@@ -262,6 +280,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
             gradientType: 0,
           },
         }),
+        new BackgroundImageProperty({ name: "lineBackgroundImage" }),
         new BorderProperty({
           name: "lineBorder",
         }),
@@ -270,6 +289,9 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         }),
         new RoundingProperty({
           name: "lineRounding",
+        }),
+        new BoxShadowProperty({
+          name: "lineShadow",
         }),
       ],
     });
@@ -356,5 +378,20 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
   public get lineRounding() {
     return this.get("lineRounding") as RoundingProperty;
+  }
+
+  public hasDemo(): boolean {
+    return true;
+  }
+
+  public demo() {
+    return (
+      <div style={{ width: "100%" }}>
+        <HorizontalEventsWidget
+          settings={this}
+          store={new DemoHistoryStore()}
+        />
+      </div>
+    );
   }
 }

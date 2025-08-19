@@ -20,8 +20,6 @@ import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import classes from "./AbstractWidgetSettings.module.css";
 import { BackgroundImageProperty } from "../widgetproperties/BackgroundImageProperty";
 import { ReactNode } from "react";
-import { BlurProperty } from "../widgetproperties/BlurProperty";
-import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
@@ -29,19 +27,12 @@ import { HeightProperty } from "../widgetproperties/HeightProperty";
 import { WidthProperty } from "../widgetproperties/WidthProperty";
 import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
 import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationGoalState";
+import { Flex } from "antd";
+import { CloseOverlayButton, Title } from "../../Overlay/Overlay";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
-
-    this.addSection({
-      key: "preset",
-      title: "Готовые шаблоны",
-      properties: [
-        new PresetProperty({ type: "donation-goal", settings: this }),
-      ],
-    });
-
     this.addSection({
       key: "goals",
       title: "tab-donationgoal-goals",
@@ -50,7 +41,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "general",
-      title: "General",
+      title: "Entire",
       properties: [
         new ColorProperty({
           name: "widgetBackgroundColor",
@@ -94,11 +85,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "header",
       title: "tab-donationgoal-header",
       properties: [
-        new BooleanProperty({
-          name: "showTitle",
-          value: true,
-          displayName: "widget-donationgoal-show-title",
-        }),
         new ColorProperty({
           name: "titleBackgroundColor",
           displayName: "background-color",
@@ -113,6 +99,11 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BackgroundImageProperty({
           name: "titleBackgroundImage",
+        }),
+        new BooleanProperty({
+          name: "showTitle",
+          value: true,
+          displayName: "widget-donationgoal-show-title",
         }),
         new AnimatedFontProperty({
           name: "descriptionFont",
@@ -153,6 +144,11 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "progressbar",
       title: "tab-donationgoal-bar",
       properties: [
+        new ColorProperty({
+          name: "backgroundColor",
+          displayName: "widget-donationgoal-background",
+          target: ColorPropertyTarget.BACKGROUND,
+        }),
         new BackgroundImageProperty({
           name: "outerImage",
         }),
@@ -180,11 +176,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           options: ["left", "center", "right"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
-        new ColorProperty({
-          name: "backgroundColor",
-          displayName: "widget-donationgoal-background",
-          target: ColorPropertyTarget.BACKGROUND,
-        }),
         new HeightProperty({
           name: "outerHeight",
         }),
@@ -209,9 +200,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "fulfillment",
       title: "tab-donationgoal-fulfillment",
       properties: [
-        new BackgroundImageProperty({
-          name: "innerImage",
-        }),
         new ColorProperty({
           name: "filledColor",
           displayName: "widget-donationgoal-filled-color",
@@ -223,6 +211,9 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
             gradientType: GRADIENT_TYPE.LINEAR,
             colors: [{ color: "#00FF00" }],
           },
+        }),
+        new BackgroundImageProperty({
+          name: "innerImage",
         }),
         new HeightProperty({
           name: "filledHeight",
@@ -245,7 +236,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
       ],
     });
-
   }
 
   public copy(): DonationGoalWidgetSettings {
@@ -266,14 +256,19 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public demo() {
     return (
-      <DonationGoal settings={this} state={new DemoDonationGoalState(this)} />
+      <Flex className="full-width" vertical justify="center">
+        <DonationGoal settings={this} state={new DemoDonationGoalState(this)} />
+      </Flex>
     );
   }
 
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Сбор средств"</h3>
+        <Flex justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Сбор средств"</h3>
+          <CloseOverlayButton/>
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Позволяет создать цели сбора донатов и отслеживать их выполнение на
           стриме.

@@ -1,4 +1,4 @@
-import { ReactNode, useContext } from "react";
+import { MouseEventHandler, ReactNode, useContext, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
@@ -12,6 +12,17 @@ import { toJS } from "mobx";
 import BooleanPropertyInput from "../components/BooleanPropertyInput";
 import InputNumber from "../components/InputNumber";
 import { PaymentPageConfigContext } from "../../MediaWidget/PaymentPageConfig";
+import CollapseLikeButton from "../../Button/Button";
+import ArrowUp from "../../../icons/ArrowUp";
+import ArrowDown from "../../../icons/ArrowDown";
+import CloseIcon from "../../../icons/CloseIcon";
+import { BorderedIconButton } from "../../IconButton/IconButton";
+import { TextPropertyRawComponent } from "./TextProperty";
+import {
+  LabeledSwitchComponent,
+  LightLabeledSwitchComponent,
+} from "../../LabeledSwitch/LabeledSwitchComponent";
+import { AddListItemButton, List, ListItem } from "../../List/List";
 
 export interface Amount {
   major: number;
@@ -42,49 +53,30 @@ const ItemComponent = observer(
     return (
       <div key={index} className={`${classes.goalcontainer}`}>
         <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-title">
-            <TextPropertyModal title="Название">
-              <textarea
-                className="widget-settings-value"
-                value={goal.briefDescription}
-                onChange={(e) => {
-                  const updated = toJS(goal);
-                  updated.briefDescription = e.target.value;
-                  property.updateGoal(updated, index);
-                }}
-              />
-            </TextPropertyModal>
-          </LabeledContainer>
+          <TextPropertyRawComponent
+            displayName="widget-goal-title"
+            value={goal.briefDescription}
+            size="small"
+            onChange={(e) => {
+              const updated = toJS(goal);
+              updated.briefDescription = e.target.value;
+              property.updateGoal(updated, index);
+            }}
+          />
         </div>
         <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-description">
-            <TextPropertyModal title="Описание">
-              <textarea
-                className="widget-settings-value"
-                value={goal.fullDescription}
-                onChange={(e) => {
-                  const updated = toJS(goal);
-                  updated.fullDescription = e.target.value;
-                  property.updateGoal(updated, index);
-                }}
-              />
-            </TextPropertyModal>
-          </LabeledContainer>
+          <TextPropertyRawComponent
+            displayName="widget-goal-description"
+            value={goal.fullDescription}
+            size="small"
+            onChange={(e) => {
+              const updated = toJS(goal);
+              updated.fullDescription = e.target.value;
+              property.updateGoal(updated, index);
+            }}
+          />
         </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-amount">
-            <InputNumber
-              value={goal.requiredAmount.major}
-              addon="руб."
-              onChange={(value) => {
-                const updated = toJS(goal);
-                updated.requiredAmount.major = value ?? 0;
-                property.updateGoal(updated, index);
-              }}
-            />
-          </LabeledContainer>
-        </div>
-        <div className="settings-item">
+        <Flex gap={9} className="settings-item">
           <LabeledContainer displayName="widget-goal-accumulated-amount">
             <InputNumber
               value={
@@ -112,76 +104,108 @@ const ItemComponent = observer(
               }}
             />
           </LabeledContainer>
-        </div>
-        <div className="settings-item">
-          <LabeledContainer displayName="widget-goal-default">
-            <BooleanPropertyInput
-              onChange={() => {
+          <LabeledContainer displayName="widget-goal-amount">
+            <InputNumber
+              value={goal.requiredAmount.major}
+              addon="руб."
+              onChange={(value) => {
                 const updated = toJS(goal);
-                updated.default = !updated.default;
+                updated.requiredAmount.major = value ?? 0;
                 property.updateGoal(updated, index);
-              }}
-              prop={{
-                value: goal.default,
               }}
             />
           </LabeledContainer>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <button
-            className={`${classes.deletebutton}`}
-            onClick={() => {
-              property.deleteGoal(index);
+        </Flex>
+        <div className="settings-item">
+          <LightLabeledSwitchComponent
+            value={goal.default}
+            onChange={() => {
+              const updated = toJS(goal);
+              updated.default = !updated.default;
+              property.updateGoal(updated, index);
             }}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">delete</span>
-              <div>
-                <Trans i18nKey="button-delete" />
-              </div>
-            </Flex>
-          </button>
+            label="widget-goal-default"
+          />
         </div>
       </div>
     );
   },
 );
 
-const DonationGoalPropertyComponent = observer(
-  ({ property }: { property: DonationGoalProperty }) => {
+const DonationGoalItemComponent = observer(
+  ({
+    property,
+    index,
+    goal,
+  }: {
+    property: DonationGoalProperty;
+    index: number;
+    goal: Goal;
+  }) => {
+    const [opened, setOpened] = useState<boolean>(false);
     return (
-      <>
-        <div style={{ marginTop: "10px", textAlign: "center" }}>
-          <button
-            className={`${classes.button} oda-btn-default`}
-            onClick={() => property.addGoal()}
-          >
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">add</span>
-              <div>
-                <Trans i18nKey="button-add-goal" />
-              </div>
+      <Flex vertical className={`${classes.goalitem}`}>
+        <ListItem
+          first={
+            <div className={`${classes.goaltitle}`}>
+              {goal.briefDescription}
+            </div>
+          }
+          second={
+            <Flex align="center" justify="flex-end" gap={3}>
+            <BorderedIconButton onClick={() => property.deleteGoal(index)}>
+              <CloseIcon color="#FF8888" />
+            </BorderedIconButton>
+            {opened ? <ArrowUp /> : <ArrowDown />}
             </Flex>
-          </button>
-        </div>
-        <Collapse
-          defaultActiveKey={["1"]}
-          items={property.value.map((goal: Goal, index: number) => {
-            return {
-              key: index,
-              label: goal.briefDescription,
-              children: (
-                <ItemComponent property={property} goal={goal} index={index} />
-              ),
-            };
-          })}
+          }
+          onClick={() => setOpened(!opened)}
         />
-      </>
+        {opened && <ItemComponent property={property} goal={goal} index={index} />}
+      </Flex>
     );
   },
 );
 
-// TODO: 18n
+const DonationGoalPropertyComponent = observer(
+  ({ property }: { property: DonationGoalProperty }) => {
+    const [opened, setOpened] = useState<string>("");
+
+    const switcher = (index: number) => {
+      if (opened === String(index)) {
+        setOpened("");
+      } else {
+        setOpened(String(index));
+      }
+    };
+
+    // TODO duplicates
+    const clickHandler = (index: number) => {
+      return (e: MouseEvent) => {
+        if (e.target === e.currentTarget) {
+          switcher(index);
+        }
+      };
+    };
+
+    return (
+      <List>
+        {property.value.map((goal: Goal, index: number) => (
+          <DonationGoalItemComponent
+            property={property}
+            index={index}
+            goal={goal}
+          />
+        ))}
+        <AddListItemButton
+          onClick={() => property.addGoal()}
+          label="button-add-goal"
+        />
+      </List>
+    );
+  },
+);
+
 export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
   constructor() {
     super({
@@ -189,7 +213,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
       value: [
         {
           id: uuidv7(),
-          briefDescription: "",
+          briefDescription: "Название",
           fullDescription: "",
           default: false,
           requiredAmount: { major: 100, currency: "RUB" },

@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import DonationTimer from "./DonationTimer";
+import { DonationTimer } from "./DonationTimer";
 import WidgetWrapper from "../../WidgetWrapper";
 import { Widget } from "../../types/Widget";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";

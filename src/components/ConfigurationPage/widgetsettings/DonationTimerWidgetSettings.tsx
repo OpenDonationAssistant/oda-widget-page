@@ -1,4 +1,4 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
@@ -10,7 +10,6 @@ import {
   ColorPropertyTarget,
 } from "../widgetproperties/ColorProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
-import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
@@ -18,19 +17,12 @@ import {
   SELECTION_TYPE,
   SingleChoiceProperty,
 } from "../widgetproperties/SingleChoiceProperty";
-import DonationTimer from "../../../pages/DonationTimer/DonationTimer";
+import { DonationTimer } from "../../../pages/DonationTimer/DonationTimer";
+import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
-
-    this.addSection({
-      key: "preset",
-      title: "Готовые шаблоны",
-      properties: [
-        new PresetProperty({ type: "donation-timer", settings: this }),
-      ],
-    });
 
     this.addSection({
       key: "general",
@@ -231,6 +223,6 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   }
 
   public demo() {
-    return <DonationTimer settings={this} />;
+    return <DonationTimer settings={this} store={new DemoHistoryStore()} />;
   }
 }

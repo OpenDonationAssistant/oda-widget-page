@@ -14,6 +14,8 @@ import { BorderProperty } from "../../components/ConfigurationPage/widgetpropert
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
+import { RouletteWidget } from "./RouletteWidget";
+import { DemoReelStore } from "../../stores/ReelStore";
 
 export class RouletteWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -69,6 +71,10 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
+  public get itemsProperty(): RouletteItemsProperty {
+    return this.get("roulette-items") as RouletteItemsProperty;
+  }
+
   public help(): ReactNode {
     return (
       <>
@@ -86,5 +92,13 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
+  }
+
+  public hasDemo(): boolean {
+    return true;
+  }
+
+  public demo(): ReactNode {
+    return <RouletteWidget settings={this} store={new DemoReelStore(20000, this.itemsProperty.value)} />;
   }
 }

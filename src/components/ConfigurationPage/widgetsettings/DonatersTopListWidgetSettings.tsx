@@ -17,7 +17,6 @@ import {
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
-import { PresetProperty } from "../widgetproperties/PresetProperty";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
@@ -31,13 +30,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
 
-    this.addSection({
-      key: "preset",
-      title: "Готовые шаблоны",
-      properties: [
-        new PresetProperty({ type: "donaters-top-list", settings: this }),
-      ],
-    });
     this.addSection({
       key: "content",
       title: "tab-donaters-list-content",

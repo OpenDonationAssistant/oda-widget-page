@@ -10,15 +10,48 @@
   margin-bottom: 6px;
 }
 
-.resizable{
-  box-shadow: inset 0 0 12px 6px rgba(0, 0, 0, 0.8), 0 0 12px 6px rgba(0, 0, 0, 0.8);
-    border: 1px solid rgb(43, 53, 102);
-    border-radius: 8px;
-    margin-bottom: 10px;
-    background: url(https://api.oda.digital/public/commonback.jpg);
-    background-size: cover;
-    display: flex
-;
-    justify-content: center;
-    align-items: center;
+.preview {
+  padding: 6px;
+  background-color: black;
+  border-radius: 9px;
+  margin-top: 0px;
+  /* height: calc(100% - 135px); */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resizable {
+  border-radius: 6px;
+  background: url(https://cdn.oda.digital/assets/preview-background.jpg);
+  background-size: cover;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.alerttitle {
+  color: var(--oda-color-950);
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.alertcontainer {
+  height: 100%;
+  overflow: hidden;
+}
+
+.alertsettings {
+  width: 50%;
+  overflow-y: scroll;
+  height: 97%;
+}
+
+.alertpreview {
+  width: 50%;
 }

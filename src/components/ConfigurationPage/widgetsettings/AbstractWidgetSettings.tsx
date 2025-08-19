@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
-import { Tabs as AntTabs } from "antd";
+import { Tabs as AntTabs, Flex } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
+import classes from "./AbstractWidgetSettings.module.css";
 import { Preset } from "../../../types/Preset";
 
 export interface SettingsSection {
@@ -78,15 +79,6 @@ export class AbstractWidgetSettings {
     return prepared;
   }
 
-  // public makePreset(previewUrl: string | void): Preset {
-  //   var config = this._sections;
-  //   return new Preset({
-  //     name: "test",
-  //     showcase: previewUrl ?? "",
-  //     properties: [],
-  //   });
-  // }
-
   protected makeIndex() {
     this._sections
       .flatMap((section) => section.properties)
@@ -108,23 +100,24 @@ export class AbstractWidgetSettings {
   };
 
   public markup(): ReactNode {
-    if (this._sections.length > 1) {
+    // if (this._sections.length > 1) {
       return (
         <AntTabs
+        className={`${classes.settings}`}
           type="card"
           items={this._sections.map(this.tabPaneGenerator)}
         />
       );
-    }
-    return (
-      <>
-        {this._sections.at(0)?.properties.map((prop) => (
-          <div key={prop.name} className="settings-item">
-            {prop.markup()}
-          </div>
-        ))}
-      </>
-    );
+    // }
+    // return (
+    //   <Flex vertical className="full-width">
+    //     {this._sections.at(0)?.properties.map((prop) => (
+    //       <div key={prop.name} className="settings-item">
+    //         {prop.markup()}
+    //       </div>
+    //     ))}
+    //   </Flex>
+    // );
   }
 
   public help(): ReactNode {
@@ -139,7 +132,7 @@ export class AbstractWidgetSettings {
     return <></>;
   }
 
-  public hasDemo(): ReactNode {
+  public hasDemo(): boolean {
     return false;
   }
 

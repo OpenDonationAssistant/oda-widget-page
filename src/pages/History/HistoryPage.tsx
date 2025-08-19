@@ -17,7 +17,7 @@ import {
 } from "../../components/Overlay/Overlay";
 import { useContext, useEffect, useRef, useState } from "react";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
-import { HistoryStore, HistoryStoreContext } from "./HistoryStore";
+import { DefaultHistoryStore, HistoryStore, HistoryStoreContext } from "./HistoryStore";
 import { observer } from "mobx-react-lite";
 import { HistoryItemComponent } from "./HistoryItem";
 import CloseIcon from "../../icons/CloseIcon";
@@ -262,7 +262,7 @@ export const HistoryComponent = observer(
 export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
-    () => new HistoryStore(recipientId, "history-page", conf),
+    () => new DefaultHistoryStore(recipientId, "history-page", conf),
   );
 
   return (

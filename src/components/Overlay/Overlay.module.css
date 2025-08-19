@@ -7,11 +7,6 @@
   z-index: 200;
 }
 
-.emptyspace {
-  width: 100%;
-  height: 400px;
-}
-
 .back {
   position: fixed;
   top: 0;
@@ -49,6 +44,14 @@
 .big {
   margin-top: 2vh;
   top: 2vh;
+}
+
+.fullscreen {
+  margin-top: 2vh;
+  top: 2vh;
+  width: 1200px;
+  left: 2vw;
+  height: 96vh;
 }
 
 .title {

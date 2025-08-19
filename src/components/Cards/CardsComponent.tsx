@@ -1,20 +1,42 @@
 import { MouseEventHandler, ReactNode } from "react";
 import classes from "./CardsComponent.module.css";
 import { Button, Flex } from "antd";
+import { log } from "../../logging";
 
 export function Card({
   children,
   selected,
   onClick,
+  className,
 }: {
   children: ReactNode;
   selected?: boolean;
-  onClick: MouseEventHandler<HTMLElement>;
+  onClick: MouseEventHandler<Element>;
+  className?: string;
 }) {
+  const clickHandler: MouseEventHandler = (e) => {
+    let target = e.target as HTMLElement;
+    log.debug({ target: target, currentTarget: e.currentTarget });
+    while (target.parentNode) {
+      if (target.localName === "button") {
+        log.debug("click on button");
+        return;
+      }
+      if (target === e.currentTarget) {
+        log.debug("click on element");
+        onClick?.(e);
+        return;
+      }
+      target = target.parentNode as HTMLElement;
+    }
+  };
+
   return (
     <Flex
-      className={`${classes.card} ${selected ? classes.selected : classes.notselected}`}
-      onClick={onClick}
+      className={`${classes.card} ${selected ? classes.selected : classes.notselected} ${className ? className : ""}`}
+      onClick={clickHandler}
+      vertical
+      justify="space-between"
     >
       {children}
     </Flex>

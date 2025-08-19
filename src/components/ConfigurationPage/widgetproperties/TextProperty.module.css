@@ -5,5 +5,12 @@
   flex-grow: 1;
   color: var(--oda-color-1000);
   padding: 6px 15px 3px 15px;
+}
+
+.normal {
   height: 180px;
+}
+
+.small {
+  height: 60px;
 }

@@ -1,21 +1,43 @@
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import classes from "./TextProperty.module.css";
 
+export const TextPropertyRawComponent = observer(
+  ({
+    displayName,
+    value,
+    onChange,
+    size,
+  }: {
+    displayName: string;
+    value: string;
+    onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+    size?: "small" | "normal";
+  }) => {
+    return (
+      <LabeledContainer displayName={displayName}>
+        <textarea
+          className={`${classes.text} ${"small" === size ? classes.small : classes.normal}`}
+          value={value}
+          onChange={onChange}
+        />
+      </LabeledContainer>
+    );
+  },
+);
+
 const TextPropertyComponent = observer(
   ({ property }: { property: TextProperty }) => {
     return (
-      <LabeledContainer displayName={property.displayName}>
-        <textarea
-          className={`${classes.text}`}
-          value={property.value}
-          onChange={(e) => {
-            property.value = e.target.value;
-          }}
-        />
-      </LabeledContainer>
+      <TextPropertyRawComponent
+        displayName={property.displayName}
+        value={property.value}
+        onChange={(e) => {
+          property.value = e.target.value;
+        }}
+      />
     );
   },
 );

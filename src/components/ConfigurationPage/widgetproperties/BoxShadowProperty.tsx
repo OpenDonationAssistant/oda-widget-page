@@ -9,6 +9,12 @@ import InputNumber from "../components/InputNumber";
 import classes from "./BoxShadowProperty.module.css";
 import { log } from "../../../logging";
 import { t } from "i18next";
+import { BorderedIconButton } from "../../IconButton/IconButton";
+import CloseIcon from "../../../icons/CloseIcon";
+import CopyIcon from "../../../icons/CopyIcon";
+import SubActionButton from "../../SubActionButton/SubActionButton";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import AddIcon from "../../../icons/AddIcon";
 
 interface BoxShadow {
   inset: boolean;
@@ -86,108 +92,125 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
     return (
       <>
         <LabeledContainer help={this.help} displayName={this.displayName}>
-          <Button className="oda-btn-default" onClick={() => this.addShadow()}>
-            <Flex justify="center" align="center" gap={3}>
-              <span className="material-symbols-sharp">add</span>
-              <div>Добавить тень</div>
-            </Flex>
-          </Button>
-        </LabeledContainer>
-        <Flex vertical={true} gap={10}>
-          {this.value.shadows.map((shadow, i) => (
-            <Flex
-              align="center"
-              justify="center"
-              gap={10}
-              className={`${classes.shadowitem}`}
-            >
-              <Segmented
-                value={shadow.inset}
-                options={[
-                  { label: t("Inset"), value: true },
-                  { label: t("Outset"), value: false },
-                ]}
-                onChange={(value) =>
-                  (this.value = produce(toJS(this.value), (draft) => {
-                    draft.shadows[i].inset = value;
-                  }))
-                }
-              />
-              <ColorPicker
-                showText
-                className={`${classes.colorpicker}`}
-                value={shadow.color}
-                onChange={(value) =>
-                  (this.value = produce(toJS(this.value), (draft) => {
-                    draft.shadows[i].color = value.toRgbString();
-                  }))
-                }
-              />
-              <Flex vertical={true} gap={10}>
-                <LabeledContainer
-                  className={classes.label}
-                  displayName="Смещение по горизонтали"
-                >
-                  <InputNumber
-                    value={shadow.x}
-                    addon="px"
+          <Flex vertical gap={12} className="full-width">
+            {this.value.shadows.map((shadow, i) => (
+              <Flex vertical gap={12} className={`${classes.shadowitem}`}>
+                <Flex align="center" className="full-width" gap={12}>
+                  <Segmented
+                    className={`${classes.shadowtype}`}
+                    value={shadow.inset}
+                    options={[
+                      { label: t("Inset"), value: true },
+                      { label: t("Outset"), value: false },
+                    ]}
                     onChange={(value) =>
                       (this.value = produce(toJS(this.value), (draft) => {
-                        draft.shadows[i].x = value;
+                        draft.shadows[i].inset = value;
                       }))
                     }
                   />
-                </LabeledContainer>
-                <LabeledContainer displayName="Смещение по вертикали">
-                  <InputNumber
-                    value={shadow.y}
-                    addon="px"
-                    onChange={(value) =>
-                      (this.value = produce(toJS(this.value), (draft) => {
-                        draft.shadows[i].y = value;
-                      }))
-                    }
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="Размытие">
-                  <InputNumber
-                    value={shadow.blur}
-                    addon="px"
-                    onChange={(value) =>
-                      (this.value = produce(toJS(this.value), (draft) => {
-                        draft.shadows[i].blur = value;
-                      }))
-                    }
-                  />
-                </LabeledContainer>
-                <LabeledContainer displayName="Растяжение">
-                  <InputNumber
-                    value={shadow.spread}
-                    addon="px"
-                    onChange={(value) =>
-                      (this.value = produce(toJS(this.value), (draft) => {
-                        draft.shadows[i].spread = value;
-                      }))
-                    }
-                  />
-                </LabeledContainer>
-              </Flex>
-              <Button
-                className="oda-btn-default"
-                onClick={() =>
-                  (this.value = produce(toJS(this.value), (draft) => {
-                    draft.shadows.splice(i, 1);
-                  }))
-                }
-              >
-                <Flex justify="center" align="center" gap={3}>
-                  <span className="material-symbols-sharp">delete</span>
-                  <div>Удалить тень</div>
+                  <div className={`${classes.colorcontainer}`}>
+                    <ColorPicker
+                      showText
+                      className={`${classes.colorpicker}`}
+                      value={shadow.color}
+                      onChange={(value) =>
+                        (this.value = produce(toJS(this.value), (draft) => {
+                          draft.shadows[i].color = value.toRgbString();
+                        }))
+                      }
+                    />
+                  </div>
                 </Flex>
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
+                <Flex gap={9}>
+                  <SmallLabeledContainer
+                    className={classes.label}
+                    displayName="Смещение по горизонтали"
+                  >
+                    <InputNumber
+                      value={shadow.x}
+                      addon="px"
+                      onChange={(value) =>
+                        (this.value = produce(toJS(this.value), (draft) => {
+                          draft.shadows[i].x = value;
+                        }))
+                      }
+                    />
+                  </SmallLabeledContainer>
+                  <SmallLabeledContainer displayName="Смещение по вертикали">
+                    <InputNumber
+                      value={shadow.y}
+                      addon="px"
+                      onChange={(value) =>
+                        (this.value = produce(toJS(this.value), (draft) => {
+                          draft.shadows[i].y = value;
+                        }))
+                      }
+                    />
+                  </SmallLabeledContainer>
+                </Flex>
+                <Flex gap={9}>
+                  <SmallLabeledContainer displayName="Размытие">
+                    <InputNumber
+                      value={shadow.blur}
+                      addon="px"
+                      onChange={(value) =>
+                        (this.value = produce(toJS(this.value), (draft) => {
+                          draft.shadows[i].blur = value;
+                        }))
+                      }
+                    />
+                  </SmallLabeledContainer>
+                  <SmallLabeledContainer displayName="Растяжение">
+                    <InputNumber
+                      value={shadow.spread}
+                      addon="px"
+                      onChange={(value) =>
+                        (this.value = produce(toJS(this.value), (draft) => {
+                          draft.shadows[i].spread = value;
+                        }))
+                      }
+                    />
+                  </SmallLabeledContainer>
+                </Flex>
+                <Flex className="full-width" justify="flex-end" gap={12}>
+                  <SubActionButton
+                    onClick={() => {
+                      this.value = produce(toJS(this.value), (draft) => {
+                        const toCopy = draft.shadows.at(i);
+                        if (toCopy) {
+                          draft.shadows.splice(i, 0, toCopy);
+                        }
+                      });
+                    }}
+                  >
+                    <CopyIcon />
+                    <div>Копировать</div>
+                  </SubActionButton>
+                  <SubActionButton
+                    onClick={() =>
+                      (this.value = produce(toJS(this.value), (draft) => {
+                        draft.shadows.splice(i, 1);
+                      }))
+                    }
+                  >
+                    <CloseIcon color="#FF8888" />
+                    <div style={{ color: "#FF8888" }}>Удалить</div>
+                  </SubActionButton>
+                </Flex>
+              </Flex>
+            ))}
+            <button
+              className={`${classes.addbutton}`}
+              onClick={() => this.addShadow()}
+            >
+              <Flex justify="center" align="center" gap={3}>
+                <AddIcon color="var(--oda-color-150)"/>
+                <div>Добавить тень</div>
+              </Flex>
+            </button>
+          </Flex>
+        </LabeledContainer>
       </>
     );
   });
@@ -211,7 +234,7 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
   copy() {
     return new BoxShadowProperty({
       name: this.name,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       displayName: this.displayName,
       help: this.help,
     });

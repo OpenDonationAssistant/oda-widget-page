@@ -3,7 +3,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { WIDGET_TYPES } from "../../types/Widget";
+import { WIDGET_TYPES, Widget } from "../../types/Widget";
 import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
@@ -13,7 +13,6 @@ import {
   SelectedIndexContext,
   SelectedIndexStore,
 } from "../../stores/SelectedIndexStore";
-import Modal from "../Modal/Modal";
 import AddIcon from "../../icons/AddIcon";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
@@ -21,29 +20,33 @@ import CardsIcon from "../../icons/CardsIcon";
 import { CardButton, CardList } from "../Cards/CardsComponent";
 import { useSearchParams } from "react-router-dom";
 import {
+  CloseOverlayButton,
   Dialog,
+  FullscreenPanel,
   ModalState,
   ModalStateContext,
   Overlay,
   Title,
 } from "../Overlay/Overlay";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import { List } from "../List/List";
+import { PresetWindow } from "./PresetsComponent";
+import {
+  DefaultPresetStore,
+  PresetStore,
+  PresetStoreContext,
+} from "../../stores/PresetStore";
+import { log } from "../../logging";
 
 const Widgets = observer(({ asCards }: { asCards: boolean }) => {
-  const selection = useContext(SelectedIndexContext);
   const widgetStore = useContext(WidgetStoreContext);
 
   return (
     <>
       {!asCards && (
-        <Flex vertical wrap gap={asCards ? 12 : 6}>
+        <List>
           {widgetStore.list.map((data, index) => (
-            <Draggable
-              key={data.id}
-              draggableId={data.id}
-              isDragDisabled={selection.id === data.id}
-              index={index}
-            >
+            <Draggable key={data.id} draggableId={data.id} index={index}>
               {(draggable) => (
                 <div
                   className={`${classes.widgetdraggablecontainer}`}
@@ -58,7 +61,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             </Draggable>
           ))}
           <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
-        </Flex>
+        </List>
       )}
       {asCards && (
         <CardList>
@@ -149,21 +152,33 @@ const AddWidgetComponent = observer(
     asCards: boolean;
   }) => {
     const { t } = useTranslation();
-    const selection = useContext(SelectedIndexContext);
-    const [showAddWidgetPopup, setShowAddWidgetPopup] = useState(false);
+
+    const parentModalState = useContext(ModalStateContext);
+    const [dialogState] = useState<ModalState>(
+      () => new ModalState(parentModalState),
+    );
+    const [presetDialogState] = useState<ModalState>(
+      () => new ModalState(parentModalState),
+    );
+    const presetStore = useContext(PresetStoreContext);
+    const [widget, setWidget] = useState<Widget | null>(null);
+    log.debug({ widget: widget }, "created widget");
 
     const NewWidgetSection = observer(({ category }: { category: string }) => {
       return (
-        <>
+        <div className={`${classes.widgetpreviews}`}>
           {WIDGET_TYPES.filter((type) => type.category === category).map(
             (type) => (
               <div
                 onClick={() => {
-                  widgetStore.addWidget(type.name).then(() => {
-                    setShowAddWidgetPopup(false);
-                    selection.index = widgetStore.list.length - 1;
-                    selection.id =
-                      widgetStore.list.at(selection.index)?.id || null;
+                  widgetStore.addWidget(type.name).then((widget) => {
+                    log.debug({ widget: widget }, "created widget");
+                    dialogState.show = false;
+                    if (!widget) {
+                      return;
+                    }
+                    presetDialogState.show = true;
+                    setWidget(widget);
                   });
                 }}
               >
@@ -171,57 +186,51 @@ const AddWidgetComponent = observer(
               </div>
             ),
           )}
-        </>
+        </div>
       );
     });
 
     return (
-      <>
-        <Modal
-          size="big"
-          title="Добавление виджета"
-          show={showAddWidgetPopup}
-          showSubmitButton={false}
-          onSubmit={() => {
-            setShowAddWidgetPopup(false);
-          }}
-          onDecline={() => {
-            setShowAddWidgetPopup(false);
-          }}
-        >
-          <Flex
-            gap={12}
-            wrap={true}
-            align="center"
-            className={`${classes.addwidgetcontainer} full-width`}
-          >
-            <div className={`${classes.section}`}>Для стрима</div>
-            <NewWidgetSection category="onscreen" />
-            <div className={`${classes.section}`}>Медиа</div>
-            <NewWidgetSection category="media" />
-            <div className={`${classes.section}`}>Инструменты стримера</div>
-            <NewWidgetSection category="internal" />
-          </Flex>
-        </Modal>
-        {!showAddWidgetPopup && !asCards && (
+      <ModalStateContext.Provider value={dialogState}>
+        <ModalStateContext.Provider value={presetDialogState}>
+          {widget && (
+            <PresetWindow presetStore={presetStore} widget={widget} />
+          )}
+        </ModalStateContext.Provider>
+        <Overlay>
+          <FullscreenPanel>
+            <Flex justify="space-between">
+              <Title>Добавить виджет</Title>
+              <CloseOverlayButton />
+            </Flex>
+            <Flex vertical gap={12} className={`${classes.sectioncontainer}`}>
+              <div className={`${classes.section}`}>Для стрима</div>
+              <NewWidgetSection category="onscreen" />
+              <div className={`${classes.section}`}>Медиа</div>
+              <NewWidgetSection category="media" />
+              <div className={`${classes.section}`}>Инструменты стримера</div>
+              <NewWidgetSection category="internal" />
+            </Flex>
+          </FullscreenPanel>
+        </Overlay>
+        {!dialogState.show && !asCards && (
           <button
             className={`${classes.addwidgetbutton}`}
-            onClick={() => setShowAddWidgetPopup(true)}
+            onClick={() => (dialogState.show = true)}
           >
             <AddIcon color="var(--oda-primary-color)" />
             <div>{t("button-addwidget")}</div>
           </button>
         )}
-        {!showAddWidgetPopup && asCards && (
-          <CardButton onClick={() => setShowAddWidgetPopup(true)} />
+        {!dialogState.show && asCards && (
+          <CardButton onClick={() => (dialogState.show = true)} />
         )}
-      </>
+      </ModalStateContext.Provider>
     );
   },
 );
 
 export default function ConfigurationPage({}: {}) {
-  const selection = useRef(new SelectedIndexStore());
   const [asCards, setAsCards] = useState<boolean>(() => {
     const value = localStorage.getItem("asCards");
     if (value === null || value === undefined) {
@@ -233,6 +242,7 @@ export default function ConfigurationPage({}: {}) {
   const parentModalState = useContext(ModalStateContext);
   const [state] = useState<ModalState>(() => new ModalState(parentModalState));
   const navigate = useNavigate();
+  const [presetStore] = useState<PresetStore>(() => new DefaultPresetStore());
 
   useEffect(() => {
     const code = localStorage.getItem("code");
@@ -249,7 +259,7 @@ export default function ConfigurationPage({}: {}) {
   }, [params]);
 
   return (
-    <>
+    <PresetStoreContext.Provider value={presetStore}>
       <ModalStateContext.Provider value={state}>
         <Overlay>
           <Dialog>
@@ -267,34 +277,32 @@ export default function ConfigurationPage({}: {}) {
           </Dialog>
         </Overlay>
       </ModalStateContext.Provider>
-      <SelectedIndexContext.Provider value={selection.current}>
-        <Flex justify="space-between" align="center">
-          <h1 className={`${classes.header}`}>Виджеты</h1>
-          <Flex
-            className="full-width"
-            justify="flex-end"
-            style={{ marginBottom: "9px" }}
+      <Flex justify="space-between" align="center">
+        <h1 className={`${classes.header}`}>Виджеты</h1>
+        <Flex
+          className="full-width"
+          justify="flex-end"
+          style={{ marginBottom: "9px" }}
+        >
+          <NotBorderedIconButton
+            onClick={() => {
+              setAsCards(false);
+              localStorage.setItem("asCards", JSON.stringify(false));
+            }}
           >
-            <NotBorderedIconButton
-              onClick={() => {
-                setAsCards(false);
-                localStorage.setItem("asCards", JSON.stringify(false));
-              }}
-            >
-              <LinesIcon />
-            </NotBorderedIconButton>
-            <NotBorderedIconButton
-              onClick={() => {
-                setAsCards(true);
-                localStorage.setItem("asCards", JSON.stringify(true));
-              }}
-            >
-              <CardsIcon />
-            </NotBorderedIconButton>
-          </Flex>
+            <LinesIcon />
+          </NotBorderedIconButton>
+          <NotBorderedIconButton
+            onClick={() => {
+              setAsCards(true);
+              localStorage.setItem("asCards", JSON.stringify(true));
+            }}
+          >
+            <CardsIcon />
+          </NotBorderedIconButton>
         </Flex>
-        <WidgetList asCards={asCards} />
-      </SelectedIndexContext.Provider>
-    </>
+      </Flex>
+      <WidgetList asCards={asCards} />
+    </PresetStoreContext.Provider>
   );
 }

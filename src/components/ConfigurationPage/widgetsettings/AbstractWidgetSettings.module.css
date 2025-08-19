@@ -29,15 +29,16 @@
 }
 
 .helptitle {
-  font-family: "Mulish Variable";
   padding: 10px 0 0px 10px;
   margin-bottom: 10px;
   font-weight: 900;
+  color: var(--oda-color-950);
 }
 
 .helpdescription {
   margin-left: 25px;
   margin-bottom: 10px;
+  color: var(--oda-color-950);
   & a {
     color: white;
     font-weight: 900;
@@ -64,4 +65,8 @@
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.settings {
+  flex: 1 1;
 }

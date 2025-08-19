@@ -4,31 +4,14 @@ import axios from "axios";
 import classes from "./ReelItemBackgroundProperty.module.css";
 import { uuidv7 } from "uuidv7";
 import { observer } from "mobx-react-lite";
+import { fullUri } from "../../../utils";
 
 const ReelBackgroundComponent = observer(
   ({ property }: { property: ReelItemBackgroundProperty }) => {
     const [image, setImage] = useState<string>("");
 
-    const fullUri = (): Promise<string> => {
-      if (!property.value) {
-        return Promise.resolve("");
-      }
-      let url = property.value;
-      if (!property.value.startsWith("http")) {
-        url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${property.value}`;
-      }
-      // TODO: вынести в общий модуль
-      return fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-      })
-        .then((res) => res.blob())
-        .then((blob) => URL.createObjectURL(blob));
-    };
-
     useEffect(() => {
-      fullUri().then(setImage);
+      fullUri(property.value).then(setImage);
     }, [property.value]);
 
     return (

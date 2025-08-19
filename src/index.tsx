@@ -23,7 +23,7 @@ import auth from "./auth";
 import axios from "axios";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
-import ReelWidget from "./pages/Reel/ReelWidget";
+import { ReelWidget } from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import { HistoryPage } from "./pages/History/HistoryPage";
 import { ConfigProvider, Flex, theme } from "antd";
@@ -37,7 +37,6 @@ import PaymentPageConfigComponent from "./pages/PaymentPageConfig/PaymentPageCon
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
 import DonationGoalPage from "./pages/DonationGoal/DonationGoalPage";
-import EventsPage from "./pages/Events/EventsPage";
 import DonatersTopListPage from "./pages/DonatersTopList/DonatersTopListPage";
 import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";

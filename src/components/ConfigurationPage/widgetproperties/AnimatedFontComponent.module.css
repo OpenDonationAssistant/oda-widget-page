@@ -4,6 +4,12 @@
   width: 25%;
 }
 
+.okbutton {
+  width: 250px;
+  margin-top: 21px;
+  margin-top: 12px;
+}
+
 .addanimationbuttoncontainer{
   display: flex;
   justify-content: flex-end;

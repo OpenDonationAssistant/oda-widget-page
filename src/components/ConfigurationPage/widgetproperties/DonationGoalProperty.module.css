@@ -1,5 +1,17 @@
+.goaltitle{
+  font-size: 24px;
+  font-weight: 900;
+}
+
 .goalcontainer {
   position: relative;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+.goalitem {
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
 }
 
 .button {

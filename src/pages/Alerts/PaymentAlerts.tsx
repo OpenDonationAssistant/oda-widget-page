@@ -16,6 +16,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData, useNavigate } from "react-router";
 import { uuidv7 } from "uuidv7";
+import { TokenStore } from "../../stores/TokenStore";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -407,361 +408,355 @@ const Alert = observer(({ state }: { state: AlertState }) => {
   );
 });
 
-function PaymentAlerts({
-  alertController,
-}: {
-  alertController: AlertController;
-}) {
-  const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
-  const navigate = useNavigate();
+const PaymentAlerts = observer(
+  ({
+    alertController,
+    tokenStore,
+  }: {
+    alertController: AlertController;
+    tokenStore: TokenStore;
+  }) => {
+    const { recipientId } = useLoaderData() as WidgetData;
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-      .listTokens({})
-      .then((tokens) => tokens.data.filter((token) => token.enabled))
-      .then((tokens) => {
-        tokens
-          .filter((token) => token.system === "DonationAlerts")
-          .forEach((token) => {
-            axios
-              .get("https://api.oda.digital/donationalerts", {
-                headers: {
-                  Authorization: `Bearer ${token.token}`,
-                },
-              })
-              .then((response) => {
-                const userId = response.data.data.id;
-                const centrifugoToken =
-                  response.data.data.socket_connection_token;
+    useEffect(() => {
+      const tokens = tokenStore.tokens.filter((token) => token.enabled);
+      tokens
+        .filter((token) => token.system === "DonationAlerts")
+        .forEach((token) => {
+          axios
+            .get("https://api.oda.digital/donationalerts", {
+              headers: {
+                Authorization: `Bearer ${token.token}`,
+              },
+            })
+            .then((response) => {
+              const userId = response.data.data.id;
+              const centrifugoToken =
+                response.data.data.socket_connection_token;
 
-                const socket = new WebSocket(
-                  "wss://centrifugo.donationalerts.com/connection/websocket",
+              const socket = new WebSocket(
+                "wss://centrifugo.donationalerts.com/connection/websocket",
+              );
+
+              socket.addEventListener("close", (event) => {
+                navigate(0);
+              });
+
+              socket.addEventListener("error", (event) => {
+                navigate(0);
+              });
+
+              socket.addEventListener("open", (event) => {
+                log.debug("send auth request to DA");
+                socket.send(
+                  JSON.stringify({
+                    params: {
+                      token: centrifugoToken,
+                    },
+                    id: 1,
+                  }),
                 );
+              });
 
-                socket.addEventListener("close", (event) => {
-                  navigate(0);
-                });
-
-                socket.addEventListener("error", (event) => {
-                  navigate(0);
-                });
-
-                socket.addEventListener("open", (event) => {
-                  log.debug("send auth request to DA");
-                  socket.send(
-                    JSON.stringify({
-                      params: {
-                        token: centrifugoToken,
+              socket.addEventListener("message", (event) => {
+                const channel = `$alerts:donation_${userId}`;
+                const data = JSON.parse(event.data);
+                console.log({ data: data }, "Message from DA ");
+                if (
+                  data.result?.channel === channel &&
+                  data.result?.data?.data
+                ) {
+                  const payment = data.result.data.data;
+                  HistoryService(
+                    undefined,
+                    process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                  ).addHistoryItem(
+                    {
+                      recipientId: recipientId,
+                      amount: {
+                        minor: 0,
+                        major: payment.amount_in_user_currency,
+                        currency: "RUB",
                       },
-                      id: 1,
-                    }),
+                      nickname: payment.username,
+                      message: payment.message,
+                      triggerAlert: true,
+                      triggerReel: true,
+                      triggerDonaton: true,
+                      goals: [],
+                      addToTop: true,
+                      addToGoal: false,
+                      id: uuidv7(),
+                      paymentId: uuidv7(),
+                      system: "DonationAlerts",
+                      externalId: payment.id,
+                    },
+                    {},
                   );
-                });
-
-                socket.addEventListener("message", (event) => {
-                  const channel = `$alerts:donation_${userId}`;
-                  const data = JSON.parse(event.data);
-                  console.log({ data: data }, "Message from DA ");
-                  if (
-                    data.result?.channel === channel &&
-                    data.result?.data?.data
-                  ) {
-                    const payment = data.result.data.data;
-                    HistoryService(
-                      undefined,
-                      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                    ).addHistoryItem(
+                }
+                if (data.id === 1) {
+                  log.debug("getting centrifugo token");
+                  const clientId = data.result.client;
+                  axios
+                    .post(
+                      "https://www.donationalerts.com/api/v1/centrifuge/subscribe",
+                      { channels: [channel], client: clientId },
                       {
-                        recipientId: recipientId,
-                        amount: {
-                          minor: 0,
-                          major: payment.amount_in_user_currency,
-                          currency: "RUB",
+                        headers: {
+                          Authorization: `Bearer ${token.token}`,
                         },
-                        nickname: payment.username,
-                        message: payment.message,
-                        triggerAlert: true,
-                        triggerReel: true,
-                        triggerDonaton: true,
-                        goals: [],
-                        addToTop: true,
-                        addToGoal: false,
-                        id: uuidv7(),
-                        paymentId: uuidv7(),
-                        system: "DonationAlerts",
-                        externalId: payment.id,
                       },
-                      {},
-                    );
-                  }
-                  if (data.id === 1) {
-                    log.debug("getting centrifugo token");
-                    const clientId = data.result.client;
-                    axios
-                      .post(
-                        "https://www.donationalerts.com/api/v1/centrifuge/subscribe",
-                        { channels: [channel], client: clientId },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token.token}`,
+                    )
+                    .then((response) => {
+                      const channelToken = response.data.channels[0].token;
+                      log.debug(
+                        { token: channelToken },
+                        "got centrigure channel token",
+                      );
+                      socket.send(
+                        JSON.stringify({
+                          params: {
+                            channel: `$alerts:donation_${userId}`,
+                            token: channelToken,
                           },
+                          method: 1,
+                          id: 2,
+                        }),
+                      );
+                    });
+                }
+              });
+            });
+        });
+      tokens
+        .filter((token) => token.system === "DonatePay")
+        .forEach((token) => {
+          axios
+            .get(`https://donatepay.ru/api/v1/user?access_token=${token.token}`)
+            .then((response) => response.data.data.id)
+            .then((id) => {
+              log.debug("id: " + id);
+              axios
+                .post("https://donatepay.ru/api/v2/socket/token", {
+                  access_token: token.token,
+                })
+                .then((response) => response.data.token)
+                .then((centrifugoToken) => {
+                  log.debug(
+                    { token: centrifugoToken },
+                    "Got DonatePay socket token",
+                  );
+
+                  const socket = new WebSocket(
+                    "wss://centrifugo.donatepay.ru:443/connection/websocket",
+                  );
+
+                  socket.addEventListener("close", (event) => {
+                    navigate(0);
+                  });
+
+                  socket.addEventListener("error", (event) => {
+                    navigate(0);
+                  });
+
+                  socket.addEventListener("open", (event) => {
+                    log.debug("send auth request to DonatePay");
+                    socket.send(
+                      JSON.stringify({
+                        params: {
+                          token: centrifugoToken,
                         },
-                      )
-                      .then((response) => {
-                        const channelToken = response.data.channels[0].token;
-                        log.debug(
-                          { token: channelToken },
-                          "got centrigure channel token",
-                        );
-                        socket.send(
-                          JSON.stringify({
-                            params: {
-                              channel: `$alerts:donation_${userId}`,
-                              token: channelToken,
-                            },
-                            method: 1,
-                            id: 2,
-                          }),
-                        );
-                      });
-                  }
+                        id: 1,
+                      }),
+                    );
+                  });
+
+                  socket.addEventListener("message", (event) => {
+                    const channel = `$public:${id}`;
+                    const data = JSON.parse(event.data);
+                    console.log({ data: data }, "Message from DonatePay");
+                    if (data.id === 1) {
+                      log.debug("getting centrifugo token");
+                      const clientId = data.result.client;
+                      axios
+                        .post("https://donatepay.ru/api/v2/socket/token", {
+                          access_token: token.token,
+                          channels: [channel],
+                          client: clientId,
+                        })
+                        .then((response) => {
+                          const channelToken = response.data.channels[0].token;
+                          log.debug(
+                            { token: channelToken },
+                            "got centrigure channel token",
+                          );
+                          socket.send(
+                            JSON.stringify({
+                              params: {
+                                channel: channel,
+                                token: channelToken,
+                              },
+                              method: 1,
+                              id: 2,
+                            }),
+                          );
+                        });
+                    }
+                    if (
+                      data.result?.channel === channel &&
+                      data.result?.data?.data?.notification
+                    ) {
+                      const payment = data.result.data.data.notification;
+                      HistoryService(
+                        undefined,
+                        process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                      ).addHistoryItem(
+                        {
+                          recipientId: recipientId,
+                          amount: {
+                            minor: 0,
+                            major: payment.vars.sum,
+                            currency: payment.vars.currency,
+                          },
+                          nickname: payment.vars.name,
+                          message: payment.vars.comment,
+                          triggerAlert: true,
+                          triggerReel: true,
+                          triggerDonaton: true,
+                          goals: [],
+                          addToTop: true,
+                          addToGoal: false,
+                          id: uuidv7(),
+                          paymentId: uuidv7(),
+                          system: "DonatePay",
+                          externalId: payment.id,
+                        },
+                        {},
+                      );
+                    }
+                  });
                 });
-              });
-          });
-        tokens
-          .filter((token) => token.system === "DonatePay")
-          .forEach((token) => {
-            axios
-              .get(
-                `https://donatepay.ru/api/v1/user?access_token=${token.token}`,
-              )
-              .then((response) => response.data.data.id)
-              .then((id) => {
-                log.debug("id: " + id);
-                axios
-                  .post("https://donatepay.ru/api/v2/socket/token", {
-                    access_token: token.token,
-                  })
-                  .then((response) => response.data.token)
-                  .then((centrifugoToken) => {
-                    log.debug(
-                      { token: centrifugoToken },
-                      "Got DonatePay socket token",
-                    );
+            });
+        });
+      tokens
+        .filter((token) => token.system === "DonatePay.eu")
+        .forEach((token) => {
+          axios
+            .get(`https://donatepay.eu/api/v1/user?access_token=${token.token}`)
+            .then((response) => response.data.data.id)
+            .then((id) => {
+              log.debug("id: " + id);
+              axios
+                .post("https://donatepay.eu/api/v2/socket/token", {
+                  access_token: token.token,
+                })
+                .then((response) => response.data.token)
+                .then((centrifugoToken) => {
+                  log.debug(
+                    { token: centrifugoToken },
+                    "Got DonatePay-eu socket token",
+                  );
 
-                    const socket = new WebSocket(
-                      "wss://centrifugo.donatepay.ru:443/connection/websocket",
-                    );
+                  const socket = new WebSocket(
+                    "wss://centrifugo.donatepay.eu:443/connection/websocket",
+                  );
 
-                    socket.addEventListener("close", (event) => {
-                      navigate(0);
-                    });
-
-                    socket.addEventListener("error", (event) => {
-                      navigate(0);
-                    });
-
-                    socket.addEventListener("open", (event) => {
-                      log.debug("send auth request to DonatePay");
-                      socket.send(
-                        JSON.stringify({
-                          params: {
-                            token: centrifugoToken,
-                          },
-                          id: 1,
-                        }),
-                      );
-                    });
-
-                    socket.addEventListener("message", (event) => {
-                      const channel = `$public:${id}`;
-                      const data = JSON.parse(event.data);
-                      console.log({ data: data }, "Message from DonatePay");
-                      if (data.id === 1) {
-                        log.debug("getting centrifugo token");
-                        const clientId = data.result.client;
-                        axios
-                          .post("https://donatepay.ru/api/v2/socket/token", {
-                            access_token: token.token,
-                            channels: [channel],
-                            client: clientId,
-                          })
-                          .then((response) => {
-                            const channelToken =
-                              response.data.channels[0].token;
-                            log.debug(
-                              { token: channelToken },
-                              "got centrigure channel token",
-                            );
-                            socket.send(
-                              JSON.stringify({
-                                params: {
-                                  channel: channel,
-                                  token: channelToken,
-                                },
-                                method: 1,
-                                id: 2,
-                              }),
-                            );
-                          });
-                      }
-                      if (
-                        data.result?.channel === channel &&
-                        data.result?.data?.data?.notification
-                      ) {
-                        const payment = data.result.data.data.notification;
-                        HistoryService(
-                          undefined,
-                          process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                        ).addHistoryItem(
-                          {
-                            recipientId: recipientId,
-                            amount: {
-                              minor: 0,
-                              major: payment.vars.sum,
-                              currency: payment.vars.currency,
-                            },
-                            nickname: payment.vars.name,
-                            message: payment.vars.comment,
-                            triggerAlert: true,
-                            triggerReel: true,
-                            triggerDonaton: true,
-                            goals: [],
-                            addToTop: true,
-                            addToGoal: false,
-                            id: uuidv7(),
-                            paymentId: uuidv7(),
-                            system: "DonatePay",
-                            externalId: payment.id,
-                          },
-                          {},
-                        );
-                      }
-                    });
+                  socket.addEventListener("close", (event) => {
+                    navigate(0);
                   });
-              });
-          });
-        tokens
-          .filter((token) => token.system === "DonatePay.eu")
-          .forEach((token) => {
-            axios
-              .get(
-                `https://donatepay.eu/api/v1/user?access_token=${token.token}`,
-              )
-              .then((response) => response.data.data.id)
-              .then((id) => {
-                log.debug("id: " + id);
-                axios
-                  .post("https://donatepay.eu/api/v2/socket/token", {
-                    access_token: token.token,
-                  })
-                  .then((response) => response.data.token)
-                  .then((centrifugoToken) => {
-                    log.debug(
-                      { token: centrifugoToken },
-                      "Got DonatePay-eu socket token",
-                    );
 
-                    const socket = new WebSocket(
-                      "wss://centrifugo.donatepay.eu:443/connection/websocket",
-                    );
-
-                    socket.addEventListener("close", (event) => {
-                      navigate(0);
-                    });
-
-                    socket.addEventListener("error", (event) => {
-                      navigate(0);
-                    });
-
-                    socket.addEventListener("open", (event) => {
-                      log.debug("send auth request to DonatePay");
-                      socket.send(
-                        JSON.stringify({
-                          params: {
-                            token: centrifugoToken,
-                          },
-                          id: 1,
-                        }),
-                      );
-                    });
-
-                    socket.addEventListener("message", (event) => {
-                      const channel = `$public:${id}`;
-                      const data = JSON.parse(event.data);
-                      if (data.id === 1) {
-                        log.debug("getting centrifugo token");
-                        const clientId = data.result.client;
-                        axios
-                          .post("https://donatepay.eu/api/v2/socket/token", {
-                            access_token: token.token,
-                            channels: [channel],
-                            client: clientId,
-                          })
-                          .then((response) => {
-                            const channelToken =
-                              response.data.channels[0].token;
-                            log.debug(
-                              { token: channelToken },
-                              "got centrigure channel token",
-                            );
-                            socket.send(
-                              JSON.stringify({
-                                params: {
-                                  channel: channel,
-                                  token: channelToken,
-                                },
-                                method: 1,
-                                id: 2,
-                              }),
-                            );
-                          });
-                      }
-                      if (
-                        data.result?.channel === channel &&
-                        data.result?.data?.data?.notification
-                      ) {
-                        const payment = data.result.data.data.notification;
-                        HistoryService(
-                          undefined,
-                          process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                        ).addHistoryItem(
-                          {
-                            recipientId: recipientId,
-                            amount: {
-                              minor: 0,
-                              major: payment.vars.sum,
-                              currency: payment.vars.currency,
-                            },
-                            nickname: payment.vars.name,
-                            message: payment.vars.comment,
-                            triggerAlert: true,
-                            triggerReel: true,
-                            triggerDonaton: true,
-                            goals: [],
-                            addToTop: true,
-                            addToGoal: false,
-                            id: uuidv7(),
-                            paymentId: uuidv7(),
-                            system: "DonatePay.eu",
-                            externalId: payment.id,
-                          },
-                          {},
-                        );
-                      }
-                    });
+                  socket.addEventListener("error", (event) => {
+                    navigate(0);
                   });
-              });
-          });
-      });
-  }, [alertController]);
 
-  return (
-    <AlertStateContext.Provider value={alertController.state}>
-      <FontLoader state={alertController.state} />
-      <Alert state={alertController.state} />
-    </AlertStateContext.Provider>
-  );
-}
+                  socket.addEventListener("open", (event) => {
+                    log.debug("send auth request to DonatePay");
+                    socket.send(
+                      JSON.stringify({
+                        params: {
+                          token: centrifugoToken,
+                        },
+                        id: 1,
+                      }),
+                    );
+                  });
+
+                  socket.addEventListener("message", (event) => {
+                    const channel = `$public:${id}`;
+                    const data = JSON.parse(event.data);
+                    if (data.id === 1) {
+                      log.debug("getting centrifugo token");
+                      const clientId = data.result.client;
+                      axios
+                        .post("https://donatepay.eu/api/v2/socket/token", {
+                          access_token: token.token,
+                          channels: [channel],
+                          client: clientId,
+                        })
+                        .then((response) => {
+                          const channelToken = response.data.channels[0].token;
+                          log.debug(
+                            { token: channelToken },
+                            "got centrigure channel token",
+                          );
+                          socket.send(
+                            JSON.stringify({
+                              params: {
+                                channel: channel,
+                                token: channelToken,
+                              },
+                              method: 1,
+                              id: 2,
+                            }),
+                          );
+                        });
+                    }
+                    if (
+                      data.result?.channel === channel &&
+                      data.result?.data?.data?.notification
+                    ) {
+                      const payment = data.result.data.data.notification;
+                      HistoryService(
+                        undefined,
+                        process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                      ).addHistoryItem(
+                        {
+                          recipientId: recipientId,
+                          amount: {
+                            minor: 0,
+                            major: payment.vars.sum,
+                            currency: payment.vars.currency,
+                          },
+                          nickname: payment.vars.name,
+                          message: payment.vars.comment,
+                          triggerAlert: true,
+                          triggerReel: true,
+                          triggerDonaton: true,
+                          goals: [],
+                          addToTop: true,
+                          addToGoal: false,
+                          id: uuidv7(),
+                          paymentId: uuidv7(),
+                          system: "DonatePay.eu",
+                          externalId: payment.id,
+                        },
+                        {},
+                      );
+                    }
+                  });
+                });
+            });
+        });
+    }, [alertController, tokenStore.tokens]);
+
+    return (
+      <AlertStateContext.Provider value={alertController.state}>
+        <FontLoader state={alertController.state} />
+        <Alert state={alertController.state} />
+      </AlertStateContext.Provider>
+    );
+  },
+);
 
 export default PaymentAlerts;

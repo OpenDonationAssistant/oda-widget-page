@@ -6,15 +6,18 @@ export default function SecondaryButton({
   children,
   onClick,
   className,
+  disabled
 }: {
   children: ReactNode;
   onClick: () => void;
   className?: string;
+  disabled?: boolean
 }) {
   return (
     <>
       <button
         className={`${classes.button} ${className ?? ""}`}
+        disabled={disabled}
         onClick={() => {
           onClick();
         }}

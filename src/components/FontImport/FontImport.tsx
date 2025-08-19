@@ -9,8 +9,10 @@ export default function FontImport({ font }: { font: string }) {
 
   useEffect(() => {
     fonts.getImportCss(font).then((loaded) => {
-      setCss(loaded);
-      log.debug({ css: css }, "Loaded css");
+      if (loaded) {
+        setCss(loaded);
+        log.debug({ css: css }, "Loaded css");
+      }
     });
   }, [font]);
 

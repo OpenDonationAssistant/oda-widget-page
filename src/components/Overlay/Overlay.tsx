@@ -8,6 +8,8 @@ import { observer } from "mobx-react-lite";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import { useKeyPress } from "ahooks";
+import { NotBorderedIconButton } from "../IconButton/IconButton";
+import CloseIcon from "../../icons/CloseIcon";
 
 export class ModalState {
   private _show: boolean = false;
@@ -65,6 +67,51 @@ export class ModalState {
 
 export const ModalStateContext = createContext(new ModalState());
 
+export const FullscreenPanel = ({ children }: { children: ReactNode }) => {
+  const state = useContext(ModalStateContext);
+  const backRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (!event.target) {
+        return;
+      }
+      log.debug(
+        {
+          show: state.show,
+          current: backRef.current,
+          misses: backRef.current?.contains(event.target as Node),
+          target: event.target,
+        },
+        "handling click outside",
+      );
+      if (event.target === backRef.current && state.show) {
+        log.debug("closing modal panel");
+        state.onClose();
+        state.show = false;
+        event.stopPropagation();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [state.show]);
+
+  return (
+    <>
+      <Flex
+        className={`${classes.modal} ${classes.fullscreen}`}
+        justify="flex-start"
+        vertical
+      >
+        {children}
+      </Flex>
+      <div ref={backRef} className={`${classes.emptyspace}`} />
+    </>
+  );
+};
+
 export const Panel = ({ children }: { children: ReactNode }) => {
   const state = useContext(ModalStateContext);
   const backRef = useRef<HTMLDivElement | null>(null);
@@ -105,6 +152,7 @@ export const Panel = ({ children }: { children: ReactNode }) => {
       >
         {children}
       </Flex>
+      {/* todo понять зачем */}
       <div ref={backRef} className={`${classes.emptyspace}`} />
     </>
   );
@@ -167,6 +215,20 @@ export const Warning = ({
   );
 };
 
+export const CloseOverlayButton = ({}) => {
+  const dialogState = useContext(ModalStateContext);
+
+  return (
+    <NotBorderedIconButton
+      onClick={() => {
+        dialogState.show = false;
+      }}
+    >
+      <CloseIcon color="var(--oda-color-950)" />
+    </NotBorderedIconButton>
+  );
+};
+
 export const Overlay = observer(({ children }: { children: ReactNode }) => {
   const state = useContext(ModalStateContext);
 
@@ -195,15 +257,15 @@ export const Overlay = observer(({ children }: { children: ReactNode }) => {
       if (!event.target) {
         return;
       }
-      log.debug(
-        {
-          show: state.show,
-          current: backRef.current,
-          misses: backRef.current?.contains(event.target as Node),
-          target: event.target,
-        },
-        "handling click outside",
-      );
+      // log.debug(
+      //   {
+      //     show: state.show,
+      //     current: backRef.current,
+      //     misses: backRef.current?.contains(event.target as Node),
+      //     target: event.target,
+      //   },
+      //   "handling click outside",
+      // );
       if (event.target === backRef.current && state.show) {
         state.onClose();
         state.show = false;
@@ -225,7 +287,11 @@ export const Overlay = observer(({ children }: { children: ReactNode }) => {
               className={`${classes.back}`}
               style={{ zIndex: state.level * 200 }}
             />
-            <div ref={backRef} className={`${classes.container}`}>
+            <div
+              ref={backRef}
+              className={`${classes.container}`}
+              style={{ zIndex: state.level * 200 }}
+            >
               {children}
             </div>
           </>,

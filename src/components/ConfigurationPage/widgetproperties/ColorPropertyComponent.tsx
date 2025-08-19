@@ -1,13 +1,4 @@
-import {
-  Button,
-  Col,
-  ColorPicker,
-  Flex,
-  Row,
-  Segmented,
-  Select,
-  Switch,
-} from "antd";
+import { Button, ColorPicker, Flex, Segmented, Select, Switch } from "antd";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import {
@@ -31,7 +22,7 @@ const ColorStopComponent = observer(
     index,
     onChange,
   }: {
-    property: ColorProperty;
+    property: { value: ColorPropertyValue };
     index: number;
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
@@ -101,7 +92,7 @@ const AddColorToGradient = observer(
     property,
     onChange,
   }: {
-    property: ColorProperty;
+    property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
     return (
@@ -133,7 +124,7 @@ const GradientSettings = observer(
     property,
     onChange,
   }: {
-    property: ColorProperty;
+    property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
     return (
@@ -229,18 +220,16 @@ const GradientColors = observer(
     property,
     onChange,
   }: {
-    property: ColorProperty;
+    property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
     return (
       <Flex vertical={true} className="full-width" gap={10}>
         <GradientSettings property={property} />
+        <div className={`${classes.colorlabel}`}>Цвета</div>
         {property.value.colors.map((color: ColorStop, index: number) => (
           <Flex vertical gap={9}>
-            <SmallLabeledContainer
-              key={index}
-              displayName={`Цвет #${index + 1}`}
-            >
+            <SmallLabeledContainer key={index} displayName="">
               <Flex className={`${classes.gradientcolor}`} gap={9}>
                 <ColorPicker
                   className={`${classes.color}`}
@@ -329,11 +318,11 @@ export const ColorPropertyComponent = observer(
     property,
     onChange,
   }: {
-    property: ColorProperty;
+    property: { value: ColorPropertyValue; displayName: string };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
     return (
-      <Flex gap={10} vertical={true}>
+      <Flex gap={10} vertical={true} className="full-width">
         <LabeledContainer displayName={property.displayName}>
           <Segmented
             block

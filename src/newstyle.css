@@ -108,6 +108,19 @@ button.ant-btn.ant-btn-default {
     display: flex;
     justify-content: center;
     align-items: center;
+    &:disabled {
+      color: var(--oda-color-150);
+      background-color: var(--oda-color-250);
+      &:hover {
+        color: var(--oda-color-150)!important;
+        background-color: var(--oda-color-250)!important;
+        transform: unset!important;
+      }
+    }
+    &:hover {
+      color: unset;
+      background-color: var(--oda-color-250)!important;
+    }
   }
 
   h1 {

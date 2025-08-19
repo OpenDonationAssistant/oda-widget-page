@@ -3,7 +3,11 @@ import { WidgetData } from "../../types/WidgetData";
 import WidgetWrapper from "../../WidgetWrapper";
 import { HistoryComponent } from "./HistoryPage";
 import { useState } from "react";
-import { HistoryStore, HistoryStoreContext } from "./HistoryStore";
+import {
+  DefaultHistoryStore,
+  HistoryStore,
+  HistoryStoreContext,
+} from "./HistoryStore";
 import {
   DefaultWidgetStore,
   WidgetStore,
@@ -13,11 +17,9 @@ import {
 export default function HistoryWidgetPage({}) {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
-    () => new HistoryStore(recipientId, widgetId, conf),
+    () => new DefaultHistoryStore(recipientId, widgetId, conf),
   );
-  const [widgetStore] = useState<WidgetStore>(
-    () => new DefaultWidgetStore(),
-  );
+  const [widgetStore] = useState<WidgetStore>(() => new DefaultWidgetStore());
 
   return (
     <WidgetWrapper>

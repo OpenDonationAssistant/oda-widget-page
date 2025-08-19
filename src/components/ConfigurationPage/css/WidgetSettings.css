@@ -45,14 +45,14 @@ button.ant-btn.ant-btn-primary {
 #root button.oda-btn-default:hover,
 .oda-btn-default:hover,
 .ant-btn-default:hover,
-#root button.ant-btn.ant-btn-default:hover,
-button.ant-btn.ant-btn-primary:hover {
-  cursor: pointer !important;
+#root button.ant-btn.ant-btn-default:hover:active,
+button.ant-btn.ant-btn-primary:hover:active {
+  cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0 !important;
   border-color: #3c89e8 !important;
-  color: var(--oda-label-background-color) !important;
-  background-color: var(--oda-secondary-text-color) !important;
-  transform: translateY(-2px) !important;
+  color: var(--oda-label-background-color);
+  background-color: var(--oda-secondary-text-color);
+  transform: translateY(-2px);
 }
 
 .configuration-container {
@@ -218,55 +218,16 @@ textarea.widget-settings-value {
 }
 
 .payment-alerts-previews-item {
-  min-height: 350px;
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0px;
+  overflow-y: scroll;
+  padding-top: 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 12px;
   position: relative;
-  background-color: var(--oda-color-150);
-
-  & .ant-tabs {
-    flex: 1 1 auto;
-    /*border-bottom: 2px solid var(--oda-main-background-color);*/
-    /*border-top: 2px solid var(--oda-main-background-color);*/
-
-    /* border-bottom: var(--oda-main-border); */
-
-    &.ant-tabs-left {
-      & > .ant-tabs-content-holder {
-        /* border-top: 1px solid var(--oda-main-background-color); */
-        background: var(--oda-label-background-color);
-        border-radius: 0px;
-        & > .ant-tabs-content {
-          & > .ant-tabs-tabpane {
-            padding: 0px;
-          }
-        }
-      }
-      & > .ant-tabs-nav {
-        & .ant-tabs-nav-wrap {
-          width: 145px;
-        }
-        background: unset;
-        padding-left: 0px;
-        & .ant-tabs-nav-list {
-          /* border-top: 1px solid var(--oda-panel-backgroun-color); */
-          padding-top: 5px;
-          padding-bottom: 5px;
-          & .ant-tabs-ink-bar {
-            background: none;
-          }
-          & .ant-tabs-tab {
-            &.ant-tabs-tab-active {
-              border-radius: 5px;
-              margin-right: 5px;
-              border: none;
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 .image-preview-container {
@@ -499,10 +460,6 @@ div.payment-alert-image-preview {
 
 .settings-item {
   width: 100%;
-  padding-top: 18px;
-  padding-bottom: 18px;
-}
-
-.widget-settings .payment-alerts-previews-item button.oda-btn-default {
-  width: 100%;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }

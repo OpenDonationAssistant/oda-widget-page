@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "../../components/ConfigurationPage/widgetproperties/WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
-import { Flex, Segmented, Select } from "antd";
+import { Segmented } from "antd";
 import { produce } from "immer";
 import { toJS } from "mobx";
 import classes from "./HorizontalEventsModeProperty.module.css";

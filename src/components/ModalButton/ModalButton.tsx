@@ -1,6 +1,6 @@
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
-import { Flex, Modal } from "antd";
+import { Modal } from "antd";
 import { Trans, useTranslation } from "react-i18next";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 

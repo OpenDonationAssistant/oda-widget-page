@@ -125,7 +125,12 @@ const RuleList = observer(({}) => {
             <div>
               <ModalStateContext.Provider value={deleteRuleDialogState}>
                 <Overlay>
-                  <Warning action={() => state.removeRule(index)}>
+                  <Warning
+                    action={() => {
+                      state.removeRule(index);
+                      deleteRuleDialogState.show = false;
+                    }}
+                  >
                     Вы точно хотите удалить правило?
                   </Warning>
                 </Overlay>

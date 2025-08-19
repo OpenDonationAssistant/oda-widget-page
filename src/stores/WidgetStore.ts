@@ -37,11 +37,12 @@ export class DefaultWidgetStore implements WidgetStore {
     );
   }
 
-  private load(): Promise<void> {
-    log.debug("loading widgets");
+  private async load(): Promise<void> {
+    log.debug({store: this},"loading widgets");
     return this.client()
       .list()
       .then((response) => {
+        log.debug({response: response},"handling widgets response");
         this._list = response.data
           .sort((a, b) => {
             if (a.sortOrder === undefined && b.sortOrder === undefined) {
@@ -64,7 +65,7 @@ export class DefaultWidgetStore implements WidgetStore {
       });
   }
 
-  async addWidget(type: string): Promise<Widget | null> {
+  public async addWidget(type: string): Promise<Widget | null> {
     const response = await this.client().addWidget({
       type: type,
       sortOrder: this.list.length,
@@ -76,7 +77,7 @@ export class DefaultWidgetStore implements WidgetStore {
     return widget;
   }
 
-  async deleteWidget(id: string): Promise<void> {
+  public async deleteWidget(id: string): Promise<void> {
     this._list = this.list.filter((widget) => widget.id !== id);
     await this.client()._delete(id);
   }

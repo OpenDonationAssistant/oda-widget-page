@@ -253,13 +253,14 @@ export class AlertController {
     return this.sortedAlerts[index];
   }
 
-  protected renderAlert(alert: Alert, data: any, ackFunction: Function) {
+  protected async renderAlert(alert: Alert, data: any, ackFunction: Function): Promise<void> {
     // TODO: send after checking for showing?
     if (this.showing == true) {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
       log.debug("another alert in play");
       return;
     }
+
     const duration = alert.property("duration")?.time;
     if (alert.property("duration")?.limited ?? false) {
       // setTimeout(() => {
@@ -305,6 +306,9 @@ export class AlertController {
       this.renderMessage(alert, data),
       this.playAudio(alert, data).then(() => {
         log.debug("handled audio");
+      }),
+      sleep(3000).then(() => {
+        log.debug("minimal time passed");
       }),
       sleep(duration).then(() => {
         log.debug("handled widget sleep");
@@ -393,11 +397,11 @@ export class AlertController {
         return sleep(animation.value.duration);
       })
       .then(() => {
-        log.debug("handled widget rendeing");
+        log.debug("handled widget rendering");
       });
   }
 
-  private renderImage(alert: Alert, data: any): Promise<void> {
+  private async renderImage(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("imageAppearanceDelay") as number;
     log.debug({ delay: delay }, "image delay");
     return sleep(delay)
@@ -471,11 +475,11 @@ export class AlertController {
         this.state.imageClassName = animation.classname();
       })
       .then(() => {
-        log.debug("handled image rendeing");
+        log.debug("handled image rendering");
       });
   }
 
-  private renderTitle(alert: Alert, data: any): Promise<void> {
+  private async renderTitle(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("headerAppearanceDelay") as number;
     log.debug({ delay: delay }, "header delay");
 
@@ -577,7 +581,7 @@ export class AlertController {
       });
   }
 
-  private renderMessage(alert: Alert, data: any): Promise<void> {
+  private async renderMessage(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("messageAppearanceDelay") as number;
     const messageFont = alert.get("font") as AnimatedFontProperty;
 
@@ -668,7 +672,7 @@ export class AlertController {
       });
   }
 
-  private finishWidget(alert: Alert): Promise<void> {
+  private async finishWidget(alert: Alert): Promise<void> {
     log.debug("starting finishing widget");
     const animation = alert.get("totalDisappearance") as AnimationProperty;
     this.state.totalClassName = animation.classname();
@@ -683,7 +687,7 @@ export class AlertController {
     return sleep(animation.value.duration).then(() => this.state.clearTotal());
   }
 
-  private finishImage(alert: Alert): Promise<void> {
+  private async finishImage(alert: Alert): Promise<void> {
     log.debug("finishing image");
     const animation = alert.get("imageDisappearance") as AnimationProperty;
     const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
@@ -700,7 +704,7 @@ export class AlertController {
     );
   }
 
-  private finishTitle(alert: Alert): Promise<void> {
+  private async finishTitle(alert: Alert): Promise<void> {
     const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
       .duration;
     const animation = alert.get("headerDisappearance") as AnimationProperty;
@@ -711,7 +715,7 @@ export class AlertController {
     );
   }
 
-  private finishMessage(alert: Alert): Promise<void> {
+  private async finishMessage(alert: Alert): Promise<void> {
     const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
       .duration;
     const animation = alert.get("messageDisappearance") as AnimationProperty;
@@ -722,7 +726,7 @@ export class AlertController {
     );
   }
 
-  playAudio(alert: Alert, data: any): Promise<void | AudioBuffer> {
+  async playAudio(alert: Alert, data: any): Promise<void | AudioBuffer> {
     if (!this.voiceController) {
       return Promise.resolve();
     }
@@ -742,9 +746,7 @@ export class AlertController {
     this.voiceController?.interrupt();
     this.clear();
     this.resumePlayer();
-    if (this.ackFunction) {
-      this.ackFunction();
-    }
+    this.ackFunction?.();
     this.sendEndNotification();
   }
 

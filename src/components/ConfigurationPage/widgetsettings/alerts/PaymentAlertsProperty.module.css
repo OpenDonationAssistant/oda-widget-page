@@ -1,4 +1,5 @@
 .adddalertbutton {
+  margin-top: 3px;
   text-align: center;
   width: 100%;
   background-color: var(--oda-color-150);
@@ -15,11 +16,19 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  & [class*="ant-collapse"] {
-    & [class*="ant-collapse-content"] {
-      & [class*="ant-collapse-content-box"] {
-        padding: 12px;
-      }
-    }
+  gap: 3px;
+}
+
+.alertheader {
+  padding: 12px 15px;
+  background-color: var(--oda-color-150);
+  border: none;
+  border-radius: 6px;
+  &:hover {
+    background-color: var(--oda-color-250);
+    cursor: pointer;
+  }
+  & .alerttitle{
+    font-size: 21px;
   }
 }

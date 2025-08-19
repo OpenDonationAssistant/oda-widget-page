@@ -25,10 +25,13 @@
   display: flex;
   justify-content: flex-start;
   width: 100%;
-  min-width: 200px;
   align-items: center;
-  margin-right: 10px;
   gap: 9px;
+  & [class*="ant-select"] {
+    &[class*="ant-select-outlined"] {
+      width: 100%;
+    }
+  }
 }
 
 .helpmodal {
