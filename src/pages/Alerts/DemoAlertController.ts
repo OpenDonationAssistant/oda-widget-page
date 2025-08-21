@@ -15,34 +15,32 @@ export class DemoAlertController extends AlertController {
     config.set("alerts", [alert]);
     super(config, recipientId);
     this._alert = alert;
-    this.listen("","");
+    this.listen("", "");
   }
-  private testData(){
+
+  private testData() {
     return {
-        id: uuidv7(), // TODO: сделать опциональным
-        alertId: this._alert.id,
-        nickname: "Тестовый алерт",
-        message: "Тестовое сообщение",
-        amount: {
-          major: 100,
-          minor: 0,
-          currency: "RUB",
-        },
-      }
-  };
+      id: uuidv7(), // TODO: сделать опциональным
+      alertId: this._alert.id,
+      nickname: "Тестовый алерт",
+      message: "Тестовое сообщение",
+      amount: {
+        major: 100,
+        minor: 0,
+        currency: "RUB",
+      },
+    };
+  }
 
   public listen(widgetId: string, conf: any) {
-    super.handleSettings()
-    .then(async () => {
+    return super.handleSettings().then(async () => {
+      log.debug("demo alert iteration");
       while (true) {
-        log.debug("demo alert iteration");
-        fullUri(this._alert.image)
-          .then((url) => {
-            const updatedAlert = produce(toJS(this._alert), (draft) => {
-              draft.image = url;
-            });
-            return this.renderAlert(updatedAlert, this.testData(), () => {});
-          })
+        await fullUri(this._alert.image).then(async (url) => {
+          const updatedAlert = this._alert.copy();
+          updatedAlert.image = url;
+          await this.renderAlert(updatedAlert, this.testData(), () => {});
+        });
       }
     });
   }

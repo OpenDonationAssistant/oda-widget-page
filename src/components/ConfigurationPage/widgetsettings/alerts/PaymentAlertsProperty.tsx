@@ -110,7 +110,6 @@ const AlertItemComponent = observer(({ alert }: { alert: Alert }) => {
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
-    const { t } = useTranslation();
 
     return (
       <>

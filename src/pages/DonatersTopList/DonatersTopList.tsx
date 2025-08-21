@@ -102,25 +102,23 @@ export const DonatersTopList = observer(
     const gap = settings.gap;
 
     function portion(): ReactNode[] {
-      let donaters = store.sortedMap;
-      if (!donaters) {
+      if (!store.list) {
         return [];
       }
       let packs = [];
-      let origin = Array.from(donaters.keys());
       for (
         let start = 0;
-        start < topsize && start < origin.length;
+        start < topsize && start < store.list.length;
         start += packSize
       ) {
         let end = start + packSize;
         if (end > topsize) {
           end = topsize;
         }
-        if (end > origin.length) {
-          end = origin.length;
+        if (end > store.list.length) {
+          end = store.list.length;
         }
-        const label = origin.slice(start, end).map((donater) => (
+        const label = store.list.slice(start, end).map((record) => (
           <div
             key={start}
             style={{
@@ -137,8 +135,7 @@ export const DonatersTopList = observer(
               style={messageFont.calcStyle()}
               className={`${messageFont.calcClassName()}`}
             >
-              {donater} - {donaters.get(donater).major}
-              {` \u20BD`}
+              {record.nickname} - {record.amount} RUB
             </div>
           </div>
         ));

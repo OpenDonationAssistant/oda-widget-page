@@ -21,6 +21,7 @@ import PrimaryButton from "../../../PrimaryButton/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
 import { DemoTokenStore } from "../../../../stores/TokenStore";
+import { useState } from "react";
 
 const SaveButtons = () => {
   return (
@@ -33,6 +34,7 @@ const SaveButtons = () => {
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
+  const [alertController, setAlertController] = useState<any>(() => new DemoAlertController(alert, ""));
   log.debug({ alert: toJS(alert) }, "render alert");
 
   return (
@@ -114,7 +116,7 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
             >
               <div style={{ margin: "auto" }}>
                 <PaymentAlerts
-                  alertController={new DemoAlertController(alert, "")}
+                  alertController={alertController}
                   tokenStore={new DemoTokenStore()}
                 />
               </div>
