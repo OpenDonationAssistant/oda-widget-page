@@ -68,6 +68,12 @@ export const AnimatedFontComponent = observer(
               The quick brown fox jumps over the lazy dog
             </div>
             <div
+              className={`${classes.demo} ${property.calcClassName()}`}
+              style={property.calcStyle()}
+            >
+              Съешь ещё этих мягких французских булок, да выпей чаю
+            </div>
+            <div
               className={`${classes.background}`}
               style={{
                 background: `url(${process.env.PUBLIC_URL}/opacity.png)`,
