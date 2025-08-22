@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import "./css/Widget.css";
 import "./css/WidgetButton.css";
@@ -89,25 +89,6 @@ const HelpButton = observer(({ widget }: { widget: Widget }) => {
     </>
   );
 });
-
-const NameComponent = observer(
-  ({ widget, asCards }: { widget: Widget; asCards: boolean }) => {
-    return (
-      <Flex
-        align="baseline"
-        className="widget-header-toogler"
-        justify={asCards ? "space-between" : "flex-start"}
-        gap={12}
-      >
-        <Flex align="center" gap={12}>
-          {widget.icon}
-          <div className="widget-title">{widget.name}</div>
-        </Flex>
-        <Switch value={widget.enabled} onChange={() => widget.toggle()} />
-      </Flex>
-    );
-  },
-);
 
 const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
   const preview = useRef<HTMLElement | null>(null);
@@ -251,11 +232,23 @@ const WidgetAsCard = observer(({ widget }: { widget: Widget }) => {
 });
 
 export const WidgetConfiguration = observer(
-  ({ widget, asCards }: { widget: Widget; asCards: boolean }) => {
+  ({
+    widget,
+    asCards,
+    open,
+  }: {
+    widget: Widget;
+    asCards: boolean;
+    open?: boolean;
+  }) => {
     const parentModalState = useContext(ModalStateContext);
     const [modalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+
+    useEffect(() => {
+      modalState.show = open ?? false;
+    }, [open]);
 
     return (
       <WidgetSettingsContext.Provider

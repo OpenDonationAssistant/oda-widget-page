@@ -18,12 +18,15 @@ export class ModalState {
   private _parent: ModalState | null;
   private _onClose: () => void = () => {};
 
-  constructor(parent?: ModalState, onClose?: () => void) {
+  constructor(parent?: ModalState, onClose?: () => void, show?: boolean) {
     this._onTop = false;
     this._level = (parent?.level ?? -2) + 1;
     this._parent = parent ?? null;
     if (onClose) {
       this._onClose = onClose;
+    }
+    if (show) {
+      this._show = show;
     }
     makeAutoObservable(this);
   }

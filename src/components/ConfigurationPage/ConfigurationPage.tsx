@@ -9,10 +9,7 @@ import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import classes from "./ConfigurationPage.module.css";
-import {
-  SelectedIndexContext,
-  SelectedIndexStore,
-} from "../../stores/SelectedIndexStore";
+import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import AddIcon from "../../icons/AddIcon";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
@@ -40,9 +37,12 @@ import { log } from "../../logging";
 
 const Widgets = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
+  const selection = useContext(SelectedIndexContext);
+
+  log.debug({ selection: selection.id }, "rendering selection");
 
   return (
-    <>
+    <SelectedIndexContext.Provider value={selection}>
       {!asCards && (
         <List>
           {widgetStore.list.map((data, index) => (
@@ -55,7 +55,11 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
                   {...draggable.dragHandleProps}
                   key={data.id}
                 >
-                  <WidgetConfiguration widget={data} asCards={asCards} />
+                  <WidgetConfiguration
+                    widget={data}
+                    asCards={asCards}
+                    open={data.id === selection.id}
+                  />
                 </div>
               )}
             </Draggable>
@@ -66,12 +70,16 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
       {asCards && (
         <CardList>
           {widgetStore.list.map((data, index) => (
-            <WidgetConfiguration widget={data} asCards={asCards} />
+            <WidgetConfiguration
+              widget={data}
+              asCards={asCards}
+              open={data.id === selection.id}
+            />
           ))}
           <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
         </CardList>
       )}
-    </>
+    </SelectedIndexContext.Provider>
   );
 });
 
@@ -162,6 +170,8 @@ const AddWidgetComponent = observer(
     );
     const presetStore = useContext(PresetStoreContext);
     const [widget, setWidget] = useState<Widget | null>(null);
+    const selection = useContext(SelectedIndexContext);
+
     log.debug({ widget: widget }, "created widget");
 
     const NewWidgetSection = observer(({ category }: { category: string }) => {
@@ -179,6 +189,8 @@ const AddWidgetComponent = observer(
                     }
                     presetDialogState.show = true;
                     setWidget(widget);
+                    selection.id = widget.id;
+                    log.debug({selection: selection.id}, "set selection");
                   });
                 }}
               >
@@ -193,9 +205,7 @@ const AddWidgetComponent = observer(
     return (
       <ModalStateContext.Provider value={dialogState}>
         <ModalStateContext.Provider value={presetDialogState}>
-          {widget && (
-            <PresetWindow presetStore={presetStore} widget={widget} />
-          )}
+          {widget && <PresetWindow presetStore={presetStore} widget={widget} />}
         </ModalStateContext.Provider>
         <Overlay>
           <FullscreenPanel>
