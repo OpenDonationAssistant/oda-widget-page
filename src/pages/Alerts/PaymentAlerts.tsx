@@ -532,9 +532,7 @@ function PaymentAlerts({
           .filter((token) => token.system === "DonatePay")
           .forEach((token) => {
             axios
-              .get(
-                `https://donatepay.ru/api/v1/user?access_token=${token.token}`,
-              )
+              .get(`https://api.oda.digital/donatepay/user?access_token=${token.token}`)
               .then((response) => response.data.data.id)
               .then((id) => {
                 log.debug("id: " + id);
