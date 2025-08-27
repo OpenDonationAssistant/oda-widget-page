@@ -117,10 +117,10 @@ button.ant-btn.ant-btn-default {
         transform: unset!important;
       }
     }
-    &:hover {
-      color: unset;
-      background-color: var(--oda-color-250)!important;
-    }
+    /* &:hover { */
+    /*   color: unset; */
+    /*   background-color: var(--oda-color-250)!important; */
+    /* } */
   }
 
   h1 {

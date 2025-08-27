@@ -1,4 +1,3 @@
-import { AdvancedTextProperty } from "../../components/ConfigurationPage/widgetproperties/AdvancedText/AdvancedTextProperty";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
@@ -8,7 +7,6 @@ import {
   ColorProperty,
   ColorPropertyTarget,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
-import { ListProperty } from "../../components/ConfigurationPage/widgetproperties/List/ListProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
@@ -40,15 +38,15 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
       key: "header",
       title: "Заголовок",
       properties: [
-        new ListProperty({
-          name: "headerItems",
-          displayName: "Элементы заголовка",
-          value: [
-            new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
-          ],
-          factoryMethod: () =>
-            new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
-        }),
+        // new ListProperty({
+        //   name: "headerItems",
+        //   displayName: "Элементы заголовка",
+        //   value: [
+        //     new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
+        //   ],
+        //   factoryMethod: () =>
+        //     new AdvancedTextProperty({ name: "header", label: "Заголовок" }),
+        // }),
         new BooleanProperty({
           name: "showHeader",
           value: true,
