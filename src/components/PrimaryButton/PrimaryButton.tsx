@@ -5,7 +5,7 @@ export default function PrimaryButton({
   children,
   onClick,
   disabled,
-  className
+  className,
 }: {
   children: ReactNode;
   onClick: () => void;

@@ -24,6 +24,7 @@ import AddIcon from "../../icons/AddIcon";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./AddHistoryItemModal.module.css";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
+import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
 
 export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -91,22 +92,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       <ModalStateContext.Provider value={showModal}>
         <Overlay>
           <Panel>
-            <Title>
-              <Flex justify="space-between" style={{ marginBottom: "30px" }}>
-                <Flex>
-                  <div>Добавить донат</div>
-                </Flex>
-                <Flex>
-                  <NotBorderedIconButton
-                    onClick={() => {
-                      showModal.show = false;
-                    }}
-                  >
-                    <CloseIcon color="var(--oda-color-1000)" />
-                  </NotBorderedIconButton>
-                </Flex>
-              </Flex>
-            </Title>
+            <Title>Добавить донат</Title>
             <Flex vertical className="full-width">
               <Flex vertical className={`${classes.section}`} gap={12}>
                 <div className={`${classes.sectiontitle}`}>Основное</div>
@@ -161,14 +147,19 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                   />
                 </Flex>
               </Flex>
-              <PrimaryButton
-                onClick={() => {
-                  addItem();
-                  showModal.show = false;
-                }}
-              >
-                Добавить
-              </PrimaryButton>
+              <Flex gap={6} justify="flex-end">
+                <SecondaryButton onClick={() => (showModal.show = false)}>
+                  Отменить
+                </SecondaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    addItem();
+                    showModal.show = false;
+                  }}
+                >
+                  Добавить
+                </PrimaryButton>
+              </Flex>
             </Flex>
           </Panel>
         </Overlay>

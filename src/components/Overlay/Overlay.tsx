@@ -46,6 +46,9 @@ export class ModalState {
   public get onTop() {
     return this._onTop;
   }
+  public setOnClose(fn: () => void) {
+    this._onClose = fn;
+  }
   public set show(show: boolean) {
     this._onTop = show;
     if (this._parent !== null) {
@@ -173,8 +176,19 @@ export const Dialog = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Title = ({ children }: { children: ReactNode }) => {
-  return <div className={`${classes.title}`}>{children}</div>;
+export const Title = ({
+  children,
+  showClose = true,
+}: {
+  children: ReactNode;
+  showClose?: boolean;
+}) => {
+  return (
+    <Flex justify="space-between" className={`${classes.title}`}>
+      {children}
+      {showClose && <CloseOverlayButton />}
+    </Flex>
+  );
 };
 
 export const Subtitle = ({

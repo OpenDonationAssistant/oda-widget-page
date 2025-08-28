@@ -114,8 +114,8 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
   return (
     <Overlay>
       <FullscreenPanel>
-        <Title>
-          <Flex justify="space-between" gap={51}>
+        <Title showClose={false}>
+          <Flex className="full-width" justify="space-between" gap={51}>
             <Flex justify="flex-start" align="baseline" gap={18}>
               <EditableString
                 label={widget.name}

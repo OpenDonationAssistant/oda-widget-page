@@ -57,6 +57,7 @@
 .title {
   color: var(--oda-color-1000);
   font-size: 48px;
+  width: 100%;
 }
 
 .subtitle {

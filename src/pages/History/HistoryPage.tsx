@@ -17,7 +17,11 @@ import {
 } from "../../components/Overlay/Overlay";
 import { useContext, useEffect, useRef, useState } from "react";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
-import { DefaultHistoryStore, HistoryStore, HistoryStoreContext } from "./HistoryStore";
+import {
+  DefaultHistoryStore,
+  HistoryStore,
+  HistoryStoreContext,
+} from "./HistoryStore";
 import { observer } from "mobx-react-lite";
 import { HistoryItemComponent } from "./HistoryItem";
 import CloseIcon from "../../icons/CloseIcon";
@@ -150,14 +154,7 @@ export const HistoryComponent = observer(
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
             <Panel>
-              <Flex align="top" justify="space-between">
-                <Title>Настройки отображения</Title>
-                <NotBorderedIconButton
-                  onClick={() => (dialogState.show = false)}
-                >
-                  <CloseIcon color="white" />
-                </NotBorderedIconButton>
-              </Flex>
+              <Title>Настройки отображения</Title>
               <Subtitle>
                 Выберите, какие события будут отображаться в истории
               </Subtitle>
@@ -204,36 +201,40 @@ export const HistoryComponent = observer(
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
             {!showHeader && <ODALogo />}
             <Flex gap={9}>
-              <Flex
-                align="center"
-                justify="center"
-                gap={6}
-                className={`${classes.premoderationbutton}`}
-              >
-                <div>Премодерация</div>
-                <Switch
-                  value={premoderation}
-                  onChange={(update) => {
-                    widgetStore
-                      .search({ type: "payment-alerts" })
-                      .forEach((widget) => {
-                        const property = widget.config.get("premoderation") as
-                          | PremoderationProperty
-                          | undefined;
-                        if (!property) {
-                          return;
-                        }
-                        property.value = produce(
-                          toJS(property.value),
-                          (draft) => {
-                            draft.enabled = update;
-                          },
-                        );
-                        widget.save().then(() => setPremoderation(update));
-                      });
-                  }}
-                />
-              </Flex>
+              {widgetStore.list.filter(
+                (widget) => widget.type === "payment-alerts",
+              ).length > 0 && (
+                <Flex
+                  align="center"
+                  justify="center"
+                  gap={6}
+                  className={`${classes.premoderationbutton}`}
+                >
+                  <div>Премодерация</div>
+                  <Switch
+                    value={premoderation}
+                    onChange={(update) => {
+                      widgetStore
+                        .search({ type: "payment-alerts" })
+                        .forEach((widget) => {
+                          const property = widget.config.get(
+                            "premoderation",
+                          ) as PremoderationProperty | undefined;
+                          if (!property) {
+                            return;
+                          }
+                          property.value = produce(
+                            toJS(property.value),
+                            (draft) => {
+                              draft.enabled = update;
+                            },
+                          );
+                          widget.save().then(() => setPremoderation(update));
+                        });
+                    }}
+                  />
+                </Flex>
+              )}
               <AddHistoryItemModal compact={!showHeader} />
               <BorderedIconButton
                 onClick={() => {

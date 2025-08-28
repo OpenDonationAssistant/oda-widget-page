@@ -1,5 +1,5 @@
 import { useRequest } from "ahooks";
-import { Button, Flex, Input, Modal, QRCode, Spin } from "antd";
+import { Flex, Input, QRCode, Spin } from "antd";
 import classes from "./WidgetUrlModal.module.css";
 import axios from "axios";
 import { Tokens, tokenRequest } from "../../pages/Login/Login";
@@ -79,10 +79,7 @@ export const WidgetUrlModal = observer(({
       <ModalStateContext.Provider value={dialogState}>
         <Overlay>
           <Panel>
-            <Flex justify="space-between">
-              <Title>Как подключить виджет</Title>
-              <CloseOverlayButton/>
-            </Flex>
+            <Title>Как подключить виджет</Title>
             {loading && (
               <Flex
                 className={`${classes.spin} full-width`}
@@ -121,7 +118,7 @@ export const WidgetUrlModal = observer(({
                   Если хотите воспользоваться виджетом на телефоне или добавить
                   его в Prisma Live или его аналоги, воспользуйтесь QR кодом -
                   виджет откроется в браузере телефона, там же можно скопировать
-                  ссылку на него для Prisma Live
+                  ссылку на него для Prisma Live.
                 </div>
                 <Flex justify="center">
                   <QRCode size={320} value={data} />

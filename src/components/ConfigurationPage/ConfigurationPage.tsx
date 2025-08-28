@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
@@ -17,7 +17,6 @@ import CardsIcon from "../../icons/CardsIcon";
 import { CardButton, CardList } from "../Cards/CardsComponent";
 import { useSearchParams } from "react-router-dom";
 import {
-  CloseOverlayButton,
   Dialog,
   FullscreenPanel,
   ModalState,
@@ -38,6 +37,10 @@ import { log } from "../../logging";
 const Widgets = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
   const selection = useContext(SelectedIndexContext);
+  const parentModalState = useContext(ModalStateContext);
+  const [presetDialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
 
   log.debug({ selection: selection.id }, "rendering selection");
 
@@ -58,7 +61,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
                   <WidgetConfiguration
                     widget={data}
                     asCards={asCards}
-                    open={data.id === selection.id}
+                    open={data.id === selection.id && presetDialogState.show === false}
                   />
                 </div>
               )}
@@ -69,7 +72,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
       )}
       {asCards && (
         <CardList>
-          {widgetStore.list.map((data, index) => (
+          {widgetStore.list.map((data) => (
             <WidgetConfiguration
               widget={data}
               asCards={asCards}
@@ -161,12 +164,9 @@ const AddWidgetComponent = observer(
   }) => {
     const { t } = useTranslation();
 
-    const parentModalState = useContext(ModalStateContext);
+    const presetDialogState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
-    const [presetDialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
+      () => new ModalState(presetDialogState),
     );
     const presetStore = useContext(PresetStoreContext);
     const [widget, setWidget] = useState<Widget | null>(null);
@@ -187,10 +187,13 @@ const AddWidgetComponent = observer(
                     if (!widget) {
                       return;
                     }
-                    presetDialogState.show = true;
-                    setWidget(widget);
-                    selection.id = widget.id;
-                    log.debug({selection: selection.id}, "set selection");
+                    presetStore.for(widget.type).then((presets) => {
+                      setWidget(widget);
+                      selection.id = widget.id;
+                      if (presets.length > 0) {
+                        presetDialogState.show = true;
+                      }
+                    })
                   });
                 }}
               >
@@ -209,10 +212,7 @@ const AddWidgetComponent = observer(
         </ModalStateContext.Provider>
         <Overlay>
           <FullscreenPanel>
-            <Flex justify="space-between">
-              <Title>Добавить виджет</Title>
-              <CloseOverlayButton />
-            </Flex>
+            <Title>Добавить виджет</Title>
             <Flex vertical gap={12} className={`${classes.sectioncontainer}`}>
               <div className={`${classes.section}`}>Для стрима</div>
               <NewWidgetSection category="onscreen" />

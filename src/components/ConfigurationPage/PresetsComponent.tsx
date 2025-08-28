@@ -21,9 +21,11 @@ import SubActionButton from "../SubActionButton/SubActionButton";
 const PreviewImage = ({
   preset,
   widget,
+  onClose,
 }: {
   preset: Preset;
   widget: Widget;
+  onClose?: () => void;
 }) => {
   const [url, setUrl] = useState<string | null>(null);
   const dialogState = useContext(ModalStateContext);
@@ -37,6 +39,7 @@ const PreviewImage = ({
       className={`${classes.previewcard}`}
       onClick={() => {
         preset.applyTo(widget.config, widget.type);
+        onClose && onClose();
         dialogState.show = false;
       }}
     >
@@ -48,7 +51,13 @@ const PreviewImage = ({
   );
 };
 
-const Window = ({ children }: { children: ReactNode }) => {
+const Window = ({
+  children,
+  onClose,
+}: {
+  children: ReactNode;
+  onClose?: () => void;
+}) => {
   const state = useContext(ModalStateContext);
   const backRef = useRef<HTMLDivElement | null>(null);
 
@@ -95,21 +104,28 @@ export const PresetWindow = ({
 }) => {
   const [personal, setPersonal] = useState<Preset[]>([]);
   const [system, setSystem] = useState<Preset[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    setLoading(true);
     presetStore.for(widget.type).then((presets) => {
+      if (presets.length === 0) {
+      }
       setPersonal(presets.filter((preset) => preset.owner !== "ODA"));
       setSystem(presets.filter((preset) => preset.owner === "ODA"));
+      setLoading(false);
     });
   }, [presetStore, widget]);
 
   return (
     <Overlay>
       <Window>
-        <Flex justify="space-between">
-          <Title>Шаблоны</Title>
-          <CloseOverlayButton />
-        </Flex>
+        <Title>Шаблоны</Title>
+        {loading && (
+          <Flex className="full-width" justify="center" align="center">
+            <Spin size="large" />
+          </Flex>
+        )}
         {personal && personal.length > 0 && (
           <Flex vertical className={`${classes.cardlistcontainer}`}>
             <Subtitle className={`${classes.presetsubtitle}`}>

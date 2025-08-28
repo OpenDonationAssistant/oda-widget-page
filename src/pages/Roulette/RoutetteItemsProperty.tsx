@@ -27,10 +27,7 @@ const ItemModal = observer(() => {
       <ModalStateContext.Provider value={modalState}>
         <Overlay>
           <Panel>
-            <Flex>
-              <Title>Настройки лота</Title>
-              <CloseOverlayButton />
-            </Flex>
+            <Title>Настройки лота</Title>
           </Panel>
         </Overlay>
         <button

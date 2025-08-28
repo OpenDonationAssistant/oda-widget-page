@@ -21,6 +21,8 @@ import { ReelWidget } from "./ReelWidget";
 import { DemoReelStore } from "../../stores/ReelStore";
 import { ReelWinningEffectProperty } from "./ReelWinningEffectProperty";
 import { log } from "../../logging";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -150,7 +152,10 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
+        <Flex justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
+          <CloseOverlayButton/>
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Позволяет запускать рулетку на донаты, в которой выграет одна из
           карточек - "призов". Запускается на каждый донат больше заданной

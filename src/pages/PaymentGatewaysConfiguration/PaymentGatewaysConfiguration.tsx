@@ -113,12 +113,7 @@ const ModalWrapper = observer(
     return (
       <Overlay>
         <Panel>
-          <Title>
-            <Flex className="full-width" justify="space-between">
-              <div>Добавить способ оплаты</div>
-              <CloseOverlayButton />
-            </Flex>
-          </Title>
+          <Title>Добавить способ оплаты</Title>
           <div className={`${classes.subtitle}`}>{subtitle}</div>
           {children}
           <Flex className={`${classes.buttons}`}>
@@ -286,12 +281,7 @@ const ChooseGatewayModal = observer(
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
             <Panel>
-              <Title>
-                <Flex className="full-width" justify="space-between">
-                  <div>Добавить способ оплаты</div>
-                  <CloseOverlayButton />
-                </Flex>
-              </Title>
+              <Title>Добавить способ оплаты</Title>
               <div className={`${classes.subtitle}`}>
                 Выберите партнера, через которого будет осуществляться прием
                 донатов

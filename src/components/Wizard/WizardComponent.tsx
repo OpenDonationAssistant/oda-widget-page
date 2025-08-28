@@ -94,7 +94,6 @@ const Wizard = observer(
       () =>
         new ModalState(parentModalState, () => {
           configurationStore.reset();
-          log.debug({ index: configurationStore.index }, "closed wizard");
         }),
     );
 
@@ -117,16 +116,7 @@ const Wizard = observer(
           <ModalStateContext.Provider value={dialogState}>
             <Overlay>
               <Panel>
-                <Title>
-                  <Flex className="full-width" justify="space-between">
-                    <Flex>{configurationStore.step.title}</Flex>
-                    <NotBorderedIconButton
-                      onClick={() => configurationStore.reset()}
-                    >
-                      <CloseIcon color="var(--oda-color-1000)" />
-                    </NotBorderedIconButton>
-                  </Flex>
-                </Title>
+                <Title>{configurationStore.step.title}</Title>
                 <div className={`${classes.subtitle}`}>
                   {configurationStore.step.subtitle}
                 </div>

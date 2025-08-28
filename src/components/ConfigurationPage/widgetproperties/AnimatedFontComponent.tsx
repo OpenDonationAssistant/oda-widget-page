@@ -76,10 +76,7 @@ export const AnimatedFontComponent = observer(
           </SecondaryButton>
           <Overlay>
             <Panel>
-              <Flex justify="space-between" align="top">
-                <Title>Настройки шрифта</Title>
-                <CloseOverlayButton />
-              </Flex>
+              <Title>Настройки шрифта</Title>
               <div className={`${classes.democontainer}`}>
                 {property.createFontImport()}
                 <div
