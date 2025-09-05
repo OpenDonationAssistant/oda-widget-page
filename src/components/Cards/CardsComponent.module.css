@@ -30,6 +30,7 @@
 }
 
 .card {
+  position: relative;
   border-radius: 12px;
   background-color: var(--oda-color-150);
   min-height: 200px;
@@ -40,10 +41,17 @@
   }
 }
 
+.checkicon {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
+
 
 .cardtitle {
   color: var(--oda-color-1000);
   font-size: 21px;
+  padding-right: 
 }
 
 .notselected {

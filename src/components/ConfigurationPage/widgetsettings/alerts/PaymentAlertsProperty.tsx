@@ -1,9 +1,8 @@
-import { MouseEventHandler, ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-i18next";
 import { AlertComponent } from "./AlertComponent";
 import { Flex, Switch } from "antd";
 import { useLoaderData } from "react-router";
@@ -14,7 +13,6 @@ import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, toJS } from "mobx";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";
-import { EditableString } from "../../../RenamableLabel/EditableString";
 import {
   FullscreenPanel,
   ModalState,
@@ -25,6 +23,10 @@ import {
 import CopyIcon from "../../../../icons/CopyIcon";
 import { BorderedIconButton } from "../../../IconButton/IconButton";
 import { AddListItemButton, List, ListItem } from "../../../List/List";
+import {
+  SelectedIndexContext,
+  SelectedIndexStore,
+} from "../../../../stores/SelectedIndexStore";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -40,89 +42,102 @@ function testAlert(topic: string, alert: Alert) {
   });
 }
 
-const AlertItemComponent = observer(({ alert }: { alert: Alert }) => {
-  const { conf } = useLoaderData() as WidgetData;
-  const parentModalState = useContext(ModalStateContext);
-  const [deleteDialogState] = useState<ModalState>(
-    () => new ModalState(parentModalState),
-  );
-  const [alertDialogState] = useState<ModalState>(
-    () => new ModalState(parentModalState),
-  );
+const AlertItemComponent = observer(
+  ({ alert, open }: { alert: Alert; open: boolean }) => {
+    const { conf } = useLoaderData() as WidgetData;
+    const parentModalState = useContext(ModalStateContext);
+    const [deleteDialogState] = useState<ModalState>(
+      () => new ModalState(parentModalState),
+    );
+    const [alertDialogState] = useState<ModalState>(
+      () => new ModalState(parentModalState, () => {}, open),
+    );
+    const selection = useContext(SelectedIndexContext);
 
-  return (
-    <ModalStateContext.Provider value={alertDialogState}>
-      <ListItem
-        onClick={() => (alertDialogState.show = true)}
-        first={
-          <Flex align="center" gap={18}>
-            <div className={`${classes.alerttitle}`}>
-              {alert.property("name")}
-            </div>
-            <Switch
-              value={alert.property("enabled")}
-              onChange={(value) => alert.set("enabled", value)}
-            />
-          </Flex>
-        }
-        second={
-          <Flex className={`${classes.alertbuttons}`} gap={9}>
-            <SubActionButton
-              onClick={() => testAlert(conf.topic.alerts, alert)}
-            >
-              <div>Тест</div>
-            </SubActionButton>
-            <BorderedIconButton
-              onClick={() => {
-                alert.copy();
-              }}
-            >
-              <CopyIcon />
-            </BorderedIconButton>
-            <ModalStateContext.Provider value={deleteDialogState}>
-              <Overlay>
-                <Warning
-                  action={() => {
-                    deleteDialogState.show = false;
-                    alert.delete();
-                  }}
-                >
-                  Вы точно хотите удалить оповещение?
-                </Warning>
-              </Overlay>
+    return (
+      <ModalStateContext.Provider value={alertDialogState}>
+        <ListItem
+          onClick={() => {
+            selection.id = alert.id;
+            alertDialogState.show = true;
+          }}
+          first={
+            <Flex align="center" gap={18}>
+              <div className={`${classes.alerttitle}`}>
+                {alert.property("name")}
+              </div>
+              <Switch
+                value={alert.property("enabled")}
+                onChange={(value) => alert.set("enabled", value)}
+              />
+            </Flex>
+          }
+          second={
+            <Flex className={`${classes.alertbuttons}`} gap={9}>
+              <SubActionButton onClick={() => testAlert(conf.topic.alerts, alert)}>
+                <div>Тест</div>
+              </SubActionButton>
               <BorderedIconButton
-                onClick={() => (deleteDialogState.show = true)}
+                onClick={() => {
+                  alert.copy();
+                }}
               >
-                <CloseIcon color="#FF8888" />
+                <CopyIcon />
               </BorderedIconButton>
-            </ModalStateContext.Provider>
-          </Flex>
-        }
-      />
-      <Overlay>
-        <FullscreenPanel>
-          <AlertComponent alert={alert} />
-        </FullscreenPanel>
-      </Overlay>
-    </ModalStateContext.Provider>
-  );
-});
+              <ModalStateContext.Provider value={deleteDialogState}>
+                <Overlay>
+                  <Warning
+                    action={() => {
+                      deleteDialogState.show = false;
+                      alert.delete();
+                    }}
+                  >
+                    Вы точно хотите удалить оповещение?
+                  </Warning>
+                </Overlay>
+                <BorderedIconButton
+                  onClick={() => (deleteDialogState.show = true)}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              </ModalStateContext.Provider>
+            </Flex>
+          }
+        />
+        <Overlay>
+          <FullscreenPanel>
+            <AlertComponent alert={alert} />
+          </FullscreenPanel>
+        </Overlay>
+      </ModalStateContext.Provider>
+    );
+  },
+);
 
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
-
+    const [selection, setSelection] = useState<SelectedIndexStore>(
+      () => new SelectedIndexStore(),
+    );
     return (
-      <>
+      <SelectedIndexContext.Provider value={selection}>
         <List>
           {property.value.map((alert) => (
-            <AlertItemComponent key={alert.id} alert={alert} />
+            <AlertItemComponent
+              key={alert.id}
+              alert={alert}
+              open={selection.id === alert.id}
+            />
           ))}
           <AddListItemButton
             label="button-add-alert"
-            onClick={() => property.addAlert()}
+            onClick={() => {
+              const added = property.addAlert();
+              selection.id = added.id;
+            }}
           />
         </List>
-      </>
+      </SelectedIndexContext.Provider>
     );
   },
 );
@@ -161,16 +176,15 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
     return this.value.map((it) => it.config());
   }
 
-  addAlert(alert?: Alert): void {
-    this._value = [
-      ...this._value,
-      alert
-        ? alert
-        : new Alert({
-            removeFn: (id: string) => this.removeAlert(id),
-            addFn: (alert: Alert) => this.addAlert(),
-          }),
-    ];
+  addAlert(alert?: Alert): Alert {
+    const alertToAdd =
+      alert ||
+      new Alert({
+        removeFn: (id: string) => this.removeAlert(id),
+        addFn: (alert: Alert) => this.addAlert(),
+      });
+    this._value = [...this._value, alertToAdd];
+    return alertToAdd;
   }
 
   public markSaved(): void {

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, createContext } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
 import { Tabs as AntTabs, Flex } from "antd";
@@ -101,13 +101,13 @@ export class AbstractWidgetSettings {
 
   public markup(): ReactNode {
     // if (this._sections.length > 1) {
-      return (
-        <AntTabs
+    return (
+      <AntTabs
         className={`${classes.settings}`}
-          type="card"
-          items={this._sections.map(this.tabPaneGenerator)}
-        />
-      );
+        type="card"
+        items={this._sections.map(this.tabPaneGenerator)}
+      />
+    );
     // }
     // return (
     //   <Flex vertical className="full-width">
@@ -154,3 +154,6 @@ export class AbstractWidgetSettings {
     [...this._index.values()].forEach((prop) => prop.markSaved());
   }
 }
+
+export const AbstractWidgetSettingsContext =
+  createContext<AbstractWidgetSettings | null>(null);

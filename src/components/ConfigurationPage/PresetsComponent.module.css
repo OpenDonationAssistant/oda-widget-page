@@ -11,10 +11,21 @@
 
 .cardlistcontainer {
   margin-bottom: 32px;
+  width: 100%;
+}
+
+.presetcontainer {
+  max-height: 75vh;
 }
 
 .presetsubtitle {
   margin-bottom: 18px;
+}
+
+.buttons {
+  margin-top: 12px;
+  padding-right: 21px;
+  width: 100%;
 }
 
 .preview {

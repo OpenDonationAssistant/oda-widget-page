@@ -1,5 +1,6 @@
 import { Flex } from "antd";
 import { ReactNode } from "react";
+import classes from "./PrimaryButton.module.css";
 
 export default function PrimaryButton({
   children,
@@ -15,7 +16,7 @@ export default function PrimaryButton({
   return (
     <>
       <button
-        className={`oda-btn-default ${className ? className : ""}`}
+        className={`oda-btn-default ${classes.primarybutton} ${className ? className : ""}`}
         disabled={disabled}
         onClick={() => {
           onClick();

@@ -1,0 +1,17 @@
+.section {
+  font-size: 18px;
+  color: var(--oda-color-500);
+  width: 100%;
+  margin-top: 9px;
+}
+
+.widgetpreviewtitle {
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--oda-color-1000);
+}
+
+.widgetpreviewdescription {
+  font-size: 15px;
+  color: #707080;
+}

@@ -15,7 +15,7 @@ import { DonatonWidgetSettings } from "../components/ConfigurationPage/widgetset
 import { RutonyChatSettings } from "../pages/RutonyChat/RutonyChatSettings";
 import { tokenRequest } from "../pages/Login/Login";
 import { HorizontalEventsWidgetSettings } from "../pages/HorizontalEvents/HorizontalEventsWidgetSettings";
-import { ReactNode } from "react";
+import { ReactNode, createContext } from "react";
 import AlertsIcon from "../icons/widgets/AlertsIcon";
 import { RouletteWidgetSettings } from "../pages/Roulette/RouletteWidgetSettings";
 import DonationGoalIcon from "../icons/DonationGoalIcon";
@@ -393,3 +393,5 @@ export class Widget {
     return this._config.subactions();
   }
 }
+
+export const WidgetContext = createContext<Widget | null>(null);

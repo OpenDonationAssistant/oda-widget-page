@@ -14,6 +14,8 @@ import {
 } from "../widgetproperties/SingleChoiceProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -161,7 +163,10 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Текущий трек"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Текущий трек"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Отображает название текущего видео в плеере, кто заказал и сколько
           треков в очереди.
@@ -173,9 +178,7 @@ export class PlayerInfoWidgetSettings extends AbstractWidgetSettings {
             <li>
               Вставить ссылку как Browser Source в OBS поверх картинки стрима.
             </li>
-            <li>
-              Добавить видео в плеер, проверить что виджет отображается.
-            </li>
+            <li>Добавить видео в плеер, проверить что виджет отображается.</li>
           </ul>
         </div>
       </>

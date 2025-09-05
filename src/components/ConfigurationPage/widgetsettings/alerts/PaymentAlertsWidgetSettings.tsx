@@ -7,6 +7,8 @@ import classes from "../AbstractWidgetSettings.module.css";
 import TestAlertPopup from "../../../TestAlertPopup/TestAlertPopup";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { PremoderationProperty } from "./PremoderationProperty";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../../Overlay/Overlay";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   private _alerts: PaymentAlertsProperty;
@@ -44,7 +46,10 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Алерты"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Алерты"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Показывает алерты для донатов. Пока поддерживает только донаты через
           ОДА.

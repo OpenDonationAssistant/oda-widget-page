@@ -37,9 +37,19 @@ export class DemoAlertController extends AlertController {
       log.debug("demo alert iteration");
       while (true) {
         await fullUri(this._alert.image).then(async (url) => {
-          const updatedAlert = this._alert.copy();
-          updatedAlert.image = url;
-          await this.renderAlert(updatedAlert, this.testData(), () => {});
+          const freshAlert = new Alert({
+            id: undefined,
+            audio:
+              produce(toJS(this._alert.audio), (draft) => draft) || undefined,
+            image: url,
+            video:
+              produce(toJS(this._alert.video), (draft) => draft) || undefined,
+            triggers: produce(toJS(this._alert.triggers), (draft) => draft),
+            properties: this._alert.properties.map((prop) => prop.copy()),
+            removeFn: () => {},
+            addFn: () => {},
+          });
+          await this.renderAlert(freshAlert, this.testData(), () => {});
         });
       }
     });

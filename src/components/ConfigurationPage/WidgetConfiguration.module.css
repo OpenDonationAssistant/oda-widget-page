@@ -33,15 +33,23 @@
   margin-bottom: 32px;
 }
 
+.smallcontainer {
+  height: 70%;
+}
+
+.bigcontainer {
+  height: 100%;
+}
+
 .configcontainer {
   margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
-  height: 100%;
 
   & [class*="ant-tabs-content-holder"] {
     overflow-y: scroll;
-    height: 80vh;
+    max-height: 80vh;
+    height: min-content;
     & [class*="ant-tabs-content-holder"] {
       height: unset;
       overflow-y: auto;

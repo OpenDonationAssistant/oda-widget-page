@@ -1,25 +1,18 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { BorderProperty } from "../widgetproperties/BorderProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
 import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
-import { PresetProperty } from "../widgetproperties/PresetProperty";
 import PlayerPopup from "../../PlayerPopup/PlayerPopup";
 import { DemoPlayerStore } from "../../PlayerPopup/DemoPlayer";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { Flex } from "antd";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({ sections: [] });
-
-    this.addSection({
-      key: "preset",
-      title: "Готовые шаблоны",
-      properties: [
-        new PresetProperty({ type: "player-popup", settings: this }),
-      ],
-    });
 
     this.addSection({
       key: "general",
@@ -105,9 +98,12 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>
-          Виджет "Видео из проигрывателя"
-        </h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>
+            Виджет "Видео из проигрывателя"
+          </h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Показывает на стриме видео из реквеста.
         </div>

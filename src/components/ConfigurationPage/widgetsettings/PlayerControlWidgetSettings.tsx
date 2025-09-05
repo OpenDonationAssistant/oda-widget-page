@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { Flex } from "antd";
 
 export class PlayerControlWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -12,7 +14,10 @@ export class PlayerControlWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Remote Control"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Remote Control"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Позволяет удаленно управлять виджетом Плеер - добавлять треки,
           паузить/включать плеер.

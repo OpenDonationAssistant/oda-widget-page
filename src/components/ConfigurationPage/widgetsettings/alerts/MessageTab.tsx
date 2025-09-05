@@ -61,18 +61,18 @@ export const MessageTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("messageDisappearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
+        {(alert.get("messageWidth") as WidthProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("messageHeight") as HeightProperty).markup()}
+      </div>
+      <div className="settings-item">
         {(alert.get("messageBackgroundColor") as ColorProperty).markup()}
       </div>
       <div className="settings-item">
         {(
           alert.get("messageBackgroundImage") as BackgroundImageProperty
         ).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("messageWidth") as WidthProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("messageHeight") as HeightProperty).markup()}
       </div>
       <div className="settings-item">
         {(alert.get("messageAlignment") as SingleChoiceProperty).markup()}

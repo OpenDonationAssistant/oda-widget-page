@@ -22,7 +22,7 @@ function repeatAlert(topic: string, data: HistoryItem) {
     nickname: data.nickname,
     message: data.message,
     amount: data.amount,
-    force: true
+    force: true,
   });
 }
 
@@ -89,13 +89,16 @@ export const HistoryItemComponent = observer(
         justify="space-between"
       >
         <Flex justify="space-between">
-          <span className={classes.title}>
-            <span className={`${classes.amount}`}>
-              {item.amount?.major}
-              {`\u20BD`}
+          <Flex align="center" gap={3}>
+            <span className="material-symbols-sharp">payments</span>
+            <span className={classes.title}>
+              <span className={`${classes.amount}`}>
+                {item.amount?.major}
+                {`\u20BD`}
+              </span>
+              <span> от {item.nickname ?? "Аноним"}</span>
             </span>
-            <span> от {item.nickname ?? "Аноним"}</span>
-          </span>
+          </Flex>
           <Flex gap={6}>
             {item.rouletteResults && item.rouletteResults.length > 0 && (
               <Flex align="center" className={`${classes.goals}`} gap={6}>

@@ -4,6 +4,8 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -47,13 +49,13 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
             new TextProperty({
               name: "requestTooltip",
               value: "",
-              displayName: "Текст подсказки для донатера"
+              displayName: "Текст подсказки для донатера",
             }),
             new TextProperty({
               name: "wordsBlacklist",
               value: "",
-              displayName: "Blacklist слов в названии"
-            })
+              displayName: "Blacklist слов в названии",
+            }),
           ],
         },
         {
@@ -81,7 +83,10 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Плеер"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Плеер"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Проигрывает видео из реквеста из доната.
         </div>

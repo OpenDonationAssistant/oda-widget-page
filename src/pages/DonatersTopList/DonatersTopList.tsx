@@ -159,6 +159,7 @@ export const DonatersTopList = observer(
         {messageFont.createFontImport()}
         <Flex
           style={{
+            ...{ maxWidth: "100%" },
             ...settings.backgroundColor.calcCss(),
             ...settings.widgetBorder.calcCss(),
             ...settings.rounding.calcCss(),
@@ -208,24 +209,22 @@ export const DonatersTopList = observer(
             dots={false}
           >
             {portion().map((pack) => (
-              <div>
-                <Flex
-                  vertical={layout === "vertical"}
-                  align={listAlignItems}
-                  justify={listJustifyContent}
-                  className="full-width full-height"
-                  style={{
-                    ...settings.listBorder.calcCss(),
-                    ...settings.listPadding.calcCss(),
-                    ...settings.listRounding.calcCss(),
-                    ...settings.listBoxShadow.calcCss(),
-                    ...settings.listBackgroundColor.calcCss(),
-                    ...listBackgroundImage,
-                  }}
-                >
-                  {pack}
-                </Flex>
-              </div>
+              <Flex
+                vertical={layout === "vertical"}
+                align={listAlignItems}
+                justify={listJustifyContent}
+                className="full-width full-height"
+                style={{
+                  ...settings.listBorder.calcCss(),
+                  ...settings.listPadding.calcCss(),
+                  ...settings.listRounding.calcCss(),
+                  ...settings.listBoxShadow.calcCss(),
+                  ...settings.listBackgroundColor.calcCss(),
+                  ...listBackgroundImage,
+                }}
+              >
+                {pack}
+              </Flex>
             ))}
           </Carousel>
         </Flex>

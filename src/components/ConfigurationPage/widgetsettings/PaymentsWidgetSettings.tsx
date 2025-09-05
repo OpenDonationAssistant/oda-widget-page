@@ -6,6 +6,8 @@ import {
 } from "../widgetproperties/AnimatedFontProperty";
 import classes from "./AbstractWidgetSettings.module.css";
 import { ReactNode } from "react";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -63,7 +65,10 @@ export class PaymentsWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "События"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "События"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Отображает список донатов, обновляется автоматически реал-тайм.
         </div>

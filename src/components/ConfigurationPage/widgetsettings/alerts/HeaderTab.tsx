@@ -57,18 +57,18 @@ export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
         />
       </div>
       <div className="settings-item">
+        {(alert.get("headerWidth") as WidthProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerHeight") as HeightProperty).markup()}
+      </div>
+      <div className="settings-item">
         {(alert.get("titleBackgroundColor") as ColorProperty).markup()}
       </div>
       <div className="settings-item">
         {(
           alert.get("headerBackgroundImage") as BackgroundImageProperty
         ).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerWidth") as WidthProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerHeight") as HeightProperty).markup()}
       </div>
       <div className="settings-item">
         {(alert.get("headerAlignment") as SingleChoiceProperty).markup()}

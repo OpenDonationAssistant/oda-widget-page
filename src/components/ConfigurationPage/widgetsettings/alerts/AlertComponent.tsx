@@ -2,8 +2,6 @@ import { Alert } from "./Alerts";
 import { useTranslation } from "react-i18next";
 import { Tabs as AntTabs, Flex, Select } from "antd";
 import { observer } from "mobx-react-lite";
-import { log } from "../../../../logging";
-import { toJS } from "mobx";
 import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
 import { HeaderTab } from "./HeaderTab";
@@ -12,7 +10,7 @@ import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
 import { LayoutTab } from "./LayoutTab";
 import classes from "./AlertComponent.module.css";
-import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { CloseOverlayButton, ModalStateContext } from "../../../Overlay/Overlay";
 import { EditableString } from "../../../RenamableLabel/EditableString";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
 import { ResizableBox } from "react-resizable";
@@ -21,21 +19,50 @@ import PrimaryButton from "../../../PrimaryButton/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
 import { DemoTokenStore } from "../../../../stores/TokenStore";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { WidgetContext } from "../../../../types/Widget";
+import { reaction } from "mobx";
+import { log } from "../../../../logging";
+import { PresetStoreContext } from "../../../../stores/PresetStore";
 
-const SaveButtons = () => {
+const SaveButtons = observer(({}) => {
+  const widget = useContext(WidgetContext);
+  const dialog = useContext(ModalStateContext);
+
+  log.debug({widget: widget}, "Load save buttons for widget preview");
+
+  reaction(() => widget?.config.unsaved, () => {
+    log.debug({unsaved: widget?.config.unsaved},"tracking unsaved");
+  });
+
   return (
     <Flex className="full-width" justify="flex-end" gap={9}>
-      <SecondaryButton onClick={() => {}}>Отменить</SecondaryButton>
-      <PrimaryButton onClick={() => {}}>Сохранить</PrimaryButton>
+      <SecondaryButton
+        onClick={() => {
+          widget?.reload();
+          dialog.show = false;
+        }}
+      >
+        Отменить
+      </SecondaryButton>
+      <PrimaryButton
+        disabled={!widget?.config.unsaved}
+        onClick={() => {
+          widget?.save();
+        }}
+      >
+        Сохранить
+      </PrimaryButton>
     </Flex>
   );
-};
+});
 
 export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const { t } = useTranslation();
-  const [alertController, setAlertController] = useState<any>(() => new DemoAlertController(alert, ""));
-  log.debug({ alert: toJS(alert) }, "render alert");
+  const [alertController] = useState<any>(
+    () => new DemoAlertController(alert, ""),
+  );
+  const presetStore = useContext(PresetStoreContext);
 
   return (
     <Flex key={alert.id} vertical style={{ height: "100%" }}>

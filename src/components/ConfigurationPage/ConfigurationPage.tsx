@@ -2,14 +2,16 @@ import { useContext, useEffect, useState } from "react";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import { WIDGET_TYPES, Widget } from "../../types/Widget";
-import { WidgetStore, WidgetStoreContext } from "../../stores/WidgetStore";
+import { WidgetStoreContext } from "../../stores/WidgetStore";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd";
 import classes from "./ConfigurationPage.module.css";
-import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import AddIcon from "../../icons/AddIcon";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
@@ -18,7 +20,6 @@ import { CardButton, CardList } from "../Cards/CardsComponent";
 import { useSearchParams } from "react-router-dom";
 import {
   Dialog,
-  FullscreenPanel,
   ModalState,
   ModalStateContext,
   Overlay,
@@ -26,26 +27,114 @@ import {
 } from "../Overlay/Overlay";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import { List } from "../List/List";
-import { PresetWindow } from "./PresetsComponent";
 import {
   DefaultPresetStore,
   PresetStore,
   PresetStoreContext,
 } from "../../stores/PresetStore";
+import { Wizard, WizardConfigurationStore } from "../Wizard/WizardComponent";
+import {
+  AddWidgetWizardStoreContext,
+  SelectPresetComponent,
+  SelectWidgetComponent,
+} from "./AddWidgetWizard";
+import CollapseLikeButton from "../Button/Button";
+import { reaction } from "mobx";
 import { log } from "../../logging";
 
 const Widgets = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
-  const selection = useContext(SelectedIndexContext);
-  const parentModalState = useContext(ModalStateContext);
-  const [presetDialogState] = useState<ModalState>(
-    () => new ModalState(parentModalState),
+  const presetStore = useContext(PresetStoreContext);
+  const [selection, setSelection] = useState<string>("");
+  const wizardStore = useContext(AddWidgetWizardStoreContext);
+  const [wizardConfiguration] = useState<WizardConfigurationStore>(
+    () =>
+      new WizardConfigurationStore({
+        steps: [
+          {
+            title: "Добавить виджет",
+            subtitle: "",
+            content: <SelectWidgetComponent />,
+            handler: () => {
+              return Promise.resolve(true);
+            },
+          },
+          {
+            title: "Выберите шаблон",
+            subtitle: "",
+            content: <SelectPresetComponent />,
+            condition: () => {
+              return presetStore.for(wizardStore.type).then((presets) => {
+                return presets.length > 0;
+              });
+            },
+            handler: () => {
+              if (!wizardStore.preset || !wizardStore.type) {
+                log.debug(
+                  { preset: wizardStore.preset, type: wizardStore.type },
+                  "no preset selected",
+                );
+                return Promise.resolve(false);
+              }
+              return Promise.resolve(true);
+            },
+          },
+        ],
+        dynamicStepAmount: true,
+        reset: () => {
+          wizardStore.reset();
+        },
+        finish: () => {
+          if (!wizardStore.type) {
+            return Promise.resolve();
+          }
+          return widgetStore.addWidget(wizardStore.type).then((widget) => {
+            if (!widget) {
+              return;
+            }
+            log.debug(
+              { preset: wizardStore.preset, type: widget.type },
+              "applying preset to created widget",
+            );
+            wizardStore.preset?.applyTo(widget.config, widget.type);
+            return widget.save().then(() => {
+              setSelection(widget.id);
+            });
+          });
+        },
+      }),
   );
 
-  log.debug({ selection: selection.id }, "rendering selection");
+  useEffect(() => {
+    reaction(
+      () => wizardStore.type,
+      () => {
+        wizardConfiguration.canContinue = !!wizardStore.type;
+      },
+    );
+  }, [wizardStore, wizardConfiguration]);
+
+  useEffect(() => {
+    reaction(
+      () => wizardStore.preset,
+      () => {
+        wizardConfiguration.canContinue = !!wizardStore.preset;
+      },
+    );
+  }, [wizardStore, wizardConfiguration]);
+
+  useEffect(() => {
+    reaction(
+      () => wizardConfiguration.index,
+      () => {
+        wizardConfiguration.canContinue = false;
+      },
+    );
+  }, [wizardStore, wizardConfiguration]);
 
   return (
-    <SelectedIndexContext.Provider value={selection}>
+    <>
+      <Wizard configurationStore={wizardConfiguration} />
       {!asCards && (
         <List>
           {widgetStore.list.map((data, index) => (
@@ -56,18 +145,24 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
                   ref={draggable.innerRef}
                   {...draggable.draggableProps}
                   {...draggable.dragHandleProps}
-                  key={data.id}
                 >
                   <WidgetConfiguration
                     widget={data}
                     asCards={asCards}
-                    open={data.id === selection.id && presetDialogState.show === false}
+                    open={data.id === selection}
                   />
                 </div>
               )}
             </Draggable>
           ))}
-          <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+          <CollapseLikeButton
+            onClick={() => {
+              wizardConfiguration.next();
+            }}
+          >
+            <AddIcon color="var(--oda-primary-color)" />
+            <div>Добавить виджет</div>
+          </CollapseLikeButton>
         </List>
       )}
       {asCards && (
@@ -76,20 +171,23 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             <WidgetConfiguration
               widget={data}
               asCards={asCards}
-              open={data.id === selection.id}
+              open={data.id === selection}
             />
           ))}
-          <AddWidgetComponent asCards={asCards} widgetStore={widgetStore} />
+          <CardButton onClick={() => wizardConfiguration.next()}>
+            <AddIcon color="var(--oda-primary-color)" />
+            <div>Добавить виджет</div>
+          </CardButton>
         </CardList>
       )}
-    </SelectedIndexContext.Provider>
+    </>
   );
 });
 
 const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
   const widgetStore = useContext(WidgetStoreContext);
 
-  function onDragEnd(result: any) {
+  function onDragEnd(result: DropResult) {
     if (!result.destination) {
       return;
     }
@@ -122,124 +220,6 @@ const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
   );
 });
 
-const WidgetPreviewComponent = observer(
-  ({
-    widget,
-  }: {
-    widget: { title: string; description: string; preview: string };
-  }) => {
-    const { t } = useTranslation();
-
-    return (
-      <Flex
-        className={`${classes.widgetpreviewcontainer}`}
-        align="flex-start"
-        gap={12}
-      >
-        {false && (
-          <div className={`${classes.widgetpreviewimage}`}>
-            {widget.preview && <img src={widget.preview} />}
-          </div>
-        )}
-        <Flex vertical gap={9}>
-          <div className={`${classes.widgetpreviewtitle}`}>
-            {t(widget.title)}
-          </div>
-          <div className={`${classes.widgetpreviewdescription}`}>
-            {t(widget.description)}
-          </div>
-        </Flex>
-      </Flex>
-    );
-  },
-);
-
-const AddWidgetComponent = observer(
-  ({
-    widgetStore,
-    asCards,
-  }: {
-    widgetStore: WidgetStore;
-    asCards: boolean;
-  }) => {
-    const { t } = useTranslation();
-
-    const presetDialogState = useContext(ModalStateContext);
-    const [dialogState] = useState<ModalState>(
-      () => new ModalState(presetDialogState),
-    );
-    const presetStore = useContext(PresetStoreContext);
-    const [widget, setWidget] = useState<Widget | null>(null);
-    const selection = useContext(SelectedIndexContext);
-
-    log.debug({ widget: widget }, "created widget");
-
-    const NewWidgetSection = observer(({ category }: { category: string }) => {
-      return (
-        <div className={`${classes.widgetpreviews}`}>
-          {WIDGET_TYPES.filter((type) => type.category === category).map(
-            (type) => (
-              <div
-                onClick={() => {
-                  widgetStore.addWidget(type.name).then((widget) => {
-                    log.debug({ widget: widget }, "created widget");
-                    dialogState.show = false;
-                    if (!widget) {
-                      return;
-                    }
-                    presetStore.for(widget.type).then((presets) => {
-                      setWidget(widget);
-                      selection.id = widget.id;
-                      if (presets.length > 0) {
-                        presetDialogState.show = true;
-                      }
-                    })
-                  });
-                }}
-              >
-                <WidgetPreviewComponent widget={type} />
-              </div>
-            ),
-          )}
-        </div>
-      );
-    });
-
-    return (
-      <ModalStateContext.Provider value={dialogState}>
-        <ModalStateContext.Provider value={presetDialogState}>
-          {widget && <PresetWindow presetStore={presetStore} widget={widget} />}
-        </ModalStateContext.Provider>
-        <Overlay>
-          <FullscreenPanel>
-            <Title>Добавить виджет</Title>
-            <Flex vertical gap={12} className={`${classes.sectioncontainer}`}>
-              <div className={`${classes.section}`}>Для стрима</div>
-              <NewWidgetSection category="onscreen" />
-              <div className={`${classes.section}`}>Медиа</div>
-              <NewWidgetSection category="media" />
-              <div className={`${classes.section}`}>Инструменты стримера</div>
-              <NewWidgetSection category="internal" />
-            </Flex>
-          </FullscreenPanel>
-        </Overlay>
-        {!dialogState.show && !asCards && (
-          <button
-            className={`${classes.addwidgetbutton}`}
-            onClick={() => (dialogState.show = true)}
-          >
-            <AddIcon color="var(--oda-primary-color)" />
-            <div>{t("button-addwidget")}</div>
-          </button>
-        )}
-        {!dialogState.show && asCards && (
-          <CardButton onClick={() => (dialogState.show = true)} />
-        )}
-      </ModalStateContext.Provider>
-    );
-  },
-);
-
 export default function ConfigurationPage({}: {}) {
   const [asCards, setAsCards] = useState<boolean>(() => {
     const value = localStorage.getItem("asCards");
@@ -254,19 +234,17 @@ export default function ConfigurationPage({}: {}) {
   const navigate = useNavigate();
   const [presetStore] = useState<PresetStore>(() => new DefaultPresetStore());
 
-  useEffect(() => {
-    const code = localStorage.getItem("code");
-    if (code) {
-      localStorage.removeItem("code");
-      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .getDonationAlertsToken({
-          authorizationCode: code,
-        })
-        .then((response) => {
-          state.show = true;
-        });
-    }
-  }, [params]);
+  const code = localStorage.getItem("code");
+  if (code) {
+    localStorage.removeItem("code");
+    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+      .getDonationAlertsToken({
+        authorizationCode: code,
+      })
+      .then((response) => {
+        state.show = true;
+      });
+  }
 
   return (
     <PresetStoreContext.Provider value={presetStore}>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 
 import "./css/Widget.css";
 import "./css/WidgetButton.css";
@@ -10,10 +10,11 @@ import { useTranslation } from "react-i18next";
 import { ResizableBox } from "react-resizable";
 import classes from "./WidgetConfiguration.module.css";
 import { observer } from "mobx-react-lite";
-import { Widget } from "../../types/Widget";
+import { Widget, WidgetContext } from "../../types/Widget";
 import { WidgetUrlModal } from "./WidgetUrlModal";
 import {
   CloseOverlayButton,
+  Dialog,
   FullscreenPanel,
   ModalState,
   ModalStateContext,
@@ -21,11 +22,7 @@ import {
   Panel,
   Title,
 } from "../Overlay/Overlay";
-import CloseIcon from "../../icons/CloseIcon";
-import {
-  BorderedIconButton,
-  NotBorderedIconButton,
-} from "../IconButton/IconButton";
+import { BorderedIconButton } from "../IconButton/IconButton";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import HelpIcon from "../../icons/HelpIcon";
 import CopyIcon from "../../icons/CopyIcon";
@@ -35,11 +32,7 @@ import SubActionButton from "../SubActionButton/SubActionButton";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import { Preset } from "../../types/Preset";
-import {
-  DefaultPresetStore,
-  PresetStore,
-  PresetStoreContext,
-} from "../../stores/PresetStore";
+import { PresetStoreContext } from "../../stores/PresetStore";
 import { uuidv7 } from "uuidv7";
 import { uploadBlob } from "../../utils";
 import { PresetsComponent } from "./PresetsComponent";
@@ -51,7 +44,7 @@ const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const dialogState = useContext(ModalStateContext);
 
   return (
-    <Flex className={`${classes.previewbuttons}`} justify="flex-end" gap={9}>
+    <Flex className={`${classes.previewbuttons}`} justify="flex-end" gap={12}>
       <SecondaryButton
         onClick={() => {
           dialogState.show = false;
@@ -90,6 +83,16 @@ const HelpButton = observer(({ widget }: { widget: Widget }) => {
   );
 });
 
+const WidgetSettingsWindow = observer(
+  ({ children, widget }: { children: ReactNode; widget: Widget }) => {
+    return widget.config.hasDemo() ? (
+      <FullscreenPanel>{children}</FullscreenPanel>
+    ) : (
+      <Dialog>{children}</Dialog>
+    );
+  },
+);
+
 const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
   const preview = useRef<HTMLElement | null>(null);
   const presetStore = useContext(PresetStoreContext);
@@ -113,7 +116,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
 
   return (
     <Overlay>
-      <FullscreenPanel>
+      <WidgetSettingsWindow widget={widget}>
         <Title showClose={false}>
           <Flex className="full-width" justify="space-between" gap={51}>
             <Flex justify="flex-start" align="baseline" gap={18}>
@@ -141,40 +144,45 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
             </Flex>
           </Flex>
         </Title>
-        <div className={`${classes.configcontainer}`}>
-          {widget.config.markup()}
-          {widget.config.hasDemo() && (
-            <Flex vertical gap={9}>
-              <Flex
-                justify="flex-start"
-                gap={9}
-                className={`${classes.previewcontainer}`}
-              >
-                <SubActionButton onClick={() => savePreset()}>
-                  Создать шаблон
-                </SubActionButton>
-                <PresetsComponent presetStore={presetStore} widget={widget} />
-              </Flex>
-              <Flex
-                ref={preview}
-                justify="space-around"
-                className={`${classes.preview}`}
-              >
-                <ResizableBox
-                  height={-1}
-                  width={-1}
-                  className={`${classes.resizable}`}
-                  axis="both"
-                  minConstraints={[400, 100]}
+        <WidgetContext.Provider value={widget}>
+          <div
+            className={`${classes.configcontainer} ${widget.config.hasDemo() ? classes.bigcontainer : classes.smallcontainer}`}
+          >
+            {widget.config.markup()}
+            {widget.config.hasDemo() && (
+              <Flex vertical gap={9}>
+                <Flex
+                  justify="flex-start"
+                  gap={9}
+                  className={`${classes.previewcontainer}`}
                 >
-                  {widget.config.demo()}
-                </ResizableBox>
+                  <SubActionButton onClick={() => savePreset()}>
+                    Создать шаблон
+                  </SubActionButton>
+                  <PresetsComponent presetStore={presetStore} widget={widget} />
+                </Flex>
+                <Flex
+                  ref={preview}
+                  justify="space-around"
+                  className={`${classes.preview}`}
+                >
+                  <ResizableBox
+                    height={-1}
+                    width={-1}
+                    className={`${classes.resizable}`}
+                    axis="both"
+                    minConstraints={[400, 100]}
+                  >
+                    {widget.config.demo()}
+                  </ResizableBox>
+                </Flex>
+                <SaveButtons widget={widget} />
               </Flex>
-              <SaveButtons widget={widget} />
-            </Flex>
-          )}
-        </div>
-      </FullscreenPanel>
+            )}
+            {!widget.config.hasDemo() && <SaveButtons widget={widget} />}
+          </div>
+        </WidgetContext.Provider>
+      </WidgetSettingsWindow>
     </Overlay>
   );
 });

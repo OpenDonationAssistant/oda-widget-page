@@ -25,6 +25,8 @@ import { WidthProperty } from "../widgetproperties/WidthProperty";
 import { HeightProperty } from "../widgetproperties/HeightProperty";
 import { DonatersTopList } from "../../../pages/DonatersTopList/DonatersTopList";
 import { DemoListStore } from "../../../pages/DonatersTopList/DemoListStore";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -96,8 +98,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           value: true,
           displayName: "widget-donaterslist-show-header",
         }),
-        new WidthProperty({ name: "headerWidth" }),
-        new HeightProperty({ name: "headerHeight" }),
         new TextProperty({
           name: "title",
           value: "Донатеры ",
@@ -113,6 +113,8 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           options: ["Left", "Center", "Right"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
+        new WidthProperty({ name: "headerWidth" }),
+        new HeightProperty({ name: "headerHeight" }),
         new ColorProperty({
           name: "titleBackgroundColor",
           displayName: "widget-donaterslist-title-background-color",
@@ -429,7 +431,10 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Список донатеров"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Список донатеров"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Отображает информацию про донатеров - топ за выбранный период (день,
           месяц) или последние

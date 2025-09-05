@@ -74,104 +74,39 @@ export class ModalState {
 export const ModalStateContext = createContext(new ModalState());
 
 export const FullscreenPanel = ({ children }: { children: ReactNode }) => {
-  const state = useContext(ModalStateContext);
-  const backRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!event.target) {
-        return;
-      }
-      log.debug(
-        {
-          show: state.show,
-          current: backRef.current,
-          misses: backRef.current?.contains(event.target as Node),
-          target: event.target,
-        },
-        "handling click outside",
-      );
-      if (event.target === backRef.current && state.show) {
-        log.debug("closing modal panel");
-        state.onClose();
-        state.show = false;
-        event.stopPropagation();
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [state.show]);
-
   return (
-    <>
-      <Flex
-        className={`${classes.modal} ${classes.fullscreen}`}
-        justify="flex-start"
-        vertical
-      >
-        {children}
-      </Flex>
-      <div ref={backRef} className={`${classes.emptyspace}`} />
-    </>
+    <Flex
+      className={`${classes.modal} ${classes.fullscreen}`}
+      justify="flex-start"
+      vertical
+    >
+      {children}
+    </Flex>
   );
 };
 
 export const Panel = ({ children }: { children: ReactNode }) => {
-  const state = useContext(ModalStateContext);
-  const backRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!event.target) {
-        return;
-      }
-      log.debug(
-        {
-          show: state.show,
-          current: backRef.current,
-          misses: backRef.current?.contains(event.target as Node),
-          target: event.target,
-        },
-        "handling click outside",
-      );
-      if (event.target === backRef.current && state.show) {
-        log.debug("closing modal panel");
-        state.onClose();
-        state.show = false;
-        event.stopPropagation();
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [state.show]);
-
   return (
-    <>
-      <Flex
-        className={`${classes.modal} ${classes.big}`}
-        justify="flex-start"
-        vertical
-      >
-        {children}
-      </Flex>
-      {/* todo понять зачем */}
-      <div ref={backRef} className={`${classes.emptyspace}`} />
-    </>
+    <Flex
+      className={`${classes.modal} ${classes.big}`}
+      justify="flex-start"
+      vertical
+    >
+      {children}
+    </Flex>
   );
 };
 
 export const Dialog = ({ children }: { children: ReactNode }) => {
   return (
-    <Flex
-      className={`${classes.modal} ${classes.small}`}
-      justify="flex-start"
-      vertical
-    >
-      {children}
+    <Flex vertical justify="center" align="center">
+      <Flex
+        className={`${classes.modal} ${classes.small}`}
+        justify="flex-start"
+        vertical
+      >
+        {children}
+      </Flex>
     </Flex>
   );
 };
@@ -274,15 +209,6 @@ export const Overlay = observer(({ children }: { children: ReactNode }) => {
       if (!event.target) {
         return;
       }
-      // log.debug(
-      //   {
-      //     show: state.show,
-      //     current: backRef.current,
-      //     misses: backRef.current?.contains(event.target as Node),
-      //     target: event.target,
-      //   },
-      //   "handling click outside",
-      // );
       if (event.target === backRef.current && state.show) {
         state.onClose();
         state.show = false;

@@ -6,7 +6,7 @@ export default function CollapseLikeButton({
   children,
   onClick,
 }: {
-  children: ReactNode,
+  children: ReactNode;
   onClick: () => void;
 }) {
   return (

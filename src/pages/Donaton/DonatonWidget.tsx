@@ -3,7 +3,6 @@ import { log } from "../../logging";
 import classes from "./DonatonWidget.module.css";
 import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { reaction } from "mobx";
 
 export const DonatonWidget = observer(
   ({ settings }: { settings: DonatonWidgetSettings }) => {

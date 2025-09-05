@@ -10,26 +10,29 @@ import {
 import { Flex } from "antd";
 import classes from "./WizardComponent.module.css";
 import { makeAutoObservable, reaction } from "mobx";
-import { NotBorderedIconButton } from "../IconButton/IconButton";
-import CloseIcon from "../../icons/CloseIcon";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import { log } from "../../logging";
+import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
 export interface WizardConfigurationStep {
   title: ReactNode;
   subtitle: string;
   content: ReactNode;
-  handler?: () => boolean;
+  condition?: () => Promise<boolean>;
+  handler?: () => Promise<boolean>;
 }
 
 export interface WizardConfiguration {
   steps: WizardConfigurationStep[];
   dynamicStepAmount: boolean;
+  reset: () => void;
+  finish?: () => Promise<void>;
 }
 
 export class WizardConfigurationStore {
   private _configuration: WizardConfiguration;
   private _index: number;
+  private _canContinue: boolean = false;
 
   constructor(configuration: WizardConfiguration) {
     this._configuration = configuration;
@@ -56,6 +59,41 @@ export class WizardConfigurationStore {
     return this._configuration.steps.length;
   }
 
+  private checkCondition(index: number): Promise<boolean> {
+    if (index >= this._configuration.steps.length) {
+      return Promise.resolve(false);
+    }
+    const condition = this._configuration.steps[index].condition;
+    if (condition === undefined || condition === null) {
+      this._index = index;
+      return Promise.resolve(true);
+    }
+    return condition().then((result): Promise<boolean> => {
+      if (result) {
+        this._index = index;
+        return Promise.resolve(true);
+      } else {
+        return this.checkCondition(index + 1);
+      }
+    });
+  }
+
+  private nextIteration() {
+    this.checkCondition(this._index + 1).then((success) => {
+      this.canContinue = false;
+      if (!success) {
+        const finish = this.configuration.finish;
+        if (finish) {
+          finish().then(() => {
+            this.reset();
+          });
+        } else {
+          this.reset();
+        }
+      }
+    });
+  }
+
   public next() {
     log.debug(
       {
@@ -65,25 +103,32 @@ export class WizardConfigurationStore {
       },
       "Calling next step",
     );
-    if (this.index > -1 && this.step.handler) {
-      const result = this.step.handler();
-      if (!result) {
-        this._index = -1;
-        return;
-      }
-    }
-    this._index = this._index + 1;
-    if (this._index >= this._configuration.steps.length) {
-      this.reset();
+    if (this.step && this.step.handler) {
+      return this.step.handler().then((result) => {
+        if (result) {
+          this.nextIteration();
+        }
+      });
+    } else {
+      this.nextIteration();
     }
   }
 
   public reset() {
     this._index = -1;
+    this._configuration.reset();
+  }
+
+  public set canContinue(value: boolean) {
+    this._canContinue = value;
+  }
+
+  public get canContinue() {
+    return this._canContinue;
   }
 }
 
-const Wizard = observer(
+export const Wizard = observer(
   ({
     configurationStore,
   }: {
@@ -131,9 +176,17 @@ const Wizard = observer(
                   {!configurationStore.stepAmount && (
                     <div>Шаг {configurationStore.index + 1}</div>
                   )}
-                  <PrimaryButton onClick={() => configurationStore.next()}>
-                    Далее
-                  </PrimaryButton>
+                  <Flex gap={9} justify="flex-end">
+                    <SecondaryButton onClick={() => configurationStore.reset()}>
+                      Отменить
+                    </SecondaryButton>
+                    <PrimaryButton
+                      disabled={!configurationStore.canContinue}
+                      onClick={() => configurationStore.next()}
+                    >
+                      Далее
+                    </PrimaryButton>
+                  </Flex>
                 </Flex>
               </Panel>
             </Overlay>
@@ -143,5 +196,3 @@ const Wizard = observer(
     );
   },
 );
-
-export { Wizard };

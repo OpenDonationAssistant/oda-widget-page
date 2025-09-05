@@ -19,6 +19,7 @@ import { Trans } from "react-i18next";
 import InputNumber from "../../components/InputNumber";
 import { log } from "../../../../logging";
 import { useState } from "react";
+import { HeightProperty } from "../../widgetproperties/HeightProperty";
 
 const GeneralTab = observer(({ alert }: { alert: Alert }) => {
   const [amount, setAmount] = useState<number>(() => {
@@ -43,7 +44,7 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
   return (
     <>
       <div className="settings-item">
-        <div>Срабатывает</div>
+        <div style={{ fontSize: "21px" }}>Срабатывает</div>
         <Flex gap={12} justify="space-around">
           <Flex className="full-width">
             <Select
@@ -125,12 +126,6 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("duration") as DurationProperty).markup()}
       </div>
       <div className="settings-item">
-        {(alert.get("totalWidth") as WidthProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("totalHeight") as WidthProperty).markup()}
-      </div>
-      <div className="settings-item">
         {(alert.get("totalAppearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
@@ -138,6 +133,12 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
       </div>
       <div className="settings-item">
         {(alert.get("totalDisappearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalWidth") as WidthProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("totalHeight") as HeightProperty).markup()}
       </div>
       <div className="settings-item">
         {(alert.get("totalBackgroundColor") as ColorProperty)?.markup()}

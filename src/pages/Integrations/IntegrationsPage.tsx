@@ -10,7 +10,7 @@ import {
   Wizard,
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { Flex, Switch } from "antd";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
@@ -31,6 +31,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { log } from "../../logging";
 import { uuidv7 } from "uuidv7";
+import { reaction } from "mobx";
 
 export const IntegrationsPage = observer(({}) => {
   const selection = useContext(IntegrationWizardStoreContext);
@@ -52,37 +53,79 @@ export const IntegrationsPage = observer(({}) => {
               window.open(
                 "https://www.donationalerts.com/oauth/authorize?client_id=13593&redirect_uri=https%3A%2F%2Fwidgets.oda.digital&response_type=code&scope=oauth-donation-subscribe oauth-user-show",
               );
+              log.debug("opening donationalerts");
+              return Promise.resolve(true);
             }
             if (selection.system === "donate.stream") {
               selection.accessToken = uuidv7();
+              return Promise.resolve(true);
             }
-            return selection.system !== null;
+            return Promise.resolve(selection.system !== null);
           },
         },
         {
           title: "Добавить донатную платформу",
           subtitle: "Введите информацию для подключения",
           content: <AddDonatePayTokenComponent />,
+          condition: () => {
+            return Promise.resolve(
+              selection.system === "donatepay.ru" ||
+                selection.system === "donatepay.eu" ||
+                selection.system === "donate.stream",
+            );
+          },
           handler: () => {
+            log.debug({ system: selection.system }, "handling adding token");
             if (selection.system === "donatepay.ru") {
               tokenStore.addToken("DonatePay", selection.accessToken);
-              return true;
+              return Promise.resolve(true);
             }
             if (selection.system === "donatepay.eu") {
               tokenStore.addToken("DonatePay.eu", selection.accessToken);
-              return true;
+              return Promise.resolve(true);
             }
             if (selection.system === "donate.stream") {
               tokenStore.addToken("Donate.Stream", selection.accessToken);
-              return true;
+              return Promise.resolve(true);
             }
-            return false;
+            if (selection.system === "donationalerts") {
+              return Promise.resolve(true);
+            }
+            return Promise.resolve(false);
           },
         },
       ],
       dynamicStepAmount: true,
+      reset: () => {
+        log.debug("resetting integration page wizard");
+        selection.system = null;
+        selection.accessToken = "";
+      },
     }),
   );
+
+  useEffect(() => {
+    reaction(
+      () => selection.system,
+      () => {
+        log.debug({ system: selection.system }, "checking selection system");
+        wizardConfiguration.canContinue = !!selection.system;
+      },
+    );
+  }, [selection.system, wizardConfiguration]);
+
+  useEffect(() => {
+    reaction(
+      () => selection.accessToken,
+      () => {
+        log.debug(
+          { accessToken: selection.accessToken },
+          "checking access token",
+        );
+        wizardConfiguration.canContinue = !!selection.accessToken;
+      },
+    );
+  }, [selection.accessToken, wizardConfiguration]);
 
   return (
     <>

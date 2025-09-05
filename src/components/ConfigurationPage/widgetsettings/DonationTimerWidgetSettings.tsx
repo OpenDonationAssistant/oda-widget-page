@@ -19,6 +19,8 @@ import {
 } from "../widgetproperties/SingleChoiceProperty";
 import { DonationTimer } from "../../../pages/DonationTimer/DonationTimer";
 import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -200,7 +202,10 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Таймер донатов"</h3>
+        <Flex align="top" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Таймер донатов"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Считает время с момента последнего доната, обновляется автоматически
           реал-тайм.

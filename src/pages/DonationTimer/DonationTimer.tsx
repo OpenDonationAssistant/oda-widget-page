@@ -1,7 +1,5 @@
 import { CSSProperties } from "react";
 import { useEffect, useState } from "react";
-import { useLoaderData } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
 import classes from "./DonationTimer.module.css";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { Flex } from "antd";
@@ -23,6 +21,12 @@ export const DonationTimer = observer(
     const [time, setTime] = useState<String>("");
 
     useEffect(() => {
+      if (settings.resetOnLoad){
+        setLastDonationTime(Date.now());
+      } else {
+        const lastDate = store.items.at(0)?.date;
+        setLastDonationTime(lastDate ? Date.parse(lastDate) : Date.now());
+      }
       reaction(
         () => store.items.at(0),
         (item) => {

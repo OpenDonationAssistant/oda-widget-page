@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import InputNumber from "../components/InputNumber";
 import { Flex, Segmented, Switch } from "antd";
 import classes from "./WidthProperty.module.css";
+import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 
 export class HeightProperty extends DefaultWidgetProperty<number> {
   constructor({
@@ -34,23 +35,17 @@ export class HeightProperty extends DefaultWidgetProperty<number> {
   comp = observer(() => {
     return (
       <Flex vertical gap={9}>
-        <LabeledContainer displayName={this.displayName}>
-          <Segmented
-            className="full-width"
-            options={[
-              { value: 0, label: "Растягивать" },
-              { value: 1, label: "Зафиксировать" },
-            ]}
-            value={this.value > -1 ? 1 : 0}
-            onChange={(checked) => {
-              if (checked) {
-                this.value = 100;
-              } else {
-                this.value = -1;
-              }
-            }}
-          />
-        </LabeledContainer>
+        <LightLabeledSwitchComponent
+          label={this.displayName}
+          value={this.value > -1}
+          onChange={(checked) => {
+            if (checked) {
+              this.value = 100;
+            } else {
+              this.value = -1;
+            }
+          }}
+        />
         {this.value > -1 && (
           <InputNumber
             value={this.value}

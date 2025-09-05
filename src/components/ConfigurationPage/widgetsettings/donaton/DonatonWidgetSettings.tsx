@@ -18,6 +18,8 @@ import { DonatonPriceProperty } from "./DonatonPriceProperty";
 import { DonatonWidget } from "../../../../pages/Donaton/DonatonWidget";
 import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
+import { Flex } from "antd";
+import { CloseOverlayButton } from "../../../Overlay/Overlay";
 
 export class DonatonWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -50,6 +52,11 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
           name: "titleFont",
           value: {
             size: 24,
+            outline: {
+              enabled: false,
+              width: 0,
+              color: "rgb(255, 255, 255)",
+            },
             color: {
               angle: 0,
               colors: [
@@ -172,7 +179,10 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Донатон"</h3>
+        <Flex align="center" justify="space-between">
+          <h3 className={`${classes.helptitle}`}>Виджет "Донатон"</h3>
+          <CloseOverlayButton />
+        </Flex>
         <div className={`${classes.helpdescription}`}>
           Запускает обратный отсчет до конца стрима. Таймер увеличивается в
           зависимости от суммы доната.

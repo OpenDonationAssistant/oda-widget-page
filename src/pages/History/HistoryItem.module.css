@@ -3,6 +3,9 @@
   background-color: var(--oda-color-150);
   border-radius: 16px;
   padding: 12px 15px;
+  & [class*="material-symbols-sharp"] {
+    padding-top: 4px;
+  }
 }
 
 .active {

@@ -227,6 +227,38 @@ input[type="file"] {
   -webkit-background-clip: text;
 }
 
+.withscroll {
+  overflow-y: scroll;
+  padding-right: 9px;
+  &::-webkit-scrollbar {
+    width: 15px;
+    display: initial;
+    padding: 3px;
+    background: var(--oda-color-100);
+    border-radius: 9px;
+    /* border: 1px solid var(--oda-primary-color); */
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: var(--oda-color-100);
+    border-radius: 9px;
+    /* border: 1px solid var(--oda-primary-color); */
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    /* background: var(--oda-secondary-text-color); */
+    /* border: 1px solid var(--oda-primary-color); */
+    border-radius: 9px;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
 ::-webkit-scrollbar {
     background-color: black;
     display: none;
