@@ -41,7 +41,8 @@
     margin-right: 5px;
   }
   &:hover{
-    border: 2px dashed var(--oda-secondary-text-color);
-    color: var(--oda-secondary-text-color);
+    cursor: pointer;
+    color: var(--oda-primary-color);
+    transform: translateY(-2px);
   }
 }

@@ -253,7 +253,11 @@ export class AlertController {
     return this.sortedAlerts[index];
   }
 
-  protected async renderAlert(alert: Alert, data: any, ackFunction: Function): Promise<void> {
+  protected async renderAlert(
+    alert: Alert,
+    data: any,
+    ackFunction: Function,
+  ): Promise<void> {
     // TODO: send after checking for showing?
     if (this.showing == true) {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
@@ -288,7 +292,9 @@ export class AlertController {
       return this.voiceController
         ?.playSource(
           //`${process.env.REACT_APP_FILE_API_ENDPOINT}/assets/premoderation-sound.wav`,
-          this._recipientId === "tabularussia" ? "https://cdn.oda.digital/assets/100new.mp3" : "https://cdn.oda.digital/assets/bonk.mp3",
+          this._recipientId === "tabularussia"
+            ? "https://cdn.oda.digital/assets/100new.mp3"
+            : "https://cdn.oda.digital/assets/bonk.mp3",
         )
         .then(() => {
           log.debug("clearing alert");

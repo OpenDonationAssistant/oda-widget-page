@@ -8,6 +8,7 @@ import { Flex } from "antd";
 import { Alert } from "./Alerts";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { uuidv7 } from "uuidv7";
+import classes from "./SoundTab.module.css";
 
 function uploadFile(file: File, name: string) {
   return axios.put(
@@ -92,7 +93,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       {alert.audio && (
         <>
           <div className="settings-item">
-            <LabeledContainer displayName="Файл">
+            <LabeledContainer displayName="Аудиофайл">
               <div className="current-sound">
                 <span className="audio-name">
                   {alert.audio.replace("https://api.oda.digital/assets/", "")}
@@ -132,26 +133,28 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       )}
       <div className="audio-button-container">
         {!alert.audio && (
-          <div
-            style={{
-              textAlign: "center",
-              width: "100%",
-              paddingBottom: "10px",
-            }}
-          >
-            <label className="oda-btn-default">
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleFileUpload(e).then((name) => (alert.audio = name))
-                }
-              />
-              <Flex justify="center" align="center" gap={3}>
-                <span className="material-symbols-sharp">upload</span>
-                <div>{t("button-upload-audio")}</div>
-              </Flex>
-            </label>
-          </div>
+          <LabeledContainer displayName="Аудиофайл">
+            <div
+              style={{
+                textAlign: "center",
+                width: "100%",
+                paddingBottom: "10px",
+              }}
+            >
+              <label className={`${classes.upload}`}>
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    handleFileUpload(e).then((name) => (alert.audio = name))
+                  }
+                />
+                <Flex justify="center" align="center" gap={3}>
+                  <span className="material-symbols-sharp">upload</span>
+                  <div>{t("button-upload-audio")}</div>
+                </Flex>
+              </label>
+            </div>
+          </LabeledContainer>
         )}
       </div>
     </div>

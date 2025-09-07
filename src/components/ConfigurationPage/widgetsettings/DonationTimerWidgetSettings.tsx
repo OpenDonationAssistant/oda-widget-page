@@ -40,13 +40,6 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           value: "Без донатов уже <time>",
           displayName: "widget-donation-timer-text",
         }),
-      ],
-    });
-
-    this.addSection({
-      key: "style",
-      title: "Стиль",
-      properties: [
         new AnimatedFontProperty({
           name: "titleFont",
           value: {
@@ -79,6 +72,13 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
             shadowOffsetY: 0,
           },
         }),
+      ],
+    });
+
+    this.addSection({
+      key: "style",
+      title: "Стиль",
+      properties: [
         new SingleChoiceProperty({
           name: "textAlign",
           value: "left",

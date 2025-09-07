@@ -243,7 +243,7 @@ export class Alert {
     this._triggers = value;
   }
 
-  public get properties(): any[] {
+  public get properties(): WidgetProperty<any>[] {
     return this._properties;
   }
 

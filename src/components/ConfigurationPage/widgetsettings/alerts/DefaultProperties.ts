@@ -12,7 +12,6 @@ import {
 import { HeightProperty } from "../../widgetproperties/HeightProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
-import { PresetProperty } from "../../widgetproperties/PresetProperty";
 import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import {
   SELECTION_TYPE,
@@ -27,10 +26,6 @@ import { DurationProperty } from "./DurationProperty";
 import { LayoutProperty } from "./LayoutProperty";
 
 export const DEFAULT_PROPERTIES = (alert: Alert) => [
-  new PresetProperty({
-    type: "alert",
-    settings: alert,
-  }),
   new DefaultWidgetProperty({
     name: "name",
     value: "<Без названия>",

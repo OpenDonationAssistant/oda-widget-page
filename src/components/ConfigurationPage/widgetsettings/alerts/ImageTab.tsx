@@ -64,30 +64,17 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
 
   return (
     <Flex vertical gap={10}>
-      <div className="upload-button-container">
-        {!alert.video && !alert.image && (
-          <div
-            style={{
-              marginBottom: "10px",
-              marginTop: "10px",
-              marginRight: "10px",
-            }}
-          >
-            <label className="oda-btn-default" style={{ marginRight: "10px" }}>
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    alert.video = name;
-                  })
-                }
-              />
-              <Flex justify="center" align="center" gap={3}>
-                <span className="material-symbols-sharp">upload</span>
-                <div>{t("button-upload-video")}</div>
-              </Flex>
-            </label>
-            <label className="oda-btn-default">
+      {!alert.video && !alert.image && (
+        <Flex
+          vertical
+          style={{
+            marginBottom: "10px",
+            marginTop: "10px",
+            marginRight: "10px",
+          }}
+        >
+          <LabeledContainer displayName="Изображение">
+            <label className={`${classes.upload}`}>
               <input
                 type="file"
                 onChange={(e) =>
@@ -98,12 +85,41 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               />
               <Flex justify="center" align="center" gap={3}>
                 <span className="material-symbols-sharp">upload</span>
-                <div>{t("button-upload-image")}</div>
+                <div>Загрузить</div>
               </Flex>
             </label>
+          </LabeledContainer>
+          <div
+            style={{
+              color: "var(--oda-color-650)",
+              fontSize: "18px",
+              marginTop: "24px",
+              marginBottom: "24px",
+            }}
+          >
+            или
           </div>
-        )}
-      </div>
+          <LabeledContainer displayName="Видео">
+            <label
+              className={`${classes.upload}`}
+              style={{ marginRight: "10px" }}
+            >
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleFileUpload(e).then((name) => {
+                    alert.video = name;
+                  })
+                }
+              />
+              <Flex justify="center" align="center" gap={3}>
+                <span className="material-symbols-sharp">upload</span>
+                <div>Загрузить</div>
+              </Flex>
+            </label>
+          </LabeledContainer>
+        </Flex>
+      )}
       {(alert.video || alert.image) && (
         <>
           <Flex
@@ -112,12 +128,16 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
             className={`${classes.imagecontainer}`}
           >
             {alert.image && (
-              <Image.PreviewGroup>
-                <Image width={200} height={120} src={`${image}`} />
-              </Image.PreviewGroup>
+              <LabeledContainer displayName="Изображение">
+                <Image.PreviewGroup>
+                  <Image src={`${image}`} style={{ width: "100%" }} />
+                </Image.PreviewGroup>
+              </LabeledContainer>
             )}
             {alert.video && (
-              <video src={video} width="640" height="360" controls muted />
+              <LabeledContainer displayName="Видео">
+                <video src={video} style={{ width: "100%" }} controls muted />
+              </LabeledContainer>
             )}
             <Flex vertical={true} justify="flex-start" align="flex-start">
               <Button

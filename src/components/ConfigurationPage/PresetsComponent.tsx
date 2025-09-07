@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ModalState,
   ModalStateContext,
@@ -7,7 +7,6 @@ import {
   Subtitle,
   Title,
 } from "../Overlay/Overlay";
-import { log } from "../../logging";
 import { Flex, Spin } from "antd";
 import classes from "./PresetsComponent.module.css";
 import { observer } from "mobx-react-lite";
@@ -23,74 +22,33 @@ import {
 } from "../../stores/SelectedIndexStore";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import { Alert } from "./widgetsettings/alerts/Alerts";
 
-const PreviewImage = observer(({
-  preset,
-  onSelect,
-}: {
-  preset: Preset;
-  onSelect: () => void;
-}) => {
-  const [url, setUrl] = useState<string | null>(null);
-  const selection = useContext(SelectedIndexContext);
+const PreviewImage = observer(
+  ({ preset, onSelect }: { preset: Preset; onSelect: () => void }) => {
+    const [url, setUrl] = useState<string | null>(null);
+    const selection = useContext(SelectedIndexContext);
 
-  useEffect(() => {
-    fullUri(preset.showcase).then((image) => setUrl(image));
-  }, [preset]);
+    useEffect(() => {
+      fullUri(preset.showcase).then((image) => setUrl(image));
+    }, [preset]);
 
-  return (
-    <Card
-      className={`${classes.previewcard}`}
-      selected={selection.id === preset.name}
-      onClick={() => {
-        onSelect();
-      }}
-    >
-      {url && (
-        <img src={url} style={{ overflow: "auto", borderRadius: "9px" }} />
-      )}
-      {!url && <Spin size="large" />}
-    </Card>
-  );
-});
-
-// const Window = ({ children }: { children: ReactNode }) => {
-//   const state = useContext(ModalStateContext);
-//   const backRef = useRef<HTMLDivElement | null>(null);
-//
-//   useEffect(() => {
-//     function handleClickOutside(event: MouseEvent) {
-//       if (!event.target) {
-//         return;
-//       }
-//       log.debug(
-//         {
-//           show: state.show,
-//           current: backRef.current,
-//           misses: backRef.current?.contains(event.target as Node),
-//           target: event.target,
-//         },
-//         "handling click outside",
-//       );
-//       if (event.target === backRef.current && state.show) {
-//         log.debug("closing modal panel");
-//         state.onClose();
-//         state.show = false;
-//         event.stopPropagation();
-//       }
-//     }
-//     document.addEventListener("mousedown", handleClickOutside);
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, [state.show]);
-//
-//   return (
-//     <Flex className={`${classes.modal}`} justify="flex-start" vertical>
-//       {children}
-//     </Flex>
-//   );
-// };
+    return (
+      <Card
+        className={`${classes.previewcard}`}
+        selected={selection.id === preset.name}
+        onClick={() => {
+          onSelect();
+        }}
+      >
+        {url && (
+          <img src={url} style={{ overflow: "auto", borderRadius: "9px" }} />
+        )}
+        {!url && <Spin size="large" />}
+      </Card>
+    );
+  },
+);
 
 export const PresetWindow = ({
   type,
@@ -149,7 +107,7 @@ export const PresetWindow = ({
 };
 
 export const PresetsComponent = observer(
-  ({ widget }: { presetStore: PresetStore; widget: Widget }) => {
+  ({ target }: { presetStore: PresetStore; target: Widget | Alert }) => {
     const parentModalState = useContext(ModalStateContext);
     const [modalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
@@ -170,7 +128,7 @@ export const PresetsComponent = observer(
                 className={`${classes.presetcontainer} withscroll`}
               >
                 <PresetWindow
-                  type={widget.type}
+                  type={target instanceof Widget ? target.type : "alert"}
                   onSelect={(preset: Preset) => {
                     selection.id = preset.name;
                     setSelected(preset);
@@ -187,7 +145,11 @@ export const PresetsComponent = observer(
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={() => {
-                    selected?.applyTo(widget.config, widget.type);
+                    if (target instanceof Widget) {
+                      selected?.applyTo(target.config, target.type);
+                    } else {
+                      selected?.applyTo(target, "alert");
+                    }
                     modalState.show = false;
                   }}
                 >

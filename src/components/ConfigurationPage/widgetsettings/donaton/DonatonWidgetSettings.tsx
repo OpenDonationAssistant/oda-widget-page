@@ -35,19 +35,6 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
           displayName: "widget-donaton-timer-text",
           help: "Надпись на таймере",
         }),
-        new DonatonPriceProperty(),
-        new DateTimeProperty({
-          name: "timer-end",
-          displayName: "widget-donaton-timer-end",
-          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
-        }),
-      ],
-    });
-
-    this.addSection({
-      key: "style",
-      title: "Стиль",
-      properties: [
         new AnimatedFontProperty({
           name: "titleFont",
           value: {
@@ -80,6 +67,19 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
             shadowOffsetY: 0,
           },
         }),
+        new DonatonPriceProperty(),
+        new DateTimeProperty({
+          name: "timer-end",
+          displayName: "widget-donaton-timer-end",
+          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
+        }),
+      ],
+    });
+
+    this.addSection({
+      key: "style",
+      title: "Стиль",
+      properties: [
         new ColorProperty({
           name: "backgroundColor",
           displayName: "background-color",

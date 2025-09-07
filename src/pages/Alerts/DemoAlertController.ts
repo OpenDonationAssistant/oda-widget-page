@@ -3,7 +3,7 @@ import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/
 import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { AlertController } from "./AlertController";
 import { log } from "../../logging";
-import { fullUri } from "../../utils";
+import { fullUri, sleep } from "../../utils";
 import { produce } from "immer";
 import { toJS } from "mobx";
 
@@ -49,7 +49,11 @@ export class DemoAlertController extends AlertController {
             removeFn: () => {},
             addFn: () => {},
           });
-          await this.renderAlert(freshAlert, this.testData(), () => {});
+          await this.renderAlert(freshAlert, this.testData(), () => {}).then(
+            () => {
+              return sleep(2000);
+            },
+          );
         });
       }
     });

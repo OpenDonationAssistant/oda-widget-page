@@ -20,6 +20,16 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: true,
               displayName: "Реквесты включены",
             }),
+            new BooleanProperty({
+              name: "youtubeEnabled",
+              value: true,
+              displayName: "Реквесты с YouTube",
+            }),
+            new BooleanProperty({
+              name: "vkvideoEnabled",
+              value: true,
+              displayName: "Реквесты с VKVideo",
+            }),
             new NumberProperty({
               name: "songRequestCost",
               value: 100,
@@ -35,16 +45,6 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               name: "requestViewAmount",
               value: 100,
               displayName: "Минимальное кол-во просмотров",
-            }),
-            new BooleanProperty({
-              name: "youtubeEnabled",
-              value: true,
-              displayName: "Реквесты с YouTube",
-            }),
-            new BooleanProperty({
-              name: "vkvideoEnabled",
-              value: true,
-              displayName: "Реквесты с VKVideo",
             }),
             new TextProperty({
               name: "requestTooltip",

@@ -1,6 +1,6 @@
 import { Alert } from "./Alerts";
 import { useTranslation } from "react-i18next";
-import { Tabs as AntTabs, Flex, Select } from "antd";
+import { Tabs as AntTabs, Flex } from "antd";
 import { observer } from "mobx-react-lite";
 import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
@@ -10,7 +10,10 @@ import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
 import { LayoutTab } from "./LayoutTab";
 import classes from "./AlertComponent.module.css";
-import { CloseOverlayButton, ModalStateContext } from "../../../Overlay/Overlay";
+import {
+  CloseOverlayButton,
+  ModalStateContext,
+} from "../../../Overlay/Overlay";
 import { EditableString } from "../../../RenamableLabel/EditableString";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
 import { ResizableBox } from "react-resizable";
@@ -19,21 +22,29 @@ import PrimaryButton from "../../../PrimaryButton/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
 import { DemoTokenStore } from "../../../../stores/TokenStore";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { WidgetContext } from "../../../../types/Widget";
-import { reaction } from "mobx";
+import { reaction, toJS } from "mobx";
 import { log } from "../../../../logging";
 import { PresetStoreContext } from "../../../../stores/PresetStore";
+import { uuidv7 } from "uuidv7";
+import { snapdom } from "@zumer/snapdom";
+import { uploadBlob } from "../../../../utils";
+import { Preset } from "../../../../types/Preset";
+import { PresetsComponent } from "../../PresetsComponent";
 
 const SaveButtons = observer(({}) => {
   const widget = useContext(WidgetContext);
   const dialog = useContext(ModalStateContext);
 
-  log.debug({widget: widget}, "Load save buttons for widget preview");
+  log.debug({ widget: widget }, "Load save buttons for widget preview");
 
-  reaction(() => widget?.config.unsaved, () => {
-    log.debug({unsaved: widget?.config.unsaved},"tracking unsaved");
-  });
+  reaction(
+    () => widget?.config.unsaved,
+    () => {
+      log.debug({ unsaved: widget?.config.unsaved }, "tracking unsaved");
+    },
+  );
 
   return (
     <Flex className="full-width" justify="flex-end" gap={9}>
@@ -62,7 +73,25 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
   const [alertController] = useState<any>(
     () => new DemoAlertController(alert, ""),
   );
+  const preview = useRef<HTMLElement | null>(null);
   const presetStore = useContext(PresetStoreContext);
+
+  async function savePreset(): Promise<string | void> {
+    if (!preview.current) {
+      return Promise.resolve();
+    }
+    const name = uuidv7();
+    const canvas = await snapdom(preview.current);
+    const blob = await canvas.toBlob({ type: "webp" });
+    const url = await uploadBlob(blob, `${name}.webp`);
+    const preset = new Preset({
+      name: name,
+      owner: "doesntmatter",
+      showcase: url ?? "",
+      properties: toJS(alert.properties)
+    });
+    return presetStore.save(preset, "alert");
+  }
 
   return (
     <Flex key={alert.id} vertical style={{ height: "100%" }}>
@@ -78,7 +107,7 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         <CloseOverlayButton />
       </Flex>
       <Flex gap={12} className={`${classes.alertcontainer}`}>
-        <Flex vertical className={`${classes.alertsettings}`}>
+        <Flex vertical className={`${classes.alertsettings} withscroll`}>
           <AntTabs
             size="small"
             type="card"
@@ -124,14 +153,15 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         </Flex>
         <Flex vertical className={`${classes.alertpreview}`} gap={9}>
           <Flex
+            ref={preview}
             justify="flex-start"
             gap={9}
             className={`${classes.previewcontainer}`}
           >
-            <SubActionButton onClick={() => {}}>Создать шаблон</SubActionButton>
-            <SubActionButton onClick={() => {}}>
-              Применить шаблон
+            <SubActionButton onClick={() => savePreset()}>
+              Создать шаблон
             </SubActionButton>
+            <PresetsComponent target={alert} presetStore={presetStore} />
           </Flex>
           <Flex justify="space-around" className={`${classes.preview}`}>
             <ResizableBox

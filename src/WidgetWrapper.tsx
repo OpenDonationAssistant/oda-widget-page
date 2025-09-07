@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "./types/WidgetData";
 import { WidgetSettingsContext } from "./contexts/WidgetSettingsContext";

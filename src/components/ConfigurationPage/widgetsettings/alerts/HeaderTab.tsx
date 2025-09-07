@@ -25,21 +25,6 @@ export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
         {(alert.get("showHeader") as BooleanProperty).markup()}
       </div>
       <div className="settings-item">
-        {(alert.get("headerAppearanceDelay") as NumberProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerDuration") as DurationProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerAppearance") as AnimationProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerAnimation") as AnimationProperty).markup()}
-      </div>
-      <div className="settings-item">
-        {(alert.get("headerDisappearance") as AnimationProperty).markup()}
-      </div>
-      <div className="settings-item">
         {(alert.get("nicknameTextTemplate") as TextProperty).markup()}
       </div>
       <div className="settings-item">
@@ -55,6 +40,21 @@ export const HeaderTab = observer(({ alert }: { alert: Alert }) => {
             alert.update("headerFont", prop.value);
           }}
         />
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAppearanceDelay") as NumberProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerDuration") as DurationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAppearance") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerAnimation") as AnimationProperty).markup()}
+      </div>
+      <div className="settings-item">
+        {(alert.get("headerDisappearance") as AnimationProperty).markup()}
       </div>
       <div className="settings-item">
         {(alert.get("headerWidth") as WidthProperty).markup()}

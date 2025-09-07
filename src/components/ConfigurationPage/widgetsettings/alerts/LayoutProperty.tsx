@@ -7,218 +7,235 @@ import classes from "./LayoutProperty.module.css";
 import { produce } from "immer";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
+import { Card } from "../../../Cards/CardsComponent";
+import PictureIcon from "../../../../icons/PictureIcon";
 
 const LayoutPropertyComponent = observer(
   ({ property }: { property: LayoutProperty }) => {
     return (
-      <div className={`settings-item ${classes.container}`}>
-        <Flex
-          align="center"
-          wrap
-          gap={20}
-          className={`${classes.previews}`}
-          justify="center"
-          style={{ margin: "0px auto" }}
-        >
-          <Flex
-            vertical
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"1" === property.value.value && classes.selected}`}
+      <>
+        <div className={`${classes.previews}`}>
+          <Card
+            selected={"1" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "1";
               });
             }}
           >
-            <img src="/icons/picture.png" />
-            <div>Заголовок</div>
-            <div>Сообщение</div>
-          </Flex>
-          <Flex
-            vertical
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"2" === property.value.value && classes.selected}`}
+            <Flex
+              vertical
+              align="center"
+              justify="center"
+              style={{ height: "100%" }}
+            >
+              <PictureIcon />
+              <div>Заголовок</div>
+              <div>Сообщение</div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"2" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "2";
               });
             }}
           >
-            <div>Заголовок</div>
-            <img src="/icons/picture.png" />
-            <div>Сообщение</div>
-          </Flex>
-          <Flex
-            vertical
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"3" === property.value.value && classes.selected}`}
+            <Flex
+              vertical
+              align="center"
+              justify="center"
+              style={{ height: "100%" }}
+            >
+              <div>Заголовок</div>
+              <PictureIcon />
+              <div>Сообщение</div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"3" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "3";
               });
             }}
           >
-            <div>Заголовок</div>
-            <div>Сообщение</div>
-            <img src="/icons/picture.png" />
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-start"
-            className={`${classes.layout} ${"4" === property.value.value && classes.selected}`}
+            <Flex
+              vertical
+              align="center"
+              justify="center"
+              style={{ height: "100%" }}
+            >
+              <div>Заголовок</div>
+              <div>Сообщение</div>
+              <PictureIcon />
+            </Flex>
+          </Card>
+          <Card
+            selected={"4" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "4";
               });
             }}
           >
-            <Flex vertical justify="flex-start">
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+            <Flex align="top" justify="center" style={{ height: "100%" }}>
+              <Flex vertical>
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </Flex>
+              <PictureIcon />
             </Flex>
-            <img src="/icons/picture.png" />
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-start"
-            className={`${classes.layout} ${"5" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"5" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "5";
               });
             }}
           >
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Заголовок
-            </div>
-            <img src="/icons/picture.png" />
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Сообщение
-            </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-start"
-            className={`${classes.layout} ${"6" === property.value.value && classes.selected}`}
+            <Flex
+              align="top"
+              justify="center"
+              style={{ height: "100%", width: "100%" }}
+            >
+              <div style={{ wordBreak: "break-all" }}>Заголовок</div>
+              <PictureIcon />
+              <div style={{ wordBreak: "break-all" }}>Сообщение</div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"6" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "6";
               });
             }}
           >
-            <img src="/icons/picture.png" />
-            <Flex vertical justify="flex-start">
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+            <Flex
+              align="top"
+              justify="center"
+              style={{ height: "100%", width: "100%" }}
+            >
+              <PictureIcon />
+              <Flex vertical justify="flex-start">
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </Flex>
             </Flex>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"7" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"7" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "7";
               });
             }}
           >
-            <div>
-              <div>Заголовок</div>
-              <div>Сообщение</div>
-            </div>
-            <img src="/icons/picture.png" />
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"8" === property.value.value && classes.selected}`}
+            <Flex
+              align="center"
+              justify="center"
+              style={{ height: "100%", width: "100%" }}
+            >
+              <div>
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </div>
+              <PictureIcon />
+            </Flex>
+          </Card>
+          <Card
+            selected={"8" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "8";
               });
             }}
           >
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Заголовок
-            </div>
-            <img src="/icons/picture.png" />
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Сообщение
-            </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"9" === property.value.value && classes.selected}`}
+            <Flex
+              align="center"
+              justify="center"
+              style={{ height: "100%", width: "100%" }}
+            >
+              <div style={{ width: "50px", wordBreak: "break-all" }}>
+                Заголовок
+              </div>
+              <PictureIcon />
+              <div style={{ width: "50px", wordBreak: "break-all" }}>
+                Сообщение
+              </div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"9" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "9";
               });
             }}
           >
-            <img src="/icons/picture.png" />
-            <div>
-              <div>Заголовок</div>
-              <div>Сообщение</div>
-            </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-end"
-            className={`${classes.layout} ${"10" === property.value.value && classes.selected}`}
+            <Flex
+              align="center"
+              justify="center"
+              style={{ height: "100%", width: "100%" }}
+            >
+              <PictureIcon />
+              <div>
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"10" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "10";
               });
             }}
           >
-            <Flex vertical justify="flex-end">
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+            <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
+              <Flex vertical justify="flex-end">
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </Flex>
+              <PictureIcon />
             </Flex>
-            <img src="/icons/picture.png" />
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-end"
-            className={`${classes.layout} ${"11" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"11" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "11";
               });
             }}
           >
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Заголовок
-            </div>
-            <img src="/icons/picture.png" />
-            <div style={{ width: "50px", wordBreak: "break-all" }}>
-              Сообщение
-            </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="flex-end"
-            className={`${classes.layout} ${"12" === property.value.value && classes.selected}`}
+            <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
+              <div style={{ wordBreak: "break-all" }}>Заголовок</div>
+              <PictureIcon />
+              <div style={{ wordBreak: "break-all" }}>Сообщение</div>
+            </Flex>
+          </Card>
+          <Card
+            selected={"12" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "12";
               });
             }}
           >
-            <img src="/icons/picture.png" />
-            <Flex vertical justify="flex-end">
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+            <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
+              <PictureIcon />
+              <Flex vertical justify="flex-end">
+                <div>Заголовок</div>
+                <div>Сообщение</div>
+              </Flex>
             </Flex>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"13" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"13" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "13";
@@ -239,16 +256,11 @@ const LayoutPropertyComponent = observer(
                 <div>Заголовок</div>
                 <div>Сообщение</div>
               </div>
-              <img
-                style={{ width: "100%", height: "100%" }}
-                src="/icons/picture.png"
-              />
+              <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"14" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"14" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "14";
@@ -269,16 +281,11 @@ const LayoutPropertyComponent = observer(
                 <div>Заголовок</div>
                 <div>Сообщение</div>
               </div>
-              <img
-                src="/icons/picture.png"
-                style={{ width: "100%", height: "100%" }}
-              />
+              <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"15" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"15" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "15";
@@ -299,16 +306,11 @@ const LayoutPropertyComponent = observer(
                 <div>Заголовок</div>
                 <div>Сообщение</div>
               </div>
-              <img
-                src="/icons/picture.png"
-                style={{ width: "100%", height: "100%" }}
-              />
+              <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
-          </Flex>
-          <Flex
-            justify="center"
-            align="center"
-            className={`${classes.layout} ${"16" === property.value.value && classes.selected}`}
+          </Card>
+          <Card
+            selected={"16" === property.value.value}
             onClick={() => {
               property.value = produce(toJS(property.value), (draft) => {
                 draft.value = "16";
@@ -316,8 +318,8 @@ const LayoutPropertyComponent = observer(
             }}
           >
             <div>Фиксированные координаты</div>
-          </Flex>
-        </Flex>
+          </Card>
+        </div>
         {"16" === property.value.value && (
           <>
             <LabeledContainer displayName="widget-alert-image-start-point-x">
@@ -406,7 +408,7 @@ const LayoutPropertyComponent = observer(
             </LabeledContainer>
           </>
         )}
-      </div>
+      </>
     );
   },
 );
