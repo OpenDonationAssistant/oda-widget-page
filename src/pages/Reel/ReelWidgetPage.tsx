@@ -2,35 +2,32 @@ import WidgetWrapper from "../../WidgetWrapper";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
-import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import {
   DefaultVariableStore,
   VariableStoreContext,
 } from "../../stores/VariableStore";
 import { ReelWidgetSettings } from "./ReelWidgetSettings";
-import ReelWidget from "./ReelWidget";
+import { ReelWidget } from "./ReelWidget";
+import { DefaultReelStore } from "../../stores/ReelStore";
 
 export default function ReelWidgetPage({}) {
-  const { widgetId, conf, recipientId, settings } =
+  const { widgetId, conf, settings } =
     useLoaderData() as WidgetData;
 
-  const widgetSettings = Widget.configFromJson(
-    settings,
-  ) as ReelWidgetSettings;
+  const widgetSettings = Widget.configFromJson(settings) as ReelWidgetSettings;
 
-  const variablesStore = new DefaultVariableStore()
+  const variablesStore = new DefaultVariableStore();
 
-  // const state = new DonationGoalState({
-  //   widgetId: widgetId,
-  //   conf: conf,
-  //   paymentPageConfig: new PaymentPageConfig(recipientId),
-  //   variables: variablesStore
-  // });
+  const reelStore = new DefaultReelStore({
+    widgetId: widgetId,
+    conf: conf,
+    settings: widgetSettings,
+  });
 
   return (
     <WidgetWrapper>
       <VariableStoreContext.Provider value={variablesStore}>
-        <ReelWidget />
+        <ReelWidget settings={widgetSettings} store={reelStore} />
       </VariableStoreContext.Provider>
     </WidgetWrapper>
   );
