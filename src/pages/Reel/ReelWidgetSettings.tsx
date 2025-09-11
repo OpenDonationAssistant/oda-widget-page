@@ -121,6 +121,10 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     return this.get("reelWinningEffect") as ReelWinningEffectProperty;
   }
 
+  public get itemBackgroundProperty() {
+    return this.get("backgroundImage") as ReelItemBackgroundProperty;
+  }
+
   runReel(id: string, conf: any) {
     const optionList = this.optionListProperty.value;
     const choosenIndex = getRndInteger(0, optionList.length - 1);
@@ -154,7 +158,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
       <>
         <Flex justify="space-between">
           <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
-          <CloseOverlayButton/>
+          <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
           Позволяет запускать рулетку на донаты, в которой выграет одна из

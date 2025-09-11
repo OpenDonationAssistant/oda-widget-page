@@ -8,21 +8,24 @@ import {
 } from "../../stores/VariableStore";
 import { ReelWidgetSettings } from "./ReelWidgetSettings";
 import { ReelWidget } from "./ReelWidget";
-import { DefaultReelStore } from "../../stores/ReelStore";
+import { DefaultReelStore, ReelStore } from "../../stores/ReelStore";
+import { useState } from "react";
 
 export default function ReelWidgetPage({}) {
-  const { widgetId, conf, settings } =
-    useLoaderData() as WidgetData;
+  const { settings, widgetId, conf } = useLoaderData() as WidgetData;
 
   const widgetSettings = Widget.configFromJson(settings) as ReelWidgetSettings;
 
   const variablesStore = new DefaultVariableStore();
 
-  const reelStore = new DefaultReelStore({
-    widgetId: widgetId,
-    conf: conf,
-    settings: widgetSettings,
-  });
+  const [reelStore] = useState<ReelStore>(
+    () =>
+      new DefaultReelStore({
+        widgetId: widgetId,
+        conf: conf,
+        settings: widgetSettings,
+      }),
+  );
 
   return (
     <WidgetWrapper>

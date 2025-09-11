@@ -233,7 +233,7 @@ export class Widget {
 
   public static config(
     type: string,
-    properties: SavedProperty[]
+    properties: SavedProperty[],
   ): AbstractWidgetSettings | null {
     const settings = this.createDefault(type);
     if (settings === undefined) {

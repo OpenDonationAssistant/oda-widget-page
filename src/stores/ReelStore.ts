@@ -56,7 +56,9 @@ export class DefaultReelStore implements ReelStore {
   }
 
   private shuffle() {
-    let options = structuredClone(toJS(this._settings.optionListProperty.value));
+    let options = structuredClone(
+      toJS(this._settings.optionListProperty.value),
+    );
     let shuffled = [];
     const count = options.length;
     for (let i = 0; i < count; i++) {

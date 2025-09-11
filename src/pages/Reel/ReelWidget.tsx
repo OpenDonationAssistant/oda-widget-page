@@ -2,11 +2,9 @@ import Glide from "@glidejs/glide";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import classes from "./ReelWidget.module.css";
 import { log } from "../../logging";
-import { findSetting } from "../../components/utils";
-import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { ReelWidgetSettings } from "./ReelWidgetSettings";
 import { ReelStore } from "../../stores/ReelStore";
 import { observer } from "mobx-react-lite";
@@ -17,7 +15,14 @@ export const ReelWidget = observer(
     const glideRef = useRef<HTMLDivElement | null>(null);
     const glide = useRef<Glide | null>(null);
     const [highlight, setHighlight] = useState<boolean>(false);
-    const [image, setImage] = useState<string>("");
+    const [winningStyle, setWinningStyle] = useState<CSSProperties>(() => {
+      return {};
+    });
+    const [nonWinningStyle, setNonWinningStyle] = useState<CSSProperties>(
+      () => {
+        return {};
+      },
+    );
 
     useEffect(() => {
       if (!glideRef || !store.options) {
@@ -46,7 +51,7 @@ export const ReelWidget = observer(
       );
       log.debug({ options: store.options, index: index }, "highlight");
       const speed = settings.speedProperty.value;
-      const time = findSetting(settings, "time", 10) * 1000;
+      const time = settings.timeProperty.value * 1000;
       glide.current?.update({ autoplay: speed });
       setTimeout(() => {
         const index = store.options.findIndex(
@@ -58,11 +63,6 @@ export const ReelWidget = observer(
       }, time);
     }, [store.selection]);
 
-    const titleFont = new AnimatedFontProperty({
-      name: "titleFont",
-      value: findSetting(settings, "titleFont", null),
-    });
-
     const selectionStyle = settings.selectionColorProperty.calcCss();
 
     const slideStyle = {
@@ -70,36 +70,36 @@ export const ReelWidget = observer(
     };
 
     useEffect(() => {
-      let backgroundImage = findSetting(settings, "backgroundImage", "");
-      fullUri(backgroundImage).then(setImage);
+      let backgroundImage = settings.itemBackgroundProperty.value;
+      fullUri(backgroundImage).then((image) => {
+        let nonWinningStyle = settings.cardBorderProperty.calcCss();
+        if (image) {
+          nonWinningStyle.backgroundSize = "cover";
+          nonWinningStyle.backgroundImage = `url(${image})`;
+        }
+        setNonWinningStyle(nonWinningStyle);
+        let winningStyle = {
+          ...selectionStyle,
+          ...settings.cardBorderProperty.calcCss(),
+        };
+        setWinningStyle(winningStyle);
+      });
     }, [settings]);
 
-    function calcItemStyle(option: string) {
-      let style = settings.cardBorderProperty.calcCss();
-      if (highlight && store.selection === option) {
-        style = { ...selectionStyle, ...style };
-      } else {
-        if (image) {
-          style.backgroundSize = "cover";
-          style.backgroundImage = `url(${image})`;
-        }
-      }
-      log.debug({ style }, "calculated style for slide item");
-      return style;
-    }
+    function calcItemStyle(option: string) {}
 
     const borderStyle = settings.widgetBorderProperty.calcCss();
 
     return (
       <>
-        {titleFont.createFontImport()}
+        {settings.titleFontProperty.createFontImport()}
         <div className={`glide hidden`} ref={glideRef} style={borderStyle}>
           <div className="glide__track" data-glide-el="track">
             <ul className="glide__slides" style={slideStyle}>
               {store.options.map((option) => (
                 <div
                   key={option}
-                  style={calcItemStyle(option)}
+                  style={highlight && store.selection === option ? winningStyle : nonWinningStyle}
                   className={`${classes.reelitemcontainer} ${
                     highlight && store.selection === option
                       ? classes.active
@@ -108,8 +108,8 @@ export const ReelWidget = observer(
                 >
                   <li
                     key={option}
-                    style={titleFont.calcStyle()}
-                    className={`${titleFont.calcClassName()} glide__slide ${
+                    style={settings.titleFontProperty.calcStyle()}
+                    className={`${settings.titleFontProperty.calcClassName()} glide__slide ${
                       classes.reelitem
                     }`}
                   >
