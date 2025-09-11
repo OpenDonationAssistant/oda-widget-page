@@ -88,7 +88,7 @@ const NewsLineComponent = observer(({}) => {
       {newsStore.news && newsStore.news.length > 0 && (
         <Flex className={`${classes.newscontainer}`} align="center">
           <div className={`${classes.newsprefix}`}>new</div>
-          <Marquee className={`${classes.newsline}`}>
+          <Marquee className={`${classes.newsline}`} style={{ marginRight: "36px" }}>
             {newsStore.news.at(0)?.title}
           </Marquee>
           <NotBorderedIconButton
