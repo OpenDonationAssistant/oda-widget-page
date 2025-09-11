@@ -43,6 +43,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "general",
       title: "Entire",
       properties: [
+        new WidthProperty({
+          name: "width",
+        }),
+        new HeightProperty({
+          name: "height",
+        }),
         new ColorProperty({
           name: "widgetBackgroundColor",
           displayName: "background-color",
@@ -57,12 +63,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BackgroundImageProperty({
           name: "backgroundImage",
-        }),
-        new WidthProperty({
-          name: "width",
-        }),
-        new HeightProperty({
-          name: "height",
         }),
         new BorderProperty({
           name: "border",
@@ -85,6 +85,28 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "header",
       title: "tab-donationgoal-header",
       properties: [
+        new BooleanProperty({
+          name: "showTitle",
+          value: true,
+          displayName: "widget-donationgoal-show-title",
+        }),
+        new SingleChoiceProperty({
+          name: "titleTextAlign",
+          value: "left",
+          displayName: "widget-donationgoal-title-alignment",
+          options: ["left", "center", "right"],
+          selectionType: SELECTION_TYPE.SEGMENTED,
+        }),
+        new AnimatedFontProperty({
+          name: "descriptionFont",
+          label: "widget-donationgoal-title-font-family",
+        }),
+        new WidthProperty({
+          name: "titleWidth",
+        }),
+        new HeightProperty({
+          name: "titleHeight",
+        }),
         new ColorProperty({
           name: "titleBackgroundColor",
           displayName: "background-color",
@@ -99,28 +121,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BackgroundImageProperty({
           name: "titleBackgroundImage",
-        }),
-        new BooleanProperty({
-          name: "showTitle",
-          value: true,
-          displayName: "widget-donationgoal-show-title",
-        }),
-        new AnimatedFontProperty({
-          name: "descriptionFont",
-          label: "widget-donationgoal-title-font-family",
-        }),
-        new SingleChoiceProperty({
-          name: "titleTextAlign",
-          value: "left",
-          displayName: "widget-donationgoal-title-alignment",
-          options: ["left", "center", "right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        }),
-        new WidthProperty({
-          name: "titleWidth",
-        }),
-        new HeightProperty({
-          name: "titleHeight",
         }),
         new BorderProperty({
           name: "titleBorder",
@@ -144,24 +144,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "progressbar",
       title: "tab-donationgoal-bar",
       properties: [
-        new ColorProperty({
-          name: "backgroundColor",
-          displayName: "widget-donationgoal-background",
-          target: ColorPropertyTarget.BACKGROUND,
-        }),
-        new BackgroundImageProperty({
-          name: "outerImage",
-        }),
         new BooleanProperty({
           name: "showLabel",
           value: true,
           displayName: "widget-donationgoal-show-description",
         }),
         new DonationGoalLabelProperty(),
-        new AnimatedFontProperty({
-          name: "amountFont",
-          label: "widget-donationgoal-amount-font-family",
-        }),
         new SingleChoiceProperty({
           name: "filledTextPlacement",
           value: "center",
@@ -176,8 +164,20 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           options: ["left", "center", "right"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
+        new AnimatedFontProperty({
+          name: "amountFont",
+          label: "widget-donationgoal-amount-font-family",
+        }),
         new HeightProperty({
           name: "outerHeight",
+        }),
+        new ColorProperty({
+          name: "backgroundColor",
+          displayName: "widget-donationgoal-background",
+          target: ColorPropertyTarget.BACKGROUND,
+        }),
+        new BackgroundImageProperty({
+          name: "outerImage",
         }),
         new BorderProperty({
           name: "outerBorder",
@@ -200,6 +200,9 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       key: "fulfillment",
       title: "tab-donationgoal-fulfillment",
       properties: [
+        new HeightProperty({
+          name: "filledHeight",
+        }),
         new ColorProperty({
           name: "filledColor",
           displayName: "widget-donationgoal-filled-color",
@@ -214,9 +217,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BackgroundImageProperty({
           name: "innerImage",
-        }),
-        new HeightProperty({
-          name: "filledHeight",
         }),
         new BorderProperty({
           name: "innerBorder",
@@ -267,7 +267,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
       <>
         <Flex justify="space-between">
           <h3 className={`${classes.helptitle}`}>Виджет "Сбор средств"</h3>
-          <CloseOverlayButton/>
+          <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
           Позволяет создать цели сбора донатов и отслеживать их выполнение на

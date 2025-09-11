@@ -159,7 +159,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
                   <SubActionButton onClick={() => savePreset()}>
                     Создать шаблон
                   </SubActionButton>
-                  <PresetsComponent presetStore={presetStore} widget={widget} />
+                  <PresetsComponent presetStore={presetStore} target={widget} />
                 </Flex>
                 <Flex
                   ref={preview}

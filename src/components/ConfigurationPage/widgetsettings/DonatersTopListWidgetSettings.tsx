@@ -187,6 +187,9 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
       key: "list-item",
       title: "tab-donaters-list-item",
       properties: [
+        new AnimatedFontProperty({
+          name: "messageFont",
+        }),
         new WidthProperty({ name: "itemWidth" }),
         new HeightProperty({ name: "itemHeight" }),
         new ColorProperty({
@@ -202,9 +205,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new BackgroundImageProperty({ name: "itemBackgroundImage" }),
-        new AnimatedFontProperty({
-          name: "messageFont",
-        }),
         new SingleChoiceProperty({
           name: "listAlignment",
           value: "Center",

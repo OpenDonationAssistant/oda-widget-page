@@ -185,7 +185,6 @@ export class Alert {
   }
 
   public update(name: string, value: any): void {
-    log.debug({ name: name, value: value }, "updating alert");
     this._properties.map((it) => {
       if (it.name === name) {
         it.value = value;

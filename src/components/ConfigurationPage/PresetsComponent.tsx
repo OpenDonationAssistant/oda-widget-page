@@ -85,7 +85,7 @@ export const PresetWindow = ({
           </Subtitle>
           <CardList>
             {personal.map((preset) => (
-              <PreviewImage preset={preset} onSelect={() => onSelect(preset)} />
+              <PreviewImage key={preset.name} preset={preset} onSelect={() => onSelect(preset)} />
             ))}
           </CardList>
         </Flex>

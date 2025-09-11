@@ -83,6 +83,7 @@ export class WizardConfigurationStore {
       this.canContinue = false;
       if (!success) {
         const finish = this.configuration.finish;
+        log.debug({ finish: finish }, "Checking for finish function");
         if (finish) {
           finish().then(() => {
             this.reset();

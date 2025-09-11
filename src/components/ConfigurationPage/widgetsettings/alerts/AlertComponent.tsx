@@ -10,6 +10,7 @@ import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
 import { LayoutTab } from "./LayoutTab";
 import classes from "./AlertComponent.module.css";
+import { toBlob } from "html-to-image";
 import {
   CloseOverlayButton,
   ModalStateContext,
@@ -28,7 +29,6 @@ import { reaction, toJS } from "mobx";
 import { log } from "../../../../logging";
 import { PresetStoreContext } from "../../../../stores/PresetStore";
 import { uuidv7 } from "uuidv7";
-import { snapdom } from "@zumer/snapdom";
 import { uploadBlob } from "../../../../utils";
 import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
@@ -81,14 +81,28 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
       return Promise.resolve();
     }
     const name = uuidv7();
-    const canvas = await snapdom(preview.current);
-    const blob = await canvas.toBlob({ type: "webp" });
-    const url = await uploadBlob(blob, `${name}.webp`);
+    const blob = await toBlob(preview.current);
+    if (!blob) {
+      return Promise.resolve();
+    }
+    const url = await uploadBlob(blob, `${name}.png`);
+    const properties = alert
+      .config()
+      .properties.filter((it) => it.name !== "name");
+    if (alert.image) {
+      properties.push({ name: "image", value: alert.image });
+    }
+    if (alert.audio) {
+      properties.push({ name: "audio", value: alert.audio });
+    }
+    if (alert.video) {
+      properties.push({ name: "video", value: alert.video });
+    }
     const preset = new Preset({
       name: name,
       owner: "doesntmatter",
       showcase: url ?? "",
-      properties: toJS(alert.properties)
+      properties: properties,
     });
     return presetStore.save(preset, "alert");
   }
@@ -153,7 +167,6 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         </Flex>
         <Flex vertical className={`${classes.alertpreview}`} gap={9}>
           <Flex
-            ref={preview}
             justify="flex-start"
             gap={9}
             className={`${classes.previewcontainer}`}
@@ -163,7 +176,11 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
             </SubActionButton>
             <PresetsComponent target={alert} presetStore={presetStore} />
           </Flex>
-          <Flex justify="space-around" className={`${classes.preview}`}>
+          <Flex
+            ref={preview}
+            justify="space-around"
+            className={`${classes.preview}`}
+          >
             <ResizableBox
               height={-1}
               width={-1}

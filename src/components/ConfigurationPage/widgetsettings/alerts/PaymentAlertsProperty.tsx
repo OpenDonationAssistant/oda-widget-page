@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { Alert } from "./Alerts";
 import classes from "./PaymentAlertsProperty.module.css";
@@ -10,7 +10,7 @@ import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
-import { extendObservable, observable, toJS } from "mobx";
+import { extendObservable, observable, reaction, toJS } from "mobx";
 import SubActionButton from "../../../SubActionButton/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";
 import {
@@ -27,6 +27,13 @@ import {
   SelectedIndexContext,
   SelectedIndexStore,
 } from "../../../../stores/SelectedIndexStore";
+import {
+  Wizard,
+  WizardConfigurationStore,
+} from "../../../Wizard/WizardComponent";
+import { AddAlertWizardStoreContext } from "./AddAlertWizard";
+import { PresetWindow } from "../../PresetsComponent";
+import { Preset } from "../../../../types/Preset";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -74,7 +81,9 @@ const AlertItemComponent = observer(
           }
           second={
             <Flex className={`${classes.alertbuttons}`} gap={9}>
-              <SubActionButton onClick={() => testAlert(conf.topic.alerts, alert)}>
+              <SubActionButton
+                onClick={() => testAlert(conf.topic.alerts, alert)}
+              >
                 <div>Тест</div>
               </SubActionButton>
               <BorderedIconButton
@@ -114,13 +123,90 @@ const AlertItemComponent = observer(
   },
 );
 
+const ChooseTemplate = observer(({}: {}) => {
+  const [presetSelection, setPresetSelection] = useState<SelectedIndexStore>(
+    () => new SelectedIndexStore(),
+  );
+  const wizardStore = useContext(AddAlertWizardStoreContext);
+  return (
+    <SelectedIndexContext.Provider value={presetSelection}>
+      <Flex
+        vertical
+        gap={12}
+        className="withscroll"
+        style={{ maxHeight: "75vh", width: "100%" }}
+      >
+        <PresetWindow
+          type="alert"
+          onSelect={(preset: Preset) => {
+            presetSelection.id = preset.name;
+            wizardStore.preset = preset;
+          }}
+        />
+      </Flex>
+    </SelectedIndexContext.Provider>
+  );
+});
+
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
-    const [selection, setSelection] = useState<SelectedIndexStore>(
+    const [selection] = useState<SelectedIndexStore>(
       () => new SelectedIndexStore(),
     );
+    const wizardStore = useContext(AddAlertWizardStoreContext);
+    const [wizardConfiguration] = useState<WizardConfigurationStore>(
+      () =>
+        new WizardConfigurationStore({
+          steps: [
+            {
+              title: "Выберите шаблон",
+              subtitle: "",
+              content: <ChooseTemplate />,
+              handler: () => {
+                return Promise.resolve(true);
+              },
+            },
+          ],
+          dynamicStepAmount: true,
+          reset: () => {
+            log.debug("reset addalert wizard");
+            wizardStore.reset();
+          },
+          finish: () => {
+            log.debug("finish addalert wizard");
+            const added = wizardStore.property?.addAlert();
+            log.debug(
+              {
+                property: toJS(wizardStore.property),
+                added: toJS(added),
+                preset: toJS(wizardStore.preset),
+              },
+              "finish adding alert",
+            );
+            if (added) {
+              wizardStore.preset?.applyTo(added, "alert");
+              selection.id = added.id;
+            }
+            wizardStore.reset();
+            return Promise.resolve();
+          },
+        }),
+    );
+
+    useEffect(() => {
+      reaction(
+        () => wizardStore.preset,
+        () => {
+          wizardConfiguration.canContinue = !!wizardStore.preset;
+        },
+      );
+    }, [wizardStore, wizardConfiguration]);
+
+    wizardStore.property = property;
+
     return (
       <SelectedIndexContext.Provider value={selection}>
+        <Wizard configurationStore={wizardConfiguration} />
         <List>
           {property.value.map((alert) => (
             <AlertItemComponent
@@ -131,10 +217,7 @@ const PaymentAlertsPropertyComponent = observer(
           ))}
           <AddListItemButton
             label="button-add-alert"
-            onClick={() => {
-              const added = property.addAlert();
-              selection.id = added.id;
-            }}
+            onClick={() => wizardConfiguration.next()}
           />
         </List>
       </SelectedIndexContext.Provider>

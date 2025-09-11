@@ -228,12 +228,12 @@ export class Widget {
   }
 
   public static configFromJson(json: any): AbstractWidgetSettings | null {
-    return this.config(json.type, json.config.properties);
+    return this.config(json.type, json.config?.properties ?? []);
   }
 
   public static config(
     type: string,
-    properties: SavedProperty[],
+    properties: SavedProperty[]
   ): AbstractWidgetSettings | null {
     const settings = this.createDefault(type);
     if (settings === undefined) {
@@ -255,16 +255,10 @@ export class Widget {
     if (json.sortOrder === undefined) {
       return null;
     }
-    if (json.sortOrder === undefined) {
-      return null;
-    }
     if (json.name === undefined) {
       return null;
     }
     if (json.ownerId === undefined) {
-      return null;
-    }
-    if (json.config === undefined) {
       return null;
     }
     return new Widget({

@@ -142,7 +142,7 @@
   "widget-donationgoal-amount-color": "Amount color",
   "widget-donationgoal-background": "Background color",
   "widget-donationgoal-filled-color": "Filled part color",
-  "widget-donationgoal-amount-alignment": "Amount alignment",
+  "widget-donationgoal-amount-alignment": "Label alignment",
   "widget-donationgoal-label-template": "Label template",
   "outerBorder": "Border for required part",
   "innerBorder": "Border for filled part",
