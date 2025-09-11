@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { subscribe } from "../socket";
 import { log } from "../logging";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
