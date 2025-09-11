@@ -40,15 +40,15 @@ export class DefaultReelStore implements ReelStore {
     setTimeout(() => {
       log.debug(`clear active and highlight`);
       this.clearSelection();
-    }, time + 20000);
+    }, time + 10000);
   }
 
   private listen(widgetId: string, topic: string) {
     subscribe(widgetId, topic, (message) => {
-      log.info({ message: message }, "Received reel command");
       let json = JSON.parse(message.body);
+      log.info({ message: json, widgetId: widgetId }, "Received reel command");
       if (json.widgetId === widgetId) {
-        this._selection = [this._selection, json.selection];
+        this._selection = [...this._selection, json.selection];
       }
       this.handleSelection();
       message.ack();
@@ -80,7 +80,11 @@ export class DefaultReelStore implements ReelStore {
 
   private clearSelection(): void {
     if (this._selection.length > 0) {
-      this._selection.splice(this._selection.length - 1, 1);
+      log.debug("clearing reel");
+      this._selection = this._selection.filter((item, index) => {
+        return index !== 0;
+      });
+      log.debug({selection: this._selection}, "updated reel selection");
     }
   }
 }
