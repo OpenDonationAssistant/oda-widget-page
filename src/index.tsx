@@ -23,7 +23,6 @@ import auth from "./auth";
 import axios from "axios";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
-import { ReelWidget } from "./pages/Reel/ReelWidget";
 import { WidgetData } from "./types/WidgetData";
 import { HistoryPage } from "./pages/History/HistoryPage";
 import { ConfigProvider, Flex, theme } from "antd";
@@ -59,6 +58,7 @@ import {
   PaymentPageConfigContext,
 } from "./components/MediaWidget/PaymentPageConfig";
 import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
+import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
 
 async function widgetSettingsLoader({
   params,
@@ -324,7 +324,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/reel/:widgetId",
-    element: <ReelWidget />,
+    element: <ReelWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {
