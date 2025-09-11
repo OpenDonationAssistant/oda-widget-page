@@ -5,7 +5,8 @@ import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/
 import { Flex } from "antd";
 import { HistoryStore } from "../History/HistoryStore";
 import { observer } from "mobx-react-lite";
-import { reaction } from "mobx";
+import { reaction, toJS } from "mobx";
+import { log } from "../../logging";
 
 export const DonationTimer = observer(
   ({
@@ -15,25 +16,27 @@ export const DonationTimer = observer(
     settings: DonationTimerWidgetSettings;
     store: HistoryStore;
   }) => {
-    const [lastDonationTime, setLastDonationTime] = useState<number | null>(
+    const [lastDonationTime, setLastDonationTime] = useState<Date | null>(
       null,
     );
     const [time, setTime] = useState<String>("");
 
     useEffect(() => {
-      if (settings.resetOnLoad){
-        setLastDonationTime(Date.now());
-      } else {
-        const lastDate = store.items.at(0)?.date;
-        setLastDonationTime(lastDate ? Date.parse(lastDate) : Date.now());
-      }
       reaction(
         () => store.items.at(0),
         (item) => {
-          if (item?.date) {
-            setLastDonationTime(Date.parse(item?.date));
+          log.debug({ item: toJS(item) }, "timer reaction");
+          if (lastDonationTime === null && settings.resetOnLoad) {
+            log.debug("reset timer");
+            setLastDonationTime(new Date());
+            return;
+          }
+          if (item?.timestamp) {
+            const date = new Date(item?.timestamp);
+            log.debug({ date: date }, "setting timer date");
+            setLastDonationTime(date);
           } else {
-            setLastDonationTime(Date.now());
+            setLastDonationTime(new Date());
           }
         },
       );
@@ -45,8 +48,7 @@ export const DonationTimer = observer(
           return;
         }
         const now = Date.now();
-        const paymentDate = new Date(lastDonationTime);
-        const difference = now - paymentDate.getTime();
+        const difference = now - lastDonationTime.getTime();
         const days = Math.floor(difference / (24 * 36e5));
         const hours = Math.floor((difference % (24 * 36e5)) / 36e5);
         const minutes = Math.floor((difference % 36e5) / 60000);

@@ -80,8 +80,8 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePay = this.readValue(`${widgetId}.showDonatePay`);
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
-    this.load();
     makeAutoObservable(this);
+    this.load();
     this.listen(conf);
   }
 
