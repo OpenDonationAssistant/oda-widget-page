@@ -187,6 +187,13 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
       key: "list-item",
       title: "tab-donaters-list-item",
       properties: [
+        new SingleChoiceProperty({
+          name: "listAlignment",
+          value: "Center",
+          displayName: "widget-donaterslist-list-alignment",
+          options: ["Left", "Center", "Right"],
+          selectionType: SELECTION_TYPE.SEGMENTED,
+        }),
         new AnimatedFontProperty({
           name: "messageFont",
         }),
@@ -205,13 +212,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           target: ColorPropertyTarget.BACKGROUND,
         }),
         new BackgroundImageProperty({ name: "itemBackgroundImage" }),
-        new SingleChoiceProperty({
-          name: "listAlignment",
-          value: "Center",
-          displayName: "widget-donaterslist-list-alignment",
-          options: ["Left", "Center", "Right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        }),
         new BorderProperty({
           name: "itemBorder",
           displayName: "border",

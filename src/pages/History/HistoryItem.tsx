@@ -90,7 +90,7 @@ export const HistoryItemComponent = observer(
       >
         <Flex justify="space-between">
           <Flex align="center" gap={3}>
-            <span className="material-symbols-sharp">payments</span>
+            <span className="material-symbols-sharp" style={{ color: "var(--oda-color-1000)" }}>payments</span>
             <span className={classes.title}>
               <span className={`${classes.amount}`}>
                 {item.amount?.major}
