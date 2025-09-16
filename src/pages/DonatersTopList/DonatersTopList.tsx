@@ -208,23 +208,25 @@ export const DonatersTopList = observer(
             autoplay
             dots={false}
           >
-            {portion().map((pack) => (
-              <Flex
-                vertical={layout === "vertical"}
-                align={listAlignItems}
-                justify={listJustifyContent}
-                className="full-width full-height"
-                style={{
-                  ...settings.listBorder.calcCss(),
-                  ...settings.listPadding.calcCss(),
-                  ...settings.listRounding.calcCss(),
-                  ...settings.listBoxShadow.calcCss(),
-                  ...settings.listBackgroundColor.calcCss(),
-                  ...listBackgroundImage,
-                }}
-              >
-                {pack}
-              </Flex>
+            {portion().map((pack, index) => (
+              <div key={index}>
+                <Flex
+                  vertical={layout === "vertical"}
+                  align={listAlignItems}
+                  justify={listJustifyContent}
+                  className="full-width full-height"
+                  style={{
+                    ...settings.listBorder.calcCss(),
+                    ...settings.listPadding.calcCss(),
+                    ...settings.listRounding.calcCss(),
+                    ...settings.listBoxShadow.calcCss(),
+                    ...settings.listBackgroundColor.calcCss(),
+                    ...listBackgroundImage,
+                  }}
+                >
+                  {pack}
+                </Flex>
+              </div>
             ))}
           </Carousel>
         </Flex>
