@@ -273,5 +273,6 @@
   "Entire":"Entire widget",
   "tab-alert-configs": "Settings",
   "blink": "Blink",
-  "none": "None"
+  "none": "None",
+  "dialog-add-donation-trigger-donaton": "Trigger donaton"
 }

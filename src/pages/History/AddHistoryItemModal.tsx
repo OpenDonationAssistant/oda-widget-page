@@ -39,6 +39,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const [countInTop, setCountInTop] = useState<boolean>(false);
   const [countInGoal, setCountInGoal] = useState<boolean>(false);
   const [triggerReel, setTriggerReel] = useState<boolean>(false);
+  const [triggerDonaton, setTriggerDonaton] = useState<boolean>(false);
   const [goalId, setGoalId] = useState<string | null>(null);
 
   const paymentPageConfig = useRef<PaymentPageConfig | null>(
@@ -59,6 +60,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       nickname: nickname,
       triggerAlert: showAlert,
       triggerReel: triggerReel,
+      triggerDonaton: triggerDonaton,
       goals: goalId
         ? [
             {
@@ -144,6 +146,11 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     label="dialog-add-donation-trigger-reel"
                     value={triggerReel}
                     onChange={() => setTriggerReel((old) => !old)}
+                  />
+                  <LabeledSwitchComponent
+                    label="dialog-add-donation-trigger-donaton"
+                    value={triggerDonaton}
+                    onChange={() => setTriggerDonaton((old) => !old)}
                   />
                 </Flex>
               </Flex>

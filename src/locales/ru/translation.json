@@ -274,5 +274,6 @@
   "Entire":"Весь виджет",
   "tab-alert-configs": "Настройки",
   "blink": "Мигание",
-  "none": "Нет"
+  "none": "Нет",
+  "dialog-add-donation-trigger-donaton": "Добавить к таймеру конца трансляции"
 }
