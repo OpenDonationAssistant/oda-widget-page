@@ -208,8 +208,8 @@ export const DonatersTopList = observer(
           {settings.carousel.value.enabled && (
             <Flex
               vertical={layout === "vertical"}
-              className="full-width full-height"
               style={{
+                ...{ flex: "1 1 auto"},
                 ...settings.listWidth.calcCss(),
                 ...settings.listHeight.calcCss(),
                 ...settings.listBorder.calcCss(),
@@ -235,8 +235,8 @@ export const DonatersTopList = observer(
           {!settings.carousel.value.enabled && (
             <Flex
               vertical={layout === "vertical"}
-              className="full-width full-height"
               style={{
+                ...{ flex: "1 1 auto"},
                 ...settings.listWidth.calcCss(),
                 ...settings.listHeight.calcCss(),
                 ...settings.listBorder.calcCss(),
