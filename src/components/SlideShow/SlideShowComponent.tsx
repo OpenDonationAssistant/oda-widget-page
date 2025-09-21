@@ -17,9 +17,6 @@ export function SlideShowComponent({
   inAnimation?: Animation;
   outAnimation?: Animation;
 }) {
-  if (!slides || slides.length === 0) {
-    return <></>;
-  }
 
   const [index, setIndex] = useState<number>(() => 0);
   const [containerClassName, setContainerClassName] = useState<string>("");
@@ -41,6 +38,10 @@ export function SlideShowComponent({
     );
     return () => clearTimeout(next);
   }, [index, inAnimation, outAnimation, period]);
+
+  if (!slides || slides.length === 0) {
+    return <></>;
+  }
 
   return <Flex className={`${containerClassName} full-width`}>{slides[index]}</Flex>;
 }
