@@ -26,22 +26,31 @@ export const DonatersTopList = observer(
           topsize: settings.topsize,
         },
         "toplist settings changed",
-      )
+      );
       if (settings.type === "Last") {
         historyStore.loadUntil(settings.topsize);
       }
     }, [settings.topsize, settings.type]);
 
     const topsize = settings.topsize;
+    const now = new Date();
+    const dayDateDiff =
+      settings.period === "day"
+        ? 1000 * 60 * 60 * 24
+        : 1000 * 60 * 60 * 24 * 30;
     const recordsList =
       settings.type === "Top"
         ? topListStore.list
-        : historyStore.items.map((item) => {
-            return {
-              nickname: item.nickname,
-              amount: item.amount.major,
-            };
-          });
+        : historyStore.items
+            .filter((item) => {
+              return now.getTime() - item.timestamp.getTime() < dayDateDiff;
+            })
+            .map((item) => {
+              return {
+                nickname: item.nickname,
+                amount: item.amount.major,
+              };
+            });
 
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
@@ -210,7 +219,7 @@ export const DonatersTopList = observer(
             <Flex
               vertical={layout === "vertical"}
               style={{
-                ...{ flex: "1 1 auto"},
+                ...{ flex: "1 1 auto" },
                 ...settings.listWidth.calcCss(),
                 ...settings.listHeight.calcCss(),
                 ...settings.listBorder.calcCss(),
@@ -237,7 +246,7 @@ export const DonatersTopList = observer(
             <Flex
               vertical={layout === "vertical"}
               style={{
-                ...{ flex: "1 1 auto"},
+                ...{ flex: "1 1 auto" },
                 ...settings.listWidth.calcCss(),
                 ...settings.listHeight.calcCss(),
                 ...settings.listBorder.calcCss(),
