@@ -1,13 +1,14 @@
-import { HistoryItem, HistoryStore } from "./HistoryStore";
+import { HistoryStore } from "./HistoryStore";
 
 export class DemoHistoryStore implements HistoryStore{
     today: string = "";
-    load(): void {}
-    next(): void {}
+    load = () => { return Promise.resolve(); };
+    next = () => { return Promise.resolve(); };
     pageSize: number = 20;
-    pageNumber: number = 0;
+    pageNumber: number = 1;
     items = [
       {
+        id: "id",
         originId: "id",
         amount: {major: 100, minor: 0, currency: "RUB"},
         nickname: "donater",
@@ -22,6 +23,7 @@ export class DemoHistoryStore implements HistoryStore{
         active: false,
       },
       {
+        id: "id-2",
         originId: "id-2",
         amount: {major: 200, minor: 0, currency: "RUB"},
         nickname: "streamer",
@@ -36,6 +38,7 @@ export class DemoHistoryStore implements HistoryStore{
         active: false,
       }
     ];
+    loadUntil = (count: number) => { return Promise.resolve(); };
     isRefreshing = false;
     showODA = true;
     showDonationAlerts = true;

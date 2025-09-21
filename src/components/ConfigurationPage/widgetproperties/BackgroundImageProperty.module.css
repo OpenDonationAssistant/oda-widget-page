@@ -2,6 +2,11 @@
   border-radius: 9px;
 }
 
+.repeatbutton{
+  height: 48px;
+  width: 100%;
+}
+
 .previewcontainer {
   border: 1px solid var(--oda-color-250);
   border-radius: 9px;

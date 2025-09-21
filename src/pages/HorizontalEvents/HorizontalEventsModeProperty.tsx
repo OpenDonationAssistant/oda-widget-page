@@ -11,13 +11,18 @@ const HorizontalEventsModePropertyComponent = observer(
   ({ property }: { property: HorizontalEventsModeProperty }) => {
     return (
       <>
-        <LabeledContainer displayName="События для отображения" help={property.help}>
+        <LabeledContainer
+          displayName="События для отображения"
+          help={property.help}
+        >
           <Segmented
             value={property.value.mode}
             className={`${classes.unitselector}`}
             onChange={(value) => {
               property.value = produce(toJS(property.value), (draft) => {
-                draft.mode = value;
+                if (value === "last" || value === "period") {
+                  draft.mode = value;
+                }
               });
             }}
             options={[{ label: "За период", value: "period" }]}
@@ -31,7 +36,7 @@ const HorizontalEventsModePropertyComponent = observer(
                 options={[{ label: "Сутки", value: "day" }]}
                 onChange={(value) => {
                   property.value = produce(toJS(property.value), (draft) => {
-                    draft.period = value;
+                    draft.period = "day";
                   });
                 }}
               />

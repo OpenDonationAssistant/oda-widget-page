@@ -21,6 +21,7 @@ const timeFormat = new Intl.DateTimeFormat("ru-RU", {
 });
 
 export interface HistoryItem {
+  id: string;
   originId: string;
   amount: Amount;
   nickname: string;
@@ -37,8 +38,9 @@ export interface HistoryItem {
 
 export interface HistoryStore {
   today: string;
-  load(): void;
-  next(): void;
+  load(): Promise<void>;
+  loadUntil(count: number): Promise<void>;
+  next(): Promise<void>;
   pageSize: number;
   pageNumber: number;
   items: HistoryItem[];
@@ -72,7 +74,7 @@ export class DefaultHistoryStore implements HistoryStore {
     this._widgetId = widgetId;
     this._pageNumber = 0;
     this._pageSize = 10;
-    this._amount = 0;
+    this._amount = -1;
     this._refreshing = false;
     this._list = [];
     this._showODA = this.readValue(`${widgetId}.showODA`);
@@ -81,8 +83,14 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
     makeAutoObservable(this);
-    this.load();
-    this.listen(conf);
+    log.debug("loading history 1");
+    this.load()
+      .then(() => {
+        this.listen(conf);
+      })
+      .catch((error) => {
+        log.error(error);
+      });
   }
 
   private readValue(key: string) {
@@ -151,7 +159,6 @@ export class DefaultHistoryStore implements HistoryStore {
   }
 
   public load() {
-    this._refreshing = true;
     log.debug(
       {
         index: this._pageNumber,
@@ -159,8 +166,9 @@ export class DefaultHistoryStore implements HistoryStore {
         size: this._pageSize,
         total: this._amount,
       },
-      "loading history",
+      "loading history page",
     );
+    this._refreshing = true;
     const systems = [];
     if (this._showODA) {
       systems.push("ODA");
@@ -174,7 +182,7 @@ export class DefaultHistoryStore implements HistoryStore {
     if (this._showDonateStream) {
       systems.push("Donate.Stream");
     }
-    this.client()
+    return this.client()
       .getHistory(
         {
           recipientId: this._recipientId,
@@ -184,10 +192,11 @@ export class DefaultHistoryStore implements HistoryStore {
       )
       .then((response) => {
         this._amount = response.data.totalSize ?? 0;
-        this._list = [
-          ...this._list,
-          ...response.data.content.map((item) => {
+        log.debug({ amount: this._amount }, "history total size");
+        const newData = response.data.content
+          .map((item) => {
             return {
+              id: item.id ?? "",
               originId: item.paymentId ?? "",
               amount: item.amount ?? { major: 0, minor: 0, currency: "RUB" },
               nickname: item.nickname ?? "Аноним",
@@ -211,18 +220,54 @@ export class DefaultHistoryStore implements HistoryStore {
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
             };
-          }),
-        ];
+          })
+          .filter((item) => {
+            return this._list.findIndex((i) => i.id === item.id) === -1;
+          });
+        this._list = [...this._list, ...newData];
         this._refreshing = false;
+      })
+      .catch((error) => {
+        log.error(error);
+        this._refreshing = false;
+        return Promise.reject(error);
       });
   }
 
+  // TODO подумать про кеширование, надо ли оно вобще или тупо прокидывать запрос на сервер
+  // как будто бы кешировать надо потому что итемы прилетают в реальном времени в начало списка
+  // но кешировать только с заданными настройками/фильтрами, меняются - все заново.
+  public loadUntil(count: number): Promise<void> {
+    log.debug({ count: count, len: this._list.length }, "loading until");
+    if (this._list.length >= count) {
+      return Promise.resolve();
+    }
+    return this.next().then(() => {
+      log.debug(
+        { count: count, len: this._list.length },
+        "after loading next page",
+      );
+      return this.loadUntil(count);
+    });
+  }
+
   public next() {
-    if (this._pageNumber * this._pageSize >= this._amount) {
-      return;
+    log.debug(
+      {
+        pageNumber: this._pageNumber,
+        pageSize: this._pageSize,
+        total: this._amount,
+      },
+      "loading next page",
+    );
+    if (
+      this._amount != -1 &&
+      this._pageNumber * this._pageSize >= this._amount
+    ) {
+      return Promise.resolve();
     }
     this._pageNumber = this._pageNumber + 1;
-    this.load();
+    return this.load();
   }
 
   public set pageSize(size: number) {

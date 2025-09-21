@@ -5,6 +5,7 @@ import { Widget } from "../../types/Widget";
 import { DonatersTopList } from "./DonatersTopList";
 import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
 import { DonatersListStore } from "./DonatersListStore";
+import { DefaultHistoryStore } from "../History/HistoryStore";
 
 export default function DonatersTopListPage({}) {
   const { widgetId, recipientId, settings, conf } =
@@ -22,9 +23,15 @@ export default function DonatersTopListPage({}) {
     conf.topic.donaterstoplist,
   );
 
+  const historyStore = new DefaultHistoryStore(recipientId, widgetId, conf);
+
   return (
     <WidgetWrapper>
-      <DonatersTopList settings={widgetSettings} store={store} />
+      <DonatersTopList
+        settings={widgetSettings}
+        topListStore={store}
+        historyStore={historyStore}
+      />
     </WidgetWrapper>
   );
 }

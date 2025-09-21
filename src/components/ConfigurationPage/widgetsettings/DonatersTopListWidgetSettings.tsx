@@ -27,6 +27,7 @@ import { DonatersTopList } from "../../../pages/DonatersTopList/DonatersTopList"
 import { DemoListStore } from "../../../pages/DonatersTopList/DemoListStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -55,11 +56,13 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           value: 3,
           displayName: "widget-donaterslist-donaters-amount",
         }),
+        new DonatersTopListLayoutProperty(),
         new BooleanProperty({
           name: "hideEmpty",
           value: false,
           displayName: "widget-donaterslist-hide-empty",
         }),
+        new DonatersTopListCarouselProperty(),
       ],
     });
     this.addSection({
@@ -103,15 +106,15 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           value: "Донатеры ",
           displayName: "widget-donaterslist-title",
         }),
-        new AnimatedFontProperty({
-          name: "headerFont",
-        }),
         new SingleChoiceProperty({
           name: "headerAlignment",
           value: "Center",
           displayName: "widget-donaterslist-list-alignment",
           options: ["Left", "Center", "Right"],
           selectionType: SELECTION_TYPE.SEGMENTED,
+        }),
+        new AnimatedFontProperty({
+          name: "headerFont",
         }),
         new WidthProperty({ name: "headerWidth" }),
         new HeightProperty({ name: "headerHeight" }),
@@ -225,14 +228,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
         new BoxShadowProperty({
           name: "itemBoxShadow",
         }),
-      ],
-    });
-    this.addSection({
-      key: "layout",
-      title: "tab-donaters-list-style",
-      properties: [
-        new DonatersTopListLayoutProperty(),
-        new DonatersTopListCarouselProperty(),
       ],
     });
   }
@@ -425,7 +420,13 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   }
 
   public demo() {
-    return <DonatersTopList settings={this} store={new DemoListStore()} />;
+    return (
+      <DonatersTopList
+        settings={this}
+        topListStore={new DemoListStore()}
+        historyStore={new DemoHistoryStore()}
+      />
+    );
   }
 
   public help(): ReactNode {

@@ -1,19 +1,51 @@
 import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import "./DonatersTopList.css";
-import { Carousel, Flex } from "antd";
+import { Flex } from "antd";
 import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
 import { AbstractDonatersListStore } from "./DonatersListStore";
 import { observer } from "mobx-react-lite";
 import { log } from "../../logging";
+import { SlideShowComponent } from "../../components/SlideShow/SlideShowComponent";
+import { HistoryStore } from "../History/HistoryStore";
 
 export const DonatersTopList = observer(
   ({
     settings,
-    store,
+    topListStore,
+    historyStore,
   }: {
     settings: DonatersTopListWidgetSettings;
-    store: AbstractDonatersListStore;
+    topListStore: AbstractDonatersListStore;
+    historyStore: HistoryStore;
   }) => {
+    // TODO возможно надо посмотреть более прямой и очевидный способ их синкать
+    useEffect(() => {
+      log.debug(
+        {
+          type: settings.type,
+          topsize: settings.topsize,
+        },
+        "toplist settings changed",
+      )
+      if (settings.type === "Last") {
+        historyStore.loadUntil(settings.topsize);
+      }
+    }, [settings.topsize, settings.type]);
+
+    const topsize = settings.topsize;
+    const recordsList =
+      settings.type === "Top"
+        ? topListStore.list
+        : historyStore.items.map((item) => {
+            return {
+              nickname: item.nickname,
+              amount: item.amount.major,
+            };
+          });
+    if (settings.hideEmpty && (!recordsList || recordsList.length === 0)) {
+      return <></>;
+    }
+
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
       settings.backgroundImage.calcCss().then(setBackgroundImage);
@@ -31,69 +63,39 @@ export const DonatersTopList = observer(
       settings.listBackgroundImage.calcCss().then(setListBackgroundImage);
     }, [settings.listBackgroundImage.value]);
 
-    const topsize = settings.topsize;
+    const [itemBackgroundImage, setItemBackgroundImage] =
+      useState<CSSProperties>({});
+    useEffect(() => {
+      settings.itemBackgroundImage.calcCss().then(setItemBackgroundImage);
+    }, [settings.itemBackgroundImage.value]);
+
     const layout = settings.layout;
     const title = settings.title;
-    const headerFont = settings.headerFont;
-    const messageFont = settings.messageFont;
     const widgetMarginTopAndBottomStyle = settings.boxShadow.requiredHeight;
     const widgetMarginLeftAndRightStyle = settings.boxShadow.requiredWidth;
 
     let listAlignment = settings.listAlignment;
     let listJustifyContent = "flex-start";
     let listAlignItems = "center";
-    if (layout === "horizontal") {
-      switch (listAlignment) {
-        case "Center":
-          listJustifyContent = "space-around";
-          break;
-        case "Left":
-          listJustifyContent = "flex-start";
-          break;
-        case "Right":
-          listJustifyContent = "flex-end";
-          break;
-        default:
-          listJustifyContent = "space-around";
-          break;
-      }
-    }
-    if (layout === "vertical") {
-      switch (listAlignment) {
-        case "Center":
-          listAlignItems = "center";
-          break;
-        case "Left":
-          listAlignItems = "flex-start";
-          break;
-        case "Right":
-          listAlignItems = "flex-end";
-          break;
-        default:
-          listAlignItems = "center";
-          break;
-      }
+    switch (listAlignment) {
+      case "Center":
+        listAlignItems = "center";
+        break;
+      case "Left":
+        listAlignItems = "flex-start";
+        break;
+      case "Right":
+        listAlignItems = "flex-end";
+        break;
+      default:
+        listAlignItems = "center";
+        break;
     }
 
-    let textStyle = messageFont.calcStyle();
-    textStyle.maxWidth = "100vw";
-    textStyle.width = "50vw";
-    textStyle.flex = "1 1 auto";
-
-    let donatersTopStyle = headerFont.calcStyle();
+    let donatersTopStyle = settings.headerFont.calcStyle();
     let headerAlignment = settings.headerAlignment;
     donatersTopStyle.textAlign = headerAlignment;
     donatersTopStyle.flex = "0 0 auto";
-
-    const listBorderStyle = settings.listBorder.calcCss();
-
-    textStyle = { ...textStyle, ...listBorderStyle };
-
-    const hideEmpty = settings.hideEmpty;
-
-    if (hideEmpty && (!store.sortedMap || store.sortedMap.size == 0)) {
-      return <></>;
-    }
 
     const carouselSettings = settings.carousel.value;
     const packSize = carouselSettings.enabled
@@ -102,23 +104,20 @@ export const DonatersTopList = observer(
     const gap = settings.gap;
 
     function portion(): ReactNode[] {
-      if (!store.list) {
-        return [];
-      }
       let packs = [];
       for (
         let start = 0;
-        start < topsize && start < store.list.length;
+        start < topsize && start < recordsList.length;
         start += packSize
       ) {
         let end = start + packSize;
         if (end > topsize) {
           end = topsize;
         }
-        if (end > store.list.length) {
-          end = store.list.length;
+        if (end > recordsList.length) {
+          end = recordsList.length;
         }
-        const label = store.list.slice(start, end).map((record) => (
+        const label = recordsList.slice(start, end).map((record) => (
           <div
             key={start}
             style={{
@@ -127,13 +126,19 @@ export const DonatersTopList = observer(
               ...settings.itemRounding.calcCss(),
               ...settings.itemBoxShadow.calcCss(),
               ...settings.itemBackgroundColor.calcCss(),
-              ...settings.itemBackgroundImage.calcCss(), // TODO: fix it
-              ...{ lineHeight: "1.5" },
+              ...itemBackgroundImage,
+              // TODO flex-grow 1
+              ...{ width: "100%" },
+              ...{ height: "100%" },
+              ...settings.itemWidth.calcCss(),
+              ...settings.itemHeight.calcCss(),
+              ...{ alignSelf: "stretch" },
+              ...{ display: "flex", justifyContent: listAlignItems },
             }}
           >
             <div
-              style={messageFont.calcStyle()}
-              className={`${messageFont.calcClassName()}`}
+              style={settings.messageFont.calcStyle()}
+              className={`${settings.messageFont.calcClassName()}`}
             >
               {record.nickname} - {record.amount} RUB
             </div>
@@ -155,11 +160,11 @@ export const DonatersTopList = observer(
 
     return (
       <>
-        {headerFont.createFontImport()}
-        {messageFont.createFontImport()}
+        {settings.headerFont.createFontImport()}
+        {settings.messageFont.createFontImport()}
         <Flex
           style={{
-            ...{ maxWidth: "100%" },
+            ...{ maxWidth: "calc(min(100vw, 100%))" },
             ...settings.backgroundColor.calcCss(),
             ...settings.widgetBorder.calcCss(),
             ...settings.rounding.calcCss(),
@@ -194,41 +199,66 @@ export const DonatersTopList = observer(
             >
               <div
                 style={donatersTopStyle}
-                className={`donaters-title ${headerFont.calcClassName()}`}
+                className={`donaters-title ${settings.headerFont.calcClassName()}`}
               >
                 {title}
               </div>
             </div>
           )}
-          <Carousel
-            style={textStyle}
-            className={messageFont.calcClassName()}
-            speed={carouselSettings.speed * 1000}
-            autoplaySpeed={carouselSettings.delay * 1000}
-            autoplay
-            dots={false}
-          >
-            {portion().map((pack, index) => (
-              <div key={index}>
+          {settings.carousel.value.enabled && (
+            <Flex
+              vertical={layout === "vertical"}
+              className="full-width full-height"
+              style={{
+                ...settings.listWidth.calcCss(),
+                ...settings.listHeight.calcCss(),
+                ...settings.listBorder.calcCss(),
+                ...settings.listBackgroundColor.calcCss(),
+                ...listBackgroundImage,
+                ...settings.listRounding.calcCss(),
+                ...settings.listPadding.calcCss(),
+                ...settings.listBoxShadow.calcCss(),
+              }}
+            >
+              <SlideShowComponent
+                slides={portion()}
+                period={settings.carousel.value.delay * 1000}
+                inAnimation={{
+                  type: settings.carousel.value.inAnimation,
+                }}
+                outAnimation={{
+                  type: settings.carousel.value.outAnimation,
+                }}
+              />
+            </Flex>
+          )}
+          {!settings.carousel.value.enabled && (
+            <Flex
+              vertical={layout === "vertical"}
+              className="full-width full-height"
+              style={{
+                ...settings.listWidth.calcCss(),
+                ...settings.listHeight.calcCss(),
+                ...settings.listBorder.calcCss(),
+                ...settings.listBackgroundColor.calcCss(),
+                ...listBackgroundImage,
+                ...settings.listRounding.calcCss(),
+                ...settings.listPadding.calcCss(),
+                ...settings.listBoxShadow.calcCss(),
+              }}
+            >
+              {portion().map((item, index) => (
                 <Flex
+                  key={index}
                   vertical={layout === "vertical"}
-                  align={listAlignItems}
                   justify={listJustifyContent}
-                  className="full-width full-height"
-                  style={{
-                    ...settings.listBorder.calcCss(),
-                    ...settings.listPadding.calcCss(),
-                    ...settings.listRounding.calcCss(),
-                    ...settings.listBoxShadow.calcCss(),
-                    ...settings.listBackgroundColor.calcCss(),
-                    ...listBackgroundImage,
-                  }}
+                  className="full-width"
                 >
-                  {pack}
+                  {item}
                 </Flex>
-              </div>
-            ))}
-          </Carousel>
+              ))}
+            </Flex>
+          )}
         </Flex>
       </>
     );

@@ -173,18 +173,20 @@ export const ImagePropertyComponent = observer(
                     }}
                   />
                 </SmallLabeledContainer>
-                <SmallLabeledContainer displayName="Повтор">
-                  <LightLabeledSwitchComponent
-                    label="Если размер меньше"
-                    value={property.value.repeat}
-                    onChange={(checked) => {
-                      property.value = {
-                        ...property.value,
-                        repeat: checked,
-                      };
-                      onChange?.(property.value);
-                    }}
-                  />
+                <SmallLabeledContainer displayName="Если размер меньше виджета">
+                  <Flex className={`${classes.repeatbutton}`} align="top">
+                    <LightLabeledSwitchComponent
+                      label="Повтор"
+                      value={property.value.repeat}
+                      onChange={(checked) => {
+                        property.value = {
+                          ...property.value,
+                          repeat: checked,
+                        };
+                        onChange?.(property.value);
+                      }}
+                    />
+                  </Flex>
                 </SmallLabeledContainer>
               </Flex>
             </Flex>
