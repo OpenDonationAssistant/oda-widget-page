@@ -12,7 +12,6 @@ import { useEffect } from "react";
 import { log } from "../../logging";
 import axios from "axios";
 import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData, useNavigate } from "react-router";
 import { uuidv7 } from "uuidv7";
@@ -486,7 +485,7 @@ const PaymentAlerts = observer(
                       triggerDonaton: true,
                       goals: [],
                       addToTop: true,
-                      addToGoal: false,
+                      addToGoal: true,
                       id: uuidv7(),
                       paymentId: uuidv7(),
                       system: "DonationAlerts",
@@ -626,7 +625,7 @@ const PaymentAlerts = observer(
                           triggerDonaton: true,
                           goals: [],
                           addToTop: true,
-                          addToGoal: false,
+                          addToGoal: true,
                           id: uuidv7(),
                           paymentId: uuidv7(),
                           system: "DonatePay",
@@ -735,7 +734,7 @@ const PaymentAlerts = observer(
                           triggerDonaton: true,
                           goals: [],
                           addToTop: true,
-                          addToGoal: false,
+                          addToGoal: true,
                           id: uuidv7(),
                           paymentId: uuidv7(),
                           system: "DonatePay.eu",
