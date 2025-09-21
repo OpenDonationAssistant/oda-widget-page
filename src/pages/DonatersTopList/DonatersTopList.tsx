@@ -42,9 +42,6 @@ export const DonatersTopList = observer(
               amount: item.amount.major,
             };
           });
-    if (settings.hideEmpty && (!recordsList || recordsList.length === 0)) {
-      return <></>;
-    }
 
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
@@ -157,6 +154,10 @@ export const DonatersTopList = observer(
     const widgetWidth = settings.widthProperty.value
       ? { width: `${settings.widthProperty.value}px` }
       : { width: `calc(100% - ${widgetMarginLeftAndRightStyle * 2}px)` };
+
+    if (settings.hideEmpty && (!recordsList || recordsList.length === 0)) {
+      return <></>;
+    }
 
     return (
       <>
