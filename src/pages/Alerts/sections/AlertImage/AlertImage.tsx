@@ -25,7 +25,7 @@ export const AlertImage = observer(
       <>
         <div
           className={`${classes.imagecontainer}`}
-          style={{ ...state.imageStyle, ...style }}
+          style={{ ...style, ...state.imageStyle }}
         >
           {state.video && (
             <video

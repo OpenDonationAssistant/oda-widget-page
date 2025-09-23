@@ -410,6 +410,31 @@ export class AlertController {
   private async renderImage(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("imageAppearanceDelay") as number;
     log.debug({ delay: delay }, "image delay");
+
+    const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
+    this.state.imageVolume = alert.property("imageVolume");
+
+    let width: CSSProperties = {
+      width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginLeft: shadowProperty.requiredWidth + "px",
+      marginRight: shadowProperty.requiredWidth + "px",
+    };
+    const widthProperty = alert.get("imageWidth") as WidthProperty;
+    if (widthProperty.value > 1) {
+      width = widthProperty.calcCss();
+    }
+
+    let height: CSSProperties = {
+      height: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
+      marginTop: shadowProperty.requiredHeight + "px",
+      marginBottom: shadowProperty.requiredHeight + "px",
+    };
+
+    const heightProperty = alert.get("imageHeight") as HeightProperty;
+    if (heightProperty.value > 0) {
+      height = { ...heightProperty.calcCss(), ...{ flexGrow: 0 } };
+    }
+
     return sleep(delay)
       .then(() => {
         if (alert.property("imageDuration")?.limited ?? false) {
@@ -431,33 +456,7 @@ export class AlertController {
           this.state.video = `${alert.video}`;
         }
 
-        const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
-        this.state.imageVolume = alert.property("imageVolume");
-
-        let width: CSSProperties = {
-          width: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-          marginLeft: shadowProperty.requiredWidth + "px",
-          marginRight: shadowProperty.requiredWidth + "px",
-        };
-        const widthProperty = alert.get("imageWidth") as WidthProperty;
-        if (widthProperty.value > 1) {
-          width = widthProperty.calcCss();
-        }
-
-        let height: CSSProperties = {
-          height: `calc(100% - ${2 * shadowProperty.requiredWidth}px)`,
-          marginTop: shadowProperty.requiredHeight + "px",
-          marginBottom: shadowProperty.requiredHeight + "px",
-        };
-
-        const heightProperty = alert.get("imageHeight") as HeightProperty;
-        if (heightProperty.value > 0) {
-          height = { ...heightProperty.calcCss(), ...{ flexGrow: 0 } };
-        }
-
-        log.debug({ width: width, height: height }, "rendering image");
         this.state.imageBackgroundBlur = alert.property("imageBackgroundBlur");
-
         this.state.imageStyle = {
           ...width,
           ...height,
