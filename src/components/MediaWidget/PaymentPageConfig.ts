@@ -19,6 +19,7 @@ export class PaymentPageConfig {
   private _payButtonText: string = "";
   private _customCss: string = "";
   private _tooltip: string = "";
+  private _url: string = "";
 
   constructor(recipientId: string) {
     this._log.debug("Loading PaymentPageConfig");
@@ -43,6 +44,7 @@ export class PaymentPageConfig {
         this.minimalAmount = json.value["minimalAmount"] ?? 40;
         this._customCss = json.value["customCss"] ?? [];
         this._tooltip = json.value["tooltip"] ?? "";
+        this._url = json["url"] ?? "";
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
         this._log.debug({ config: this }, "PaymentPageConfig loaded");
@@ -163,6 +165,10 @@ export class PaymentPageConfig {
 
   public get recipientId(): string {
     return this._recipientId;
+  }
+
+  public get url(): string {
+    return this._url;
   }
 
   async reloadConfig(): Promise<void> {

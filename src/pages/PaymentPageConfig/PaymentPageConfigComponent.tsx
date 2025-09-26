@@ -7,7 +7,6 @@ import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfi
 import { Flex, Input, QRCode } from "antd";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
 import UtilityButton from "../../components/UtilityButton/UtilityButton";
 
 function uploadFile(file: File, name: string) {
@@ -109,10 +108,10 @@ export default function PaymentPageConfigComponent({}: {}) {
         <Flex className={`${classes.panel}`}>
           <Flex vertical style={{ flexGrow: 1 }}>
             <a
-              href={`https://${recipientId}.oda.digital/`}
+              href={`https://${paymentPageConfig.current?.url}`}
               className={classes.url}
             >
-              {recipientId}.oda.digital
+              {paymentPageConfig.current?.url}
             </a>
             <Flex
               justify="space-between"
@@ -167,7 +166,12 @@ export default function PaymentPageConfigComponent({}: {}) {
               </Flex>
             </Flex>
           </Flex>
-          <QRCode size={200} value={`https://${recipientId}.oda.digital/`} />
+          {paymentPageConfig.current?.url && (
+            <QRCode
+              size={200}
+              value={`https://${paymentPageConfig.current.url}`}
+            />
+          )}
         </Flex>
         <Flex className={`${classes.panel}`} vertical>
           <div style={{ marginBottom: "9px" }}>Для самозанятого или ИП</div>
