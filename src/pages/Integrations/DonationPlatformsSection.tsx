@@ -123,6 +123,7 @@ export const DonationPlatformsSection = observer(({}) => {
                   onClick={() => {
                     if (token) {
                       tokenStore.updateToken(token);
+                      integrationSettingsDialogState.show = false;
                     }
                   }}
                 >
