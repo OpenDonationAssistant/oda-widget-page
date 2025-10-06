@@ -480,12 +480,12 @@ const PaymentAlerts = observer(
                       },
                       nickname: payment.username,
                       message: payment.message,
-                      triggerAlert: true,
-                      triggerReel: true,
-                      triggerDonaton: true,
+                      triggerAlert: token.settings.triggerAlerts,
+                      triggerReel: token.settings.triggerReel,
+                      triggerDonaton: token.settings.triggerDonaton,
                       goals: [],
-                      addToTop: true,
-                      addToGoal: true,
+                      addToTop: token.settings.countInTop,
+                      addToGoal: token.settings.addToGoal,
                       id: uuidv7(),
                       paymentId: uuidv7(),
                       system: "DonationAlerts",
@@ -532,7 +532,9 @@ const PaymentAlerts = observer(
         .filter((token) => token.system === "DonatePay")
         .forEach((token) => {
           axios
-            .get(`https://api.oda.digital/donatepay/user?access_token=${token.token}`)
+            .get(
+              `https://api.oda.digital/donatepay/user?access_token=${token.token}`,
+            )
             .then((response) => response.data.data.id)
             .then((id) => {
               log.debug("id: " + id);
@@ -620,12 +622,12 @@ const PaymentAlerts = observer(
                           },
                           nickname: payment.vars.name,
                           message: payment.vars.comment,
-                          triggerAlert: true,
-                          triggerReel: true,
-                          triggerDonaton: true,
+                          triggerAlert: token.settings.triggerAlerts,
+                          triggerReel: token.settings.triggerReel,
+                          triggerDonaton: token.settings.triggerDonaton,
                           goals: [],
-                          addToTop: true,
-                          addToGoal: true,
+                          addToTop: token.settings.countInTop,
+                          addToGoal: token.settings.addToGoal,
                           id: uuidv7(),
                           paymentId: uuidv7(),
                           system: "DonatePay",
@@ -729,12 +731,12 @@ const PaymentAlerts = observer(
                           },
                           nickname: payment.vars.name,
                           message: payment.vars.comment,
-                          triggerAlert: true,
-                          triggerReel: true,
-                          triggerDonaton: true,
+                          triggerAlert: token.settings.triggerAlerts,
+                          triggerReel: token.settings.triggerReel,
+                          triggerDonaton: token.settings.triggerDonaton,
                           goals: [],
-                          addToTop: true,
-                          addToGoal: true,
+                          addToTop: token.settings.countInTop,
+                          addToGoal: token.settings.addToGoal,
                           id: uuidv7(),
                           paymentId: uuidv7(),
                           system: "DonatePay.eu",

@@ -59,6 +59,7 @@ import {
 } from "./components/MediaWidget/PaymentPageConfig";
 import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
+import { AccountPage } from "./pages/Account/AccountPage";
 
 async function widgetSettingsLoader({
   params,
@@ -110,6 +111,9 @@ function detectPage(path: string): Page {
   }
   if (path.indexOf("integrations") > 0) {
     return Page.INTEGRATIONS;
+  }
+  if (path.endsWith("account")) {
+    return Page.ACCOUNT;
   }
   return Page.WIDGETS;
 }
@@ -264,6 +268,11 @@ const router = createBrowserRouter([
       {
         path: "gateways",
         element: <PaymentGatewaysConfiguration />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "account",
+        element: <AccountPage />,
         loader: widgetSettingsLoader,
       },
     ],

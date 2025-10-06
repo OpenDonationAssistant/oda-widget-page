@@ -143,9 +143,11 @@ export const Subtitle = ({
 export const Warning = ({
   children,
   action,
+  onCancel,
 }: {
   children: ReactNode;
   action: () => void;
+  onCancel?: () => void;
 }) => {
   const state = useContext(ModalStateContext);
 
@@ -156,6 +158,7 @@ export const Warning = ({
       <Flex className="full-width" justify="flex-end" gap={9}>
         <SecondaryButton
           onClick={() => {
+            onCancel && onCancel();
             state.show = false;
           }}
         >

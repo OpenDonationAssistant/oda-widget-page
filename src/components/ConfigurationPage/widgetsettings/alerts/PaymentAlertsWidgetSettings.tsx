@@ -107,30 +107,28 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
       "calling payment alerts widget settings",
     );
     this.sections = this.sections.map((section) => {
-      if (section.key === "alerts") {
-        section.properties = section.properties.map((prop) => {
-          if (prop.name === key) {
-            if ("alerts" === key) {
-              const updated = PaymentAlertsProperty.fromConfig(value);
-              this._alerts = updated;
-              log.debug({ updated: toJS(updated) }, "updated payment alerts");
-              if (asInitialValue) {
-                updated.markSaved();
-              }
-              return updated;
+      section.properties = section.properties.map((prop) => {
+        if (prop.name === key) {
+          if ("alerts" === key) {
+            const updated = PaymentAlertsProperty.fromConfig(value);
+            this._alerts = updated;
+            log.debug({ updated: toJS(updated) }, "updated payment alerts");
+            if (asInitialValue) {
+              updated.markSaved();
             }
-            const updated = prop.copy();
-            updated.value = value;
-            updated.markSaved();
-            log.debug(
-              { updated: toJS(updated), value: value },
-              "updated payment alerts property",
-            );
             return updated;
           }
-          return prop;
-        });
-      }
+          const updated = prop.copy();
+          updated.value = value;
+          updated.markSaved();
+          log.debug(
+            { updated: toJS(updated), value: value },
+            "updated payment alerts property",
+          );
+          return updated;
+        }
+        return prop;
+      });
       this.makeIndex();
       return section;
     });

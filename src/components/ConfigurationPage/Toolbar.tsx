@@ -20,6 +20,7 @@ enum Page {
   AUTOMATION,
   GUIDES,
   INTEGRATIONS,
+  ACCOUNT,
 }
 
 interface Section {
@@ -79,6 +80,13 @@ const buttons: Section[] = [
     active: <GuideIcon color="var(--oda-color-800)" />,
     nonactive: <GuideIcon color="var(--oda-color-500)" />,
     label: "menu-guides",
+  },
+  {
+    page: Page.ACCOUNT,
+    url: "/configuration/account",
+    active: <span className="material-symbols-sharp">manage_accounts</span>,
+    nonactive: <span className="material-symbols-sharp">manage_accounts</span>,
+    label: "menu-account",
   },
 ];
 

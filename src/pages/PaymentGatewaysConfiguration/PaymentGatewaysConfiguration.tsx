@@ -15,7 +15,6 @@ import { log } from "../../logging";
 import CloseIcon from "../../icons/CloseIcon";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import {
-  CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,

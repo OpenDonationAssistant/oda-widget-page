@@ -228,7 +228,6 @@ export default function ConfigurationPage({}: {}) {
     }
     return JSON.parse(value);
   });
-  const [params] = useSearchParams();
   const parentModalState = useContext(ModalStateContext);
   const [state] = useState<ModalState>(() => new ModalState(parentModalState));
   const navigate = useNavigate();

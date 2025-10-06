@@ -8,6 +8,7 @@ export interface Token {
   system: string;
   enabled: boolean;
   token: string;
+  settings: any;
 }
 
 export interface TokenStore {
@@ -16,7 +17,7 @@ export interface TokenStore {
   toggleToken: (tokenId: string, enabled: boolean) => void;
 }
 
-export class DemoTokenStore{
+export class DemoTokenStore {
   tokens: Token[] = [];
   deleteToken: (tokenId: string) => void = () => {};
   toggleToken: (tokenId: string, enabled: boolean) => void = () => {};
@@ -46,9 +47,18 @@ export class DefaultTokenStore implements TokenStore {
             id: token.id,
             system: token.system,
             enabled: token.enabled,
-            token: token.token
+            token: token.token,
+            settings: token.settings,
           };
         });
+        log.debug(
+          {
+            tokens: this._tokens.map((token) => {
+              return { id: token.id, settings: token.settings };
+            }),
+          },
+          "loaded tokens",
+        );
       })
       .catch((error) => {
         log.error("Failed to load tokens", error);
@@ -78,6 +88,19 @@ export class DefaultTokenStore implements TokenStore {
         token: token,
         type: "accessToken",
         system: system,
+        settings: {},
+      })
+      .then(() => this.load());
+  }
+
+  public updateToken(token: Token) {
+    this.client()
+      .setToken({
+        id: token.id,
+        token: token.token,
+        type: "accessToken",
+        system: token.system,
+        settings: token.settings,
       })
       .then(() => this.load());
   }

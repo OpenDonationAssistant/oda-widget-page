@@ -13,11 +13,9 @@ import {
   Panel,
   Title,
 } from "../../components/Overlay/Overlay";
-import CloseIcon from "../../icons/CloseIcon";
 import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
 import {
   BorderedIconButton,
-  NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import SubActionButton from "../../components/SubActionButton/SubActionButton";
 import AddIcon from "../../icons/AddIcon";
@@ -37,10 +35,10 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const [amount, setAmount] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [countInTop, setCountInTop] = useState<boolean>(false);
-  const [countInGoal, setCountInGoal] = useState<boolean>(false);
   const [triggerReel, setTriggerReel] = useState<boolean>(false);
   const [triggerDonaton, setTriggerDonaton] = useState<boolean>(false);
   const [goalId, setGoalId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>("");
 
   const paymentPageConfig = useRef<PaymentPageConfig | null>(
     new PaymentPageConfig(recipientId),
@@ -57,6 +55,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
         major: amount,
         currency: "RUB",
       },
+      message: message,
       nickname: nickname,
       triggerAlert: showAlert,
       triggerReel: triggerReel,
@@ -73,7 +72,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
           ]
         : [],
       addToTop: countInTop,
-      addToGoal: countInGoal,
+      addToGoal: false,
       id: uuidv7(),
       paymentId: uuidv7(),
     });
@@ -105,7 +104,6 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     onChange={(value) => setNickname(value.target.value)}
                   />
                 </Flex>
-                {/* <Flex displayNam="dialog-add-donation-amount"> */}
                 <Flex vertical>
                   <div className={`${classes.label}`}>Сумма</div>
                   <InputNumber
@@ -114,7 +112,15 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     onChange={(value) => setAmount(value ?? 0)}
                   />
                 </Flex>
-                {/* <Flex displayName="dialog-add-donation-count-in-goal"> */}
+                <Flex vertical>
+                  <div className={`${classes.label}`}>Сообщение</div>
+                  <Input
+                    type="textarea"
+                    className={`full-width`}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </Flex>
                 <Flex vertical>
                   <div className={`${classes.label}`}>
                     Учитывать в сборе средств

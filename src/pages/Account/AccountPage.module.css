@@ -1,0 +1,46 @@
+.container {
+  margin-top: 24px;
+}
+
+.oldpassword {
+  margin-bottom: 36px;
+}
+
+.label {
+  flex: 1 1 auto;
+  width: 50%;
+  color: var(--oda-color-950);
+  font-size: 18px;
+}
+
+.input {
+  flex: 1 1 auto;
+  width: 50%;
+}
+
+.buttons {
+  margin-top: 36px;
+}
+
+.warning {
+  color: var(--oda-warning-color);
+  text-align: center;
+  font-size: 21px;
+  margin-top: 12px;
+}
+
+.successmessage {
+  color: var(--oda-color-950);
+  text-align: center;
+  font-size: 24px;
+  margin-top: 12px;
+  margin-bottom: 150px;
+}
+
+.errormessage{
+  color: var(--oda-warning-color);
+  text-align: center;
+  font-size: 24px;
+  margin-top: 12px;
+  margin-bottom: 150px;
+}

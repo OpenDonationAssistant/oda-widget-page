@@ -6,19 +6,18 @@ export const getRndInteger = (min: number, max: number): number => {
 };
 
 export async function uploadBlob(data: Blob, name: string) {
-  const response = await axios
-        .put(
-            `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
-            { file: data },
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-    const _ = response.data;
-    return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
+  const response = await axios.put(
+    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
+    { file: data },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+  const _ = response.data;
+  return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
 }
-
 
 export const fullUri = async (url: string | null): Promise<string> => {
   if (!url) {
@@ -52,4 +51,18 @@ export function sleep(ms: number): Promise<void> {
 
 export interface Renderable {
   markup: ReactNode;
+}
+
+export function deepEqual(x: any, y: any): boolean {
+  const ok = Object.keys,
+    tx = typeof x,
+    ty = typeof y,
+    isDate = x instanceof Date && y instanceof Date;
+  if (isDate) {
+    return x.getTime() === y.getTime();
+  }
+  return x && y && tx === "object" && tx === ty
+    ? ok(x).length === ok(y).length &&
+        ok(x).every((key) => deepEqual(x[key], y[key]))
+    : x === y;
 }
