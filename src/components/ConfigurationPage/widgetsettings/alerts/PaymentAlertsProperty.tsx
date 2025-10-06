@@ -34,6 +34,7 @@ import {
 import { AddAlertWizardStoreContext } from "./AddAlertWizard";
 import { PresetWindow } from "../../PresetsComponent";
 import { Preset } from "../../../../types/Preset";
+import { deepEqual } from "../../../../utils";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -288,7 +289,7 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
         { new: toJS(valueToCheck[i]), old: toJS(this._oldValue[i]) },
         "compare alerts",
       );
-      if (!this.deepEqual(toJS(valueToCheck[i]), toJS(this._oldValue[i]))) {
+      if (!deepEqual(toJS(valueToCheck[i]), toJS(this._oldValue[i]))) {
         changed = true;
       }
     }
