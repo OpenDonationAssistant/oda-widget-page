@@ -66,7 +66,18 @@ export const PresetWindow = ({
     setLoading(true);
     presetStore.for(type).then((presets) => {
       setPersonal(presets.filter((preset) => preset.owner !== "ODA"));
-      setSystem(presets.filter((preset) => preset.owner === "ODA"));
+      const systemPresets = presets.filter((preset) => preset.owner === "ODA");
+      if (systemPresets.length === 0) {
+        systemPresets.push(
+          new Preset({
+            name: "default",
+            owner: "ODA",
+            properties: [],
+            showcase: "",
+          }),
+        );
+      }
+      setSystem(systemPresets);
       setLoading(false);
     });
   }, [presetStore, type]);
@@ -85,7 +96,11 @@ export const PresetWindow = ({
           </Subtitle>
           <CardList>
             {personal.map((preset) => (
-              <PreviewImage key={preset.name} preset={preset} onSelect={() => onSelect(preset)} />
+              <PreviewImage
+                key={preset.name}
+                preset={preset}
+                onSelect={() => onSelect(preset)}
+              />
             ))}
           </CardList>
         </Flex>
