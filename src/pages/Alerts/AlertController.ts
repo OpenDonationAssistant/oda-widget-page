@@ -50,8 +50,8 @@ export class AlertController {
       })
       .then(() => {
         subscribe(widgetId, this.conf.topic.alerts, (message) => {
-          log.info({ message }, `Received alert`);
           let json = JSON.parse(message.body);
+          log.info({ json }, `Received alert`);
           const alert = this.findAlert(json);
           if (alert) {
             // TODO: обрабатывать несколько в премодерации
@@ -283,9 +283,6 @@ export class AlertController {
     this.ackFunction = ackFunction;
     this.sendStartNotification(data.id);
     this.pausePlayer();
-    if (data.media?.url) {
-      this.wait = 10000;
-    }
 
     log.debug({ data: data }, "alerting data");
     if (this._premoderation === true && data.force !== true) {
@@ -445,10 +442,7 @@ export class AlertController {
           }, duration);
         }
 
-        if (data.media?.url) {
-          log.debug({ image: data.media.url }, "rendering generated image");
-          this.state.image = `${process.env.REACT_APP_FILE_API_ENDPOINT}${data.media.url}`;
-        } else if (alert.image) {
+        if (alert.image) {
           log.debug({ image: alert.image }, "rendering image");
           this.state.image = `${alert.image}`;
         } else if (alert.video) {
