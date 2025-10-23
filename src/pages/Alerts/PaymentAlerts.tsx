@@ -16,6 +16,7 @@ import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData, useNavigate } from "react-router";
 import { uuidv7 } from "uuidv7";
 import { TokenStore } from "../../stores/TokenStore";
+import { connect } from "socket.io-client";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -748,6 +749,68 @@ const PaymentAlerts = observer(
                   });
                 });
             });
+        });
+      tokens
+        .filter((token) => token.system === "UnofficialDonationAlerts")
+        .forEach((token) => {
+          const socket = connect("wss://socket.donationalerts.ru:443", {
+            reconnection: true,
+            reconnectionDelayMax: 5000,
+            reconnectionDelay: 1000,
+          });
+
+          socket.on("connect", function () {
+            console.log("WS: connected");
+            socket.emit("add-user", {
+              token: token.token,
+              type: "alert_widget",
+            });
+          });
+
+          socket.on("connect_error", function (msg) {
+            console.log({ msg: msg }, "WS: connection_error");
+            // navigate(0);
+          });
+
+          socket.on("connect_timeout", function (msg) {
+            console.log("WS: connection_timeout");
+          });
+
+          socket.on("reconnect", function (msg) {
+            console.log("WS: reconnected");
+          });
+
+          socket.on("donation", function (msg) {
+            const donation = JSON.parse(msg);
+            console.log({ donation: donation }, "New donation");
+            HistoryService(
+              undefined,
+              process.env.REACT_APP_HISTORY_API_ENDPOINT,
+            ).addHistoryItem(
+              {
+                recipientId: recipientId,
+                amount: {
+                  minor: 0,
+                  major: donation.amount_main,
+                  currency: donation.currency,
+                },
+                nickname: donation.username,
+                message: donation.message,
+                triggerAlert: true,
+                triggerReel: false,
+                triggerDonaton: false,
+                goals: [],
+                addToTop: false,
+                addToGoal: false,
+                id: uuidv7(),
+                paymentId: uuidv7(),
+                system: "DonationAlerts",
+                externalId: donation.id,
+                alertMedia: { url: donation.tts_url }
+              },
+              {},
+            );
+          });
         });
     }, [alertController, tokenStore.tokens]);
 
