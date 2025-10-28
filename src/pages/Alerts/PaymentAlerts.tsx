@@ -806,7 +806,7 @@ const PaymentAlerts = observer(
                 paymentId: uuidv7(),
                 system: "DonationAlerts",
                 externalId: donation.id,
-                alertMedia: { url: donation.tts_url }
+                alertMedia: { url: donation.tts_url.replace("files.donationalerts.com", "widgets.oda.digital") },
               },
               {},
             );

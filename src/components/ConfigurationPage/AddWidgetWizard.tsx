@@ -13,6 +13,8 @@ import {
   SelectedIndexStore,
 } from "../../stores/SelectedIndexStore";
 import { log } from "../../logging";
+import { WidgetData } from "../../types/WidgetData";
+import { useLoaderData } from "react-router";
 
 export class AddWidgetWizardStore {
   private _type: string | null = null;
@@ -69,20 +71,28 @@ const WidgetPreviewComponent = observer(
 
 const NewWidgetSection = observer(({ category }: { category: string }) => {
   const wizardStore = useContext(AddWidgetWizardStoreContext);
+  const { recipientId } = useLoaderData() as WidgetData;
 
   return (
     <CardList>
-      {WIDGET_TYPES.filter((type) => type.category === category).map((type) => (
-        <Card
-          selected={wizardStore.type === type.name}
-          onClick={() => {
-            wizardStore.type =
-              wizardStore.type === type.name ? null : type.name;
-          }}
-        >
-          <WidgetPreviewComponent widget={type} />
-        </Card>
-      ))}
+      {WIDGET_TYPES.filter((type) => {
+        if (type.name === "twitch-alerts") {
+          return "tabularussia" === recipientId || "testuser" === recipientId;
+        }
+        return true;
+      })
+        .filter((type) => type.category === category)
+        .map((type) => (
+          <Card
+            selected={wizardStore.type === type.name}
+            onClick={() => {
+              wizardStore.type =
+                wizardStore.type === type.name ? null : type.name;
+            }}
+          >
+            <WidgetPreviewComponent widget={type} />
+          </Card>
+        ))}
     </CardList>
   );
 });

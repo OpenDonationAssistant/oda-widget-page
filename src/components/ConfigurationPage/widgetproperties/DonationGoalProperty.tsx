@@ -1,27 +1,20 @@
-import { MouseEventHandler, ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
-import { Collapse, Flex } from "antd";
-import TextPropertyModal from "./TextPropertyModal";
-import { Trans } from "react-i18next";
+import { Flex } from "antd";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
-import BooleanPropertyInput from "../components/BooleanPropertyInput";
 import InputNumber from "../components/InputNumber";
 import { PaymentPageConfigContext } from "../../MediaWidget/PaymentPageConfig";
-import CollapseLikeButton from "../../Button/Button";
 import ArrowUp from "../../../icons/ArrowUp";
 import ArrowDown from "../../../icons/ArrowDown";
 import CloseIcon from "../../../icons/CloseIcon";
 import { BorderedIconButton } from "../../IconButton/IconButton";
 import { TextPropertyRawComponent } from "./TextProperty";
-import {
-  LabeledSwitchComponent,
-  LightLabeledSwitchComponent,
-} from "../../LabeledSwitch/LabeledSwitchComponent";
+import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import { AddListItemButton, List, ListItem } from "../../List/List";
 
 export interface Amount {
@@ -153,15 +146,17 @@ const DonationGoalItemComponent = observer(
           }
           second={
             <Flex align="center" justify="flex-end" gap={3}>
-            <BorderedIconButton onClick={() => property.deleteGoal(index)}>
-              <CloseIcon color="#FF8888" />
-            </BorderedIconButton>
-            {opened ? <ArrowUp /> : <ArrowDown />}
+              <BorderedIconButton onClick={() => property.deleteGoal(index)}>
+                <CloseIcon color="#FF8888" />
+              </BorderedIconButton>
+              {opened ? <ArrowUp /> : <ArrowDown />}
             </Flex>
           }
           onClick={() => setOpened(!opened)}
         />
-        {opened && <ItemComponent property={property} goal={goal} index={index} />}
+        {opened && (
+          <ItemComponent property={property} goal={goal} index={index} />
+        )}
       </Flex>
     );
   },

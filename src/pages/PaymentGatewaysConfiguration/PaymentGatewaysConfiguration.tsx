@@ -1,76 +1,62 @@
 import { observer } from "mobx-react-lite";
 import classes from "./PaymentGatewaysConfiguration.module.css";
-import { Button, Col, Flex, Input, Row, Switch } from "antd";
-import Modal from "../../components/Modal/Modal";
+import { Flex, Input, Switch } from "antd";
 import {
   GatewayInfo,
   Instruction,
   PaymentGatewayConfigurationStore,
 } from "./PaymentGatewayConfigurationStore";
-import CheckIcon from "../../icons/CheckIcon";
-import { ReactNode, useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { log } from "../../logging";
 import CloseIcon from "../../icons/CloseIcon";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import {
-  ModalState,
-  ModalStateContext,
-  Overlay,
-  Panel,
-  Title,
-} from "../../components/Overlay/Overlay";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
-import { reaction } from "mobx";
+  Card,
+  CardButton,
+  CardList,
+} from "../../components/Cards/CardsComponent";
+import {
+  Continuation,
+  ContinuationContext,
+  Wizard,
+  WizardConfigurationStore,
+} from "../../components/Wizard/WizardComponent";
 
 const SettingsModal = observer(
   ({ configuration }: { configuration: PaymentGatewayConfigurationStore }) => {
+    const continuation = useContext(ContinuationContext);
+
+    const checkFields = () => {
+      continuation.canContinue = true;
+      configuration.gateway?.fields.forEach((field) => {
+        if (!field.value) {
+          continuation.canContinue = false;
+        }
+      });
+    };
+
     return (
-      <Modal
-        title="Добавить способ оплаты"
-        subtitle="Внесите технические настройки в Оду для подключения партнера"
-        size="big"
-        showDeclineButton={false}
-        submitButtonText="Подключить"
-        onSubmit={() => {
-          configuration.save();
-          configuration.step = 0;
-        }}
-        onDecline={() => {
-          configuration.step = 0;
-        }}
-        note={<div>Шаг 4 из 4</div>}
-        show={configuration.step === 4}
-      >
-        <Flex gap={36} vertical className="full-width">
-          {configuration.gateways
-            .filter((it) => it.id === configuration.gateway)
-            .map((it) => (
-              <FullGatewayInfoCard key={it.id} info={it} />
-            ))}
-          {configuration.gateways
-            .filter((it) => it.id === configuration.gateway)
-            .map((it) =>
-              it.fields.map((field) => (
-                <Flex key={field.id} vertical className="full-width">
-                  <div className={`${classes.fieldname}`}>{field.name}</div>
-                  <div className={`${classes.fieldcomment}`}>
-                    {field.comment}
-                  </div>
-                  <Input
-                    value={field.value}
-                    className={`${classes.fieldvalue}`}
-                    onChange={(e) => {
-                      field.value = e.target.value;
-                    }}
-                  />
-                </Flex>
-              )),
-            )}
-        </Flex>
-      </Modal>
+      <Flex gap={36} vertical className="full-width">
+        {configuration.gateway && (
+          <FullGatewayInfoCard info={configuration.gateway} />
+        )}
+        {configuration.gateway &&
+          configuration.gateway.fields.map((field) => (
+            <Flex key={field.id} vertical className="full-width">
+              <div className={`${classes.fieldname}`}>{field.name}</div>
+              <div className={`${classes.fieldcomment}`}>{field.comment}</div>
+              <Input
+                value={field.value}
+                className={`${classes.fieldvalue}`}
+                onChange={(e) => {
+                  field.value = e.target.value;
+                  checkFields();
+                }}
+              />
+            </Flex>
+          ))}
+      </Flex>
     );
   },
 );
@@ -97,95 +83,25 @@ const InstructionLine = observer(
   },
 );
 
-const ModalWrapper = observer(
-  ({
-    children,
-    subtitle,
-    configuration,
-  }: {
-    children: ReactNode;
-    subtitle: string;
-    configuration: PaymentGatewayConfigurationStore;
-  }) => {
-    const dialogState = useContext(ModalStateContext);
-
-    return (
-      <Overlay>
-        <Panel>
-          <Title>Добавить способ оплаты</Title>
-          <div className={`${classes.subtitle}`}>{subtitle}</div>
-          {children}
-          <Flex className={`${classes.buttons}`}>
-            <div>Шаг {configuration.step} из 4</div>
-            <Flex gap={12} justify="flex-end" align="center">
-              <SecondaryButton
-                onClick={() => {
-                  dialogState.show = false;
-                  configuration.step = 0;
-                }}
-              >
-                Отмена
-              </SecondaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  dialogState.show = false;
-                  configuration.step = configuration.step + 1;
-                }}
-              >
-                Далее
-              </PrimaryButton>
-            </Flex>
-          </Flex>
-        </Panel>
-      </Overlay>
-    );
-  },
-);
-
 const InstructionModal = observer(
   ({
-    subtitle,
-    step,
     configuration,
+    step,
   }: {
-    subtitle: string;
-    step: number;
     configuration: PaymentGatewayConfigurationStore;
+    step: number;
   }) => {
-    const parentModalState = useContext(ModalStateContext);
-    const [dialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
-
-    reaction(
-      () => configuration.step,
-      () => {
-        if (configuration.step === step) {
-          dialogState.show = true;
-        }
-      },
-    );
-
     return (
-      <ModalStateContext.Provider value={dialogState}>
-        <ModalWrapper subtitle={subtitle} configuration={configuration}>
-          <Flex vertical className="full-width" gap={42}>
-            {configuration.gateways
-              .filter((it) => it.id === configuration.gateway)
-              .map((it) => (
-                <FullGatewayInfoCard key={it.id} info={it} />
-              ))}
-            {configuration.gateways
-              .filter((it) => it.id === configuration.gateway)
-              .map((it) => (
-                <InstructionLine
-                  key={it.id}
-                  instructions={it.instructions.get(configuration.step) ?? []}
-                />
-              ))}
-          </Flex>
-        </ModalWrapper>
-      </ModalStateContext.Provider>
+      <Flex vertical className="full-width" gap={42}>
+        {configuration.gateway && (
+          <FullGatewayInfoCard info={configuration.gateway} />
+        )}
+        {configuration.gateway && (
+          <InstructionLine
+            instructions={configuration.gateway.instructions.get(step) ?? []}
+          />
+        )}
+      </Flex>
     );
   },
 );
@@ -224,9 +140,8 @@ const GatewayCard = observer(
     onDelete?: () => void;
   }) => {
     return (
-      <Col
-        span={7}
-        className={`${classes.card} ${!onDelete && classes.hover} ${selected ? classes.selected : classes.notselected}`}
+      <Card
+        selected={!onDelete && selected}
         onClick={() => {
           if (!onDelete) onClick();
         }}
@@ -242,11 +157,6 @@ const GatewayCard = observer(
                 <CloseIcon color="#FF8888" />
               </BorderedIconButton>
             )}
-            {!onDelete && selected && (
-              <div className={`${classes.iconbackground}`}>
-                <CheckIcon color="var(--oda-color-0)" />
-              </div>
-            )}
           </Flex>
           <Flex vertical gap={3}>
             {info.goodpoints.map((it) => (
@@ -257,7 +167,7 @@ const GatewayCard = observer(
             ))}
           </Flex>
         </Flex>
-      </Col>
+      </Card>
     );
   },
 );
@@ -270,67 +180,27 @@ const ChooseGatewayModal = observer(
     type: string;
     configuration: PaymentGatewayConfigurationStore;
   }) => {
-    const parentModalState = useContext(ModalStateContext);
-    const [dialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
+    const continuation = useContext(ContinuationContext);
+    continuation.canContinue = configuration.gateway !== null;
 
     return (
       <>
-        <ModalStateContext.Provider value={dialogState}>
-          <Overlay>
-            <Panel>
-              <Title>Добавить способ оплаты</Title>
-              <div className={`${classes.subtitle}`}>
-                Выберите партнера, через которого будет осуществляться прием
-                донатов
-              </div>
-              <Row className={`${classes.grid}`}>
-                {configuration.gateways
-                  .filter((it) => it.type === type)
-                  .map((it) => (
-                    <GatewayCard
-                      key={it.id}
-                      info={it}
-                      selected={configuration.gateway === it.id}
-                      onClick={() => {
-                        configuration.gateway =
-                          configuration.gateway === it.id ? null : it.id;
-                      }}
-                    />
-                  ))}
-              </Row>
-              <Flex className={`${classes.buttons}`}>
-                <div>Шаг 1 из 4</div>
-                <PrimaryButton
-                  onClick={() => {
-                    dialogState.show = false;
-                    configuration.step = 2;
-                  }}
-                >
-                  Далее
-                </PrimaryButton>
-              </Flex>
-            </Panel>
-          </Overlay>
-          <Button
-            className={`${classes.addbutton}`}
-            onClick={() => {
-              dialogState.show = true;
-            }}
-          >
-            <Flex
-              vertical
-              justify="center"
-              align="center"
-              gap={3}
-              className="full-height"
-            >
-              <span className="material-symbols-sharp">add</span>
-              <div>Добавить</div>
-            </Flex>
-          </Button>
-        </ModalStateContext.Provider>
+        <CardList>
+          {configuration.gateways
+            .filter((it) => it.type === type)
+            .map((it) => (
+              <GatewayCard
+                key={it.id}
+                info={it}
+                selected={configuration.gateway?.id === it.id}
+                onClick={() => {
+                  configuration.gateway =
+                    configuration.gateway?.id === it.id ? null : it;
+                  continuation.canContinue = configuration.gateway !== null;
+                }}
+              />
+            ))}
+        </CardList>
       </>
     );
   },
@@ -375,39 +245,92 @@ const PaymentGatewaysConfiguration = observer(({}) => {
   const configuration = useRef(
     new PaymentGatewayConfigurationStore(recipientId),
   );
-
-  log.debug({ conf: configuration.current.configurations });
+  const [continuation] = useState<Continuation>(new Continuation());
+  const [wizardConfiguration] = useState<WizardConfigurationStore>(
+    () =>
+      new WizardConfigurationStore({
+        steps: [
+          {
+            title: "Добавить способ приема донатов",
+            subtitle:
+              "Выберите партнера, через которого будет осуществляться прием донатов",
+            content: (
+              <ChooseGatewayModal
+                type="fiat"
+                configuration={configuration.current}
+              />
+            ),
+            handler: () => {
+              return Promise.resolve(true);
+            },
+          },
+          {
+            title: "Зарегистрируйте аккаунт у партнера",
+            subtitle: "",
+            content: (
+              <InstructionModal
+                step={2}
+                configuration={configuration.current}
+              />
+            ),
+            isInformation: true,
+          },
+          {
+            title: "Внесите необходимые настройки в личном кабинете партнера",
+            subtitle: "",
+            content: (
+              <InstructionModal
+                step={3}
+                configuration={configuration.current}
+              />
+            ),
+            isInformation: true,
+          },
+          {
+            title: "Добавить способ оплаты",
+            subtitle:
+              "Внесите технические настройки в Оду для подключения партнера",
+            content: <SettingsModal configuration={configuration.current} />,
+          },
+        ],
+        dynamicStepAmount: false,
+        reset: () => {
+          configuration.current.gateway?.fields.forEach((field) => {
+            field.value = "";
+          });
+          configuration.current.gateway = null;
+        },
+        finish: () => {
+          configuration.current.save();
+          return Promise.resolve();
+        },
+        continuationContext: continuation,
+      }),
+  );
 
   return (
-    <>
+    <ContinuationContext.Provider value={continuation}>
       <Flex vertical gap={9}>
         <h1 className={`${classes.header}`}>Способы оплаты</h1>
         <div className={`${classes.sectionname}`}>
           Фиатная валюта (RUB, USD, etc)
         </div>
-        <Flex gap={12} wrap>
+        <CardList>
           <ExisingGateways configuration={configuration.current} type="fiat" />
-          <ChooseGatewayModal
-            type="fiat"
-            configuration={configuration.current}
-          />
-        </Flex>
+          <CardButton
+            onClick={() => {
+              wizardConfiguration.next();
+            }}
+          >
+            Добавить
+          </CardButton>
+        </CardList>
         <div className={`${classes.sectionname} hidden`}>
           Криптовалюта (Bitcoin, Etherium, TON, etc)
         </div>
       </Flex>
-      <InstructionModal
-        subtitle="Зарегистрируйте аккаунт у партнера"
-        step={2}
-        configuration={configuration.current}
-      />
-      <InstructionModal
-        subtitle="Внесите необходимые настройки в личном кабинете партнера"
-        step={3}
-        configuration={configuration.current}
-      />
-      <SettingsModal configuration={configuration.current} />
-    </>
+      <Wizard configurationStore={wizardConfiguration} />
+    </ContinuationContext.Provider>
   );
 });
 

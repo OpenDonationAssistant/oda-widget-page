@@ -36,7 +36,7 @@ export interface GatewayConfiguration {
 }
 
 export class PaymentGatewayConfigurationStore {
-  private _gateway: string | null = null;
+  private _gateway: GatewayInfo | null = null;
   private _client = PaymentService(
     undefined,
     process.env.REACT_APP_PAYMENT_API_ENDPOINT,
@@ -413,14 +413,16 @@ export class PaymentGatewayConfigurationStore {
       .listGateways(this._recipientId)
       .then((response) => response.data)
       .then((data) => {
-        this.configurations = data.map((it) => {
-          return {
-            id: it.id,
-            gateway: it.gateway,
-            type: it.type,
-            enabled: it.enabled,
-          };
-        }).reverse();
+        this.configurations = data
+          .map((it) => {
+            return {
+              id: it.id,
+              gateway: it.gateway,
+              type: it.type,
+              enabled: it.enabled,
+            };
+          })
+          .reverse();
       });
   }
 
@@ -439,28 +441,27 @@ export class PaymentGatewayConfigurationStore {
   }
 
   public save() {
-    this._gateways
-      .filter((it) => it.id === this._gateway)
-      .forEach((gateway) => {
-        log.debug({ fields: gateway.fields }, "saving gateway");
-        this._client
-          .setGateway({
-            id: uuidv7(),
-            gateway: gateway.id,
-            gatewayId:
-              gateway.fields.find((field) => field.id === "shopId")?.value ??
-              "",
-            token:
-              gateway.fields.find((field) => field.id === "apiKey")?.value ??
-              "",
-            secret:
-              gateway.fields.find((field) => field.id === "secret")?.value ??
-              "",
-            type: gateway.type,
-            enabled: true,
-          })
-          .then(() => this.load());
-      });
+    if (!this._gateway) {
+      log.error("no gateway selected");
+      return;
+    }
+    this._client
+      .setGateway({
+        id: uuidv7(),
+        gateway: this._gateway.id,
+        gatewayId:
+          this._gateway.fields.find((field) => field.id === "shopId")?.value ??
+          "",
+        token:
+          this._gateway.fields.find((field) => field.id === "apiKey")?.value ??
+          "",
+        secret:
+          this._gateway.fields.find((field) => field.id === "secret")?.value ??
+          "",
+        type: this._gateway.type,
+        enabled: true,
+      })
+      .then(() => this.load());
   }
 
   public set configurations(configurations: GatewayConfiguration[]) {
@@ -471,11 +472,11 @@ export class PaymentGatewayConfigurationStore {
     return this._configurations;
   }
 
-  public get gateway(): string | null {
+  public get gateway(): GatewayInfo | null {
     return this._gateway;
   }
 
-  public set gateway(gateway: string | null) {
+  public set gateway(gateway: GatewayInfo | null) {
     this._gateway = gateway;
   }
 

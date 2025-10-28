@@ -1,6 +1,10 @@
 import { useContext, useState } from "react";
 import { DonationPlatformWizard } from "./IntegrationsWizard";
-import { DefaultTokenStore, Token } from "../../stores/TokenStore";
+import {
+  DefaultTokenStore,
+  Token,
+  TokenStoreContext,
+} from "../../stores/TokenStore";
 import {
   ModalState,
   ModalStateContext,
@@ -30,7 +34,7 @@ export const DonationPlatformsSection = observer(({}) => {
   const [selection, setSelection] = useState<string>("");
   const [token, setToken] = useState<Token | null>(null);
   const [originToken, setOriginToken] = useState<Token | null>(null);
-  const [tokenStore] = useState(() => new DefaultTokenStore());
+  const tokenStore = useContext(TokenStoreContext);
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -48,7 +52,7 @@ export const DonationPlatformsSection = observer(({}) => {
             }}
             action={() => {
               deleteRuleDialogState.show = false;
-              tokenStore.deleteToken(selection);
+              tokenStore?.deleteToken(selection);
             }}
           >
             Вы точно хотите удалить интеграцию?
@@ -122,7 +126,7 @@ export const DonationPlatformsSection = observer(({}) => {
                   disabled={deepEqual(token, originToken)}
                   onClick={() => {
                     if (token) {
-                      tokenStore.updateToken(token);
+                      tokenStore?.updateToken(token);
                       integrationSettingsDialogState.show = false;
                     }
                   }}
@@ -136,42 +140,50 @@ export const DonationPlatformsSection = observer(({}) => {
       </ModalStateContext.Provider>
       <CardSectionTitle>Донатные платформы</CardSectionTitle>
       <CardList>
-        {tokenStore.tokens.map((token) => (
-          <Card
-            key={token.id}
-            onClick={() => {
-              setToken(token);
-              setOriginToken(structuredClone(toJS(token)));
-              integrationSettingsDialogState.show = true;
-            }}
-          >
-            <Flex
-              style={{ height: "fit-content" }}
-              justify="space-between"
-              className="full-width"
-              align="center"
+        {tokenStore?.tokens
+          .filter(
+            (token) =>
+              token.system === "DonatePay" ||
+              token.system === "DonatePay.eu" ||
+              token.system === "DonationAlerts" ||
+              token.system === "UnofficialDonationAlerts",
+          )
+          .map((token) => (
+            <Card
+              key={token.id}
+              onClick={() => {
+                setToken(token);
+                setOriginToken(structuredClone(toJS(token)));
+                integrationSettingsDialogState.show = true;
+              }}
             >
-              <Flex gap={9} align="center" style={{ height: "fit-content" }}>
-                <CardTitle>{token.system}</CardTitle>
-                <Switch
-                  value={token.enabled}
-                  onChange={() =>
-                    tokenStore.toggleToken(token.id, !token.enabled)
-                  }
-                />
-              </Flex>
-              <BorderedIconButton
-                onClick={() => {
-                  setSelection(token.id);
-                  deleteRuleDialogState.show = true;
-                }}
+              <Flex
+                style={{ height: "fit-content" }}
+                justify="space-between"
+                className="full-width"
+                align="center"
               >
-                <CloseIcon color="#FF8888" />
-              </BorderedIconButton>
-            </Flex>
-          </Card>
-        ))}
-        <DonationPlatformWizard tokenStore={tokenStore} />
+                <Flex gap={9} align="center" style={{ height: "fit-content" }}>
+                  <CardTitle>{token.system}</CardTitle>
+                  <Switch
+                    value={token.enabled}
+                    onChange={() =>
+                      tokenStore.toggleToken(token.id, !token.enabled)
+                    }
+                  />
+                </Flex>
+                <BorderedIconButton
+                  onClick={() => {
+                    setSelection(token.id);
+                    deleteRuleDialogState.show = true;
+                  }}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              </Flex>
+            </Card>
+          ))}
+        {tokenStore && <DonationPlatformWizard tokenStore={tokenStore} />}
       </CardList>
     </>
   );

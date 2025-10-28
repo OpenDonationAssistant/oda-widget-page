@@ -2,6 +2,7 @@ import { DefaultApiFactory } from "@opendonationassistant/oda-recipient-service-
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { uuidv7 } from "uuidv7";
+import { createContext } from "react";
 
 export interface Token {
   id: string;
@@ -13,14 +14,18 @@ export interface Token {
 
 export interface TokenStore {
   tokens: Token[];
+  addToken: (system: string, token: string) => void;
   deleteToken: (tokenId: string) => void;
+  updateToken: (token: Token) => void;
   toggleToken: (tokenId: string, enabled: boolean) => void;
 }
 
-export class DemoTokenStore {
-  tokens: Token[] = [];
-  deleteToken: (tokenId: string) => void = () => {};
-  toggleToken: (tokenId: string, enabled: boolean) => void = () => {};
+export class DemoTokenStore implements TokenStore {
+  tokens = [];
+  addToken = () => {};
+  deleteToken = () => {};
+  updateToken = () => {};
+  toggleToken = () => {};
 }
 
 export class DefaultTokenStore implements TokenStore {
@@ -105,3 +110,5 @@ export class DefaultTokenStore implements TokenStore {
       .then(() => this.load());
   }
 }
+
+export const TokenStoreContext = createContext<TokenStore | null>(null);

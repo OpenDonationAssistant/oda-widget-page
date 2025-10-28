@@ -1,5 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   ModalState,
   ModalStateContext,
@@ -14,12 +20,31 @@ import PrimaryButton from "../PrimaryButton/PrimaryButton";
 import { log } from "../../logging";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
 
+export class Continuation {
+  private _canContinue: boolean = false;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  public get canContinue(): boolean {
+    return this._canContinue;
+  }
+
+  public set canContinue(canContinue: boolean) {
+    this._canContinue = canContinue;
+  }
+}
+
+export const ContinuationContext = createContext(new Continuation());
+
 export interface WizardConfigurationStep {
   title: ReactNode;
   subtitle: string;
   content: ReactNode;
   condition?: () => Promise<boolean>;
   handler?: () => Promise<boolean>;
+  isInformation?: boolean;
 }
 
 export interface WizardConfiguration {
@@ -27,6 +52,7 @@ export interface WizardConfiguration {
   dynamicStepAmount: boolean;
   reset: () => void;
   finish?: () => Promise<void>;
+  continuationContext?: Continuation;
 }
 
 export class WizardConfigurationStore {
@@ -38,6 +64,15 @@ export class WizardConfigurationStore {
     this._configuration = configuration;
     this._index = -1;
     makeAutoObservable(this);
+    if (configuration.continuationContext) {
+      reaction(
+        () => configuration.continuationContext?.canContinue,
+        (canContinue) => {
+          log.debug({ canContinue: canContinue }, "canContinue changed");
+          this._canContinue = canContinue ?? false;
+        },
+      );
+    }
   }
 
   public get configuration(): WizardConfiguration {
@@ -59,6 +94,7 @@ export class WizardConfigurationStore {
     return this._configuration.steps.length;
   }
 
+  // TODO make separet index update
   private checkCondition(index: number): Promise<boolean> {
     if (index >= this._configuration.steps.length) {
       return Promise.resolve(false);
@@ -79,7 +115,15 @@ export class WizardConfigurationStore {
   }
 
   private nextIteration() {
+    // todo make separet index update
     this.checkCondition(this._index + 1).then((success) => {
+      if (
+        success &&
+        this.configuration.steps.at(this._index)?.isInformation === true
+      ) {
+        this.canContinue = true;
+        return;
+      }
       this.canContinue = false;
       if (!success) {
         const finish = this.configuration.finish;
@@ -120,6 +164,7 @@ export class WizardConfigurationStore {
     this._configuration.reset();
   }
 
+  // TODO remove public access
   public set canContinue(value: boolean) {
     this._canContinue = value;
   }
@@ -128,6 +173,9 @@ export class WizardConfigurationStore {
     return this._canContinue;
   }
 }
+
+export const WizardConfigurationStoreContext =
+  createContext<WizardConfigurationStore | null>(null);
 
 export const Wizard = observer(
   ({

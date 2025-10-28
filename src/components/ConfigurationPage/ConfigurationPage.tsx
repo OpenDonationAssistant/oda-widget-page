@@ -17,7 +17,6 @@ import { NotBorderedIconButton } from "../IconButton/IconButton";
 import LinesIcon from "../../icons/LinesIcon";
 import CardsIcon from "../../icons/CardsIcon";
 import { CardButton, CardList } from "../Cards/CardsComponent";
-import { useSearchParams } from "react-router-dom";
 import {
   Dialog,
   ModalState,

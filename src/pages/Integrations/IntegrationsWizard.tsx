@@ -123,7 +123,7 @@ export const AddDonatePayTokenComponent = observer(({}: {}) => {
 });
 
 export const DonationPlatformWizard = observer(
-  ({ tokenStore }: { tokenStore: DefaultTokenStore }) => {
+  ({ tokenStore }: { tokenStore: TokenStore }) => {
     const selection = useContext(IntegrationWizardStoreContext);
 
     const [wizardConfiguration] = useState<WizardConfigurationStore>(
