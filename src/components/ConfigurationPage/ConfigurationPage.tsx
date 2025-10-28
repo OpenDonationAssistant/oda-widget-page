@@ -258,14 +258,15 @@ export default function ConfigurationPage({}: {}) {
             state.show = true;
           });
       }
+    } else {
+      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+        .getDonationAlertsToken({
+          authorizationCode: code,
+        })
+        .then((response) => {
+          state.show = true;
+        });
     }
-    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-      .getDonationAlertsToken({
-        authorizationCode: code,
-      })
-      .then((response) => {
-        state.show = true;
-      });
   }
 
   return (
