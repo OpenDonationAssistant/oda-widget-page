@@ -93,6 +93,10 @@ const code = urlParams.get("code");
 if (code) {
   localStorage.setItem("code", code);
 }
+const state = urlParams.get("state");
+if (state) {
+  localStorage.setItem("state", state);
+}
 
 function detectPage(path: string): Page {
   if (path.endsWith("payment-page")) {

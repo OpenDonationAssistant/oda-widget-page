@@ -233,8 +233,32 @@ export default function ConfigurationPage({}: {}) {
   const [presetStore] = useState<PresetStore>(() => new DefaultPresetStore());
 
   const code = localStorage.getItem("code");
+  const authState = localStorage.getItem("state");
   if (code) {
     localStorage.removeItem("code");
+    if (authState) {
+      localStorage.removeItem("state");
+      const platform = localStorage.getItem(authState);
+      localStorage.removeItem(authState);
+      if (platform === "twitch" && code) {
+        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+          .getTwitchToken({
+            authorizationCode: code,
+          })
+          .then(() => {
+            state.show = true;
+          });
+      }
+      if (platform === "vklive" && code) {
+        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+          .getVKLiveToken({
+            authorizationCode: code,
+          })
+          .then(() => {
+            state.show = true;
+          });
+      }
+    }
     RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
       .getDonationAlertsToken({
         authorizationCode: code,
