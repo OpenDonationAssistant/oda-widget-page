@@ -219,6 +219,7 @@ export class DefaultHistoryStore implements HistoryStore {
               active: item.paymentId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
+              media: item.alertMedia ?? null
             };
           })
           .filter((item) => {
