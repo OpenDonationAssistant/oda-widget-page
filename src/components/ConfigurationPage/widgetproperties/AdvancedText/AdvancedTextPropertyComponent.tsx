@@ -12,7 +12,7 @@ import {
   Overlay,
   Panel,
 } from "../../../Overlay/Overlay";
-import SecondaryButton from "../../../SecondaryButton/SecondaryButton";
+import SecondaryButton from "../../../Button/SecondaryButton";
 import { Trans, useTranslation } from "react-i18next";
 import { useContext, useState } from "react";
 import FontImport from "../../../FontImport/FontImport";

@@ -43,7 +43,7 @@ import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
-import UtilityButton from "./components/UtilityButton/UtilityButton";
+import UtilityButton from "./components/Button/UtilityButton";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
 import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";

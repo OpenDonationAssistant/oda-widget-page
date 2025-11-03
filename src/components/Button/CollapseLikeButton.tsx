@@ -1,5 +1,5 @@
 import { Flex } from "antd";
-import classes from "./Button.module.css";
+import classes from "./CollapseLikeButton.module.css";
 import { ReactNode } from "react";
 
 export default function CollapseLikeButton({

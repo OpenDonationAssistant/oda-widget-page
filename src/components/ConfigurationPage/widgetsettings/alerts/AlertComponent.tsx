@@ -16,22 +16,23 @@ import {
   ModalStateContext,
 } from "../../../Overlay/Overlay";
 import { EditableString } from "../../../RenamableLabel/EditableString";
-import SubActionButton from "../../../SubActionButton/SubActionButton";
+import SubActionButton from "../../../Button/SubActionButton";
 import { ResizableBox } from "react-resizable";
-import SecondaryButton from "../../../SecondaryButton/SecondaryButton";
-import PrimaryButton from "../../../PrimaryButton/PrimaryButton";
+import SecondaryButton from "../../../Button/SecondaryButton";
+import PrimaryButton from "../../../Button/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
 import { DemoTokenStore } from "../../../../stores/TokenStore";
 import { useContext, useRef, useState } from "react";
 import { WidgetContext } from "../../../../types/Widget";
-import { reaction, toJS } from "mobx";
+import { reaction } from "mobx";
 import { log } from "../../../../logging";
 import { PresetStoreContext } from "../../../../stores/PresetStore";
 import { uuidv7 } from "uuidv7";
 import { uploadBlob } from "../../../../utils";
 import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
+import { TriggersStoreContext } from "./triggers/TriggersStore";
 
 const SaveButtons = observer(({}) => {
   const widget = useContext(WidgetContext);
@@ -120,85 +121,87 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
         />
         <CloseOverlayButton />
       </Flex>
-      <Flex gap={12} className={`${classes.alertcontainer}`}>
-        <Flex vertical className={`${classes.alertsettings} withscroll`}>
-          <AntTabs
-            size="small"
-            type="card"
-            tabPosition="top"
-            items={[
-              {
-                key: "trigger",
-                label: t("General"),
-                children: [<GeneralTab alert={alert} />],
-              },
-              {
-                key: "layout",
-                label: t("Layout"),
-                children: [<LayoutTab alert={alert} />],
-              },
-              {
-                key: "sound",
-                label: t("tab-alert-audio"),
-                children: [<SoundTab alert={alert} />],
-              },
-              {
-                key: "image",
-                label: t("tab-alert-image"),
-                children: [<ImageTab alert={alert} />],
-              },
-              {
-                key: "header",
-                label: t("tab-alert-title"),
-                children: [<HeaderTab alert={alert} />],
-              },
-              {
-                key: "message",
-                label: t("tab-alert-message"),
-                children: [<MessageTab alert={alert} />],
-              },
-              {
-                key: "voice",
-                label: t("tab-alert-voice"),
-                children: [<VoiceTab alert={alert} />],
-              },
-            ]}
-          />
-        </Flex>
-        <Flex vertical className={`${classes.alertpreview}`} gap={9}>
-          <Flex
-            justify="flex-start"
-            gap={9}
-            className={`${classes.previewcontainer}`}
-          >
-            <SubActionButton onClick={() => savePreset()}>
-              Создать шаблон
-            </SubActionButton>
-            <PresetsComponent target={alert} presetStore={presetStore} />
+      <TriggersStoreContext.Provider value={alert.triggersStore}>
+        <Flex gap={12} className={`${classes.alertcontainer}`}>
+          <Flex vertical className={`${classes.alertsettings} withscroll`}>
+            <AntTabs
+              size="small"
+              type="card"
+              tabPosition="top"
+              items={[
+                {
+                  key: "trigger",
+                  label: t("General"),
+                  children: [<GeneralTab alert={alert} />],
+                },
+                {
+                  key: "layout",
+                  label: t("Layout"),
+                  children: [<LayoutTab alert={alert} />],
+                },
+                {
+                  key: "sound",
+                  label: t("tab-alert-audio"),
+                  children: [<SoundTab alert={alert} />],
+                },
+                {
+                  key: "image",
+                  label: t("tab-alert-image"),
+                  children: [<ImageTab alert={alert} />],
+                },
+                {
+                  key: "header",
+                  label: t("tab-alert-title"),
+                  children: [<HeaderTab alert={alert} />],
+                },
+                {
+                  key: "message",
+                  label: t("tab-alert-message"),
+                  children: [<MessageTab alert={alert} />],
+                },
+                {
+                  key: "voice",
+                  label: t("tab-alert-voice"),
+                  children: [<VoiceTab alert={alert} />],
+                },
+              ]}
+            />
           </Flex>
-          <Flex
-            ref={preview}
-            justify="space-around"
-            className={`${classes.preview}`}
-          >
-            <ResizableBox
-              height={-1}
-              width={-1}
-              className={`${classes.resizable}`}
-              axis="both"
-              minConstraints={[400, 100]}
+          <Flex vertical className={`${classes.alertpreview}`} gap={9}>
+            <Flex
+              justify="flex-start"
+              gap={9}
+              className={`${classes.previewcontainer}`}
             >
-              <div style={{ margin: "auto" }}>
-                <PaymentAlerts
-                  alertController={alertController}
-                  tokenStore={new DemoTokenStore()}
-                />
-              </div>
-            </ResizableBox>
+              <SubActionButton onClick={() => savePreset()}>
+                Создать шаблон
+              </SubActionButton>
+              <PresetsComponent target={alert} presetStore={presetStore} />
+            </Flex>
+            <Flex
+              ref={preview}
+              justify="space-around"
+              className={`${classes.preview}`}
+            >
+              <ResizableBox
+                height={-1}
+                width={-1}
+                className={`${classes.resizable}`}
+                axis="both"
+                minConstraints={[400, 100]}
+              >
+                <div style={{ margin: "auto" }}>
+                  <PaymentAlerts
+                    alertController={alertController}
+                    tokenStore={new DemoTokenStore()}
+                  />
+                </div>
+              </ResizableBox>
+            </Flex>
+            <SaveButtons />
           </Flex>
-          <SaveButtons />
         </Flex>
-      </Flex>
+      </TriggersStoreContext.Provider>
     </Flex>
   );
 });

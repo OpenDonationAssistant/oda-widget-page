@@ -15,7 +15,7 @@ import {
 import { BorderedIconButton } from "../IconButton/IconButton";
 import LinkIcon from "../../icons/LinkIcon";
 import CopyIcon from "../../icons/CopyIcon";
-import SubActionButton from "../SubActionButton/SubActionButton";
+import SubActionButton from "../Button/SubActionButton";
 import { log } from "../../logging";
 import { observer } from "mobx-react-lite";
 

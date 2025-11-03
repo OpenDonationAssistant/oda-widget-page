@@ -6,8 +6,8 @@ import { WidgetData } from "../../types/WidgetData";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { Flex, Input, QRCode } from "antd";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
-import UtilityButton from "../../components/UtilityButton/UtilityButton";
+import PrimaryButton from "../../components/Button/PrimaryButton";
+import UtilityButton from "../../components/Button/UtilityButton";
 
 function uploadFile(file: File, name: string) {
   return axios.put(

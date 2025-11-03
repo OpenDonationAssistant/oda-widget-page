@@ -1,0 +1,12 @@
+.addtriggerbuttoncontainer{
+  margin-top: 6px;
+}
+
+.triggersection {
+  flex: 1 1 auto;
+}
+
+button.deletetriggerbutton{
+  height: 36px;
+  width: 36px;
+}

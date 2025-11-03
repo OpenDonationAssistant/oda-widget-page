@@ -1,7 +1,7 @@
 import { Flex, Input } from "antd";
 import { observer } from "mobx-react-lite";
 import classes from "./AccountPage.module.css";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
+import SecondaryButton from "../../components/Button/SecondaryButton";
 import {
   Dialog,
   ModalState,
@@ -11,7 +11,7 @@ import {
   Warning,
 } from "../../components/Overlay/Overlay";
 import { useContext, useState } from "react";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
+import PrimaryButton from "../../components/Button/PrimaryButton";
 import { DefaultApiFactory as KeycloakService } from "@opendonationassistant/oda-recipient-service-client";
 
 export const AccountPage = observer(({}) => {

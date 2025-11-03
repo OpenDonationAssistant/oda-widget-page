@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty, WidgetProperty } from "./../WidgetProperty";
 import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
-import CollapseLikeButton from "../../../Button/Button";
+import CollapseLikeButton from "../../../Button/CollapseLikeButton";
 import AddIcon from "../../../../icons/AddIcon";
 
 const ListPropertyComponent = observer(

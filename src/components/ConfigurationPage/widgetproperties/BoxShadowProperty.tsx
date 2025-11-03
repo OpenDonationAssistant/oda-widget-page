@@ -12,7 +12,7 @@ import { t } from "i18next";
 import { BorderedIconButton } from "../../IconButton/IconButton";
 import CloseIcon from "../../../icons/CloseIcon";
 import CopyIcon from "../../../icons/CopyIcon";
-import SubActionButton from "../../SubActionButton/SubActionButton";
+import SubActionButton from "../../Button/SubActionButton";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import AddIcon from "../../../icons/AddIcon";
 

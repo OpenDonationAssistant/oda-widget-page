@@ -137,31 +137,7 @@ export class AlertController {
     this._pauseRequests = (
       this.settings.get("pause-media") as BooleanProperty
     ).value;
-    const sorted = alerts.value
-      .filter((alert) => alert.property("enabled"))
-      .sort((a, b) => {
-        const first = a.triggers.at(0);
-        let firstAmount: number | null = null;
-        if (first.type === "fixed-donation-amount") {
-          firstAmount = first.amount;
-        }
-        if (first.type === "at-least-donation-amount") {
-          firstAmount = first.min;
-        }
-        const second = b.triggers.at(0);
-        let secondAmount: number | null = null;
-        if (second.type === "fixed-donation-amount") {
-          secondAmount = second.amount;
-        }
-        if (second.type === "at-least-donation-amount") {
-          secondAmount = second.min;
-        }
-        if (firstAmount === null || secondAmount === null) {
-          return 0;
-        }
-        return firstAmount - secondAmount;
-      });
-    this.sortedAlerts = sorted;
+    this.sortedAlerts = alerts.sortedAlerts;
     log.debug(`loading audio`);
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
     log.debug({ alert: this.sortedAlerts }, "sorted alerts");

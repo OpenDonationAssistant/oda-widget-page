@@ -66,8 +66,7 @@ export const StreamingIntegrationsWizard = observer(({}) => {
                 log.debug("opening vklive");
                 localStorage.setItem(state, "vklive");
                 window.open(
-                  "https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=https://widgets.oda.digital/configuration/integrations&state=" +
-                    state,
+                  `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&state=${state}`
                 );
                 return Promise.resolve(true);
               }

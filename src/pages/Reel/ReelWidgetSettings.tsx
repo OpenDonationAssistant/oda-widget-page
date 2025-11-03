@@ -10,7 +10,7 @@ import { ReelItemBackgroundProperty } from "../../components/ConfigurationPage/w
 import { ReelItemListProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemListProperty";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
-import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import SubActionButton from "../../components/Button/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";

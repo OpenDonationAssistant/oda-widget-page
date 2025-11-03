@@ -16,9 +16,9 @@ import {
 import { Flex } from "antd";
 import classes from "./WizardComponent.module.css";
 import { makeAutoObservable, reaction } from "mobx";
-import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import PrimaryButton from "../Button/PrimaryButton";
 import { log } from "../../logging";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import SecondaryButton from "../Button/SecondaryButton";
 
 export class Continuation {
   private _canContinue: boolean = false;

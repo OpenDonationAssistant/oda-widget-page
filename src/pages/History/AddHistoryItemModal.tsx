@@ -13,16 +13,16 @@ import {
   Panel,
   Title,
 } from "../../components/Overlay/Overlay";
-import PrimaryButton from "../../components/PrimaryButton/PrimaryButton";
+import PrimaryButton from "../../components/Button/PrimaryButton";
 import {
   BorderedIconButton,
 } from "../../components/IconButton/IconButton";
-import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import SubActionButton from "../../components/Button/SubActionButton";
 import AddIcon from "../../icons/AddIcon";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./AddHistoryItemModal.module.css";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
+import SecondaryButton from "../../components/Button/SecondaryButton";
 
 export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const { recipientId } = useLoaderData() as WidgetData;

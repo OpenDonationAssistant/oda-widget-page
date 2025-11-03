@@ -1,13 +1,11 @@
-.alertbuttons {
-  position: absolute;
-  top: 10px;
-  right: 5px;
+.alerttitle {
+  font-size: 21px;
+  color: var(--oda-color-950);
+  width: 100%;
 }
 
-.littletitle {
-  color: var(--oda-color-500);
-  font-size: 12px;
-  margin-bottom: 6px;
+.contentpanel{
+  flex: 1 1 auto;
 }
 
 .preview {
@@ -33,25 +31,11 @@
   width: 100%;
 }
 
-.alerttitle {
-  color: var(--oda-color-950);
-  font-weight: 600;
-  font-size: 24px;
-  margin-bottom: 12px;
+.tab {
+  padding-top: 9px;
 }
 
-.alertcontainer {
-  height: 100%;
-  overflow: hidden;
-}
-
-.alertsettings {
-  width: 50%;
-  overflow-y: scroll;
-  height: 97%;
-}
-
-.alertpreview {
-  padding-top: 3px;
-  width: 50%;
+button.deletetriggerbutton{
+  height: 36px;
+  width: 36px;
 }

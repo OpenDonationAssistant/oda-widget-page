@@ -174,15 +174,6 @@ const DonationGoalPropertyComponent = observer(
       }
     };
 
-    // TODO duplicates
-    const clickHandler = (index: number) => {
-      return (e: MouseEvent) => {
-        if (e.target === e.currentTarget) {
-          switcher(index);
-        }
-      };
-    };
-
     return (
       <List>
         {property.value.map((goal: Goal, index: number) => (

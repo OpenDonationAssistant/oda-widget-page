@@ -2,7 +2,6 @@ import { MouseEventHandler, ReactNode } from "react";
 import classes from "./CardsComponent.module.css";
 import { Button, Flex } from "antd";
 import { log } from "../../logging";
-import CheckIcon from "../../icons/CheckIcon";
 import SelectedIcon from "../../icons/SelectedIcon";
 
 export function Card({

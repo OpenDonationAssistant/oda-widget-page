@@ -7,16 +7,12 @@ export class TwitchAlertsWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "general",
-      title: "Общие",
+      title: "Оповещения",
       properties: [new TwitchAlertsProperty()],
     });
   }
 
   public hasDemo(): boolean {
-    return true;
-  }
-
-  public demo() {
-    return <div style={{ width: "100%" }}></div>;
+    return false;
   }
 }

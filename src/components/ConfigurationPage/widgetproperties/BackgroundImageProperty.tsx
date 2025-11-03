@@ -17,7 +17,7 @@ import { produce } from "immer";
 import { toJS } from "mobx";
 import { uuidv7 } from "uuidv7";
 import CloseIcon from "../../../icons/CloseIcon";
-import SubActionButton from "../../SubActionButton/SubActionButton";
+import SubActionButton from "../../Button/SubActionButton";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import { fullUri } from "../../../utils";

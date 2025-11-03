@@ -11,7 +11,7 @@ import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
 import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, reaction, toJS } from "mobx";
-import SubActionButton from "../../../SubActionButton/SubActionButton";
+import SubActionButton from "../../../Button/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";
 import {
   FullscreenPanel,
@@ -35,6 +35,7 @@ import { AddAlertWizardStoreContext } from "./AddAlertWizard";
 import { PresetWindow } from "../../PresetsComponent";
 import { Preset } from "../../../../types/Preset";
 import { deepEqual } from "../../../../utils";
+import { TriggersStore } from "./triggers/TriggersStore";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {
@@ -125,7 +126,7 @@ const AlertItemComponent = observer(
 );
 
 const ChooseTemplate = observer(({}: {}) => {
-  const [presetSelection, setPresetSelection] = useState<SelectedIndexStore>(
+  const [presetSelection] = useState<SelectedIndexStore>(
     () => new SelectedIndexStore(),
   );
   const wizardStore = useContext(AddAlertWizardStoreContext);
@@ -228,6 +229,7 @@ const PaymentAlertsPropertyComponent = observer(
 
 export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
   private _oldValue: any[] = [];
+  private static _triggersStore = new TriggersStore();
 
   constructor() {
     super({
@@ -250,6 +252,11 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
           addFn: (alert: Alert) => property.addAlert(alert),
         },
       });
+      if (loaded.triggers) {
+        loaded.triggers = loaded.triggers.map((trigger) =>
+          this._triggersStore.loadTrigger(trigger),
+        );
+      }
       log.debug({ source: it, result: loaded }, "loading alert");
       return loaded;
     });
@@ -269,6 +276,16 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
       });
     this._value = [...this._value, alertToAdd];
     return alertToAdd;
+  }
+
+  removeAlert(id: string) {
+    this.value = this.value.filter((alert) => alert.id !== id);
+  }
+
+  public get sortedAlerts(): Alert[] {
+    return this.value
+      .filter((alert) => alert.property("enabled"))
+      .sort((a, b) => a.compareTriggers(b));
   }
 
   public markSaved(): void {
@@ -307,10 +324,6 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
     return changed;
   }
 
-  removeAlert(id: string) {
-    this.value = this.value.filter((alert) => alert.id !== id);
-  }
-
   copy() {
     const copied = new PaymentAlertsProperty();
     this._value.forEach((alert) =>
@@ -319,7 +332,7 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
           audio: alert.audio ?? undefined,
           image: alert.image ?? undefined,
           video: alert.video ?? undefined,
-          triggers: undefined,
+          triggers: [],
           properties: alert.properties.map((prop) => prop.copy()),
           removeFn: copied.removeAlert,
           addFn: copied.addAlert,

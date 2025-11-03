@@ -8,12 +8,12 @@ import {
   ModalStateContext,
   Overlay,
 } from "../Overlay/Overlay";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
-import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import SecondaryButton from "../Button/SecondaryButton";
+import PrimaryButton from "../Button/PrimaryButton";
 import InputNumber from "../ConfigurationPage/components/InputNumber";
 import { Flex, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import SubActionButton from "../SubActionButton/SubActionButton";
+import SubActionButton from "../Button/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 

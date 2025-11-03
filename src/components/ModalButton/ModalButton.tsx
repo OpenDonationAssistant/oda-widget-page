@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import LabeledContainer from "../LabeledContainer/LabeledContainer";
 import { Modal } from "antd";
 import { Trans, useTranslation } from "react-i18next";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import SecondaryButton from "../Button/SecondaryButton";
 
 export default function ModalButton({
   label,

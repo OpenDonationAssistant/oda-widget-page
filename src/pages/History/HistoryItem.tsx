@@ -2,7 +2,7 @@ import { Flex } from "antd";
 import classes from "./HistoryItem.module.css";
 import DonationGoalIcon from "../../icons/DonationGoalIcon";
 import { observer } from "mobx-react-lite";
-import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import SubActionButton from "../../components/Button/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";

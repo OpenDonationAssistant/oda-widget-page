@@ -19,8 +19,8 @@ import {
   DefaultWidgetStore,
   WidgetStoreContext,
 } from "../../stores/WidgetStore";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
-import SubActionButton from "../../components/SubActionButton/SubActionButton";
+import SecondaryButton from "../../components/Button/SecondaryButton";
+import SubActionButton from "../../components/Button/SubActionButton";
 import {
   ModalState,
   ModalStateContext,

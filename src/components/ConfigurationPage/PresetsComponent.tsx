@@ -15,14 +15,15 @@ import { Preset } from "../../types/Preset";
 import { Widget } from "../../types/Widget";
 import { Card, CardList } from "../Cards/CardsComponent";
 import { fullUri } from "../../utils";
-import SubActionButton from "../SubActionButton/SubActionButton";
+import SubActionButton from "../Button/SubActionButton";
 import {
   SelectedIndexContext,
   SelectedIndexStore,
 } from "../../stores/SelectedIndexStore";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
-import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import SecondaryButton from "../Button/SecondaryButton";
+import PrimaryButton from "../Button/PrimaryButton";
 import { Alert } from "./widgetsettings/alerts/Alerts";
+import { TwitchAlertData } from "../../pages/TwitchAlerts/types";
 
 const PreviewImage = observer(
   ({ preset, onSelect }: { preset: Preset; onSelect: () => void }) => {
@@ -122,13 +123,18 @@ export const PresetWindow = ({
 };
 
 export const PresetsComponent = observer(
-  ({ target }: { presetStore: PresetStore; target: Widget | Alert }) => {
+  ({
+    target,
+  }: {
+    presetStore: PresetStore;
+    target: Widget | Alert | TwitchAlertData;
+  }) => {
     const parentModalState = useContext(ModalStateContext);
     const [modalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
     const [selected, setSelected] = useState<Preset | null>(null);
-    const [selection, setSelection] = useState<SelectedIndexStore>(
+    const [selection] = useState<SelectedIndexStore>(
       () => new SelectedIndexStore(),
     );
 
@@ -162,7 +168,7 @@ export const PresetsComponent = observer(
                   onClick={() => {
                     if (target instanceof Widget) {
                       selected?.applyTo(target.config, target.type);
-                    } else {
+                    } else if (target instanceof Alert) {
                       selected?.applyTo(target, "alert");
                     }
                     modalState.show = false;

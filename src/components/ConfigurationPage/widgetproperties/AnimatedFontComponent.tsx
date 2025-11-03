@@ -23,8 +23,8 @@ import {
   Panel,
   Title,
 } from "../../Overlay/Overlay";
-import SecondaryButton from "../../SecondaryButton/SecondaryButton";
-import PrimaryButton from "../../PrimaryButton/PrimaryButton";
+import SecondaryButton from "../../Button/SecondaryButton";
+import PrimaryButton from "../../Button/PrimaryButton";
 
 const animationType = ["entire", "by words", "by symbols"];
 

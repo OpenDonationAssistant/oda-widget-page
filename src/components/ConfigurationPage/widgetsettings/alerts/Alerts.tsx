@@ -1,106 +1,25 @@
 import { uuidv7 } from "uuidv7";
 import { DEFAULT_PROPERTIES } from "./DefaultProperties";
-import { ReactNode } from "react";
-import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { InputNumber } from "antd";
 import { makeAutoObservable, toJS } from "mobx";
 import { log } from "../../../../logging";
 import { produce } from "immer";
 import { WidgetProperty } from "../../widgetproperties/WidgetProperty";
-
-export interface Amount {
-  major: number;
-  currency: string;
-}
-
-export interface DonationEvent {
-  id: string;
-  amount: Amount;
-}
-
-export interface Trigger {
-  type: string;
-  isTriggered(event: DonationEvent): boolean;
-  markup(): ReactNode;
-}
-
-export class UnknownTrigger implements Trigger {
-  type = "never";
-
-  isTriggered(event: DonationEvent): boolean {
-    return false;
-  }
-
-  public markup(): ReactNode {
-    return (
-      <LabeledContainer displayName="widget-alert-amount">
-        <InputNumber addonAfter="руб." />
-      </LabeledContainer>
-    );
-  }
-}
-
-export class FixedDonationAmountTrigger implements Trigger {
-  type = "fixed-donation-amount";
-  amount = 0;
-
-  constructor({ amount }: { amount: number }) {
-    this.amount = amount;
-  }
-
-  isTriggered(event: DonationEvent): boolean {
-    return event.amount.major == this.amount;
-  }
-
-  public markup(): ReactNode {
-    return (
-      <LabeledContainer displayName="widget-alert-amount">
-        <InputNumber addonAfter="руб." />
-      </LabeledContainer>
-    );
-  }
-}
-
-export class RangeDonationAmountTrigger implements Trigger {
-  type = "at-least-donation-amount";
-  min: number | null = null;
-  max: number | null = null;
-
-  constructor({ min, max }: { min: number | null; max: number | null }) {
-    this.min = min;
-    this.max = max;
-  }
-
-  isTriggered(event: DonationEvent): boolean {
-    if (this.min && this.max) {
-      return event.amount.major >= this.min && event.amount.major < this.max;
-    }
-    if (this.min) {
-      return event.amount.major >= this.min;
-    }
-    if (this.max) {
-      return event.amount.major < this.max;
-    }
-    return false;
-  }
-
-  public markup(): ReactNode {
-    return (
-      <LabeledContainer displayName="widget-alert-amount">
-        <InputNumber addonAfter="руб." />
-      </LabeledContainer>
-    );
-  }
-}
-
-const DEFAULT_TRIGGER: Trigger = new UnknownTrigger();
+import {
+  DonationEvent,
+  Trigger,
+  TriggerType,
+} from "./triggers/AlertTriggerInterface";
+import { TriggersStore } from "./triggers/TriggersStore";
+import { LESS_THAN_DONATION_AMOUNT_TRIGGER } from "./triggers/LessThanDonationAmountTrigger";
+import { FIXED_DONATION_AMOUNT_TRIGGER } from "./triggers/FixedDonationAmountTrigger";
+import { RANDE_DONATION_AMOUNT_TRIGGER } from "./triggers/RangeDonationAmountTrigger";
 
 export class Alert {
   private _id: string;
   private _audio: string | null = null;
   private _image: string | null = null;
   private _video: string | null = null;
-  private _triggers: Trigger[] = [DEFAULT_TRIGGER];
+  private _triggers: TriggersStore = new TriggersStore();
   private _properties: WidgetProperty<any>[] = DEFAULT_PROPERTIES(this);
   // TODO: use store
   private _removeFn: Function;
@@ -129,7 +48,7 @@ export class Alert {
     this.audio = audio || null;
     this.image = image || null;
     this.video = video || null;
-    this.triggers = triggers || [DEFAULT_TRIGGER];
+    triggers?.forEach((trigger) => this._triggers.addTrigger(trigger));
     this.merge(properties);
     this._removeFn = removeFn;
     this._addFn = addFn;
@@ -142,7 +61,7 @@ export class Alert {
       audio: this._audio,
       image: this._image,
       video: this._video,
-      triggers: toJS(this._triggers),
+      triggers: toJS(this._triggers.added),
       properties: this._properties.map((it) => {
         return {
           name: it.name,
@@ -167,7 +86,7 @@ export class Alert {
       audio: produce(toJS(this._audio), (draft) => draft) || undefined,
       image: produce(toJS(this._image), (draft) => draft) || undefined,
       video: produce(toJS(this._video), (draft) => draft) || undefined,
-      triggers: produce(toJS(this._triggers), (draft) => draft),
+      triggers: toJS(this._triggers.added),
       properties: updated,
       removeFn: this._removeFn,
       addFn: this._addFn,
@@ -235,11 +154,61 @@ export class Alert {
   }
 
   public get triggers(): Trigger[] {
+    return this._triggers.added;
+  }
+
+  public compareTriggers(alert: Alert): number {
+    let result = 0;
+    result = this.compareSelectedTriggers(alert, FIXED_DONATION_AMOUNT_TRIGGER);
+    if (result !== 0) {
+      return result;
+    }
+    result  = this.compareSelectedTriggers(alert, RANDE_DONATION_AMOUNT_TRIGGER);
+    if (result !== 0) {
+      return result;
+    }
+    result  = this.compareSelectedTriggers(alert, LESS_THAN_DONATION_AMOUNT_TRIGGER);
+    if (result !== 0) {
+      return result;
+    }
+    return result;
+  }
+
+  private compareSelectedTriggers(alert: Alert, type: TriggerType) {
+    let ourTriggers = this._triggers.added.filter(
+      (trigger) => trigger.type.type === type.type,
+    );
+    let theirTriggers = alert.triggers.filter(
+      (trigger) => trigger.type.type === type.type,
+    );
+    if (ourTriggers.length === 0 && theirTriggers.length === 0) {
+      return 0;
+    }
+    if (ourTriggers.length === 0) {
+      return -1;
+    }
+    if (theirTriggers.length === 0) {
+      return 1;
+    }
+    ourTriggers = ourTriggers.sort((a, b) => {
+      return a.compare(b);
+    });
+    theirTriggers = theirTriggers.sort((a, b) => {
+      return a.compare(b);
+    });
+    return ourTriggers[ourTriggers.length - 1].compare(
+      theirTriggers[theirTriggers.length - 1],
+    );
+  }
+
+  public get triggersStore(): TriggersStore {
     return this._triggers;
   }
 
   public set triggers(value: Trigger[]) {
-    this._triggers = value;
+    const triggers = new TriggersStore();
+    value.forEach((trigger) => triggers.addTrigger(trigger));
+    this._triggers = triggers;
   }
 
   public get properties(): WidgetProperty<any>[] {

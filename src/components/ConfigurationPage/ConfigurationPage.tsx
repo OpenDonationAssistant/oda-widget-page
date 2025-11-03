@@ -24,7 +24,7 @@ import {
   Overlay,
   Title,
 } from "../Overlay/Overlay";
-import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import PrimaryButton from "../Button/PrimaryButton";
 import { List } from "../List/List";
 import {
   DefaultPresetStore,
@@ -37,7 +37,7 @@ import {
   SelectPresetComponent,
   SelectWidgetComponent,
 } from "./AddWidgetWizard";
-import CollapseLikeButton from "../Button/Button";
+import CollapseLikeButton from "../Button/CollapseLikeButton";
 import { reaction } from "mobx";
 import { log } from "../../logging";
 
