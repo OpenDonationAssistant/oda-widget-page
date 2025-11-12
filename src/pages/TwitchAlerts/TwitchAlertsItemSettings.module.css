@@ -1,0 +1,80 @@
+.alerttitle {
+  font-size: 21px;
+  color: var(--oda-color-950);
+  width: 100%;
+}
+
+.resizable {
+  border-radius: 6px;
+  background: url(https://cdn.oda.digital/assets/preview-background.jpg);
+  background-size: cover;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.contentpanel {
+  flex: 1 1 auto;
+  /* min-width: 50%; */
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 50%;
+}
+
+.settingspanel {
+  max-width: 700px;
+  /* width: 50%; */
+}
+
+button.deletetriggerbutton {
+  height: 36px;
+  width: 36px;
+}
+
+.preview {
+  padding: 6px;
+  background-color: black;
+  border-radius: 9px;
+  margin-top: 0px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tabcontainer {
+  padding-top: 12px;
+}
+
+.note {
+  padding-left: 12px;
+  font-size: 15px;
+}
+
+.audiocontainer {
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
+  padding: 12px;
+  & .filenamecontainer {
+    /* border: 1px solid #36363d; */
+    border-radius: 9px;
+    width: 100%;
+    /* padding: 6px; */
+    & .filename {
+      font-size: 21px;
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.element {
+  background-color: var(--oda-color-150);
+  border-radius: 12px;
+}
+
+.elementsettings {
+  padding: 12px;
+}
