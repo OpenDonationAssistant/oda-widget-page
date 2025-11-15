@@ -7,10 +7,11 @@ export const UNKNOWN_TRIGGER = {
 };
 
 export class UnknownTrigger implements Trigger {
-  type = UNKNOWN_TRIGGER;
+  type = UNKNOWN_TRIGGER.type;
+  description = UNKNOWN_TRIGGER.description;
 
   isTriggered(event: DonationEvent): boolean {
-    return true;
+    return false;
   }
 
   compare(other: Trigger): number {

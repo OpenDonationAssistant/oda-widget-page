@@ -37,8 +37,8 @@
   width: 100%;
   height: 48px;
   background: transparent;
-  border: 1px solid var(--oda-primary-color);
-  border-radius: 110px;
+  border: 1px solid var(--oda-color-250);
+  border-radius: 12px;
   margin-right: 10px;
   & [class*="material-symbols-sharp"] {
     vertical-align: middle;

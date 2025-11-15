@@ -30,10 +30,13 @@ const TriggerComponent = observer(
   }) => {
     const triggersStore = useContext(TriggersStoreContext);
 
-    const options = [...triggersStore.available, ...[trigger.type]].map((t) => {
+    const options = [
+      ...triggersStore.available,
+      ...[triggersStore.getType(trigger.type)],
+    ].map((t) => {
       return {
-        value: t.type,
-        label: t.description,
+        value: t?.type,
+        label: t?.description,
       };
     });
 
@@ -48,7 +51,7 @@ const TriggerComponent = observer(
               onChange(triggersStore.createTrigger(e));
             }}
             options={options}
-            value={trigger.type.type}
+            value={trigger.type}
           />
         </Flex>
         {trigger.markup()}

@@ -1,0 +1,42 @@
+.label {
+  font-size: 21px;
+  font-weight: 500;
+  color: var(--oda-color-950);
+}
+
+.addshadowbutton {
+  border: 1px solid var(--oda-color-250);
+}
+
+.selectedalign {
+  color: var(--oda-primary-color);
+  border-top: 2px solid var(--oda-primary-color);
+  border-bottom: 2px solid var(--oda-primary-color);
+}
+
+.alignbutton {
+  line-height: 0px;
+  padding-top: 2px;
+  &:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+}
+
+.text {
+  border: 1px solid #36363F;
+  border-radius: 9px;
+  background: none;
+  flex-grow: 1;
+  color: var(--oda-color-1000);
+  padding: 6px 15px 3px 15px;
+  outline: none;
+}
+
+.normal {
+  height: 180px;
+}
+
+.small {
+  height: 60px;
+}

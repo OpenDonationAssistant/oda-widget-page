@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import classes from "./CollapseLikeButton.module.css";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
 
 export default function CollapseLikeButton({
   children,
@@ -18,5 +18,22 @@ export default function CollapseLikeButton({
         {children}
       </Flex>
     </button>
+  );
+}
+
+export function CollapseLikeUploadButton({
+  children,
+  onClick,
+}: {
+  children: ReactNode;
+  onClick: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <label className={`${classes.collapselikebutton}`}>
+      <input type="file" onChange={(e) => onClick(e)} />
+      <Flex justify="center" align="center" gap={3} className="full-height">
+        {children}
+      </Flex>
+    </label>
   );
 }

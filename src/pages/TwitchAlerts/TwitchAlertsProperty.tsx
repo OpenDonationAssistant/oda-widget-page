@@ -20,39 +20,14 @@ import {
 } from "../../components/Overlay/Overlay";
 import { uuidv7 } from "uuidv7";
 import SubActionButton from "../../components/Button/SubActionButton";
-import { useLoaderData } from "react-router";
-import { WidgetData } from "../../types/WidgetData";
 import CopyIcon from "../../icons/CopyIcon";
-import { TwitchAlertData } from "./types";
+import { TwitchAlert, TwitchAlertData } from "./types";
 import { ItemContent } from "./TwitchAlertsItemSettings";
 
 export const TWITCH_ALERT_DEFAULT_NAME = "<Без названия>";
 
-function testAlert(topic: string, alert: TwitchAlertData) {
-  // publish(topic, {
-  //   id: uuidv7(), // TODO: сделать опциональным
-  //   alertId: alert.id,
-  //   nickname: "Тестовый алерт",
-  //   message: "Тестовое сообщение",
-  //   amount: {
-  //     major: 100,
-  //     minor: 0,
-  //     currency: "RUB",
-  //   },
-  // });
-}
-
 const TwitchAlertItemComponent = observer(
-  ({
-    property,
-    index,
-    alert,
-  }: {
-    property: TwitchAlertsProperty;
-    index: number;
-    alert: TwitchAlertData;
-  }) => {
-    const { conf } = useLoaderData() as WidgetData;
+  ({ alert }: { alert: TwitchAlert }) => {
     const selection = useContext(SelectedIndexContext);
     const parentModalState = useContext(ModalStateContext);
     const [deleteDialogState] = useState<ModalState>(
@@ -60,23 +35,27 @@ const TwitchAlertItemComponent = observer(
     );
     const [contentDialogState] = useState<ModalState>(
       () =>
-        new ModalState(parentModalState, () => {}, selection.id === alert.id),
+        new ModalState(
+          parentModalState,
+          () => {},
+          selection.id === alert.data.id,
+        ),
     );
 
     return (
       <ModalStateContext.Provider value={contentDialogState}>
         <ListItem
-          first={<div className={`${classes.goaltitle}`}>{alert.name}</div>}
+          first={
+            <div className={`${classes.goaltitle}`}>{alert.data.name}</div>
+          }
           second={
             <Flex align="center" justify="flex-end" gap={3}>
-              <SubActionButton
-                onClick={() => testAlert(conf.topic.twitch, alert)}
-              >
+              <SubActionButton onClick={() => {}}>
                 <div>Тест</div>
               </SubActionButton>
               <BorderedIconButton
                 onClick={() => {
-                  property.copyAlert(index);
+                  alert.copy();
                 }}
               >
                 <CopyIcon />
@@ -86,7 +65,7 @@ const TwitchAlertItemComponent = observer(
                   <Warning
                     action={() => {
                       deleteDialogState.show = false;
-                      property.deleteAlert(index);
+                      alert.delete();
                     }}
                   >
                     Вы точно хотите удалить оповещение?
@@ -101,13 +80,13 @@ const TwitchAlertItemComponent = observer(
             </Flex>
           }
           onClick={() => {
-            selection.id = alert.id;
+            selection.id = alert.data.id;
             contentDialogState.show = true;
           }}
         />
         <Overlay>
           <FullscreenPanel>
-            <ItemContent alert={alert} property={property} index={index} />
+            <ItemContent alert={alert} />
           </FullscreenPanel>
         </Overlay>
       </ModalStateContext.Provider>
@@ -124,12 +103,8 @@ const TwitchAlertsPropertyComponent = observer(
     return (
       <SelectedIndexContext.Provider value={selection}>
         <List>
-          {property.value.map((alert: TwitchAlertData, index: number) => (
-            <TwitchAlertItemComponent
-              property={property}
-              index={index}
-              alert={alert}
-            />
+          {property.alerts.map((alert: TwitchAlert) => (
+            <TwitchAlertItemComponent key={alert.data.id} alert={alert} />
           ))}
           <AddListItemButton
             onClick={() => property.addAlert()}
@@ -147,15 +122,15 @@ export class TwitchAlertsProperty extends DefaultWidgetProperty<
   constructor() {
     super({
       name: "alerts",
-      value: [
-        {
-          id: uuidv7(),
-          name: TWITCH_ALERT_DEFAULT_NAME,
-          triggers: [],
-        },
-      ],
+      value: [],
       displayName: "Оповещения",
     });
+  }
+
+  public get alerts(): TwitchAlert[] {
+    return this.value.map(
+      (alert: TwitchAlertData) => new TwitchAlert(alert, this),
+    );
   }
 
   addAlert() {
@@ -164,12 +139,19 @@ export class TwitchAlertsProperty extends DefaultWidgetProperty<
       name: TWITCH_ALERT_DEFAULT_NAME,
       enabled: true,
       triggers: [],
+      elements: [],
       audio: [],
     });
     log.debug({ settings: this }, "updated twitch alerts");
   }
 
-  deleteAlert(index: number) {
+  deleteAlert({ index, id }: { index?: number; id?: string }) {
+    if (index === undefined && id === undefined) {
+      return;
+    }
+    if (index === undefined) {
+      index = this.value.findIndex((alert) => alert.id === id);
+    }
     this.value.splice(index, 1);
     log.debug({ settings: this }, "updated twitch alerts");
   }
@@ -179,12 +161,19 @@ export class TwitchAlertsProperty extends DefaultWidgetProperty<
     log.debug({ settings: this }, "updated twitch alerts");
   }
 
-  copyAlert(index: number) {
+  copyAlert({ index, id }: { index?: number; id?: string }) {
+    if (index === undefined && id === undefined) {
+      return;
+    }
+    if (index === undefined) {
+      index = this.value.findIndex((alert) => alert.id === id);
+    }
     const alert = this.value[index];
     this.value.push({
       id: uuidv7(),
       name: alert.name,
       enabled: alert.enabled,
+      elements: alert.elements,
       triggers: alert.triggers,
       audio: alert.audio,
     });

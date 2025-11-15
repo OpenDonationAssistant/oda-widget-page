@@ -9,7 +9,8 @@ export const SYSTEM_TRIGGER = {
 };
 
 export class SystemTrigger implements Trigger {
-  type = SYSTEM_TRIGGER;
+  type = SYSTEM_TRIGGER.type;
+  description = SYSTEM_TRIGGER.description;
   system: string = "";
 
   constructor(system?: string) {
@@ -20,7 +21,7 @@ export class SystemTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return false;
+    return event.system === this.system;
   }
 
   public compare(other: Trigger): number {

@@ -9,7 +9,8 @@ export const RANDE_DONATION_AMOUNT_TRIGGER = {
 };
 
 export class RangeDonationAmountTrigger implements Trigger {
-  type = RANDE_DONATION_AMOUNT_TRIGGER;
+  type = RANDE_DONATION_AMOUNT_TRIGGER.type;
+  description = RANDE_DONATION_AMOUNT_TRIGGER.description;
   min: number = 0;
 
   constructor(amount?: number) {
@@ -20,7 +21,7 @@ export class RangeDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return false;
+    return event.amount.major >= this.min;
   }
 
   public compare(other: Trigger): number {

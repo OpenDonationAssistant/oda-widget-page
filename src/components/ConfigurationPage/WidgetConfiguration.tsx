@@ -104,7 +104,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
     const name = uuidv7();
     const canvas = await snapdom(preview.current);
     const blob = await canvas.toBlob({ type: "webp" });
-    const url = await uploadBlob(blob, `${name}.webp`);
+    const url = (await uploadBlob(blob, `${name}.webp`)).url;
     const preset = new Preset({
       name: name,
       owner: widget.ownerId,
@@ -150,11 +150,11 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
           >
             {widget.config.markup()}
             {widget.config.hasDemo() && (
-              <Flex vertical gap={9}>
+              <Flex vertical gap={9} className={`${classes.previewcontainer}`}>
                 <Flex
                   justify="flex-start"
                   gap={9}
-                  className={`${classes.previewcontainer}`}
+                  className={`${classes.templatebuttons}`}
                 >
                   <SubActionButton onClick={() => savePreset()}>
                     Создать шаблон

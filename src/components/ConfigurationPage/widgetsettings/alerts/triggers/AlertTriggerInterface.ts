@@ -1,4 +1,4 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode } from "react";
 
 export interface Amount {
   major: number;
@@ -8,6 +8,7 @@ export interface Amount {
 export interface DonationEvent {
   id: string;
   amount: Amount;
+  system: string;
 }
 
 export interface TriggerType {
@@ -16,7 +17,8 @@ export interface TriggerType {
 }
 
 export interface Trigger {
-  type: TriggerType;
+  type: string;
+  description: string;
   isTriggered(event: DonationEvent): boolean;
   markup(): ReactNode;
   compare(other: Trigger): number;

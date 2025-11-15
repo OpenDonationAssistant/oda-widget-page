@@ -86,7 +86,9 @@ export class Alert {
       audio: produce(toJS(this._audio), (draft) => draft) || undefined,
       image: produce(toJS(this._image), (draft) => draft) || undefined,
       video: produce(toJS(this._video), (draft) => draft) || undefined,
-      triggers: toJS(this._triggers.added),
+      triggers: toJS(this._triggers.added).map((trigger) =>
+        this._triggers.loadTrigger(trigger),
+      ),
       properties: updated,
       removeFn: this._removeFn,
       addFn: this._addFn,
@@ -121,8 +123,8 @@ export class Alert {
     this._audio = null;
   }
 
-  public canBeFiredBy(event: DonationEvent): boolean {
-    return this.triggers.some((trigger) => trigger.isTriggered(event));
+  public firedBy(event: DonationEvent): boolean {
+    return this.triggers.every((trigger) => trigger.isTriggered(event));
   }
 
   public get id(): string | null {
@@ -163,11 +165,14 @@ export class Alert {
     if (result !== 0) {
       return result;
     }
-    result  = this.compareSelectedTriggers(alert, RANDE_DONATION_AMOUNT_TRIGGER);
+    result = this.compareSelectedTriggers(alert, RANDE_DONATION_AMOUNT_TRIGGER);
     if (result !== 0) {
       return result;
     }
-    result  = this.compareSelectedTriggers(alert, LESS_THAN_DONATION_AMOUNT_TRIGGER);
+    result = this.compareSelectedTriggers(
+      alert,
+      LESS_THAN_DONATION_AMOUNT_TRIGGER,
+    );
     if (result !== 0) {
       return result;
     }
@@ -176,10 +181,10 @@ export class Alert {
 
   private compareSelectedTriggers(alert: Alert, type: TriggerType) {
     let ourTriggers = this._triggers.added.filter(
-      (trigger) => trigger.type.type === type.type,
+      (trigger) => trigger.type === type.type,
     );
     let theirTriggers = alert.triggers.filter(
-      (trigger) => trigger.type.type === type.type,
+      (trigger) => trigger.type === type.type,
     );
     if (ourTriggers.length === 0 && theirTriggers.length === 0) {
       return 0;

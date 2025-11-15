@@ -48,11 +48,10 @@
 }
 
 .fullscreen {
-  margin-top: 2vh;
   top: 2vh;
-  width: 1200px;
+  width: 100%;
   left: 2vw;
-  height: 96vh;
+  height: 100vh;
 }
 
 .title {

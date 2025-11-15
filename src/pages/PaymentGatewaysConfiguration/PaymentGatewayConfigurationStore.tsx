@@ -325,21 +325,21 @@ export class PaymentGatewayConfigurationStore {
         {
           id: "shopId",
           name: "Введите Shop ID",
-          comment: "Shop ID можно скопировать в ",
+          comment: "Shop ID можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
           value: "",
         },
         {
           id: "apiKey",
-          name: "Введите Пароль #1",
+          name: "Введите API Key",
           comment:
-            "В Настройках магазина во вкладке Технические настройки сгенерируйте и скопируйте сюда Пароль #1",
+            "API Key можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
           value: "",
         },
         {
           id: "secret",
-          name: "Введите Пароль #2",
+          name: "Введите Secret",
           comment:
-            "В Настройках магазина во вкладке Технические настройки сгенерируйте и скопируйте сюда Пароль #2",
+            "Secret можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
           value: "",
         },
       ],
@@ -380,17 +380,20 @@ export class PaymentGatewayConfigurationStore {
           [
             {
               statement: "2. Настройте проект",
+              screen:
+                "https://api.oda.digital/assets/2025-11-15_15-11-1763210389.png",
               comment: (
                 <>
                   <div>
                     В созданном проекте во вкладке "Интеграция и API" заполните
                     поля следующим образом:
                   </div>
+                  <div>Ваш сайт - https://oda.digital</div>
                   <div>Настройки CMS - Other CMS</div>
-                  <div>Успешный URL - https://stcarolas.oda.digital/</div>
-                  <div>Неудачный URL - https://stcarolas.oda.digital/</div>
+                  <div>Успешный URL - {"<ваша страница доната>"}/payment/cryptocloud/result</div>
+                  <div>Неудачный URL - {"<ваша страница доната>"}/payment/cryptocloud/result</div>
                   <div>
-                    URL для уведомлений - https://stcarolas.oda.digital/
+                    URL для уведомлений - https://api.oda.digital/notification/cryptocloud
                   </div>
                 </>
               ),

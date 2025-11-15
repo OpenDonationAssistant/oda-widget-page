@@ -6,19 +6,21 @@ import EditIcon from "../../icons/EditIcon";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CheckIcon from "../../icons/CheckIcon";
 
-export const EditableString = observer(
+export const BaseEditableString = observer(
   ({
     label,
     placeholder,
     onChange,
     onClick,
-    className
+    className,
+    size,
   }: {
     label: string;
     placeholder?: string;
     onChange: (newValue: string) => void;
     onClick?: MouseEventHandler<HTMLDivElement>;
     className?: string;
+    size: "small" | "normal";
   }) => {
     const [edit, setEdit] = useState<boolean>(false);
     const [value, setValue] = useState<string>();
@@ -27,7 +29,7 @@ export const EditableString = observer(
       <>
         {!edit && (
           <Flex justify="center" align="center" className={className}>
-            <div className={`${classes.variablename}`} onClick={onClick}>
+            <div className={`${size === "normal" ? classes.variablename : classes.smallvariablename}`} onClick={onClick}>
               {label === null || label === undefined || label === ""
                 ? placeholder
                 : label}
@@ -57,11 +59,65 @@ export const EditableString = observer(
                 setEdit(false);
               }}
             >
-              <CheckIcon color="var(--oda-color-1000)"/>
+              <CheckIcon color="var(--oda-color-1000)" />
             </NotBorderedIconButton>
           </Flex>
         )}
       </>
+    );
+  },
+);
+
+export const EditableString = observer(
+  ({
+    label,
+    placeholder,
+    onChange,
+    onClick,
+    className,
+  }: {
+    label: string;
+    placeholder?: string;
+    onChange: (newValue: string) => void;
+    onClick?: MouseEventHandler<HTMLDivElement>;
+    className?: string;
+  }) => {
+    return (
+      <BaseEditableString
+        label={label}
+        placeholder={placeholder}
+        onChange={onChange}
+        onClick={onClick}
+        className={className}
+        size="normal"
+      />
+    );
+  },
+);
+
+export const SmallEditableString = observer(
+  ({
+    label,
+    placeholder,
+    onChange,
+    onClick,
+    className,
+  }: {
+    label: string;
+    placeholder?: string;
+    onChange: (newValue: string) => void;
+    onClick?: MouseEventHandler<HTMLDivElement>;
+    className?: string;
+  }) => {
+    return (
+      <BaseEditableString
+        label={label}
+        placeholder={placeholder}
+        onChange={onChange}
+        onClick={onClick}
+        className={className}
+        size="small"
+      />
     );
   },
 );

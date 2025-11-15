@@ -1,49 +1,18 @@
-import {
-  CSSProperties,
-  ChangeEvent,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import axios from "axios";
 import { Trans } from "react-i18next";
-import { Button, Flex, Image, Select, Switch, Upload } from "antd";
+import { Flex, Image, Select } from "antd";
 import classes from "./BackgroundImageProperty.module.css";
 import InputNumber from "../components/InputNumber";
 import { produce } from "immer";
 import { toJS } from "mobx";
-import { uuidv7 } from "uuidv7";
 import CloseIcon from "../../../icons/CloseIcon";
 import SubActionButton from "../../Button/SubActionButton";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
-import { fullUri } from "../../../utils";
-
-function uploadFile(file: File, name: string) {
-  return axios.put(
-    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
-    { file: file },
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-}
-
-const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-  if (!e.target.files) {
-    return Promise.reject();
-  }
-  const file = e.target.files[0];
-  const name = uuidv7();
-  return uploadFile(file, name).then((ignore: any) => {
-    return { name: file.name, url: name };
-  });
-};
+import { fullUri, handleFileUpload } from "../../../utils";
 
 export interface ImagePropertyValue {
   name: string | null;
@@ -62,32 +31,32 @@ export const DEFAULT_IMAGE_PROPERTY_VALUE = {
 
 export const ImagePropertyComponent = observer(
   ({
-    property,
+    value,
+    displayName,
     onChange,
   }: {
-    property: { value: ImagePropertyValue; displayName: string };
+    value: ImagePropertyValue;
+    displayName: string;
     onChange?: (value: ImagePropertyValue) => void;
   }) => {
-    const [image, setImage] = useState<string>(property.value.url ?? "");
+    const [image, setImage] = useState<string>(value.url ?? "");
 
     useEffect(() => {
-      fullUri(property.value.url).then(setImage);
-    }, [property.value.url]);
+      fullUri(value.url).then(setImage);
+    }, [value.url]);
 
     return (
       <>
-        <LabeledContainer displayName={property.displayName}>
-          {!property.value.url && (
+        <LabeledContainer displayName={displayName}>
+          {!value.url && (
             <label className={`${classes.upload}`}>
               <input
                 type="file"
                 onChange={(e) =>
                   handleFileUpload(e).then((result) => {
-                    property.value = {
-                      ...property.value,
-                      ...{ url: result.url, name: result.name },
-                    };
-                    onChange?.(property.value);
+                    value.url = result.url;
+                    value.name = result.name;
+                    onChange?.(value);
                   })
                 }
               />
@@ -95,7 +64,7 @@ export const ImagePropertyComponent = observer(
               <Trans i18nKey="button-upload" />
             </label>
           )}
-          {property.value.url && (
+          {value.url && (
             <Flex vertical={true} className="full-width" justify="space-around">
               <Flex
                 gap={10}
@@ -103,7 +72,7 @@ export const ImagePropertyComponent = observer(
                 className={`${classes.previewcontainer}`}
                 justify="space-between"
               >
-                <div>{property.value.name}</div>
+                <div>{value.name}</div>
                 <Flex align="center" gap={6}>
                   <Image.PreviewGroup>
                     <Image
@@ -115,28 +84,24 @@ export const ImagePropertyComponent = observer(
                   </Image.PreviewGroup>
                   <SubActionButton
                     onClick={() => {
-                      property.value = {
-                        name: null,
-                        url: null,
-                        size: "auto",
-                        repeat: false,
-                        opacity: 1,
-                      };
-                      onChange?.(property.value);
+                      value.name = null;
+                      value.url = null;
+                      value.size = "auto";
+                      value.repeat = false;
+                      value.opacity = 1;
+                      onChange?.(value);
                     }}
                   >
                     <div>Загрузить</div>
                   </SubActionButton>
                   <SubActionButton
                     onClick={() => {
-                      property.value = {
-                        name: null,
-                        url: null,
-                        size: "auto",
-                        repeat: false,
-                        opacity: 1,
-                      };
-                      onChange?.(property.value);
+                      value.name = null;
+                      value.url = null;
+                      value.size = "auto";
+                      value.repeat = false;
+                      value.opacity = 1;
+                      onChange?.(value);
                     }}
                   >
                     <CloseIcon color="#FF8888" />
@@ -147,29 +112,29 @@ export const ImagePropertyComponent = observer(
               <Flex gap={6} align="bottom">
                 <SmallLabeledContainer displayName="Прозрачность">
                   <InputNumber
-                    value={property.value.opacity}
-                    onChange={(value) => {
-                      if (value === null || value === undefined) {
+                    value={value.opacity}
+                    onChange={(updated) => {
+                      if (updated === null || updated === undefined) {
                         return;
                       }
-                      property.value = { ...property.value, opacity: value };
-                      onChange?.(property.value);
+                      value.opacity = updated;
+                      onChange?.(value);
                     }}
                   />
                 </SmallLabeledContainer>
                 <SmallLabeledContainer displayName="Размер">
                   <Select
                     className={`${classes.size}`}
-                    value={property.value.size}
+                    value={value.size}
                     options={[
                       { label: "original", value: "auto" },
                       { label: "cover", value: "cover" },
                       { label: "contain", value: "contain" },
                       { label: "fit", value: "100% 100%" },
                     ]}
-                    onChange={(value) => {
-                      property.value = { ...property.value, size: value };
-                      onChange?.(property.value);
+                    onChange={(updated) => {
+                      value.size = updated;
+                      onChange?.(value);
                     }}
                   />
                 </SmallLabeledContainer>
@@ -177,13 +142,10 @@ export const ImagePropertyComponent = observer(
                   <Flex className={`${classes.repeatbutton}`} align="top">
                     <LightLabeledSwitchComponent
                       label="Повтор"
-                      value={property.value.repeat}
+                      value={value.repeat}
                       onChange={(checked) => {
-                        property.value = {
-                          ...property.value,
-                          repeat: checked,
-                        };
-                        onChange?.(property.value);
+                        value.repeat = checked;
+                        onChange?.(value);
                       }}
                     />
                   </Flex>
@@ -244,6 +206,11 @@ export class BackgroundImageProperty extends DefaultWidgetProperty<ImageProperty
   }
 
   markup(): ReactNode {
-    return <ImagePropertyComponent property={this} />;
+    return (
+      <ImagePropertyComponent
+        displayName={this.displayName}
+        value={this.value}
+      />
+    );
   }
 }

@@ -16,6 +16,10 @@
 }
 
 .previewcontainer{
+  flex: 1 1 auto;
+}
+
+.templatebuttons {
   margin-left: 12px;
 }
 
@@ -35,16 +39,20 @@
 
 .smallcontainer {
   height: 70%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
 }
 
 .bigcontainer {
   height: 100%;
+  display: flex;
 }
 
 .configcontainer {
   margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(425px, 1fr));
+  /* display: grid; */
+  /* display: flex; */
+  /* grid-template-columns: repeat(auto-fit, minmax(425px, 1fr)); */
 
   & [class*="ant-tabs-content-holder"] {
     overflow-y: scroll;

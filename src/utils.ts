@@ -1,13 +1,14 @@
 import axios from "axios";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
+import { uuidv7 } from "uuidv7";
 
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-export async function uploadBlob(data: Blob, name: string) {
+export async function uploadBlob(data: Blob | File, name: string, isPublic: boolean = false) {
   const response = await axios.put(
-    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
+    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}?public=${isPublic}`,
     { file: data },
     {
       headers: {
@@ -16,8 +17,19 @@ export async function uploadBlob(data: Blob, name: string) {
     },
   );
   const _ = response.data;
-  return `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
+  return { "url": `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`, "name": name };
 }
+
+export const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files) {
+    return Promise.reject();
+  }
+  const file = e.target.files[0];
+  const name = uuidv7();
+  return uploadBlob(file, name).then((result) => {
+    return { url: result.url, name: result.name, originalName: file.name };
+  })
+};
 
 export const fullUri = async (url: string | null): Promise<string> => {
   if (!url) {
@@ -36,6 +48,22 @@ export const fullUri = async (url: string | null): Promise<string> => {
     .then((res) => res.blob())
     .then((blob) => URL.createObjectURL(blob));
 };
+
+export function loadAudio(name: string): Promise<ArrayBuffer | void> {
+  if (!name) {
+    return Promise.resolve();
+  }
+  let url = name;
+  if (!name.startsWith("http")) {
+    url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
+  }
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+  }).then((response) => response.arrayBuffer());
+}
 
 export const delay = (ms: number) => {
   var start = new Date().getTime();

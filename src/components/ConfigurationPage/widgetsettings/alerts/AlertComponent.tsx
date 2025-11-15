@@ -86,7 +86,7 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
     if (!blob) {
       return Promise.resolve();
     }
-    const url = await uploadBlob(blob, `${name}.png`);
+    const url = (await uploadBlob(blob, `${name}.png`)).url;
     const properties = alert
       .config()
       .properties.filter((it) => it.name !== "name");

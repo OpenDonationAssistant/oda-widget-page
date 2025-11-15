@@ -1,11 +1,9 @@
 import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-i18next";
 import { Alert } from "./Alerts";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
 import { Button, Flex, Image, Switch } from "antd";
-import { ChangeEvent, useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { BorderProperty } from "../../widgetproperties/BorderProperty";
 import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
@@ -16,34 +14,9 @@ import { DurationProperty } from "./DurationProperty";
 import classes from "./ImageTab.module.css";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
-import { uuidv7 } from "uuidv7";
-import { fullUri } from "../../../../utils";
-
-function uploadFile(file: File, name: string) {
-  return axios.put(
-    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
-    { file: file },
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-}
-
-const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-  if (!e.target.files) {
-    return Promise.reject();
-  }
-  const file = e.target.files[0];
-  const name = uuidv7();
-  return uploadFile(file, name).then((ignore) => {
-    return name;
-  });
-};
+import { fullUri, handleFileUpload } from "../../../../utils";
 
 const ImageTab = observer(({ alert }: { alert: Alert }) => {
-  const { t } = useTranslation();
   const [image, setImage] = useState<string>("");
   const [video, setVideo] = useState<string>("");
 
@@ -78,8 +51,8 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               <input
                 type="file"
                 onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    alert.image = name;
+                  handleFileUpload(e).then((result) => {
+                    alert.image = result.name;
                   })
                 }
               />
@@ -107,8 +80,8 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               <input
                 type="file"
                 onChange={(e) =>
-                  handleFileUpload(e).then((name) => {
-                    alert.video = name;
+                  handleFileUpload(e).then((result) => {
+                    alert.video = result.name;
                   })
                 }
               />

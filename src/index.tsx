@@ -190,7 +190,7 @@ function ConfigurationPageTemplate() {
           z-index: -1;
           display: block;
           background-color: #2d3436;
-          background-image: linear-gradient(345deg, #2d3436 0%, #000000 58%);
+          background-image: linear-gradient(345deg, #0c0d0e 0%, #000000 58%);
           width: 100%;
           height: 100%;
         }`,

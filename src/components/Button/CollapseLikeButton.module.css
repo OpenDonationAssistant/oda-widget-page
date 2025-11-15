@@ -8,5 +8,6 @@
   height: 52px;
   &:hover{
     background-color: var(--oda-color-250);
+    cursor: pointer;
   }
 }

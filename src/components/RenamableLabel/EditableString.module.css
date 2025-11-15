@@ -2,6 +2,10 @@
   font-size: 28px;
 }
 
+.smallvariablename {
+  font-size: 18px;
+}
+
 .rename {
   background-color: transparent!important;
   color: var(--oda-secondary-text-color)!important;

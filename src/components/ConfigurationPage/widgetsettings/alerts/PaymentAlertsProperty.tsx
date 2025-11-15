@@ -285,7 +285,8 @@ export class PaymentAlertsProperty extends DefaultWidgetProperty<Alert[]> {
   public get sortedAlerts(): Alert[] {
     return this.value
       .filter((alert) => alert.property("enabled"))
-      .sort((a, b) => a.compareTriggers(b));
+      .sort((a, b) => a.compareTriggers(b))
+      .reverse();
   }
 
   public markSaved(): void {

@@ -38,9 +38,155 @@ export const DEFAULT_BORDER_PROPERTY_VALUE: BorderPropertyValue = {
   left: DEFAULT_BORDER,
   right: DEFAULT_BORDER,
 };
-//<Col span={4} offset={2}>
-//  {label && <Trans i18nKey={label} />}
-//</Col>
+
+export const BorderPropertyComponent = observer(
+  ({
+    help,
+    displayName,
+    value,
+  }: {
+    help: string;
+    displayName: string;
+    value: BorderPropertyValue;
+  }) => {
+    return (
+      <Flex vertical={true} gap={10}>
+        <LabeledContainer help={help} displayName={displayName}>
+          <Segmented
+            block
+            className="full-width"
+            options={[
+              {
+                value: null,
+                label: "Отсутствует",
+              },
+              {
+                value: true,
+                label: "Общая",
+              },
+              {
+                value: false,
+                label: "По сторонам",
+              },
+            ]}
+            value={value.isSame}
+            onChange={(checked) => {
+              value.isSame = checked;
+            }}
+          />
+        </LabeledContainer>
+        {value.isSame === true && (
+          <BorderSideComponent
+            type={value.top.type}
+            onTypeChange={(updated) => {
+              value.top.type = updated;
+              value.right.type = updated;
+              value.bottom.type = updated;
+              value.left.type = updated;
+            }}
+            color={value.top.color}
+            onColorChange={(updated) => {
+              value.top.color = updated.toRgbString();
+              value.right.color = updated.toRgbString();
+              value.bottom.color = updated.toRgbString();
+              value.left.color = updated.toRgbString();
+            }}
+            width={value.top.width}
+            onWidthChange={(updated) => {
+              if (updated === undefined || updated === null) {
+                return;
+              }
+              value.top.width = updated;
+              value.right.width = updated;
+              value.left.width = updated;
+              value.bottom.width = updated;
+            }}
+          />
+        )}
+        {value.isSame === false && (
+          <Flex vertical={true} gap={5} className="full-width">
+            <SmallLabeledContainer displayName="borderproperty-label-top">
+              <BorderSideComponent
+                type={value.top.type}
+                onTypeChange={(updated) => {
+                  value.top.type = updated;
+                }}
+                color={value.top.color}
+                onColorChange={(updated) => {
+                  value.top.color = updated.toRgbString();
+                }}
+                width={value.top.width}
+                onWidthChange={(updated) => {
+                  if (updated === undefined || updated === null) {
+                    return;
+                  }
+                  value.top.width = updated;
+                }}
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-right">
+              <BorderSideComponent
+                type={value.right.type}
+                onTypeChange={(updated) => {
+                  value.right.type = updated;
+                }}
+                color={value.right.color}
+                onColorChange={(updated) => {
+                  value.right.color = updated.toRgbString();
+                }}
+                width={value.right.width}
+                onWidthChange={(updated) => {
+                  if (updated === undefined || updated === null) {
+                    return;
+                  }
+                  value.right.width = updated;
+                }}
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-bottom">
+              <BorderSideComponent
+                type={value.bottom.type}
+                onTypeChange={(updated) => {
+                  value.bottom.type = updated;
+                }}
+                color={value.bottom.color}
+                onColorChange={(updated) => {
+                  value.bottom.color = updated.toRgbString();
+                }}
+                width={value.bottom.width}
+                onWidthChange={(updated) => {
+                  if (updated === undefined || updated === null) {
+                    return;
+                  }
+                  value.bottom.width = updated;
+                }}
+              />
+            </SmallLabeledContainer>
+            <SmallLabeledContainer displayName="borderproperty-label-left">
+              <BorderSideComponent
+                type={value.left.type}
+                onTypeChange={(updated) => {
+                  value.left.type = updated;
+                }}
+                color={value.left.color}
+                onColorChange={(updated) => {
+                    value.left.color = updated.toRgbString();
+                }}
+                width={value.left.width}
+                onWidthChange={(updated) => {
+                  if (updated === undefined || updated === null) {
+                    return;
+                  }
+                  value.left.width = updated;
+                }}
+              />
+            </SmallLabeledContainer>
+          </Flex>
+        )}
+      </Flex>
+    );
+  },
+);
 
 const BorderSideComponent = ({
   type,
@@ -121,176 +267,6 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
     });
   }
 
-  Comp = observer(({}) => {
-    return (
-      <Flex vertical={true} gap={10}>
-        <LabeledContainer help={this.help} displayName={this.displayName}>
-          <Segmented
-            block
-            className="full-width"
-            options={[
-              {
-                value: null,
-                label: "Отсутствует",
-              },
-              {
-                value: true,
-                label: "Общая",
-              },
-              {
-                value: false,
-                label: "По сторонам",
-              },
-            ]}
-            value={this.value.isSame}
-            onChange={(checked) => {
-              this.value.isSame = checked;
-            }}
-          />
-        </LabeledContainer>
-        {this.value.isSame === true && (
-          <BorderSideComponent
-            type={this.value.top.type}
-            onTypeChange={(value) => {
-              this.value = produce(toJS(this.value), (draft) => {
-                draft.top.type = value;
-                draft.right.type = value;
-                draft.bottom.type = value;
-                draft.left.type = value;
-              });
-            }}
-            color={this.value.top.color}
-            onColorChange={(value) => {
-              this.value = produce(toJS(this.value), (draft) => {
-                draft.top.color = value.toRgbString();
-                draft.right.color = value.toRgbString();
-                draft.bottom.color = value.toRgbString();
-                draft.left.color = value.toRgbString();
-              });
-            }}
-            width={this.value.top.width}
-            onWidthChange={(value) => {
-              if (value === undefined || value === null) {
-                return;
-              }
-              this.value = produce(toJS(this.value), (draft) => {
-                draft.top.width = value;
-                draft.right.width = value;
-                draft.left.width = value;
-                draft.bottom.width = value;
-              });
-            }}
-          />
-        )}
-        {this.value.isSame === false && (
-          <Flex vertical={true} gap={5} className="full-width">
-            <SmallLabeledContainer displayName="borderproperty-label-top">
-              <BorderSideComponent
-                type={this.value.top.type}
-                onTypeChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.top.type = value;
-                  });
-                }}
-                color={this.value.top.color}
-                onColorChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.top.color = value.toRgbString();
-                  });
-                }}
-                width={this.value.top.width}
-                onWidthChange={(value) => {
-                  if (value === undefined || value === null) {
-                    return;
-                  }
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.top.width = value;
-                  });
-                }}
-              />
-            </SmallLabeledContainer>
-            <SmallLabeledContainer displayName="borderproperty-label-right">
-              <BorderSideComponent
-                type={this.value.right.type}
-                onTypeChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.right.type = value;
-                  });
-                }}
-                color={this.value.right.color}
-                onColorChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.right.color = value.toRgbString();
-                  });
-                }}
-                width={this.value.right.width}
-                onWidthChange={(value) => {
-                  if (value === undefined || value === null) {
-                    return;
-                  }
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.right.width = value;
-                  });
-                }}
-                label="borderproperty-label-right"
-              />
-            </SmallLabeledContainer>
-            <SmallLabeledContainer displayName="borderproperty-label-bottom">
-              <BorderSideComponent
-                type={this.value.bottom.type}
-                onTypeChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.bottom.type = value;
-                  });
-                }}
-                color={this.value.bottom.color}
-                onColorChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.bottom.color = value.toRgbString();
-                  });
-                }}
-                width={this.value.bottom.width}
-                onWidthChange={(value) => {
-                  if (value === undefined || value === null) {
-                    return;
-                  }
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.bottom.width = value;
-                  });
-                }}
-              />
-            </SmallLabeledContainer>
-            <SmallLabeledContainer displayName="borderproperty-label-left">
-              <BorderSideComponent
-                type={this.value.left.type}
-                onTypeChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.left.type = value;
-                  });
-                }}
-                color={this.value.left.color}
-                onColorChange={(value) => {
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.left.color = value.toRgbString();
-                  });
-                }}
-                width={this.value.left.width}
-                onWidthChange={(value) => {
-                  if (value === undefined || value === null) {
-                    return;
-                  }
-                  this.value = produce(toJS(this.value), (draft) => {
-                    draft.left.width = value;
-                  });
-                }}
-              />
-            </SmallLabeledContainer>
-          </Flex>
-        )}
-      </Flex>
-    );
-  });
-
   calcCss(): CSSProperties {
     const style: CSSProperties = {};
     style.borderTop = "none";
@@ -328,6 +304,12 @@ export class BorderProperty extends DefaultWidgetProperty<BorderPropertyValue> {
   }
 
   markup(): ReactNode {
-    return <this.Comp />;
+    return (
+      <BorderPropertyComponent
+        value={this.value}
+        help={this.help ?? ""}
+        displayName={this.displayName}
+      />
+    );
   }
 }

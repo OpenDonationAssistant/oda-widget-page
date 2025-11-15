@@ -11,11 +11,11 @@
   position: relative;
   flex: 1 1;
   color: var(--oda-color-550);
-  & span{
+  & span {
     font-size: 16px;
     color: var(--oda-main-text-color);
     margin-left: 5px;
-    &[class*="material-symbols-sharp"]{
+    &[class*="material-symbols-sharp"] {
       color: rgba(251, 255, 241, 0.4);
     }
   }
@@ -31,6 +31,9 @@
     &[class*="ant-select-outlined"] {
       width: 100%;
     }
+  }
+  & [class*="ant-slider-horizontal"] {
+    width: 100%;
   }
 }
 

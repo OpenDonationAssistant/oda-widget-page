@@ -32,7 +32,7 @@ export class ModalState {
   }
   public handleEscape() {
     if (this.show && this._onTop) {
-      console.log({ state: this }, "handle keypress");
+      log.debug({ state: this }, "handle keypress");
       this._show = false;
       this._onTop = false;
       if (this._parent !== null) {

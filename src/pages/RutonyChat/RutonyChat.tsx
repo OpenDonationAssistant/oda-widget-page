@@ -18,33 +18,19 @@ export default function DonatonWidget({}) {
     subscribe(widgetId, conf.topic.alerts, (message) => {
       const json = JSON.parse(message.body);
 
-      var jData = {
+      var data = {
           "username": json.nickname,
           "text": json.message,
           "amount": json.amount.major,
           "currency": "RUB"
       }
 
-      var j = {
+      var request = {
           "type": "donate",
-          "data": JSON.stringify(jData)
+          "data": JSON.stringify(data)
       };
 
-      const messageToSend = {
-        "type": "Donate",
-        "data": {
-          jData
-        }
-      };
-        // nick: json.nickname,
-        // site: "oda.digital",
-        // text: json.message,
-        // summ: `${json.amount.major}`,
-        // summf: `${json.amount.major}`,
-        // test: false,
-      log.debug({ message: messageToSend }, "Sending message");
-      socket.send(JSON.stringify(j));
-      // socket.send(JSON.stringify(messageToSend));
+      socket.send(JSON.stringify(request));
       message.ack();
     });
     setSocket(socket);

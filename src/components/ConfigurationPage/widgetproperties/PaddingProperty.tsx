@@ -24,11 +24,17 @@ export const DEFAULT_PADDING_PROPERTY_VALUE: PaddingPropertyValue = {
   right: 0,
 };
 
-const PaddingPropertyComponent = observer(
-  ({ property }: { property: PaddingProperty }) => {
+export const PaddingPropertyComponent = observer(
+  ({
+    value,
+    displayName,
+  }: {
+    value: PaddingPropertyValue;
+    displayName: string;
+  }) => {
     return (
       <Flex vertical={true} gap={12}>
-        <LabeledContainer displayName={property.displayName}>
+        <LabeledContainer displayName={displayName}>
           <Segmented
             block
             className="full-width"
@@ -46,75 +52,51 @@ const PaddingPropertyComponent = observer(
                 label: "По сторонам",
               },
             ]}
-            value={property.value.isSame}
+            value={value.isSame}
             onChange={(checked) => {
-              const updated = produce(
-                toJS(property.value),
-                (draft: PaddingPropertyValue) => {
-                  draft.isSame = checked;
-                },
-              );
-              property.value = updated;
+              value.isSame = checked;
             }}
           />
         </LabeledContainer>
-        {property.value.isSame === true && (
+        {value.isSame === true && (
           <InputNumber
-            value={property.value.top}
+            value={value.top}
             addon="px"
-            onChange={(value) => {
-              if (value === null || value === undefined) {
+            onChange={(updated) => {
+              if (updated === null || updated === undefined) {
                 return;
               }
-              const updated = produce(
-                property.value,
-                (draft: PaddingPropertyValue) => {
-                  draft.top = value;
-                  draft.right = value;
-                  draft.left = value;
-                  draft.bottom = value;
-                },
-              );
-              property.value = updated;
+              value.top = updated;
+              value.right = updated;
+              value.left = updated;
+              value.bottom = updated;
             }}
           />
         )}
-        {property.value.isSame === false && (
+        {value.isSame === false && (
           <Flex vertical className="full-width">
             <Flex gap={9} className="full-width">
               <SmallLabeledContainer displayName="paddingproperty-label-top">
                 <InputNumber
-                  value={property.value.top}
+                  value={value.top}
                   addon="px"
-                  onChange={(value) => {
-                    if (value === null || value === undefined) {
+                  onChange={(updated) => {
+                    if (updated === null || updated === undefined) {
                       return;
                     }
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: PaddingPropertyValue) => {
-                        draft.top = value;
-                      },
-                    );
-                    property.value = updated;
+                    value.top = updated;
                   }}
                 />
               </SmallLabeledContainer>
               <SmallLabeledContainer displayName="paddingproperty-label-right">
                 <InputNumber
-                  value={property.value.right}
+                  value={value.right}
                   addon="px"
-                  onChange={(value) => {
-                    if (value === null || value === undefined) {
+                  onChange={(updated) => {
+                    if (updated === null || updated === undefined) {
                       return;
                     }
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: PaddingPropertyValue) => {
-                        draft.right = value;
-                      },
-                    );
-                    property.value = updated;
+                    value.right = updated;
                   }}
                 />
               </SmallLabeledContainer>
@@ -122,37 +104,25 @@ const PaddingPropertyComponent = observer(
             <Flex gap={9} className="full-width">
               <SmallLabeledContainer displayName="paddingproperty-label-bottom">
                 <InputNumber
-                  value={property.value.bottom}
+                  value={value.bottom}
                   addon="px"
-                  onChange={(value) => {
-                    if (value === null || value === undefined) {
+                  onChange={(updated) => {
+                    if (updated === null || updated === undefined) {
                       return;
                     }
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: PaddingPropertyValue) => {
-                        draft.bottom = value;
-                      },
-                    );
-                    property.value = updated;
+                    value.bottom = updated;
                   }}
                 />
               </SmallLabeledContainer>
               <SmallLabeledContainer displayName="paddingproperty-label-left">
                 <InputNumber
-                  value={property.value.left}
+                  value={value.left}
                   addon="px"
-                  onChange={(value) => {
-                    if (value === null || value === undefined) {
+                  onChange={(updated) => {
+                    if (updated === null || updated === undefined) {
                       return;
                     }
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: PaddingPropertyValue) => {
-                        draft.left = value;
-                      },
-                    );
-                    property.value = updated;
+                    value.left = updated;
                   }}
                 />
               </SmallLabeledContainer>
@@ -238,6 +208,11 @@ export class PaddingProperty extends DefaultWidgetProperty<PaddingPropertyValue>
   }
 
   markup(): ReactNode {
-    return <PaddingPropertyComponent property={this} />;
+    return (
+      <PaddingPropertyComponent
+        value={this.value}
+        displayName={this.displayName}
+      />
+    );
   }
 }

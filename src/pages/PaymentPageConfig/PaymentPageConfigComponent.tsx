@@ -1,25 +1,13 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData, useNavigate } from "react-router";
-import axios from "axios";
 import { WidgetData } from "../../types/WidgetData";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { Flex, Input, QRCode } from "antd";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import UtilityButton from "../../components/Button/UtilityButton";
-
-function uploadFile(file: File, name: string) {
-  return axios.put(
-    `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}?public=true`,
-    { file: file },
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-}
+import { uploadBlob } from "../../utils";
 
 export default function PaymentPageConfigComponent({}: {}) {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -73,7 +61,7 @@ export default function PaymentPageConfigComponent({}: {}) {
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      uploadFile(file, `back-${recipientId}.jpg`).then(() => navigate(0));
+      uploadBlob(file, `back-${recipientId}.jpg`).then(() => navigate(0));
     }
   };
 
@@ -81,7 +69,7 @@ export default function PaymentPageConfigComponent({}: {}) {
     if (e.target.files) {
       const file = e.target.files[0];
       console.log(file);
-      uploadFile(file, `logo-${recipientId}.png`).then(() => navigate(0));
+      uploadBlob(file, `logo-${recipientId}.png`).then(() => navigate(0));
     }
   };
 

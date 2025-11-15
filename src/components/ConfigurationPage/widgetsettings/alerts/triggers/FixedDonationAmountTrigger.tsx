@@ -9,7 +9,8 @@ export const FIXED_DONATION_AMOUNT_TRIGGER = {
 };
 
 export class FixedDonationAmountTrigger implements Trigger {
-  type = FIXED_DONATION_AMOUNT_TRIGGER;
+  type = FIXED_DONATION_AMOUNT_TRIGGER.type;
+  description = FIXED_DONATION_AMOUNT_TRIGGER.description;
   amount = 0;
 
   constructor(amount?: number) {
@@ -20,7 +21,7 @@ export class FixedDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return false;
+    return event.amount.major === this.amount;
   }
 
   public compare(other: Trigger): number {

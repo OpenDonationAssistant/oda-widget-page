@@ -138,7 +138,6 @@ export class AlertController {
       this.settings.get("pause-media") as BooleanProperty
     ).value;
     this.sortedAlerts = alerts.sortedAlerts;
-    log.debug(`loading audio`);
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
     log.debug({ alert: this.sortedAlerts }, "sorted alerts");
     this.preloadImages();
@@ -165,68 +164,41 @@ export class AlertController {
       });
   }
 
-  private findAlert(json) {
+  private findAlert(json: any) {
     let index = -1;
     if (json.alertId) {
       index = this.sortedAlerts.findIndex((alert) => alert.id === json.alertId);
     } else {
-      index = this.sortedAlerts.findLastIndex((alert) => {
-        const trigger = alert.triggers.at(0);
-        log.debug({ trigger: trigger }, "checking trigger");
-        if (!trigger) {
-          return false;
-        }
-        if (trigger.type === "fixed-donation-amount") {
-          return trigger.amount === json.amount.major;
-        }
-        if (trigger.type === "at-least-donation-amount") {
-          return trigger.min <= json.amount.major;
-        }
-      });
-
+      index = this.sortedAlerts.findIndex((alert) => alert.firedBy(json));
       log.debug(`choosen alert index: ${index}`);
     }
     if (index === -1) {
       return null;
     }
     const choosenAlert = this.sortedAlerts[index];
-    if (choosenAlert.triggers.at(0).type === "fixed-donation-amount") {
-      const choosenAlertPool = this.sortedAlerts
-        .filter(
-          (alert) => alert.triggers.at(0).type === "fixed-donation-amount",
-        )
-        .filter(
-          (alert) =>
-            alert.triggers.at(0).amount === choosenAlert.triggers.at(0).amount,
-        );
-      if (choosenAlertPool.length > 0) {
-        const selected = getRndInteger(0, choosenAlertPool.length);
-        log.debug(
-          { index: selected, pool: choosenAlertPool },
-          "choosen alert pool",
-        );
-        return choosenAlertPool[selected];
+    const choosenAlertPool = this.sortedAlerts.filter((alert) => {
+      if (alert.triggers.length != choosenAlert.triggers.length) {
+        return false;
       }
+      return (
+        choosenAlert.triggers
+          .map(
+            (trigger, index) =>
+              alert.triggers[index].type === trigger.type &&
+              alert.triggers[index].compare(trigger) === 0,
+          )
+          .findIndex((trigger) => !trigger) === -1
+      );
+    });
+    if (choosenAlertPool.length > 0) {
+      const selected = getRndInteger(0, choosenAlertPool.length);
+      log.debug(
+        { index: selected, pool: choosenAlertPool },
+        "choosen alert pool",
+      );
+      return choosenAlertPool[selected];
     }
-    if (choosenAlert.triggers.at(0).type === "at-least-donation-amount") {
-      const choosenAlertPool = this.sortedAlerts
-        .filter(
-          (alert) => alert.triggers.at(0).type === "at-least-donation-amount",
-        )
-        .filter(
-          (alert) =>
-            alert.triggers.at(0).min === choosenAlert.triggers.at(0).min,
-        );
-      if (choosenAlertPool.length > 0) {
-        const selected = getRndInteger(0, choosenAlertPool.length);
-        log.debug(
-          { index: selected, pool: choosenAlertPool },
-          "choosen alert pool",
-        );
-        return choosenAlertPool[selected];
-      }
-    }
-    return this.sortedAlerts[index];
+    return choosenAlert;
   }
 
   protected async renderAlert(

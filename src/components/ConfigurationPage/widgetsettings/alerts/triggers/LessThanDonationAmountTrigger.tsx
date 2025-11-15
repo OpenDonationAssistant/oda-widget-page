@@ -8,7 +8,8 @@ export const LESS_THAN_DONATION_AMOUNT_TRIGGER = {
 };
 
 export class LessThanDonationAmountTrigger implements Trigger {
-  type = LESS_THAN_DONATION_AMOUNT_TRIGGER;
+  type = LESS_THAN_DONATION_AMOUNT_TRIGGER.type;
+  description = LESS_THAN_DONATION_AMOUNT_TRIGGER.description;
   amount = 0;
 
   constructor(amount?: number) {
@@ -19,7 +20,7 @@ export class LessThanDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return false;
+    return event.amount.major < this.amount;
   }
 
   public compare(other: Trigger): number {

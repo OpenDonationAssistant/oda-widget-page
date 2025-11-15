@@ -117,3 +117,9 @@ export const OUT_ANIMATIONS = [
   "slideOutRight",
   "slideOutUp",
 ]
+
+export const ALL_ANIMATIONS = [
+  ...APPEARANCE_ANIMATIONS,
+  ...IDLE_ANIMATIONS,
+  ...OUT_ANIMATIONS,
+];

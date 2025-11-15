@@ -2,7 +2,7 @@
   padding: 12px 15px;
   background-color: var(--oda-color-150);
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 21px;
   &:hover {
     background-color: var(--oda-color-250);

@@ -1,24 +1,3 @@
-.alerttitle {
-  font-size: 21px;
-  color: var(--oda-color-950);
-  width: 100%;
-}
-
-.contentpanel{
-  flex: 1 1 auto;
-}
-
-.preview {
-  padding: 6px;
-  background-color: black;
-  border-radius: 9px;
-  margin-top: 0px;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .resizable {
   border-radius: 6px;
   background: url(https://cdn.oda.digital/assets/preview-background.jpg);

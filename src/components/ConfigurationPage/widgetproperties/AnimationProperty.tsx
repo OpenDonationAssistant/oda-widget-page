@@ -1,7 +1,8 @@
-import { Select } from "antd";
+import { Flex, Select } from "antd";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import {
+  ALL_ANIMATIONS,
   APPEARANCE_ANIMATIONS,
   IDLE_ANIMATIONS,
   OUT_ANIMATIONS,
@@ -14,11 +15,45 @@ import { getRndInteger } from "../../../utils";
 import { log } from "../../../logging";
 import { observer } from "mobx-react-lite";
 import { CSSProperties } from "react";
+import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import classes from "./AnimationProperty.module.css";
 
 export interface AnimationPropertyValue {
   animation: string;
   duration: number;
 }
+
+export const AnimationPropertyComponent = observer(
+  ({
+    value,
+    displayName,
+  }: {
+    value: AnimationPropertyValue;
+    displayName: string;
+  }) => {
+    return (
+      <Flex gap={6}>
+        <SmallLabeledContainer displayName={displayName} className={`${classes.half}`}>
+          <Select
+            className="full-width"
+            value={value.animation}
+            options={[...ALL_ANIMATIONS, "random", "none"].map((option) => {
+              return { label: option, value: option };
+            })}
+            onChange={(selected) => (value.animation = selected)}
+          />
+        </SmallLabeledContainer>
+        <SmallLabeledContainer displayName="Продолжительность" className={`${classes.half}`}>
+          <InputNumber
+            value={value.duration}
+            addon="ms"
+            onChange={(updated) => (value.duration = updated)}
+          />
+        </SmallLabeledContainer>
+      </Flex>
+    );
+  },
+);
 
 export const Component = observer(
   ({ property }: { property: AnimationProperty }) => {
@@ -101,7 +136,7 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
   copy() {
     return new AnimationProperty({
       name: this.name,
-      value: produce(toJS(this.value), draft => draft),
+      value: produce(toJS(this.value), (draft) => draft),
       displayName: this.displayName,
       target: this._target,
     });
