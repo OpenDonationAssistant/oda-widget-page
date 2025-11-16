@@ -1,4 +1,4 @@
-export default function PersonIcon({}) {
+export default function PersonIcon() {
   return (
     <>
       <svg

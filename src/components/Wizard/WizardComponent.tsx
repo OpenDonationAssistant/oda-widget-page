@@ -192,6 +192,7 @@ export const Wizard = observer(
     );
 
     useEffect(() => {
+      log.debug("registering reaction for dialog state");
       reaction(
         () => configurationStore.index,
         () => {
@@ -202,7 +203,7 @@ export const Wizard = observer(
           );
         },
       );
-    }, [configurationStore]);
+    }, [configurationStore, dialogState]);
 
     return (
       <>

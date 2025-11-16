@@ -9,7 +9,7 @@ import PrimaryButton from "../../components/Button/PrimaryButton";
 import UtilityButton from "../../components/Button/UtilityButton";
 import { uploadBlob } from "../../utils";
 
-export default function PaymentPageConfigComponent({}: {}) {
+export default function PaymentPageConfigComponent() {
   const { recipientId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);

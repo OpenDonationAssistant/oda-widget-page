@@ -18,7 +18,7 @@ import {
   Warning,
 } from "../../components/Overlay/Overlay";
 
-export const StreamingPlatformsSection = observer(({}) => {
+export const StreamingPlatformsSection = observer(() => {
   const tokenStore = useContext(TokenStoreContext);
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(

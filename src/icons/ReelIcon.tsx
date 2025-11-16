@@ -1,4 +1,4 @@
-export default function ReelIcon({}) {
+export default function ReelIcon() {
   return (
     <>
       <svg

@@ -34,7 +34,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
     () => {
       log.debug({ index: index.index }, "new trigger selected index");
       if (index.index != null) {
-        if (index.index == rule.triggers.length) {
+        if (index.index === rule.triggers.length) {
           setTrigger(null);
           setTriggerId("");
         } else {

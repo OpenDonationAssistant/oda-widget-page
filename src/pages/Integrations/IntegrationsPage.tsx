@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 
-export const IntegrationsPage = observer(({}) => {
+export const IntegrationsPage = observer(() => {
   const [tokenStore] = useState<TokenStore>(() => new DefaultTokenStore());
   const { recipientId } = useLoaderData() as WidgetData;
 

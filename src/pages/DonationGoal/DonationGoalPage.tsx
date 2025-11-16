@@ -11,7 +11,7 @@ import {
   VariableStoreContext,
 } from "../../stores/VariableStore";
 
-export default function DonatonPage({}) {
+export default function DonatonPage() {
   const { widgetId, conf, recipientId, settings } =
     useLoaderData() as WidgetData;
 

@@ -1,4 +1,4 @@
-export default function SongIcon({}) {
+export default function SongIcon() {
   return (
     <>
       <svg

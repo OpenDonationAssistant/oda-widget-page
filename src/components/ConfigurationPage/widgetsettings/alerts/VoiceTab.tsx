@@ -1,8 +1,6 @@
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import BooleanPropertyInput from "../../components/BooleanPropertyInput";
-import TextPropertyModal from "../../widgetproperties/TextPropertyModal";
-import TextArea from "antd/es/input/TextArea";
 import { Alert } from "./Alerts";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";

@@ -1,4 +1,4 @@
-export default function CopyIcon({}) {
+export default function CopyIcon() {
   return (
     <>
       <svg

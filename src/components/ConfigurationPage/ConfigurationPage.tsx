@@ -219,7 +219,7 @@ const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
   );
 });
 
-export default function ConfigurationPage({}: {}) {
+export default function ConfigurationPage() {
   const [asCards, setAsCards] = useState<boolean>(() => {
     const value = localStorage.getItem("asCards");
     if (value === null || value === undefined) {

@@ -177,7 +177,7 @@ export class AlertController {
     }
     const choosenAlert = this.sortedAlerts[index];
     const choosenAlertPool = this.sortedAlerts.filter((alert) => {
-      if (alert.triggers.length != choosenAlert.triggers.length) {
+      if (alert.triggers.length !== choosenAlert.triggers.length) {
         return false;
       }
       return (
@@ -207,7 +207,7 @@ export class AlertController {
     ackFunction: Function,
   ): Promise<void> {
     // TODO: send after checking for showing?
-    if (this.showing == true) {
+    if (this.showing === true) {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
       log.debug("another alert in play");
       return;

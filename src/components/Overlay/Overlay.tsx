@@ -170,7 +170,7 @@ export const Warning = ({
   );
 };
 
-export const CloseOverlayButton = ({}) => {
+export const CloseOverlayButton = () => {
   const dialogState = useContext(ModalStateContext);
 
   return (
@@ -222,7 +222,7 @@ export const Overlay = observer(({ children }: { children: ReactNode }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [state.show]);
+  }, [state.show, state]);
 
   return (
     <>

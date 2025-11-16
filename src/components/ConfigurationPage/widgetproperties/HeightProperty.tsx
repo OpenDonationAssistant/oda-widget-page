@@ -1,10 +1,8 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import InputNumber from "../components/InputNumber";
-import { Flex, Segmented, Switch } from "antd";
-import classes from "./WidthProperty.module.css";
+import { Flex } from "antd";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 
 export class HeightProperty extends DefaultWidgetProperty<number> {

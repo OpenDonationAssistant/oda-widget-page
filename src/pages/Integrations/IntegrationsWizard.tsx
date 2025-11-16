@@ -14,7 +14,7 @@ import {
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
 import { log } from "../../logging";
-import { DefaultTokenStore, TokenStore } from "../../stores/TokenStore";
+import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
 
 export class IntegrationWizardStore {
@@ -58,7 +58,7 @@ export const IntegrationWizardStoreContext = createContext(
   new IntegrationWizardStore(),
 );
 
-export const ChooseDonationPlatformComponent = observer(({}: {}) => {
+export const ChooseDonationPlatformComponent = observer(() => {
   const context = useContext(IntegrationWizardStoreContext);
 
   return (
@@ -85,7 +85,7 @@ export const ChooseDonationPlatformComponent = observer(({}: {}) => {
   );
 });
 
-export const AddDonatePayTokenComponent = observer(({}: {}) => {
+export const AddDonatePayTokenComponent = observer(() => {
   const context = useContext(IntegrationWizardStoreContext);
 
   return (

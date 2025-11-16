@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import {
   COLOR_STOP_UNIT,
-  ColorProperty,
   ColorPropertyValue,
   ColorStop,
   GRADIENT_TYPE,
@@ -45,9 +44,7 @@ const ColorStopComponent = observer(
                 },
               );
               property.value = updated;
-              {
-                onChange && onChange(updated);
-              }
+              onChange && onChange(updated);
             }}
             addon={
               <Select
@@ -74,9 +71,7 @@ const ColorStopComponent = observer(
                     },
                   );
                   property.value = updated;
-                  {
-                    onChange && onChange(updated);
-                  }
+                  onChange && onChange(updated);
                 }}
               />
             }
@@ -106,9 +101,7 @@ const AddColorToGradient = observer(
             },
           );
           property.value = updated;
-          {
-            onChange && onChange(updated);
-          }
+          onChange && onChange(updated);
         }}
       >
         <Flex>
@@ -203,9 +196,7 @@ const GradientSettings = observer(
                   },
                 );
                 property.value = updated;
-                {
-                  onChange && onChange(updated);
-                }
+                onChange && onChange(updated);
               }}
             />
           </SmallLabeledContainer>
@@ -365,9 +356,7 @@ export const ColorPropertyComponent = observer(
                 },
               );
               property.value = updated;
-              {
-                onChange && onChange(updated);
-              }
+              onChange && onChange(updated);
             }}
           />
         )}

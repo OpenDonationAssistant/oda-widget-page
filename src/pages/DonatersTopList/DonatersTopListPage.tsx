@@ -7,7 +7,7 @@ import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPag
 import { DonatersListStore } from "./DonatersListStore";
 import { DefaultHistoryStore } from "../History/HistoryStore";
 
-export default function DonatersTopListPage({}) {
+export default function DonatersTopListPage() {
   const { widgetId, recipientId, settings, conf } =
     useLoaderData() as WidgetData;
 

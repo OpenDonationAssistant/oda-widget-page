@@ -83,7 +83,7 @@ async function getToken(page: string | null, login: string, password: string) {
     });
 }
 
-export default function Login({}) {
+export default function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 

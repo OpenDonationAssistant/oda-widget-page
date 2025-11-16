@@ -1,4 +1,4 @@
-import { Flex, Select } from "antd";
+import { Select } from "antd";
 import { Renderable } from "../../../utils";
 import { AutomationAction } from "../AutomationState";
 import LabeledContainer from "../../../components/LabeledContainer/LabeledContainer";

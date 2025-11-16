@@ -262,7 +262,7 @@ export class DefaultHistoryStore implements HistoryStore {
       "loading next page",
     );
     if (
-      this._amount != -1 &&
+      this._amount !== -1 &&
       this._pageNumber * this._pageSize >= this._amount
     ) {
       return Promise.resolve();

@@ -164,16 +164,6 @@ const DonationGoalItemComponent = observer(
 
 const DonationGoalPropertyComponent = observer(
   ({ property }: { property: DonationGoalProperty }) => {
-    const [opened, setOpened] = useState<string>("");
-
-    const switcher = (index: number) => {
-      if (opened === String(index)) {
-        setOpened("");
-      } else {
-        setOpened(String(index));
-      }
-    };
-
     return (
       <List>
         {property.value.map((goal: Goal, index: number) => (

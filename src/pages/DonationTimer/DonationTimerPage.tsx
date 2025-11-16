@@ -7,7 +7,7 @@ import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/
 import { useState } from "react";
 import { DefaultHistoryStore, HistoryStore } from "../History/HistoryStore";
 
-export default function DonationTimerPage({}) {
+export default function DonationTimerPage() {
   const { settings, recipientId, conf, widgetId } =
     useLoaderData() as WidgetData;
 

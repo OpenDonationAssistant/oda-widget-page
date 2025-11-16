@@ -5,7 +5,7 @@ import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
 import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 
-export default function DonatonPage({}) {
+export default function DonatonPage() {
   const { settings } = useLoaderData() as WidgetData;
 
   return (

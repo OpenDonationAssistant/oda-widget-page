@@ -1,4 +1,4 @@
-export default function RunIcon({}) {
+export default function RunIcon() {
   return (
     <>
       <svg

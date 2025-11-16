@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { log } from "../../logging";
 
-export default function RequestsDisabledWarning({}: {}) {
+export default function RequestsDisabledWarning() {
   const [requestsEnabled, setRequestsEnabled] = useState(true);
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import classes from "./MessageTitle.module.css";
 import { observer } from "mobx-react-lite";
 import { AlertStateContext } from "../../AlertState";
 
-export const MessageTitle = observer(({}) => {
+export const MessageTitle = observer(() => {
   const state = useContext(AlertStateContext);
 
   return (

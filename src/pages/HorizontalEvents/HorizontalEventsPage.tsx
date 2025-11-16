@@ -7,7 +7,7 @@ import { HorizontalEventsWidgetSettings } from "./HorizontalEventsWidgetSettings
 import { DefaultHistoryStore, HistoryStore } from "../History/HistoryStore";
 import { useState } from "react";
 
-export default function HorizontalEventsPage({}) {
+export default function HorizontalEventsPage() {
   const { recipientId, widgetId, settings, conf } =
     useLoaderData() as WidgetData;
 

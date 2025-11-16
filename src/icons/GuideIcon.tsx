@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function GuideIcon({ color }: { color?: string }) {
   return (
     <>

@@ -9,9 +9,8 @@ import {
 import WidgetWrapper from "../../WidgetWrapper";
 import { TwitchAlertsWidget } from "./TwitchAlertsWidget";
 
-export default function TwitchAlertsPage({}) {
-  const { widgetId, conf, recipientId, settings } =
-    useLoaderData() as WidgetData;
+export default function TwitchAlertsPage() {
+  const { settings } = useLoaderData() as WidgetData;
 
   const widgetSettings = Widget.configFromJson(
     settings,

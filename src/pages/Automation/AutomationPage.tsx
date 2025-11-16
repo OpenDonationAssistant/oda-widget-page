@@ -82,7 +82,7 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   );
 });
 
-const RuleList = observer(({}) => {
+const RuleList = observer(() => {
   const state = useContext(AutomationStateContext);
   const [showModal, setShowModal] = useState<boolean>(false);
   const { t } = useTranslation();
@@ -90,7 +90,7 @@ const RuleList = observer(({}) => {
     setShowModal((old) => !old);
   };
   const parentModalState = useContext(ModalStateContext);
-  const [deleteRuleDialogState, setDeleteRuleDialogState] =
+  const [deleteRuleDialogState] =
     useState<ModalState>(() => new ModalState(parentModalState));
 
   return (
@@ -185,7 +185,7 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
   );
 });
 
-const AutomationPage = observer(({}) => {
+const AutomationPage = observer(() => {
   const state = new AutomationState(true);
   const widgetStore = new DefaultWidgetStore();
 

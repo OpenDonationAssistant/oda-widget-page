@@ -40,7 +40,7 @@ export const DonationTimer = observer(
           }
         },
       );
-    }, [store]);
+    }, [store, settings.resetOnLoad, lastDonationTime]);
 
     useEffect(() => {
       const intervalId = setInterval(() => {

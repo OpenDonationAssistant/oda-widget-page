@@ -1,4 +1,4 @@
-export default function SelectedIcon({}) {
+export default function SelectedIcon() {
   return (
     <>
       <svg

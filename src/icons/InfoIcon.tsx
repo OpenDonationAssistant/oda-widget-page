@@ -1,4 +1,4 @@
-export default function InfoIcon({}) {
+export default function InfoIcon() {
   return (
     <>
       <svg

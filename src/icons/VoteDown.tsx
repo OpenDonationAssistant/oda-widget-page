@@ -1,4 +1,4 @@
-export default function VoteDown({}) {
+export default function VoteDown() {
   return (
     <>
       <svg

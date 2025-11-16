@@ -90,7 +90,7 @@ export class PlaylistController {
         originId: json.originId,
         owner: json.owner,
         title: json.title,
-        provider: json.provider == "vk" ? Provider.VK : Provider.YOUTUBE,
+        provider: json.provider === "vk" ? Provider.VK : Provider.YOUTUBE,
       };
 
       const playlist =
@@ -116,7 +116,7 @@ export class PlaylistController {
   }
 
   clearCurrentPlaylist() {
-    if (this.current.type() == PLAYLIST_TYPE.REQUESTED) {
+    if (this.current.type() === PLAYLIST_TYPE.REQUESTED) {
       MediaService(
         undefined,
         process.env.REACT_APP_MEDIA_API_ENDPOINT,
@@ -129,7 +129,7 @@ export class PlaylistController {
     log.debug({ song: song, playlist: playlist }, "Adding song to playlist");
     this.playlists.get(playlist)?.addSong(song);
     if (
-      this.current.type() == PLAYLIST_TYPE.PERSONAL &&
+      this.current.type() === PLAYLIST_TYPE.PERSONAL &&
       playlist === PLAYLIST_TYPE.REQUESTED
     ) {
       this.switchTo(PLAYLIST_TYPE.REQUESTED);

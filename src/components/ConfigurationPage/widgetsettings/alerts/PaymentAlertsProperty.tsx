@@ -125,7 +125,7 @@ const AlertItemComponent = observer(
   },
 );
 
-const ChooseTemplate = observer(({}: {}) => {
+const ChooseTemplate = observer(() => {
   const [presetSelection] = useState<SelectedIndexStore>(
     () => new SelectedIndexStore(),
   );

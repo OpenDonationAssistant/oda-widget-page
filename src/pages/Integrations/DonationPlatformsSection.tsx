@@ -1,10 +1,6 @@
 import { useContext, useState } from "react";
 import { DonationPlatformWizard } from "./IntegrationsWizard";
-import {
-  DefaultTokenStore,
-  Token,
-  TokenStoreContext,
-} from "../../stores/TokenStore";
+import { Token, TokenStoreContext } from "../../stores/TokenStore";
 import {
   ModalState,
   ModalStateContext,
@@ -39,8 +35,9 @@ export const DonationPlatformsSection = observer(({}) => {
   const [deleteRuleDialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
   );
-  const [integrationSettingsDialogState, setIntegrationSettingsDialogState] =
-    useState<ModalState>(() => new ModalState(parentModalState));
+  const [integrationSettingsDialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
 
   return (
     <>

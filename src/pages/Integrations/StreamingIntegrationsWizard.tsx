@@ -16,7 +16,7 @@ import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import { log } from "../../logging";
 import { uuidv7 } from "uuidv7";
 
-export const ChooseStreamingPlatformComponent = observer(({}) => {
+export const ChooseStreamingPlatformComponent = observer(() => {
   const continuation = useContext(ContinuationContext);
   const selection = useContext(SelectedIndexContext);
 
@@ -44,7 +44,7 @@ export const ChooseStreamingPlatformComponent = observer(({}) => {
   );
 });
 
-export const StreamingIntegrationsWizard = observer(({}) => {
+export const StreamingIntegrationsWizard = observer(() => {
   const [continuation] = useState<Continuation>(() => new Continuation());
   const selection = useContext(SelectedIndexContext);
 

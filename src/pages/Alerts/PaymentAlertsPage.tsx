@@ -9,7 +9,7 @@ import { subscribe } from "../../socket";
 import { log } from "../../logging";
 import { DefaultTokenStore } from "../../stores/TokenStore";
 
-export default function PaymentAlertsPage({}) {
+export default function PaymentAlertsPage() {
   const { conf, widgetId, recipientId, settings } =
     useLoaderData() as WidgetData;
 

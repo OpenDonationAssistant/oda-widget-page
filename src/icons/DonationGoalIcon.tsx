@@ -1,4 +1,4 @@
-export default function DonationGoalIcon({}) {
+export default function DonationGoalIcon() {
   return (
     <>
       <svg

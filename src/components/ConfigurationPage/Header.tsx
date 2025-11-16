@@ -17,7 +17,7 @@ function logout() {
   window.location.replace("/");
 }
 
-export default function Header({}) {
+export default function Header() {
   const { recipientId } = useLoaderData() as WidgetData;
   const { t, i18n } = useTranslation();
 

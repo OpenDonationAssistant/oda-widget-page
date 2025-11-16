@@ -2,7 +2,7 @@ import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
 import classes from "./GuidesPage.module.css";
 
-export const GuidesPage = observer(({}) => {
+export const GuidesPage = observer(() => {
   return (
     <>
       <h1>Гайды</h1>

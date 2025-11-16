@@ -8,7 +8,7 @@ import { Flex } from "antd";
 import SecondaryButton from "./SecondaryButton";
 import PrimaryButton from "./PrimaryButton";
 
-export const SaveButtons = observer(({}) => {
+export const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
   const dialog = useContext(ModalStateContext);
 

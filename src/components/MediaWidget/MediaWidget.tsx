@@ -21,7 +21,7 @@ import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
 import PlaylistActionPanel from "./PlaylistActionPanel";
 
-export default function MediaWidget({}: {}) {
+export default function MediaWidget() {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
 
   const [playlist, setPlaylist] = useState<Playlist>(
@@ -34,8 +34,6 @@ export default function MediaWidget({}: {}) {
   const [activeTab, setActiveTab] = useState(PLAYLIST_TYPE.REQUESTED);
   const playlistController = useRef<PlaylistController>();
   const [song, setSong] = useState<Song | null>(null);
-  const [isRemote, setIsRemote] = useState<boolean>(false);
-  const { t } = useTranslation();
 
   useEffect(() => {
     const playlistListener = {
@@ -72,7 +70,7 @@ export default function MediaWidget({}: {}) {
     return () => {
       cleanupCommandListener(widgetId);
     };
-  }, [recipientId, widgetId]);
+  }, [recipientId, widgetId, conf, navigate]);
 
   return (
     <>

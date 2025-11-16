@@ -14,7 +14,7 @@ import {
   WidgetStoreContext,
 } from "../../stores/WidgetStore";
 
-export default function HistoryWidgetPage({}) {
+export default function HistoryWidgetPage() {
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
     () => new DefaultHistoryStore(recipientId, widgetId, conf),

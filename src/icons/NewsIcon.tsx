@@ -1,4 +1,4 @@
-export default function NewsIcon({}) {
+export default function NewsIcon() {
   return (
     <>
       <svg

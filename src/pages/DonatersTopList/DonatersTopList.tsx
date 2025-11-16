@@ -30,7 +30,7 @@ export const DonatersTopList = observer(
       if (settings.type === "Last") {
         historyStore.loadUntil(settings.topsize);
       }
-    }, [settings.topsize, settings.type]);
+    }, [settings.topsize, settings.type, historyStore]);
 
     const topsize = settings.topsize;
     const now = new Date();
@@ -55,25 +55,25 @@ export const DonatersTopList = observer(
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
       settings.backgroundImage.calcCss().then(setBackgroundImage);
-    }, [settings.backgroundImage.value]);
+    }, [settings.backgroundImage]);
 
     const [headerBackgroundImage, setHeaderBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.headerBackgroundImage.calcCss().then(setHeaderBackgroundImage);
-    }, [settings.headerBackgroundImage.value]);
+    }, [settings.headerBackgroundImage]);
 
     const [listBackgroundImage, setListBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.listBackgroundImage.calcCss().then(setListBackgroundImage);
-    }, [settings.listBackgroundImage.value]);
+    }, [settings.listBackgroundImage]);
 
     const [itemBackgroundImage, setItemBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.itemBackgroundImage.calcCss().then(setItemBackgroundImage);
-    }, [settings.itemBackgroundImage.value]);
+    }, [settings.itemBackgroundImage]);
 
     const layout = settings.layout;
     const title = settings.title;

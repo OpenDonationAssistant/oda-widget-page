@@ -7,7 +7,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { CryptoGatewaysSection, FiatGatewaysSection } from "./ExistingGateways";
 
-const PaymentGatewaysConfiguration = observer(({}) => {
+const PaymentGatewaysConfiguration = observer(() => {
   const { recipientId } = useLoaderData() as WidgetData;
   const configuration = useRef(
     new PaymentGatewayConfigurationStore(recipientId),

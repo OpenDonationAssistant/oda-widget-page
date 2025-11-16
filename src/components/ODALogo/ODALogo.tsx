@@ -1,4 +1,4 @@
-export default function ODALogo({}) {
+export default function ODALogo() {
   return (
     <>
       <svg

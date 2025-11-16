@@ -7,7 +7,6 @@ import AddMediaPopup from "./AddMediaPopup";
 import { Playlist } from "../../logic/playlist/Playlist";
 import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
-import { useTranslation } from "react-i18next";
 import classes from "./PlaylistComponent.module.css";
 
 export default function PlaylistComponent({
@@ -20,7 +19,6 @@ export default function PlaylistComponent({
   const [current, setCurrent] = useState<number | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
   const [urlToCopy, setUrlToCopy] = useState<string>("");
-  const { t } = useTranslation();
 
   function onDragEnd(result: any) {
     if (!result.destination) {
@@ -45,7 +43,7 @@ export default function PlaylistComponent({
       },
     });
     // todo cleanup function
-  }, [playlist]);
+  }, [playlist, widgetId]);
 
   useEffect(() => {
     if (activeRef.current) {

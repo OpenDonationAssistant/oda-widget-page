@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { RouletteWidgetSettings } from "./RouletteWidgetSettings";
 import { Wheel } from "spin-wheel";
-import PrimaryButton from "../../components/Button/PrimaryButton";
 import { ReelStore } from "../../stores/ReelStore";
 import { observer } from "mobx-react-lite";
 import { log } from "../../logging";

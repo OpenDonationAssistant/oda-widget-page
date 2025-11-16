@@ -6,8 +6,12 @@ export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-export async function uploadBlob(data: Blob | File, name: string, isPublic: boolean = false) {
-  const response = await axios.put(
+export async function uploadBlob(
+  data: Blob | File,
+  name: string,
+  isPublic: boolean = false,
+) {
+  await axios.put(
     `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}?public=${isPublic}`,
     { file: data },
     {
@@ -16,8 +20,10 @@ export async function uploadBlob(data: Blob | File, name: string, isPublic: bool
       },
     },
   );
-  const _ = response.data;
-  return { "url": `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`, "name": name };
+  return {
+    url: `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`,
+    name: name,
+  };
 }
 
 export const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +34,7 @@ export const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   const name = uuidv7();
   return uploadBlob(file, name).then((result) => {
     return { url: result.url, name: result.name, originalName: file.name };
-  })
+  });
 };
 
 export const fullUri = async (url: string | null): Promise<string> => {

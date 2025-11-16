@@ -1,4 +1,4 @@
-export default function LinesIcon({}) {
+export default function LinesIcon() {
   return (
     <>
       <svg

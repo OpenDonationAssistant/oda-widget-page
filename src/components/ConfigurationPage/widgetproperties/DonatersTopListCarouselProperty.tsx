@@ -1,10 +1,8 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { produce } from "immer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
-import BooleanPropertyInput from "../components/BooleanPropertyInput";
 import InputNumber from "../components/InputNumber";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";

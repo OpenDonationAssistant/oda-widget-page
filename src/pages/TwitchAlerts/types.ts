@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 import { Element, ElementData } from "../../components/Element/Element";
-import { TwitchAlertsProperty } from "./TwitchAlertsProperty";
 import { ElementFactory } from "../../components/Element/ElementFactory";
 
 export const TWITCH_ALERT_TRIGGERS = ["never", "follow", "subscribe", "gift"];

@@ -11,7 +11,7 @@ import { ReelWidget } from "./ReelWidget";
 import { DefaultReelStore, ReelStore } from "../../stores/ReelStore";
 import { useState } from "react";
 
-export default function ReelWidgetPage({}) {
+export default function ReelWidgetPage() {
   const { settings, widgetId, conf } = useLoaderData() as WidgetData;
 
   const widgetSettings = Widget.configFromJson(settings) as ReelWidgetSettings;

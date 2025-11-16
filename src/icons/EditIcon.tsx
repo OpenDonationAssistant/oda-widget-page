@@ -1,4 +1,4 @@
-export default function EditIcon({}) {
+export default function EditIcon() {
   return (
     <>
       <svg

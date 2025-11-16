@@ -90,7 +90,7 @@ export const LabelElementCompoent = observer(
               <Flex gap={12} align="center">
                 <Flex align="center">
                   <span
-                    className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.align == "left" ? classes.selectedalign : ""}`}
+                    className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.align === "left" ? classes.selectedalign : ""}`}
                     onClick={() => {
                       data.settings.align = "left";
                     }}
@@ -98,7 +98,7 @@ export const LabelElementCompoent = observer(
                     format_align_left
                   </span>
                   <span
-                    className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.align == "center" ? classes.selectedalign : ""}`}
+                    className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.align === "center" ? classes.selectedalign : ""}`}
                     onClick={() => {
                       data.settings.align = "center";
                     }}
@@ -107,7 +107,7 @@ export const LabelElementCompoent = observer(
                   </span>
                   <span
                     className={`material-symbols-sharp ${classes.alignbutton}
-                    ${data.settings.align == "right" ? classes.selectedalign : ""}`}
+                    ${data.settings.align === "right" ? classes.selectedalign : ""}`}
                     onClick={() => {
                       data.settings.align = "right";
                     }}
@@ -191,12 +191,6 @@ export const LabelElementCompoent = observer(
 );
 
 export class LabelElement extends Element<LabelElementSettings> {
-  constructor(
-    data: ElementData<LabelElementSettings>,
-    container: ElementContainer,
-  ) {
-    super(data, container);
-  }
 
   markup(): ReactNode {
     return <LabelElementCompoent data={this.data} />;

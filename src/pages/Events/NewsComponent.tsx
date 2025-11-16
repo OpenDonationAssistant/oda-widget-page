@@ -12,25 +12,23 @@ interface News {
   demoUrl: string;
 }
 
-export default function NewsComponent({}: {}) {
-  const { data, mutate, run, loading } = useRequest<News | null, any>(
-    async () => {
-      const feed = await NewsService(
-        undefined,
-        process.env.REACT_APP_NEWS_API_ENDPOINT,
-      )
-        .getFeed()
-        .then((data) => data.data);
-      return feed.map((it) => {
-        return {
-          id: it.id ?? "",
-          title: it.title ?? "",
-          description: it.description ?? "",
-          demoUrl: it.demoUrl ?? "",
-        };
-      })[0];
-    },
-  );
+export default function NewsComponent() {
+  const { data, mutate } = useRequest<News | null, any>(async () => {
+    const feed = await NewsService(
+      undefined,
+      process.env.REACT_APP_NEWS_API_ENDPOINT,
+    )
+      .getFeed()
+      .then((data) => data.data);
+    return feed.map((it) => {
+      return {
+        id: it.id ?? "",
+        title: it.title ?? "",
+        description: it.description ?? "",
+        demoUrl: it.demoUrl ?? "",
+      };
+    })[0];
+  });
 
   function sendFeedback(rating: number) {
     mutate((prev) => {

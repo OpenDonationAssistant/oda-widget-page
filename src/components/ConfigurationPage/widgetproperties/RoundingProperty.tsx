@@ -1,7 +1,7 @@
 import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Col, Flex, Row, Segmented } from "antd";
+import { Flex, Segmented } from "antd";
 import { produce } from "immer";
 import classes from "./RoundingProperty.module.css";
 import { useTranslation } from "react-i18next";

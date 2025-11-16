@@ -8,21 +8,20 @@ import {
   ModalStateContext,
   Overlay,
   Title,
-  Warning,
 } from "../../components/Overlay/Overlay";
 import { useContext, useState } from "react";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import { DefaultApiFactory as KeycloakService } from "@opendonationassistant/oda-recipient-service-client";
 
-export const AccountPage = observer(({}) => {
+export const AccountPage = observer(() => {
   const parentModalState = useContext(ModalStateContext);
   const [changePasswordModal] = useState<ModalState>(
     () => new ModalState(parentModalState),
   );
-  const [passwordChangedModal, setPasswordChangedModal] = useState<ModalState>(
+  const [passwordChangedModal] = useState<ModalState>(
     () => new ModalState(parentModalState),
   );
-  const [wrongPasswordModal, setWrongPasswordModal] = useState<ModalState>(
+  const [wrongPasswordModal] = useState<ModalState>(
     () => new ModalState(parentModalState),
   );
   const [oldPassword, setOldPassword] = useState<string>("");

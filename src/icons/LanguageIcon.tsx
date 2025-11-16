@@ -1,4 +1,4 @@
-export default function LanguageIcon({}) {
+export default function LanguageIcon() {
   return (
     <>
       <svg

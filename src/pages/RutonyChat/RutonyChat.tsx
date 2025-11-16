@@ -4,7 +4,7 @@ import { useLoaderData } from "react-router";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
 
-export default function DonatonWidget({}) {
+export default function DonatonWidget() {
   const { widgetId, conf } = useLoaderData() as WidgetData;
   const [socket, setSocket] = useState<WebSocket | null>(null);
 

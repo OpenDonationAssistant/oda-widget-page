@@ -823,7 +823,7 @@ const PaymentAlerts = observer(
             );
           });
         });
-    }, [alertController, tokenStore.tokens]);
+    }, [alertController, tokenStore.tokens, recipientId, navigate]);
 
     return (
       <AlertStateContext.Provider value={alertController.state}>

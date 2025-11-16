@@ -1,4 +1,4 @@
-export default function ArrowDown({}) {
+export default function ArrowDown() {
   return (
     <>
       <svg
