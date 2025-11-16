@@ -93,7 +93,7 @@ const NewsLineComponent = observer(({}) => {
           </Marquee>
           <NotBorderedIconButton
             onClick={() => {
-              window.open("https://oda.digital/news", undefined, "popup=true");
+              window.open("https://oda.digital/news/", undefined, "popup=true");
             }}
           >
             <span className={`material-symbols-sharp ${classes.openicon}`}>
