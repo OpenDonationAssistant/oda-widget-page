@@ -25,13 +25,3 @@ jobs:
         push: true
         tags: ghcr.io/opendonationassistant/oda-widget-page:${{ github.RUN_NUMBER }}
         build-args: gpr_token=${{ secrets.GPR_TOKEN }}
-
-    - name: Deploying new version
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        port: ${{ secrets.PORT }}
-        script: sh ~/update_widgets.sh ${{ github.RUN_NUMBER }}
