@@ -34,7 +34,7 @@ import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
 import { TriggersStoreContext } from "./triggers/TriggersStore";
 
-const SaveButtons = observer(({}) => {
+const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
   const dialog = useContext(ModalStateContext);
 

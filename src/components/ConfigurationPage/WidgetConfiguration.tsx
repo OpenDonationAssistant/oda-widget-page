@@ -256,7 +256,7 @@ export const WidgetConfiguration = observer(
 
     useEffect(() => {
       modalState.show = open ?? false;
-    }, [open]);
+    }, [open, modalState]);
 
     return (
       <WidgetSettingsContext.Provider

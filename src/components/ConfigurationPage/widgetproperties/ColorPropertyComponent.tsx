@@ -148,9 +148,7 @@ const GradientSettings = observer(
                 },
               );
               property.value = updated;
-              {
-                onChange && onChange(updated);
-              }
+              onChange && onChange(updated);
             }}
           />
           <Segmented
@@ -174,9 +172,7 @@ const GradientSettings = observer(
                 },
               );
               property.value = updated;
-              {
-                onChange && onChange(updated);
-              }
+              onChange && onChange(updated);
             }}
           />
         </SmallLabeledContainer>
@@ -235,9 +231,7 @@ const GradientColors = observer(
                       },
                     );
                     property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
+                    onChange && onChange(updated);
                   }}
                 />
                 <Flex
@@ -263,9 +257,7 @@ const GradientColors = observer(
                         },
                       );
                       property.value = updated;
-                      {
-                        onChange && onChange(updated);
-                      }
+                      onChange && onChange(updated);
                     }}
                   />
                   <span className={classes.colorStopLabel}>
@@ -281,9 +273,7 @@ const GradientColors = observer(
                       },
                     );
                     property.value = updated;
-                    {
-                      onChange && onChange(updated);
-                    }
+                    onChange && onChange(updated);
                   }}
                 >
                   <CloseIcon color="#FF8888" />
@@ -337,9 +327,7 @@ export const ColorPropertyComponent = observer(
                 },
               );
               property.value = updated;
-              {
-                onChange && onChange(updated);
-              }
+              onChange && onChange(updated);
             }}
           />
         </LabeledContainer>

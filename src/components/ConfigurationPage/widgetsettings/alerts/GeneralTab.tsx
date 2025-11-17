@@ -100,7 +100,7 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
           ))}
         </Flex>
         <Flex className={`${classes.addtriggerbuttoncontainer}`}>
-          {alert.triggers.filter((trigger) => trigger.type.type === "never")
+          {alert.triggers.filter((trigger) => trigger.type === "never")
             .length === 0 && (
             <CollapseLikeButton
               onClick={() => {

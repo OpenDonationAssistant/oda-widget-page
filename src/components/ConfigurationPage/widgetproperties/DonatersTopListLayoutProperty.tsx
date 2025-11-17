@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
-import classes from "./DonatersTopListLayoutProperty.module.css";
-import { Trans } from "react-i18next";
 import { observer } from "mobx-react-lite";
 import { Segmented } from "antd";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";

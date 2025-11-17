@@ -40,7 +40,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
     return () => {
       cleanupCommandListener(widgetId);
     };
-  }, [widgetId, settings]);
+  }, [widgetId, settings, navigate]);
 
   if (!settings.enabled) {
     return <></>;

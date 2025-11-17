@@ -28,7 +28,7 @@ import { WidthProperty } from "../widgetproperties/WidthProperty";
 import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
 import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationGoalState";
 import { Flex } from "antd";
-import { CloseOverlayButton, Title } from "../../Overlay/Overlay";
+import { CloseOverlayButton } from "../../Overlay/Overlay";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {

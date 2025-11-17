@@ -1,11 +1,10 @@
 import { ReactNode, createContext } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
-import { Tabs as AntTabs, Flex } from "antd";
+import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
 import classes from "./AbstractWidgetSettings.module.css";
-import { Preset } from "../../../types/Preset";
 
 export interface SettingsSection {
   key: string;

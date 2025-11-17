@@ -65,4 +65,5 @@ export class DefaultVariableStore implements VariableStore {
 export const VariableStoreContext = createContext<VariableStore>({
   variables: [],
   processTemplate: (template: string) => template,
+  load: () => {},
 });

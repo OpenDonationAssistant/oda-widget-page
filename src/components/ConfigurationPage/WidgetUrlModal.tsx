@@ -5,7 +5,6 @@ import axios from "axios";
 import { Tokens, tokenRequest } from "../../pages/Login/Login";
 import { useContext, useState } from "react";
 import {
-    CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
