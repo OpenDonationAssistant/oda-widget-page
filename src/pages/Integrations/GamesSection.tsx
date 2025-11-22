@@ -60,8 +60,8 @@ export const GamesSection = observer(({}) => {
     new WizardConfigurationStore({
       steps: [
         {
-          title: "Добавить интеграцию с игрой",
-          subtitle: "Выберите игру, которую хотите подключить",
+          title: "Добавить интеграцию",
+          subtitle: "Выберите, что хотите подключить",
           content: <GamesList />,
           condition: () => {
             return Promise.resolve(true);
@@ -71,7 +71,7 @@ export const GamesSection = observer(({}) => {
           },
         },
         {
-          title: "Добавить интеграцию с игрой",
+          title: "Добавить интеграцию",
           subtitle: "Настройте интеграцию",
           content: <></>,
           condition: () => {

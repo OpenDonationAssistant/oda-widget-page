@@ -55,25 +55,25 @@ export const DonatersTopList = observer(
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
     useEffect(() => {
       settings.backgroundImage.calcCss().then(setBackgroundImage);
-    }, [settings.backgroundImage]);
+    }, [settings.backgroundImage, settings.backgroundImage.value]);
 
     const [headerBackgroundImage, setHeaderBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.headerBackgroundImage.calcCss().then(setHeaderBackgroundImage);
-    }, [settings.headerBackgroundImage]);
+    }, [settings.headerBackgroundImage, settings.headerBackgroundImage.value]);
 
     const [listBackgroundImage, setListBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.listBackgroundImage.calcCss().then(setListBackgroundImage);
-    }, [settings.listBackgroundImage]);
+    }, [settings.listBackgroundImage, settings.listBackgroundImage.value]);
 
     const [itemBackgroundImage, setItemBackgroundImage] =
       useState<CSSProperties>({});
     useEffect(() => {
       settings.itemBackgroundImage.calcCss().then(setItemBackgroundImage);
-    }, [settings.itemBackgroundImage]);
+    }, [settings.itemBackgroundImage, settings.itemBackgroundImage.value]);
 
     const layout = settings.layout;
     const title = settings.title;

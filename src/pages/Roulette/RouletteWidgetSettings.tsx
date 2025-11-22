@@ -99,6 +99,11 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
   }
 
   public demo(): ReactNode {
-    return <RouletteWidget settings={this} store={new DemoReelStore(20000, this.itemsProperty.value)} />;
+    return (
+      <RouletteWidget
+        settings={this}
+        store={new DemoReelStore(20000, this.itemsProperty.value)}
+      />
+    );
   }
 }

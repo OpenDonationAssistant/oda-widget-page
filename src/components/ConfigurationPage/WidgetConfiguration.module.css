@@ -17,6 +17,7 @@
 
 .previewcontainer{
   flex: 1 1 auto;
+  max-width: calc(100% - 600px);
 }
 
 .templatebuttons {

@@ -62,7 +62,7 @@ export const RouletteWidget = observer(
         (option) => option === store.selection,
       );
       wheel.spinToItem(index, 20000);
-    }, [store.selection]);
+    }, [wheel, store.selection]);
 
     return (
       <>

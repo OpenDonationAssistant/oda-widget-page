@@ -23,6 +23,7 @@ export interface ImagePropertyValue {
 }
 
 export const DEFAULT_IMAGE_PROPERTY_VALUE = {
+  name: null,
   url: null,
   size: "auto",
   repeat: false,
