@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import {
   Amount,
   Attachment,
+  HistoryItemDataActionRequest,
   DefaultApiFactory as HistoryService,
   ReelResult,
   TargetGoal,
@@ -30,6 +31,7 @@ export interface HistoryItem {
   rouletteResults: ReelResult[];
   message: string;
   attachments: Attachment[];
+  actions: HistoryItemDataActionRequest[];
   timestamp: Date;
   date: string;
   time: string;
@@ -203,6 +205,7 @@ export class DefaultHistoryStore implements HistoryStore {
               goals: item.goals ?? [],
               message: item.message ?? "",
               attachments: item.attachments ?? [],
+              actions: item.actions ?? [],
               timestamp: item.authorizationTimestamp
                 ? new Date(item.authorizationTimestamp)
                 : new Date(),

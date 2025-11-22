@@ -9,6 +9,7 @@ import { publish } from "../../socket";
 import SongIcon from "../../icons/SongIcon";
 import { HistoryItem } from "./HistoryStore";
 import ReelIcon from "../../icons/ReelIcon";
+import RunIcon from "../../icons/RunIcon";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -44,6 +45,19 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
           >
             <SongIcon />
             <div>{attach.title}</div>
+          </Flex>
+        ))}
+      </Flex>
+      <Flex className="full-width" wrap gap={9}>
+        {item.actions?.map((action) => (
+          <Flex
+            key={action.id}
+            className={`${classes.attachment}`}
+            align="center"
+            gap={3}
+          >
+            <RunIcon />
+            <div>{action.amount}x {action.name}</div>
           </Flex>
         ))}
       </Flex>
