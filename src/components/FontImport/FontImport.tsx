@@ -14,7 +14,7 @@ export default function FontImport({ font }: { font: string }) {
         log.debug({ css: css }, "Loaded css");
       }
     });
-  }, [font, fonts, css]);
+  }, [font]);
 
   return (
     <>
