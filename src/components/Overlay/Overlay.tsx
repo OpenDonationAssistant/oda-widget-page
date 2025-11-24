@@ -199,7 +199,14 @@ export const Waiting = () => {
             <Title showClose={false}>Успешно выполнено</Title>
           )}
           <Flex className="full-width" justify="flex-end">
-            <PrimaryButton onClick={executionStore.callback}>OK</PrimaryButton>
+            <PrimaryButton
+              onClick={() => {
+                executionStore.acknowledged = true;
+                executionStore.callback();
+              }}
+            >
+              OK
+            </PrimaryButton>
           </Flex>
         </>
       )}
