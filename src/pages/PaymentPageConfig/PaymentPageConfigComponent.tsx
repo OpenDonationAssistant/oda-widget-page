@@ -63,7 +63,7 @@ export default function PaymentPageConfigComponent() {
       const file = e.target.files[0];
       const url = `${process.env.REACT_APP_CDN_ENDPOINT}/back-${recipientId}.jpg?random=${Date.now()}`;
       uploadBlob(file, `back-${recipientId}.jpg`, true).then(() =>
-        setImageUrl(url),
+        setBackUrl(url),
       );
     }
   };
