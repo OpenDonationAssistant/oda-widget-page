@@ -61,7 +61,10 @@ export default function PaymentPageConfigComponent() {
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      uploadBlob(file, `back-${recipientId}.jpg`).then(() => navigate(0));
+      const url = `${process.env.REACT_APP_CDN_ENDPOINT}/back-${recipientId}.jpg?random=${Date.now()}`;
+      uploadBlob(file, `back-${recipientId}.jpg`, true).then(() =>
+        setImageUrl(url),
+      );
     }
   };
 
@@ -69,7 +72,10 @@ export default function PaymentPageConfigComponent() {
     if (e.target.files) {
       const file = e.target.files[0];
       console.log(file);
-      uploadBlob(file, `logo-${recipientId}.png`).then(() => navigate(0));
+      const url = `${process.env.REACT_APP_CDN_ENDPOINT}/logo-${recipientId}.png?random=${Date.now()}`;
+      uploadBlob(file, `logo-${recipientId}.png`, true).then(() =>
+        setImageUrl(url),
+      );
     }
   };
 
