@@ -42,6 +42,15 @@
   color: var(--oda-color-1000);
 }
 
+.waiting {
+  margin-top: 40vh;
+  width: 620px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: vertical;
+  justify-content: space-between;
+}
+
 .big {
   margin-top: 2vh;
   top: 2vh;

@@ -1,15 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import "./PlayerInfo.css";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { findSetting } from "../utils";
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import "animate.css";
 import { AnimatedFontProperty } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
-  BorderProperty, DEFAULT_BORDER_PROPERTY_VALUE
+  BorderProperty,
+  DEFAULT_BORDER_PROPERTY_VALUE,
 } from "../ConfigurationPage/widgetproperties/BorderProperty";
 import {
   ColorProperty,
@@ -140,7 +141,11 @@ function PlayerInfo() {
 
   const requesterBorder = new BorderProperty({
     name: "requesterBorder",
-    value: findSetting(settings, "requesterBorder", DEFAULT_BORDER_PROPERTY_VALUE),
+    value: findSetting(
+      settings,
+      "requesterBorder",
+      DEFAULT_BORDER_PROPERTY_VALUE,
+    ),
   }).calcCss();
 
   const requesterRounding = new RoundingProperty({
@@ -216,7 +221,7 @@ function PlayerInfo() {
 
   const multilineWidget = () => {
     if (!title) {
-      return  <></>;
+      return <></>;
     }
     return (
       <>
@@ -232,7 +237,12 @@ function PlayerInfo() {
           }}
         >
           <div
-            style={{ ...titleBackground, ...titleRounding, ...titlePadding,...titleBorder }}
+            style={{
+              ...titleBackground,
+              ...titleRounding,
+              ...titlePadding,
+              ...titleBorder,
+            }}
           >
             <Flex
               align="center"
@@ -256,7 +266,7 @@ function PlayerInfo() {
                 ...requesterPadding,
                 ...requesterBackground,
                 ...requesterRounding,
-                ...requesterBorder
+                ...requesterBorder,
               }}
             >
               {owner && showRequester === "show" && (
@@ -279,9 +289,14 @@ function PlayerInfo() {
             </Col>
             <Col
               span={12}
-              style={{ ...queueBackground, ...queuePadding, ...queueRounding,...queueBorder }}
+              style={{
+                ...queueBackground,
+                ...queuePadding,
+                ...queueRounding,
+                ...queueBorder,
+              }}
             >
-              {left > 0 && showQueueSize  ==="show" && (
+              {left > 0 && showQueueSize === "show" && (
                 <Flex
                   align="center"
                   gap={5}

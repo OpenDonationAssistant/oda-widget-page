@@ -1,6 +1,13 @@
 import { Flex } from "antd";
 import classes from "./Overlay.module.css";
-import { ReactNode, createContext, useContext, useEffect, useRef } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { log } from "../../logging";
 import { createPortal } from "react-dom";
 import { makeAutoObservable } from "mobx";
@@ -10,6 +17,7 @@ import PrimaryButton from "../Button/PrimaryButton";
 import { useKeyPress } from "ahooks";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
+import { ExecutionStoreContext } from "../../stores/ExecutionStore";
 
 export class ModalState {
   private _show: boolean = false;
@@ -166,6 +174,35 @@ export const Warning = ({
         </SecondaryButton>
         <PrimaryButton onClick={action}>Продолжить</PrimaryButton>
       </Flex>
+    </Flex>
+  );
+};
+
+export const Waiting = () => {
+  const executionStore = useContext(ExecutionStoreContext);
+
+  return (
+    <Flex
+      vertical
+      align="flex-start"
+      justify="flex-start"
+      className={`${classes.waiting} ${classes.modal}`}
+      gap={36}
+    >
+      {executionStore.running && <Title showClose={false}>Подождите</Title>}
+      {!executionStore.running && !executionStore.acknowledged && (
+        <>
+          {executionStore.hasError && (
+            <Title showClose={false}>Произошла ошибка</Title>
+          )}
+          {!executionStore.hasError && (
+            <Title showClose={false}>Успешно выполнено</Title>
+          )}
+          <Flex className="full-width" justify="flex-end">
+            <PrimaryButton onClick={executionStore.callback}>OK</PrimaryButton>
+          </Flex>
+        </>
+      )}
     </Flex>
   );
 };

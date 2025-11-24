@@ -1,6 +1,6 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import classes from "./PaymentPageConfig.module.css";
-import { useLoaderData, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { Flex, Input, QRCode } from "antd";
@@ -8,10 +8,16 @@ import InputNumber from "../../components/ConfigurationPage/components/InputNumb
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import UtilityButton from "../../components/Button/UtilityButton";
 import { uploadBlob } from "../../utils";
+import { ExecutionStoreContext } from "../../stores/ExecutionStore";
+import {
+  ModalState,
+  ModalStateContext,
+  Overlay,
+  Waiting,
+} from "../../components/Overlay/Overlay";
 
-export default function PaymentPageConfigComponent() {
+export default function PaymentPageConfigPage() {
   const { recipientId } = useLoaderData() as WidgetData;
-  const navigate = useNavigate();
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [minimalAmount, setMinimalAmount] = useState<number>(40);
   const [email, setEmail] = useState("");
@@ -25,6 +31,11 @@ export default function PaymentPageConfigComponent() {
   );
   const [backUrl, setBackUrl] = useState<string>(
     "https://api.oda.digital/public/commonback.jpg",
+  );
+  const executionStore = useContext(ExecutionStoreContext);
+  const parentModalState = useContext(ModalStateContext);
+  const [dialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
   );
 
   useEffect(() => {
@@ -62,9 +73,16 @@ export default function PaymentPageConfigComponent() {
     if (e.target.files) {
       const file = e.target.files[0];
       const url = `${process.env.REACT_APP_CDN_ENDPOINT}/back-${recipientId}.jpg?random=${Date.now()}`;
-      uploadBlob(file, `back-${recipientId}.jpg`, true).then(() =>
-        setBackUrl(url),
-      );
+      executionStore.fn = () => {
+        dialogState.show = true;
+        return uploadBlob(file, `back-${recipientId}.jpg`, true).then(() =>
+          setBackUrl(url),
+        );
+      };
+      executionStore.callback = () => {
+        dialogState.show = false;
+      };
+      executionStore.run();
     }
   };
 
@@ -73,9 +91,16 @@ export default function PaymentPageConfigComponent() {
       const file = e.target.files[0];
       console.log(file);
       const url = `${process.env.REACT_APP_CDN_ENDPOINT}/logo-${recipientId}.png?random=${Date.now()}`;
-      uploadBlob(file, `logo-${recipientId}.png`, true).then(() =>
-        setImageUrl(url),
-      );
+      executionStore.fn = () => {
+        dialogState.show = true;
+        return uploadBlob(file, `logo-${recipientId}.png`, true).then(() =>
+          setImageUrl(url),
+        );
+      };
+      executionStore.callback = () => {
+        dialogState.show = false;
+      };
+      executionStore.run();
     }
   };
 
@@ -263,6 +288,11 @@ export default function PaymentPageConfigComponent() {
           </Flex>
         )}
       </div>
+      <ModalStateContext.Provider value={dialogState}>
+        <Overlay>
+          <Waiting />
+        </Overlay>
+      </ModalStateContext.Provider>
     </>
   );
 }
