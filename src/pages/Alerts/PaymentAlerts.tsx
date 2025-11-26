@@ -798,7 +798,7 @@ const PaymentAlerts = observer(
                 amount: {
                   minor: 0,
                   major: donation.amount_main,
-                  currency: donation.currency,
+                  currency: "RUB",
                 },
                 nickname: donation.username,
                 message: donation.message,
