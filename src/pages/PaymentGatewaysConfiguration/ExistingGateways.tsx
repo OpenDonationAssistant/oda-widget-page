@@ -79,6 +79,8 @@ const SettingsModal = observer(
       });
     };
 
+    checkFields();
+
     return (
       <Flex gap={36} vertical className="full-width">
         {configuration.gateway && (
