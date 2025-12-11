@@ -7,6 +7,8 @@ import { HistoryStore } from "../History/HistoryStore";
 import { observer } from "mobx-react-lite";
 import { reaction, toJS } from "mobx";
 import { log } from "../../logging";
+import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 export const DonationTimer = observer(
   ({
@@ -16,31 +18,25 @@ export const DonationTimer = observer(
     settings: DonationTimerWidgetSettings;
     store: HistoryStore;
   }) => {
-    const [lastDonationTime, setLastDonationTime] = useState<Date | null>(
-      null,
-    );
+    const [lastDonationTime, setLastDonationTime] = useState<Date | null>(null);
     const [time, setTime] = useState<String>("");
 
     useEffect(() => {
-      reaction(
-        () => store.items.at(0),
-        (item) => {
-          log.debug({ item: toJS(item) }, "timer reaction");
-          if (lastDonationTime === null && settings.resetOnLoad) {
-            log.debug("reset timer");
-            setLastDonationTime(new Date());
-            return;
-          }
-          if (item?.timestamp) {
-            const date = new Date(item?.timestamp);
-            log.debug({ date: date }, "setting timer date");
-            setLastDonationTime(date);
-          } else {
-            setLastDonationTime(new Date());
-          }
-        },
-      );
-    }, [store, settings.resetOnLoad, lastDonationTime]);
+      setLastDonationTime(new Date());
+      if (!settings.resetOnLoad) {
+        reaction(
+          () => store.items.at(0),
+          (item) => {
+            log.debug({ item: toJS(item) }, "timer reaction");
+            if (item?.timestamp) {
+              const date = new Date(item?.timestamp);
+              log.debug({ date: date }, "setting timer date");
+              setLastDonationTime(date);
+            }
+          },
+        );
+      }
+    }, [store, settings.resetOnLoad]);
 
     useEffect(() => {
       const intervalId = setInterval(() => {
@@ -63,8 +59,6 @@ export const DonationTimer = observer(
     }, [lastDonationTime]);
 
     const text = settings.textProperty;
-
-    const fontStyle = settings.titleFontProperty.calcStyle();
 
     const backgroundStyle = settings.backgroundColorProperty.calcCss();
 
@@ -114,15 +108,12 @@ export const DonationTimer = observer(
               }}
               className={`${classes.background}`}
             />
-            <div
-              style={{
-                ...fontStyle,
-                ...{ textAlign: settings.textAlign },
-              }}
-              className={`${classes.text} ${settings.titleFontProperty.calcClassName()}`}
-            >
-              {text.replace("<time>", `${time}`)}
-            </div>
+            <AlignmentRenderer alignment={settings.textAlign}>
+              <TextRenderer
+                font={settings.titleFontProperty}
+                text={text.replace("<time>", `${time}`)}
+              />
+            </AlignmentRenderer>
           </Flex>
         )}
       </>

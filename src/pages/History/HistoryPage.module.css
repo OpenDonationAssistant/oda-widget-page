@@ -84,6 +84,14 @@
   margin-bottom: 10px;
 }
 
+.loadmore {
+  margin-top: 12px;
+  width: 100%;
+  & button {
+    width: 250px;
+  }
+}
+
 .newdonationnickname {
   display:flex;
   justify-content: space-between;

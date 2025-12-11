@@ -13,14 +13,11 @@ import { RoundingProperty } from "../widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
-import {
-  SELECTION_TYPE,
-  SingleChoiceProperty,
-} from "../widgetproperties/SingleChoiceProperty";
 import { DonationTimer } from "../../../pages/DonationTimer/DonationTimer";
 import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -42,35 +39,6 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         }),
         new AnimatedFontProperty({
           name: "titleFont",
-          value: {
-            size: 24,
-            color: {
-              angle: 0,
-              colors: [
-                {
-                  color: "#684aff",
-                },
-              ],
-              gradient: false,
-              repeating: false,
-              gradientType: 0,
-            },
-            family: "Play",
-            italic: false,
-            weight: true,
-            animation: "none",
-            underline: false,
-            outline: {
-              enabled: false,
-              width: 0,
-              color: "#000000",
-            },
-            shadowColor: "rgb(255, 255, 255)",
-            shadowWidth: 0,
-            animationType: "entire",
-            shadowOffsetX: 0,
-            shadowOffsetY: 0,
-          },
         }),
       ],
     });
@@ -79,12 +47,9 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
       key: "style",
       title: "Стиль",
       properties: [
-        new SingleChoiceProperty({
+        new AlignmentProperty({
           name: "textAlign",
-          value: "left",
           displayName: "text-alignment",
-          options: ["left", "center", "right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new ColorProperty({
           name: "backgroundColor",
@@ -131,8 +96,8 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
-  public get textAlign(): "left" | "center" | "right" {
-    return this.get("textAlign")?.value || "left";
+  public get textAlign(): AlignmentProperty {
+    return this.get("textAlign") as AlignmentProperty;
   }
 
   public get blurProperty(): BlurProperty {

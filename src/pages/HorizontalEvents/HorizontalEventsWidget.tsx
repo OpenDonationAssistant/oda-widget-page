@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
 import { HistoryStore } from "../History/HistoryStore";
 import { HistoryItemData } from "@opendonationassistant/oda-history-service-client";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 const dayDateDiff = 1000 * 60 * 60 * 24;
 
@@ -28,81 +29,63 @@ export const HorizontalEventsWidget = observer(
       );
     }, [store.items]);
 
-    const headerFont = settings.headerFont;
-    const eventsAmountFont = settings.eventsAmountFont;
-    const eventsNicknameFont = settings.eventsNicknameFont;
-    const eventsMessageFont = settings.eventsMessageFont;
-
     return (
-      <>
-        {headerFont.createFontImport()}
-        {eventsAmountFont.createFontImport()}
-        {eventsMessageFont.createFontImport()}
-        {eventsNicknameFont.createFontImport()}
-        <Flex
-          style={{
-            ...settings.lineBorder.calcCss(),
-            ...settings.lineBackgroundColor.calcCss(),
-            ...settings.linePadding.calcCss(),
-            ...settings.lineRounding.calcCss(),
-          }}
-        >
-          {settings.showHeader.value && (
-            <div
+      <Flex
+        style={{
+          ...settings.lineBorder.calcCss(),
+          ...settings.lineBackgroundColor.calcCss(),
+          ...settings.linePadding.calcCss(),
+          ...settings.lineRounding.calcCss(),
+        }}
+      >
+        {settings.showHeader.value && (
+          <div
+            style={{
+              ...settings.headerBackgroundColor.calcCss(),
+              ...settings.headerPadding.calcCss(),
+              ...settings.headerBorder.calcCss(),
+              ...settings.headerRounding.calcCss(),
+              ...{ flexGrow: "1" },
+            }}
+          >
+            <TextRenderer
+              text={settings.headerText.value}
+              font={settings.headerFont}
+            />
+          </div>
+        )}
+        <Marquee speed={settings.speed.value}>
+          {events.map((it) => (
+            <Flex
               style={{
-                ...settings.headerBackgroundColor.calcCss(),
-                ...settings.headerPadding.calcCss(),
-                ...settings.headerBorder.calcCss(),
-                ...settings.headerRounding.calcCss(),
-                ...{ flexGrow: "1" },
+                ...settings.eventsBorder.calcCss(),
+                ...settings.eventsBackgroundColor.calcCss(),
+                ...settings.eventsPadding.calcCss(),
+                ...settings.eventsRounding.calcCss(),
+                ...{ marginRight: `${settings.eventGap.value}px` },
+                ...{ gap: `12px` },
               }}
             >
-              <span
-                style={headerFont?.calcStyle()}
-                className={`${headerFont.calcClassName()}`}
-              >
-                {settings.headerText.value}
-              </span>
-            </div>
-          )}
-          <Marquee speed={settings.speed.value}>
-            {events.map((it) => (
-              <span
-                style={{
-                  ...settings.eventsBorder.calcCss(),
-                  ...settings.eventsBackgroundColor.calcCss(),
-                  ...settings.eventsPadding.calcCss(),
-                  ...settings.eventsRounding.calcCss(),
-                  ...{ marginRight: `${settings.eventGap.value}px` },
-                }}
-              >
-                <span
-                  style={eventsNicknameFont?.calcStyle()}
-                  className={`${eventsNicknameFont.calcClassName()}`}
-                >
-                  {it.nickname ?? "Аноним"}
-                </span>{" "}
-                {settings.showAmount.value && (
-                  <span
-                    style={eventsAmountFont?.calcStyle()}
-                    className={`${eventsAmountFont.calcClassName()}`}
-                  >
-                    - {it.amount?.major}RUB
-                  </span>
-                )}
-                {settings.showMessage.value && (
-                  <span
-                    style={eventsMessageFont?.calcStyle()}
-                    className={`${eventsMessageFont.calcClassName()}`}
-                  >
-                    {it.message ? ` - ${it.message}` : ""}
-                  </span>
-                )}
-              </span>
-            ))}
-          </Marquee>
-        </Flex>
-      </>
+              <TextRenderer
+                text={it.nickname ?? "Аноним"}
+                font={settings.eventsNicknameFont}
+              />{" "}
+              {settings.showAmount.value && (
+                <TextRenderer
+                  text={`- ${it.amount?.major}RUB`}
+                  font={settings.eventsAmountFont}
+                />
+              )}
+              {settings.showMessage.value && (
+                <TextRenderer
+                  text={it.message ? ` - ${it.message}` : ""}
+                  font={settings.eventsMessageFont}
+                />
+              )}
+            </Flex>
+          ))}
+        </Marquee>
+      </Flex>
     );
   },
 );

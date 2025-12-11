@@ -4,11 +4,13 @@ export class DemoHistoryStore implements HistoryStore{
     today: string = "";
     load = () => { return Promise.resolve(); };
     next = () => { return Promise.resolve(); };
+    hasNext = () => false;
     pageSize: number = 20;
     pageNumber: number = 1;
     items = [
       {
         id: "id",
+        actions: [],
         originId: "id",
         amount: {major: 100, minor: 0, currency: "RUB"},
         nickname: "donater",
@@ -32,6 +34,7 @@ export class DemoHistoryStore implements HistoryStore{
         rouletteResults: [],
         message: "another great comment",
         attachments: [],
+        actions: [],
         timestamp: new Date(),
         date: "",
         time: "",

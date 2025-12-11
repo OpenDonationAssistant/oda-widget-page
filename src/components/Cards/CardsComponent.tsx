@@ -40,7 +40,11 @@ export function Card({
       justify="space-between"
     >
       {children}
-      {selected && <div className={`${classes.checkicon}`}><SelectedIcon /></div>}
+      {selected && (
+        <div className={`${classes.checkicon}`}>
+          <SelectedIcon />
+        </div>
+      )}
     </Flex>
   );
 }
@@ -69,8 +73,14 @@ export function CardSectionTitle({ children }: { children: ReactNode }) {
   return <div className={`${classes.sectionname}`}>{children}</div>;
 }
 
-export function CardList({ children }: { children: ReactNode }) {
-  return <div className={`${classes.cardlist}`}>{children}</div>;
+export function CardList({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <div className={`${classes.cardlist} ${className}`}>{children}</div>;
 }
 
 export function CardButton({

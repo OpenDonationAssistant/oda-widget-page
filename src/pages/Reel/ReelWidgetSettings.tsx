@@ -4,6 +4,7 @@ import { BorderProperty } from "../../components/ConfigurationPage/widgetpropert
 import {
   ColorProperty,
   ColorPropertyTarget,
+  DEFAULT_COLOR_PROPERTY_VALUE,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
 import { ReelItemBackgroundProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemBackgroundProperty";
@@ -23,6 +24,7 @@ import { ReelWinningEffectProperty } from "./ReelWinningEffectProperty";
 import { log } from "../../logging";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
+import { DEFAULT_IMAGE_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -194,7 +196,13 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
           new DemoReelStore(
             20000,
             this.optionListProperty.value.map((name) => {
-              return { id: name, name: name, weight: 1 };
+              return {
+                id: name,
+                name: name,
+                weight: 1,
+                backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
+                backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
+              };
             }),
           )
         }

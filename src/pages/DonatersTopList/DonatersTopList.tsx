@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 import { log } from "../../logging";
 import { SlideShowComponent } from "../../components/SlideShow/SlideShowComponent";
 import { HistoryStore } from "../History/HistoryStore";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 export const DonatersTopList = observer(
   ({
@@ -80,13 +81,9 @@ export const DonatersTopList = observer(
     const widgetMarginTopAndBottomStyle = settings.boxShadow.requiredHeight;
     const widgetMarginLeftAndRightStyle = settings.boxShadow.requiredWidth;
 
-    let listAlignment = settings.listAlignment;
     let listJustifyContent = "flex-start";
     let listAlignItems = "center";
-    switch (listAlignment) {
-      case "Center":
-        listAlignItems = "center";
-        break;
+    switch (settings.listAlignment) {
       case "Left":
         listAlignItems = "flex-start";
         break;
@@ -97,11 +94,6 @@ export const DonatersTopList = observer(
         listAlignItems = "center";
         break;
     }
-
-    let donatersTopStyle = settings.headerFont.calcStyle();
-    let headerAlignment = settings.headerAlignment;
-    donatersTopStyle.textAlign = headerAlignment;
-    donatersTopStyle.flex = "0 0 auto";
 
     const carouselSettings = settings.carousel.value;
     const packSize = carouselSettings.enabled
@@ -142,12 +134,10 @@ export const DonatersTopList = observer(
               ...{ display: "flex", justifyContent: listAlignItems },
             }}
           >
-            <div
-              style={settings.messageFont.calcStyle()}
-              className={`${settings.messageFont.calcClassName()}`}
-            >
-              {record.nickname} - {record.amount} RUB
-            </div>
+            <TextRenderer
+              text={`${record.nickname} - ${record.amount} RUB`}
+              font={settings.messageFont}
+            />
           </div>
         ));
         packs[packs.length] = label;
@@ -169,108 +159,100 @@ export const DonatersTopList = observer(
     }
 
     return (
-      <>
-        {settings.headerFont.createFontImport()}
-        {settings.messageFont.createFontImport()}
-        <Flex
-          style={{
-            ...{ maxWidth: "calc(min(100vw, 100%))" },
-            ...settings.backgroundColor.calcCss(),
-            ...settings.widgetBorder.calcCss(),
-            ...settings.rounding.calcCss(),
-            ...settings.padding.calcCss(),
-            ...settings.boxShadow.calcCss(),
-            ...backgroundImage,
-            ...{
-              marginTop: `${widgetMarginTopAndBottomStyle}px`,
-              marginBottom: `${widgetMarginTopAndBottomStyle}px`,
-              marginLeft: `${widgetMarginLeftAndRightStyle}px`,
-              marginRight: `${widgetMarginLeftAndRightStyle}px`,
-            },
-            ...widgetHeight,
-            ...widgetWidth,
-          }}
-          gap={gap}
-          align={layout === "vertical" ? "stretch" : "center"}
-          vertical={layout === "vertical"}
-        >
-          {settings.showHeader && (
-            <div
-              style={{
-                ...settings.titleBackgroundColor.calcCss(),
-                ...settings.headerBorder.calcCss(),
-                ...settings.headerRounding.calcCss(),
-                ...settings.headerPadding.calcCss(),
-                ...settings.headerBoxShadow.calcCss(),
-                ...headerBackgroundImage,
-                ...settings.headerWidth.calcCss(),
-                ...settings.headerHeight.calcCss(),
+      <Flex
+        style={{
+          ...{ maxWidth: "calc(min(100vw, 100%))" },
+          ...settings.backgroundColor.calcCss(),
+          ...settings.widgetBorder.calcCss(),
+          ...settings.rounding.calcCss(),
+          ...settings.padding.calcCss(),
+          ...settings.boxShadow.calcCss(),
+          ...backgroundImage,
+          ...{
+            marginTop: `${widgetMarginTopAndBottomStyle}px`,
+            marginBottom: `${widgetMarginTopAndBottomStyle}px`,
+            marginLeft: `${widgetMarginLeftAndRightStyle}px`,
+            marginRight: `${widgetMarginLeftAndRightStyle}px`,
+          },
+          ...widgetHeight,
+          ...widgetWidth,
+        }}
+        gap={gap}
+        align={layout === "vertical" ? "stretch" : "center"}
+        vertical={layout === "vertical"}
+      >
+        {settings.showHeader && (
+          <div
+            style={{
+              ...settings.titleBackgroundColor.calcCss(),
+              ...settings.headerBorder.calcCss(),
+              ...settings.headerRounding.calcCss(),
+              ...settings.headerPadding.calcCss(),
+              ...settings.headerBoxShadow.calcCss(),
+              ...headerBackgroundImage,
+              ...settings.headerWidth.calcCss(),
+              ...settings.headerHeight.calcCss(),
+              ...{ textAlign: settings.headerAlignment },
+            }}
+          >
+            <TextRenderer text={title} font={settings.headerFont} />
+          </div>
+        )}
+        {settings.carousel.value.enabled && (
+          <Flex
+            vertical={layout === "vertical"}
+            style={{
+              ...{ flex: "1 1 auto" },
+              ...settings.listWidth.calcCss(),
+              ...settings.listHeight.calcCss(),
+              ...settings.listBorder.calcCss(),
+              ...settings.listBackgroundColor.calcCss(),
+              ...listBackgroundImage,
+              ...settings.listRounding.calcCss(),
+              ...settings.listPadding.calcCss(),
+              ...settings.listBoxShadow.calcCss(),
+            }}
+          >
+            <SlideShowComponent
+              slides={portion()}
+              period={settings.carousel.value.delay * 1000}
+              inAnimation={{
+                type: settings.carousel.value.inAnimation,
               }}
-            >
-              <div
-                style={donatersTopStyle}
-                className={`donaters-title ${settings.headerFont.calcClassName()}`}
+              outAnimation={{
+                type: settings.carousel.value.outAnimation,
+              }}
+            />
+          </Flex>
+        )}
+        {!settings.carousel.value.enabled && (
+          <Flex
+            vertical={layout === "vertical"}
+            style={{
+              ...{ flex: "1 1 auto" },
+              ...settings.listWidth.calcCss(),
+              ...settings.listHeight.calcCss(),
+              ...settings.listBorder.calcCss(),
+              ...settings.listBackgroundColor.calcCss(),
+              ...listBackgroundImage,
+              ...settings.listRounding.calcCss(),
+              ...settings.listPadding.calcCss(),
+              ...settings.listBoxShadow.calcCss(),
+            }}
+          >
+            {portion().map((item, index) => (
+              <Flex
+                key={index}
+                vertical={layout === "vertical"}
+                justify={listJustifyContent}
+                className="full-width"
               >
-                {title}
-              </div>
-            </div>
-          )}
-          {settings.carousel.value.enabled && (
-            <Flex
-              vertical={layout === "vertical"}
-              style={{
-                ...{ flex: "1 1 auto" },
-                ...settings.listWidth.calcCss(),
-                ...settings.listHeight.calcCss(),
-                ...settings.listBorder.calcCss(),
-                ...settings.listBackgroundColor.calcCss(),
-                ...listBackgroundImage,
-                ...settings.listRounding.calcCss(),
-                ...settings.listPadding.calcCss(),
-                ...settings.listBoxShadow.calcCss(),
-              }}
-            >
-              <SlideShowComponent
-                slides={portion()}
-                period={settings.carousel.value.delay * 1000}
-                inAnimation={{
-                  type: settings.carousel.value.inAnimation,
-                }}
-                outAnimation={{
-                  type: settings.carousel.value.outAnimation,
-                }}
-              />
-            </Flex>
-          )}
-          {!settings.carousel.value.enabled && (
-            <Flex
-              vertical={layout === "vertical"}
-              style={{
-                ...{ flex: "1 1 auto" },
-                ...settings.listWidth.calcCss(),
-                ...settings.listHeight.calcCss(),
-                ...settings.listBorder.calcCss(),
-                ...settings.listBackgroundColor.calcCss(),
-                ...listBackgroundImage,
-                ...settings.listRounding.calcCss(),
-                ...settings.listPadding.calcCss(),
-                ...settings.listBoxShadow.calcCss(),
-              }}
-            >
-              {portion().map((item, index) => (
-                <Flex
-                  key={index}
-                  vertical={layout === "vertical"}
-                  justify={listJustifyContent}
-                  className="full-width"
-                >
-                  {item}
-                </Flex>
-              ))}
-            </Flex>
-          )}
-        </Flex>
-      </>
+                {item}
+              </Flex>
+            ))}
+          </Flex>
+        )}
+      </Flex>
     );
   },
 );

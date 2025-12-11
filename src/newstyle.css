@@ -1,5 +1,6 @@
 /*dark theme */
 :root {
+  --animate-delay: 0.25s;
   --oda-color-0: #000000;
   --oda-color-50: #050505;
   --oda-color-100: #0C0D0E;

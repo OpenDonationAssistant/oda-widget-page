@@ -9,6 +9,7 @@ import { ReelWidgetSettings } from "./ReelWidgetSettings";
 import { ReelStore } from "../../stores/ReelStore";
 import { observer } from "mobx-react-lite";
 import { fullUri } from "../../utils";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 export const ReelWidget = observer(
   ({ settings, store }: { settings: ReelWidgetSettings; store: ReelStore }) => {
@@ -86,41 +87,37 @@ export const ReelWidget = observer(
       });
     }, [settings]);
 
-    function calcItemStyle(option: string) {}
-
     const borderStyle = settings.widgetBorderProperty.calcCss();
 
     return (
-      <>
-        {settings.titleFontProperty.createFontImport()}
-        <div className={`glide hidden`} ref={glideRef} style={borderStyle}>
-          <div className="glide__track" data-glide-el="track">
-            <ul className="glide__slides" style={slideStyle}>
-              {store.options.map((option) => (
-                <div
-                  key={option}
-                  style={highlight && store.selection === option ? winningStyle : nonWinningStyle}
-                  className={`${classes.reelitemcontainer} ${
-                    highlight && store.selection === option
-                      ? classes.active
-                      : classes.notactive
-                  }`}
-                >
-                  <li
-                    key={option}
-                    style={settings.titleFontProperty.calcStyle()}
-                    className={`${settings.titleFontProperty.calcClassName()} glide__slide ${
-                      classes.reelitem
-                    }`}
-                  >
-                    {option}
-                  </li>
-                </div>
-              ))}
-            </ul>
-          </div>
+      <div className={`glide hidden`} ref={glideRef} style={borderStyle}>
+        <div className="glide__track" data-glide-el="track">
+          <ul className="glide__slides" style={slideStyle}>
+            {store.options.map((option) => (
+              <div
+                key={option}
+                style={
+                  highlight && store.selection === option
+                    ? winningStyle
+                    : nonWinningStyle
+                }
+                className={`${classes.reelitemcontainer} ${
+                  highlight && store.selection === option
+                    ? classes.active
+                    : classes.notactive
+                }`}
+              >
+                <li key={option} className={`glide__slide ${classes.reelitem}`}>
+                  <TextRenderer
+                    text={option}
+                    font={settings.titleFontProperty}
+                  />
+                </li>
+              </div>
+            ))}
+          </ul>
         </div>
-      </>
+      </div>
     );
   },
 );

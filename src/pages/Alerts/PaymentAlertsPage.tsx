@@ -8,6 +8,7 @@ import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
 import { DefaultTokenStore } from "../../stores/TokenStore";
+import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 
 export default function PaymentAlertsPage() {
   const { conf, widgetId, recipientId, settings } =
@@ -17,7 +18,12 @@ export default function PaymentAlertsPage() {
     settings,
   ) as PaymentAlertsWidgetSettings;
 
-  const alertController = new AlertController(widgetSettings, recipientId);
+  const pageConfig = new PaymentPageConfig(recipientId);
+  const alertController = new AlertController(
+    widgetSettings,
+    recipientId,
+    pageConfig.displayName,
+  );
   alertController.listen(widgetId, conf);
 
   const tokenStore = new DefaultTokenStore();

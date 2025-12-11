@@ -1,6 +1,8 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { CSSProperties, createContext } from "react";
 import { LayoutPropertyValue } from "../../components/ConfigurationPage/widgetsettings/alerts/LayoutProperty";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 
 export class AlertState {
   private _layout: LayoutPropertyValue = {
@@ -31,20 +33,22 @@ export class AlertState {
   private _imageClassName: string = "";
   private _showMessage: boolean = true;
   private _message: string | null = null;
+  private _messageFont: AnimatedFontProperty | null = null;
   private _messageStyle: CSSProperties = {};
+  private _messageAlignment: AlignmentProperty | null = null;
   private _messageImageStyle: CSSProperties = {};
-  private _messageClassName: string = "";
   private _messageContainerClassName = "";
   private _messageContainerStyle: CSSProperties = {};
   private _showTitle: boolean = true;
   private _title: string | null = null;
-  private _titleStyle: CSSProperties = {};
-  private _titleClassName: string = "";
   private _titleImageStyle: CSSProperties = {};
+  private _titleStyle: CSSProperties = {};
+  private _titleAlignment: AlignmentProperty | null = null;
   private _headerClassName = "";
   private _headerStyle: CSSProperties = {};
   private _images: string[] = [];
   private _fonts: string[] = [];
+  private _titleFont: AnimatedFontProperty | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -76,8 +80,8 @@ export class AlertState {
   public clearTitle() {
     this._showTitle = true;
     this._title = null;
+    this._titleFont = null;
     this._titleStyle = {};
-    this._titleClassName = "";
     this._titleImageStyle = {};
     this._headerClassName = "";
   }
@@ -85,9 +89,9 @@ export class AlertState {
   public clearMessage() {
      this._showMessage = false;
      this._message = null;
-     this._messageStyle = {};
      this._messageImageStyle = {};
-     this._messageClassName = "";
+     this._messageFont = null;
+     this._messageStyle = {};
      this._messageContainerClassName = "";
   }
 
@@ -98,13 +102,13 @@ export class AlertState {
     this._imageShadowStyle = {};
     this._imageClassName = "";
     this._message = null;
+    this._messageFont = null;
     this._messageStyle = {};
     this._messageImageStyle = {};
-    this._messageClassName = "";
     this._title = null;
     this._titleStyle = {};
-    this._titleClassName = "";
     this._titleImageStyle = {};
+    this._titleFont = null;
   }
 
   public get layout(): LayoutPropertyValue {
@@ -183,12 +187,16 @@ export class AlertState {
     return toJS(this._messageStyle);
   }
 
-  public get messageImageStyle(): CSSProperties {
-    return toJS(this._messageImageStyle);
+  public get messageFont(): AnimatedFontProperty | null {
+    return this._messageFont;
   }
 
-  public get messageClassName(): string {
-    return this._messageClassName;
+  public get messageAlignment(): AlignmentProperty | null {
+    return this._messageAlignment;
+  }
+
+  public get messageImageStyle(): CSSProperties {
+    return toJS(this._messageImageStyle);
   }
 
   public get showTitle(): boolean {
@@ -199,16 +207,20 @@ export class AlertState {
     return this._title;
   }
 
-  public get titleStyle(): CSSProperties {
-    return toJS(this._titleStyle);
-  }
-
   public get titleImageStyle(): CSSProperties {
     return toJS(this._titleImageStyle);
   }
 
-  public get titleClassName(): string {
-    return this._titleClassName;
+  public get titleStyle(): CSSProperties {
+    return toJS(this._titleStyle);
+  }
+
+  public get titleFont(): AnimatedFontProperty | null {
+    return this._titleFont;
+  }
+
+  public get titleAlignment(): AlignmentProperty | null {
+    return this._titleAlignment;
   }
 
   public get images(): string[] {
@@ -287,32 +299,36 @@ export class AlertState {
     this._message = message;
   }
 
-  public set messageStyle(messageStyle: CSSProperties) {
-    this._messageStyle = messageStyle;
-  }
-
   public set messageImageStyle(messageImageStyle: CSSProperties) {
     this._messageImageStyle = messageImageStyle;
   }
 
-  public set messageClassName(messageClassName: string) {
-    this._messageClassName = messageClassName;
+  public set messageFont(messageFont: AnimatedFontProperty | null) {
+    this._messageFont = messageFont;
+  }
+
+  public set messageStyle(messageStyle: CSSProperties) {
+    this._messageStyle = messageStyle;
   }
 
   public set title(title: string | null) {
     this._title = title;
   }
 
-  public set titleStyle(titleStyle: CSSProperties) {
-    this._titleStyle = titleStyle;
-  }
-
   public set titleImageStyle(titleImageStyle: CSSProperties) {
     this._titleImageStyle = titleImageStyle;
   }
 
-  public set titleClassName(titleClassName: string) {
-    this._titleClassName = titleClassName;
+  public set titleStyle(titleStyle: CSSProperties) {
+    this._titleStyle = titleStyle;
+  }
+
+  public set titleFont(titleFont: AnimatedFontProperty | null) {
+    this._titleFont = titleFont;
+  }
+
+  public set titleAlignment(titleAlignment: AlignmentProperty | null) {
+    this._titleAlignment = titleAlignment;
   }
 
   public set images(images: string[]) {
@@ -337,6 +353,10 @@ export class AlertState {
 
   public get headerClassName(): string {
     return this._headerClassName;
+  }
+
+  public set messageAlignment(align: AlignmentProperty | null) {
+    this._messageAlignment = align;
   }
 
   public set messageContainerClassName(classname: string) {

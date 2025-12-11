@@ -5,6 +5,9 @@
   flex-grow: 1;
   color: var(--oda-color-1000);
   padding: 6px 15px 3px 15px;
+  &:focus {
+    outline: 1px inset var(--oda-primary-color);
+  }
 }
 
 .normal {

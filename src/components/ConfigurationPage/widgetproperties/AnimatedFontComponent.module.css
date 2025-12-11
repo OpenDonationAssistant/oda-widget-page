@@ -4,10 +4,77 @@
   width: 25%;
 }
 
+.fontlist {
+  max-height: 60vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.fontpreview {
+  color: var(--oda-color-950);
+}
+
+.filters {
+  width: 100%;
+  margin-bottom: 15px;
+  margin-top: 9px;
+  & .filter {
+    height: 48px;
+  }
+}
+
+.buttons {
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 9px;
+}
+
+
+.upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--oda-primary-color);
+  margin-top: 9px;
+  min-width: 140px;
+  height: 48px;
+  font-size: 14px;
+  font-weight: 900;
+  background: transparent;
+  border: 1px solid var(--oda-primary-color);
+  border-radius: 110px;
+  & [class*="material-symbols-sharp"] {
+    vertical-align: middle;
+    margin-bottom: 3px;
+    margin-right: 5px;
+  }
+  &:hover{
+    cursor: pointer;
+    color: var(--oda-primary-color);
+    transform: translateY(-2px);
+  }
+}
+
+.half {
+  width: 50%;
+}
+
 .okbutton {
   width: 250px;
   margin-top: 21px;
   margin-top: 12px;
+}
+
+.selected {
+  background-color: var(--oda-primary-color);
+  color: black !important;
+  height: 48px;
+  width: 48px;
+}
+
+.notselected {
+  height: 48px;
+  width: 48px;
 }
 
 .addanimationbuttoncontainer{
@@ -25,6 +92,9 @@
   width: 100%;
   z-index: 2;
   position: relative;
+  & div {
+    display: inline-block;
+  }
 }
 
 .background {
@@ -37,10 +107,44 @@
 }
 
 .democontainer {
+  overflow: hidden;
   position: relative;
   background-color: var(--oda-main-background-color);
   width: 100%;
+  height: 220px;
   margin-bottom: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & .zoombuttons {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 2;
+  }
+  & .langbuttons {
+    background-color: var(--oda-main-background-color);
+    border-radius: 9px;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    z-index: 2;
+    & [class*="ant-select-selection-item"] {
+      color: black;
+    }
+  }
+}
+
+.colorpicker {
+  border: 1px solid #36363D !important;
+  border-radius: 9px !important;
+  height: 48px !important;
+}
+
+.shadowitem {
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
+  padding: 12px 15px;
 }
 
 .modal {

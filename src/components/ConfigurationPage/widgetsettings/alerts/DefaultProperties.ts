@@ -308,9 +308,9 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new HeightProperty({ name: "headerHeight" }),
   new SingleChoiceProperty({
     name: "headerAlignment",
-    value: "Center",
+    value: "center",
     displayName: "widget-donaterslist-list-alignment",
-    options: ["Left", "Center", "Right"],
+    options: ["left", "center", "right"],
     selectionType: SELECTION_TYPE.SEGMENTED,
   }),
   new ColorProperty({
@@ -349,9 +349,9 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new HeightProperty({ name: "messageHeight" }),
   new SingleChoiceProperty({
     name: "messageAlignment",
-    value: "Center",
+    value: "center",
     displayName: "widget-donaterslist-list-alignment",
-    options: ["Left", "Center", "Right"],
+    options: ["left", "center", "right"],
     selectionType: SELECTION_TYPE.SEGMENTED,
   }),
   new ColorProperty({

@@ -1,14 +1,14 @@
 import {
   DefaultApiFactory as FontApiFactory,
-  FontDto,
+  FontControllerFontDto,
 } from "@opendonationassistant/oda-font-service-client";
 import { createContext } from "react";
 import { log } from "../logging";
 
 export class FontStore {
-  private _fonts: FontDto[] | null = null;
+  private _fonts: FontControllerFontDto[] | null = null;
 
-  constructor(fonts?: FontDto[]) {
+  constructor(fonts?: FontControllerFontDto[]) {
     if (fonts === null || fonts === undefined) {
       this.refreshFonts();
       log.debug("Loading font list");
@@ -30,18 +30,16 @@ export class FontStore {
     return FontApiFactory(undefined, process.env.REACT_APP_FONT_API_ENDPOINT);
   }
 
-  public list(): Promise<string[]> {
+  public list(): Promise<FontControllerFontDto[]> {
     if (this._fonts) {
-      return Promise.resolve(this._fonts.map((font) => font.name));
+      return Promise.resolve(this._fonts);
     }
-    return this.refreshFonts().then(
-      () => this._fonts?.map((font) => font.name) ?? [],
-    );
+    return this.refreshFonts().then(() => this._fonts ?? []);
   }
 
   public getImportCss(name: string) {
-    log.debug("Creating font css");
-    let font: Promise<FontDto> | null = null;
+    log.debug({ name: name }, "Creating font css");
+    let font: Promise<FontControllerFontDto> | null = null;
     if (this._fonts) {
       log.debug("Searching in cached fonts");
       const found = this._fonts.find((font) => font.name === name);
@@ -84,7 +82,7 @@ export class FontStore {
                 font-style: normal;
                 font-display: auto;
                 font-weight: 400;
-                src: url(https://cdn.jsdelivr.net/fontsource/fonts/${it.name}@latest/cyrillic-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/${font.name}@latest/cyrillic-400-normal.woff) format('woff');
+                src: url(https://cdn.jsdelivr.net/fontsource/fonts/${it.name}@latest/cyrillic-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/${it.name}@latest/cyrillic-400-normal.woff) format('woff');
                 unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
               }
 
@@ -156,7 +154,27 @@ export class FontStore {
     );
   }
 
-  public get all(): FontDto[]{
+  public search({
+    name,
+    subset,
+    category,
+  }: {
+    name?: string;
+    subset?: string;
+    category?: string;
+  }): Promise<FontControllerFontDto[]> {
+    return this.client()
+      .listFonts(subset ?? null, category ?? null, name ?? null)
+      .then((data) => data.data);
+  }
+
+  public upload(file: File) {
+    return this.client()
+      .put(file)
+      .then((data) => this.refreshFonts().then(() => data.data));
+  }
+
+  public get all(): FontControllerFontDto[] {
     return this._fonts ?? [];
   }
 }

@@ -42,6 +42,7 @@ export interface HistoryStore {
   today: string;
   load(): Promise<void>;
   loadUntil(count: number): Promise<void>;
+  hasNext(): boolean;
   next(): Promise<void>;
   pageSize: number;
   pageNumber: number;
@@ -85,7 +86,6 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
     makeAutoObservable(this);
-    log.debug("loading history 1");
     this.load()
       .then(() => {
         this.listen(conf);
@@ -105,15 +105,20 @@ export class DefaultHistoryStore implements HistoryStore {
 
   private listen(conf: any) {
     log.debug("listening for history events");
-    subscribe(this._widgetId, conf.topic.alerts, (message) => {
-      log.debug(`events widgets received: ${message.body}`);
-      setTimeout(() => {
-        this._list = [];
-        this._pageNumber = 0;
-        this.load();
-      }, 1500);
-      message.ack();
-    });
+    subscribe(
+      this._widgetId,
+      conf.topic.alerts,
+      (message) => {
+        log.debug(`events widgets received: ${message.body}`);
+        setTimeout(() => {
+          this._list = [];
+          this._pageNumber = 0;
+          this.load();
+        }, 1500);
+        message.ack();
+      },
+      { autoDelete: "true", durable: "false" },
+    );
     subscribe(this._widgetId, conf.topic.alertStatus, (message) => {
       log.debug(`Payments widgets received: ${message.body}`);
       let json = JSON.parse(message.body);
@@ -222,7 +227,7 @@ export class DefaultHistoryStore implements HistoryStore {
               active: item.paymentId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
-              media: item.alertMedia ?? null
+              media: item.alertMedia ?? null,
             };
           })
           .filter((item) => {
@@ -253,6 +258,12 @@ export class DefaultHistoryStore implements HistoryStore {
       );
       return this.loadUntil(count);
     });
+  }
+
+  public hasNext() {
+    return (
+      this._amount !== -1 && (this._pageNumber + 1) * this._pageSize < this._amount
+    );
   }
 
   public next() {

@@ -15,7 +15,7 @@ import {
   Subtitle,
   Title,
 } from "../../components/Overlay/Overlay";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import {
   DefaultHistoryStore,
@@ -33,22 +33,11 @@ import { toJS } from "mobx";
 import ODALogo from "../../components/ODALogo/ODALogo";
 import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
+import SecondaryButton from "../../components/Button/SecondaryButton";
+import { uuidv7 } from "uuidv7";
 
 const HistoryItemList = observer(({}: {}) => {
-  const lastLoaded = useRef<HTMLDivElement | null>(null);
   const historyStore = useContext(HistoryStoreContext);
-
-  useEffect(() => {
-    if (lastLoaded.current) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          historyStore?.next();
-        }
-      });
-      observer.observe(lastLoaded.current);
-      return () => observer.disconnect();
-    }
-  }, [historyStore?.isRefreshing, lastLoaded]);
 
   return (
     <Flex vertical gap={3}>
@@ -64,19 +53,17 @@ const HistoryItemList = observer(({}: {}) => {
             item.date !== historyStore?.items.at(index - 1)?.date && (
               <div className={`${classes.historyday}`}>{item.date}</div>
             )}
-          <div
-            key={index}
-            ref={
-              index === (historyStore?.items.length ?? 0) - 1
-                ? lastLoaded
-                : null
-            }
-          >
-            <HistoryItemComponent item={item} />
-          </div>
+          <HistoryItemComponent key={index} item={item} />
         </>
       ))}
       {historyStore?.isRefreshing && <Spin />}
+      {!historyStore?.isRefreshing && historyStore?.hasNext() && (
+        <Flex className={`${classes.loadmore}`} justify="center" align="center">
+          <SecondaryButton onClick={() => historyStore?.next()}>
+            Показать еще
+          </SecondaryButton>
+        </Flex>
+      )}
     </Flex>
   );
 });
@@ -88,7 +75,10 @@ const NewsLineComponent = observer(({}) => {
       {newsStore.news && newsStore.news.length > 0 && (
         <Flex className={`${classes.newscontainer}`} align="center">
           <div className={`${classes.newsprefix}`}>new</div>
-          <Marquee className={`${classes.newsline}`} style={{ marginRight: "36px" }}>
+          <Marquee
+            className={`${classes.newsline}`}
+            style={{ marginRight: "36px" }}
+          >
             {newsStore.news.at(newsStore.news.length - 1)?.title}
           </Marquee>
           <NotBorderedIconButton
@@ -263,7 +253,8 @@ export const HistoryComponent = observer(
 export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, "history-page", conf),
+    () =>
+      new DefaultHistoryStore(recipientId, `history-page-${uuidv7()}`, conf),
   );
 
   return (

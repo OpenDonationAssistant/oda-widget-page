@@ -21,10 +21,12 @@ import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
+import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 
 export class AlertController {
   private settings: PaymentAlertsWidgetSettings;
   private conf: any;
+  private _streamerName: string;
 
   private showing: boolean = false;
   private ackFunction: Function | null = null;
@@ -37,16 +39,21 @@ export class AlertController {
   private _recipientId: string;
   private _state: AlertState = new AlertState();
 
-  constructor(settings: PaymentAlertsWidgetSettings, recipientId: string) {
+  constructor(
+    settings: PaymentAlertsWidgetSettings,
+    recipientId: string,
+    streamerName: string,
+  ) {
     this.settings = settings;
     this._recipientId = recipientId;
+    this._streamerName = streamerName;
   }
 
   public listen(widgetId: string, conf: any) {
     this.conf = conf;
     this.handleSettings()
       .then(() => {
-        this.voiceController = new VoiceController(this._recipientId);
+        this.voiceController = new VoiceController(this._streamerName);
       })
       .then(() => {
         subscribe(widgetId, this.conf.topic.alerts, (message) => {
@@ -452,7 +459,7 @@ export class AlertController {
 
         const headerFont = alert.get("headerFont") as AnimatedFontProperty;
         this.state.fonts.push(headerFont.value.family);
-        this.state.titleClassName = `${headerFont.calcClassName()}`;
+        this.state.titleFont = headerFont;
 
         const shadowProperty = alert.get(
           "headerBoxShadow",
@@ -476,15 +483,13 @@ export class AlertController {
         if (heightProperty.value > 0) {
           height = heightProperty.calcCss();
         }
-        const headerAlignment = alert.get(
+        this.state.titleAlignment = alert.get(
           "headerAlignment",
-        ) as SingleChoiceProperty;
+        ) as AlignmentProperty;
         this.state.titleStyle = {
-          ...headerFont.calcStyle(),
           ...(alert.get("headerBorder") as BorderProperty).calcCss(),
           ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
           ...(alert.get("headerPadding") as PaddingProperty).calcCss(),
-          ...({ textAlign: headerAlignment.value } as CSSProperties),
           ...width,
           ...height,
         };
@@ -541,6 +546,7 @@ export class AlertController {
           );
         }
 
+        this.state.messageFont = messageFont;
         if (messageFont.value.family) {
           this.state.fonts.push(messageFont.value.family);
         }
@@ -567,16 +573,14 @@ export class AlertController {
         if (heightProperty.value > 0) {
           height = heightProperty.calcCss();
         }
-        const messageAlignment = alert.get(
+        this.state.messageAlignment = alert.get(
           "messageAlignment",
-        ) as SingleChoiceProperty;
+        ) as AlignmentProperty;
 
         this.state.messageStyle = {
-          ...messageFont.calcStyle(),
           ...(alert.get("messageBorder") as BorderProperty).calcCss(),
           ...(alert.get("messageRounding") as RoundingProperty).calcCss(),
           ...(alert.get("messagePadding") as PaddingProperty).calcCss(),
-          ...({ textAlign: messageAlignment.value } as CSSProperties),
           ...width,
           ...height,
         };
@@ -598,7 +602,6 @@ export class AlertController {
       })
       .then(() => {
         log.debug("setting message");
-        this.state.messageClassName = messageFont.calcClassName() ?? "";
         this.state.message = data.message;
         this.state.showMessage = (
           alert.get("showMessage") as BooleanProperty

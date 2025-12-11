@@ -3,6 +3,7 @@ import { log } from "../../logging";
 import classes from "./DonatonWidget.module.css";
 import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { observer } from "mobx-react-lite";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 export const DonatonWidget = observer(
   ({ settings }: { settings: DonatonWidgetSettings }) => {
@@ -59,21 +60,12 @@ export const DonatonWidget = observer(
     ]);
 
     return (
-      <>
-        {titleFont.createFontImport()}
-        <div
-          id="donatonTimer"
-          className={`${classes.textholder}`}
-          style={style}
-        >
-          <div
-            style={titleFont.calcStyle()}
-            className={`${titleFont.calcClassName()}`}
-          >
-            {settings.textProperty.replace("<time>", `${time}`)}
-          </div>
-        </div>
-      </>
+      <div className={`${classes.textholder}`} style={style}>
+        <TextRenderer
+          text={settings.textProperty.replace("<time>", `${time}`)}
+          font={titleFont}
+        />
+      </div>
     );
   },
 );

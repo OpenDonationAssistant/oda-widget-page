@@ -18,6 +18,13 @@ export interface TextOutline {
   color: string;
 }
 
+export interface TextShadow {
+  x: number;
+  y: number;
+  blur: number;
+  color: string;
+}
+
 export interface FontPropertyValue {
   family: string;
   size: number;
@@ -26,12 +33,10 @@ export interface FontPropertyValue {
   weight: boolean;
   italic: boolean;
   underline: boolean;
-  shadowWidth: number;
-  shadowOffsetX: number;
-  shadowOffsetY: number;
-  shadowColor: string;
+  shadows: TextShadow[];
   animation: string;
-  animationType: string;
+  animationType: "entire" | "word" | "letter";
+  animationSpeed: string;
 }
 
 export const DEFAULT_FONT_PROPERTY_VALUE = {
@@ -48,12 +53,10 @@ export const DEFAULT_FONT_PROPERTY_VALUE = {
   weight: false,
   italic: false,
   underline: false,
-  shadowWidth: 0,
-  shadowOffsetX: 0,
-  shadowOffsetY: 0,
-  shadowColor: "#000000",
+  shadows: [],
   animation: "none",
   animationType: "entire",
+  animationSpeed: "slow",
 };
 
 export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValue> {
@@ -82,16 +85,14 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
       displayName: "button-text-color",
       target: ColorPropertyTarget.TEXT,
     }).calcClassName();
-    if (!this.value.animation) {
+    if (!this.value.animation || this.value.animation === "none") {
       return fontClassName;
     }
-    if (this.value.animation === "none") {
-      return fontClassName;
+    let classes = `${fontClassName} animate__animated animate__infinite animate__${this.value.animation}`;
+    if (this.value.animationSpeed !== "normal") {
+      classes = classes.concat(` animate__${this.value.animationSpeed}`);
     }
-    if (this.value.animation === "pulse") {
-      return `${fontClassName} animate__animated animate__infinite animate__${this.value.animation}`;
-    }
-    return `${fontClassName} animate__animated animate__infinite animate__slow animate__${this.value.animation}`;
+    return classes;
   }
 
   createFontImport() {
@@ -106,11 +107,14 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
       target: ColorPropertyTarget.TEXT,
     }).calcCss();
 
-    const shadowStyle = this.value.shadowWidth
-      ? {
-          textShadow: `${this.value.shadowOffsetX}px ${this.value.shadowOffsetY}px ${this.value.shadowWidth}px ${this.value.shadowColor}`,
-        }
-      : {};
+    const shadow = this.value.shadows
+      .filter((it) => it.blur > 0)
+      .reduce((style, shadow) => {
+        return (style += `${shadow.x}px ${shadow.y}px ${shadow.blur}px ${shadow.color},`);
+      }, "");
+    const shadowStyle = {
+      textShadow: `${shadow.substring(0, shadow.length - 1)}`,
+    };
 
     const fontStyle = {
       fontSize: this.value.size,

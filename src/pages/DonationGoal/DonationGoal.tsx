@@ -1,13 +1,12 @@
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
 import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
-import { produce } from "immer";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { Flex } from "antd";
-import { log } from "../../logging";
 import { VariableStoreContext } from "../../stores/VariableStore";
 import { AbstractDonationGoalState } from "./DonationGoalState";
+import { TextRenderer } from "../../components/Renderer/TextRenderer";
+import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
 
 export const DonationGoal = observer(
   ({
@@ -27,19 +26,6 @@ export const DonationGoal = observer(
       useState<CSSProperties>({});
     const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
 
-    const titleFont = settings.titleFontProperty;
-    const titleTextStyle = titleFont.calcStyle();
-
-    let titleTextAlign = { justifyContent: "center" };
-    switch (settings.titleTextAlign) {
-      case "left":
-        titleTextAlign = { justifyContent: "flex-start" };
-        break;
-      case "right":
-        titleTextAlign = { justifyContent: "flex-end" };
-        break;
-    }
-
     const backgroundColor = settings.backgroundColor.calcCss();
     const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
 
@@ -52,9 +38,6 @@ export const DonationGoal = observer(
     useEffect(() => {
       settings.outerImageProperty.calcCss().then(setOuterBackgroundImage);
     }, [settings.outerImageProperty.value]);
-
-    const labelTemplate = settings.labelTemplate;
-    const amountFont = settings.amountFontProperty;
 
     const filledColor = settings.filledColorProperty.calcCss();
     let filledTextAlign = "center";
@@ -75,9 +58,7 @@ export const DonationGoal = observer(
         filledTextPlacement = { gridRow: "3" };
         break;
     }
-    const filledTextStyle = produce(amountFont.calcStyle(), (draft) => {
-      draft.justifyContent = filledTextAlign;
-    });
+    const filledTextStyle = { justifyContent: filledTextAlign };
     const filledBorderStyle = settings.innerBorderProperty.calcCss();
     const filledRoundingStyle = settings.innerRoundingProperty.calcCss();
     const filledPaddingStyle = settings.innerPaddingProperty.calcCss();
@@ -139,8 +120,6 @@ export const DonationGoal = observer(
       return goal.id;
     });
 
-    log.debug({ ids: ids, state: state.goals.map((goal) => goal.id) }, "ids");
-
     return (
       <div
         style={{
@@ -162,18 +141,16 @@ export const DonationGoal = observer(
           ...settings.height.calcCss(),
         }}
       >
-        {amountFont.createFontImport()}
-        {titleFont.createFontImport()}
         {state.goals
           .filter((goal) => ids.includes(goal.id))
           .map((goal) => (
             <>
               <div className={`${classes.goalitem}`}>
                 {settings.showTitle && (
-                  <Flex className="full-width" style={titleTextAlign}>
+                  <AlignmentRenderer
+                    alignment={settings.titleTextAlign}>
                     <div
                       style={{
-                        ...titleTextStyle,
                         ...titleBorderStyle,
                         ...titlePaddingStyle,
                         ...titleRoundingStyle,
@@ -185,14 +162,12 @@ export const DonationGoal = observer(
                       }}
                       className={`${classes.goaldescription}}`}
                     >
-                      <div
-                        style={{ zIndex: 2, opacity: 1 }}
-                        className={`${titleFont.calcClassName()}`}
-                      >
-                        {variables.processTemplate(goal.briefDescription)}
-                      </div>
+                      <TextRenderer
+                        text={variables.processTemplate(goal.briefDescription)}
+                        font={settings.titleFontProperty}
+                      />
                     </div>
-                  </Flex>
+                  </AlignmentRenderer>
                 )}
                 <div
                   style={{
@@ -238,29 +213,30 @@ export const DonationGoal = observer(
                         ...filledTextPlacement,
                         zIndex: 3,
                       }}
-                      className={`${
-                        classes.goalamount
-                      } ${amountFont.calcClassName()}`}
+                      className={`${classes.goalamount}`}
                     >
-                      {variables
-                        .processTemplate(labelTemplate)
-                        .replaceAll(
-                          "<collected>",
-                          `${goal.accumulatedAmount?.major ?? 0}`,
-                        )
-                        .replaceAll(
-                          "<required>",
-                          `${goal.requiredAmount.major}`,
-                        )
-                        .replaceAll("<currency>", "RUB")
-                        .replaceAll(
-                          "<proportion>",
-                          `${Math.trunc(
-                            ((goal.accumulatedAmount?.major ?? 0) /
-                              goal.requiredAmount.major) *
-                              100,
-                          )}`,
-                        )}
+                      <TextRenderer
+                        font={settings.amountFontProperty}
+                        text={variables
+                          .processTemplate(settings.labelTemplate)
+                          .replaceAll(
+                            "<collected>",
+                            `${goal.accumulatedAmount?.major ?? 0}`,
+                          )
+                          .replaceAll(
+                            "<required>",
+                            `${goal.requiredAmount.major}`,
+                          )
+                          .replaceAll("<currency>", "RUB")
+                          .replaceAll(
+                            "<proportion>",
+                            `${Math.trunc(
+                              ((goal.accumulatedAmount?.major ?? 0) /
+                                goal.requiredAmount.major) *
+                                100,
+                            )}`,
+                          )}
+                      />
                     </div>
                   )}
                 </div>

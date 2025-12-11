@@ -29,6 +29,7 @@ import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
 import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationGoalState";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -90,12 +91,9 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           value: true,
           displayName: "widget-donationgoal-show-title",
         }),
-        new SingleChoiceProperty({
+        new AlignmentProperty({
           name: "titleTextAlign",
-          value: "left",
           displayName: "widget-donationgoal-title-alignment",
-          options: ["left", "center", "right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new AnimatedFontProperty({
           name: "descriptionFont",
@@ -157,12 +155,10 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           options: ["top", "center", "bottom"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
-        new SingleChoiceProperty({
+        new AlignmentProperty({
           name: "filledTextAlign",
           value: "left",
           displayName: "widget-donationgoal-amount-alignment",
-          options: ["left", "center", "right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new AnimatedFontProperty({
           name: "amountFont",
@@ -319,8 +315,8 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     return this.get("descriptionFont") as AnimatedFontProperty;
   }
 
-  public get titleTextAlign(): "left" | "center" | "right" {
-    return this.get("titleTextAlign")?.value || "left";
+  public get titleTextAlign(): AlignmentProperty {
+    return this.get("titleTextAlign") as AlignmentProperty;
   }
 
   public get titleWidth(): WidthProperty {

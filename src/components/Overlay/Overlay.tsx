@@ -105,9 +105,9 @@ export const Panel = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Dialog = ({ children }: { children: ReactNode }) => {
+export const Dialog = ({ children, center }: { children: ReactNode, center?: boolean }) => {
   return (
-    <Flex vertical justify="center" align="center">
+    <Flex vertical justify={center ? "center" : "flex-start"} align="center">
       <Flex
         className={`${classes.modal} ${classes.small}`}
         justify="flex-start"

@@ -20,6 +20,7 @@ export class PaymentPageConfig {
   private _customCss: string = "";
   private _tooltip: string = "";
   private _url: string = "";
+  private _displayName: string = "";
 
   constructor(recipientId: string) {
     this._log.debug("Loading PaymentPageConfig");
@@ -39,6 +40,7 @@ export class PaymentPageConfig {
         this.fio = json.value["fio"] ?? "";
         this.inn = json.value["inn"] ?? "";
         this.arbitraryText = json.value["arbitraryText"] ?? null;
+        this._displayName = json.value["nickname"] ?? "";
         this.goals = json.value["goals"] ?? [];
         this._payButtonText = json.value["payButtonText"] ?? "";
         this.minimalAmount = json.value["minimalAmount"] ?? 40;
@@ -169,6 +171,10 @@ export class PaymentPageConfig {
 
   public get url(): string {
     return this._url;
+  }
+
+  public get displayName(): string {
+    return this._displayName;
   }
 
   async reloadConfig(): Promise<void> {

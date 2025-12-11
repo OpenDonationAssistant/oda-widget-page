@@ -15,10 +15,10 @@ export class VoiceController {
   audioCtx = new AudioContext();
   playingSource: AudioBufferSourceNode | null = null;
   onEndHandler: any | null = null;
-  recipientId: string;
+  private _streamerName: string;
 
-  constructor(recipientId: string) {
-    this.recipientId = recipientId;
+  constructor(streamerName: string) {
+    this._streamerName = streamerName;
   }
 
   // TODO: использовать axios
@@ -92,7 +92,7 @@ export class VoiceController {
       .replace("<username>", data.nickname ? data.nickname : "Аноним")
       .replace("<amount>", data.amount.major)
       .replace("<minoramount>", data.amount.major * 100)
-      .replace("<streamer>", this.recipientId);
+      .replace("<streamer>", this._streamerName);
     try {
       if (resultText.length > 0) {
         return sleep(alert.property("headerVoiceDelay") as number)

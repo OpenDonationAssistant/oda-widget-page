@@ -1,10 +1,17 @@
 import { Client, messageCallbackType } from "@stomp/stompjs";
 import { log } from "./logging";
 
+export interface ListenerOptions {
+  durable?: string;
+  autoDelete?: string;
+  ack?: string;
+}
+
 interface Listener {
   id: string;
   topic: string;
   onMessage: messageCallbackType;
+  options: ListenerOptions;
 }
 
 const socket = new Client({
@@ -19,15 +26,20 @@ socket.onConnect = () => {
   listeners.forEach((listener) => {
     socket.subscribe(listener.topic, listener.onMessage, {
       id: `${listener.id}-${listener.topic}`,
-      durable: "true",
-      "auto-delete": "false",
-      ack: "client",
+      durable: listener.options.durable ?? "true",
+      "auto-delete": listener.options.autoDelete ?? "false",
+      ack: listener.options.ack ?? "client",
     });
     log.debug(`Subscribed to ${listener.topic} for ${listener.id}`);
   });
 };
 
-function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
+function subscribe(
+  id: string,
+  topic: string,
+  onMessage: messageCallbackType,
+  options?: ListenerOptions,
+) {
   log.info(`Creating subscription ${topic} for ${id}`);
   if (socket.connected) {
     socket.subscribe(topic, onMessage, {
@@ -41,6 +53,7 @@ function subscribe(id: string, topic: string, onMessage: messageCallbackType) {
     id: id,
     topic: topic,
     onMessage: onMessage,
+    options: options ?? {},
   });
 
   log.info(`${id} connected to ${topic}`);
@@ -65,7 +78,7 @@ function setupCommandListener(widgetId: string, reloadFn: Function) {
         message.ack();
       }
     }
-  });
+  }, { durable: "false", autoDelete: "true", ack: "auto" });
 }
 
 function cleanupCommandListener(widgetId: string) {

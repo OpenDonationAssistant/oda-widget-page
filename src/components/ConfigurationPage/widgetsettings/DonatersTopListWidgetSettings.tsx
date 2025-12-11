@@ -28,6 +28,7 @@ import { DemoListStore } from "../../../pages/DonatersTopList/DemoListStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
+import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -106,12 +107,10 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           value: "Донатеры ",
           displayName: "widget-donaterslist-title",
         }),
-        new SingleChoiceProperty({
+        new AlignmentProperty({
           name: "headerAlignment",
-          value: "Center",
-          displayName: "widget-donaterslist-list-alignment",
-          options: ["Left", "Center", "Right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
+          value: "center",
+          displayName: "widget-donaterslist-list-alignment"
         }),
         new AnimatedFontProperty({
           name: "headerFont",
@@ -190,12 +189,10 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
       key: "list-item",
       title: "tab-donaters-list-item",
       properties: [
-        new SingleChoiceProperty({
+        new AlignmentProperty({
           name: "listAlignment",
-          value: "Center",
+          value: "center",
           displayName: "widget-donaterslist-list-alignment",
-          options: ["Left", "Center", "Right"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new AnimatedFontProperty({
           name: "messageFont",
