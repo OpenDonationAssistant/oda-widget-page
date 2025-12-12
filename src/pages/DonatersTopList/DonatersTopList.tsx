@@ -82,12 +82,12 @@ export const DonatersTopList = observer(
     const widgetMarginLeftAndRightStyle = settings.boxShadow.requiredWidth;
 
     let listJustifyContent = "flex-start";
-    let listAlignItems = "center";
+    let listAlignItems = "center"; // TODO Use AlignmentRenderer
     switch (settings.listAlignment) {
-      case "Left":
+      case "left":
         listAlignItems = "flex-start";
         break;
-      case "Right":
+      case "right":
         listAlignItems = "flex-end";
         break;
       default:

@@ -344,7 +344,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
     return this.get("listHeight") as HeightProperty;
   }
 
-  public get listAlignment(): "Left" | "Center" | "Right" {
+  public get listAlignment(): "left" | "center" | "right" {
     return this.get("listAlignment")?.value;
   }
 
