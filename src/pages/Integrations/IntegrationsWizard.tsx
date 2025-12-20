@@ -23,6 +23,7 @@ export class IntegrationWizardStore {
     | "donatepay.ru"
     | "donatepay.eu"
     | "donate.stream"
+    | "donatex"
     | null = null;
   private _accessToken: string = "";
 
@@ -36,6 +37,7 @@ export class IntegrationWizardStore {
       | "donatepay.ru"
       | "donatepay.eu"
       | "donate.stream"
+      | "donatex"
       | null,
   ) {
     this._system = system;
@@ -81,6 +83,12 @@ export const ChooseDonationPlatformComponent = observer(() => {
       >
         <CardTitle>DonatePay.eu</CardTitle>
       </Card>
+      <Card
+        selected={context.system === "donatex"}
+        onClick={() => (context.system = "donatex")}
+      >
+        <CardTitle>DonateX</CardTitle>
+      </Card>
     </CardList>
   );
 });
@@ -109,6 +117,20 @@ export const AddDonatePayTokenComponent = observer(() => {
           <div className={`${classes.instruction}`}>
             1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
             <a href="https://donatepay.ru/page/api">API DonatePay.ru</a>
+          </div>
+          <Input
+            value={context.accessToken}
+            onChange={(value) => {
+              context.accessToken = value.target.value;
+            }}
+          />
+        </Flex>
+      )}
+      {context.system === "donatex" && (
+        <Flex className="full-width" gap={12} vertical>
+          <div className={`${classes.instruction}`}>
+            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
+            <a href="https://donatex.gg/streamer/settings">Настройки</a>
           </div>
           <Input
             value={context.accessToken}
@@ -156,7 +178,8 @@ export const DonationPlatformWizard = observer(
               return Promise.resolve(
                 selection.system === "donatepay.ru" ||
                   selection.system === "donatepay.eu" ||
-                  selection.system === "donate.stream",
+                  selection.system === "donate.stream" ||
+                  selection.system === "donatex"
               );
             },
             handler: () => {
@@ -171,6 +194,10 @@ export const DonationPlatformWizard = observer(
               }
               if (selection.system === "donate.stream") {
                 tokenStore.addToken("Donate.Stream", selection.accessToken);
+                return Promise.resolve(true);
+              }
+              if (selection.system === "donatex") {
+                tokenStore.addToken("DonateX", selection.accessToken);
                 return Promise.resolve(true);
               }
               if (selection.system === "donationalerts") {

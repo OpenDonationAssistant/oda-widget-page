@@ -10,6 +10,7 @@
     "@glidejs/glide": "^3.6.0",
     "@grafana/faro-web-sdk": "^1.19.0",
     "@grafana/faro-web-tracing": "^1.19.0",
+    "@microsoft/signalr": "^10.0.0",
     "@opendonationassistant/oda-automation-service-client": "^0.2.0",
     "@opendonationassistant/oda-config-service-client": "^0.0.2",
     "@opendonationassistant/oda-files-service-client": "^0.0.1",

@@ -17,6 +17,7 @@ import { useLoaderData, useNavigate } from "react-router";
 import { uuidv7 } from "uuidv7";
 import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
@@ -822,6 +823,47 @@ const PaymentAlerts = observer(
               {},
             );
           });
+        });
+      tokens
+        .filter((token) => token.system === "DonateX")
+        .forEach((token) => {
+          const connection = new HubConnectionBuilder()
+            .withUrl(
+              `https://donatex.gg/api/public-donations-hub?access_token=${encodeURIComponent(token.token)}`,
+            )
+            .withAutomaticReconnect()
+            .configureLogging(LogLevel.Information)
+            .build();
+          connection.on("DonationCreated", (donation) => {
+            console.log({ donation: donation }, "New donation");
+            HistoryService(
+              undefined,
+              process.env.REACT_APP_HISTORY_API_ENDPOINT,
+            ).addHistoryItem(
+              {
+                recipientId: recipientId,
+                amount: {
+                  minor: 0,
+                  major: donation.amountInRub,
+                  currency: "RUB",
+                },
+                nickname: donation.username,
+                message: donation.message,
+                triggerAlert: false,
+                triggerReel: true,
+                triggerDonaton: true,
+                goals: [],
+                addToTop: true,
+                addToGoal: true,
+                id: uuidv7(),
+                paymentId: uuidv7(),
+                system: "DonationAlerts",
+                externalId: donation.id
+              },
+              {},
+            );
+          });
+          connection.start();
         });
     }, [alertController, tokenStore.tokens, recipientId, navigate]);
 

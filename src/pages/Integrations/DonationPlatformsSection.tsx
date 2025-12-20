@@ -65,7 +65,7 @@ export const DonationPlatformsSection = observer(({}) => {
             <Flex vertical gap={18} className={`${classes.container}`}>
               <LightLabeledSwitchComponent
                 label="Показывать оповещения"
-                value={token?.settings["triggerAlerts"]}
+                value={token?.settings["triggerAlerts"] ?? false}
                 onChange={(newValue) => {
                   if (token) {
                     token.settings["triggerAlerts"] = newValue;
@@ -74,7 +74,7 @@ export const DonationPlatformsSection = observer(({}) => {
               />
               <LightLabeledSwitchComponent
                 label="Учитывать в топе"
-                value={token?.settings["countInTop"]}
+                value={token?.settings["countInTop"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
                     token.settings["countInTop"] = newValue;
@@ -83,7 +83,7 @@ export const DonationPlatformsSection = observer(({}) => {
               />
               <LightLabeledSwitchComponent
                 label="Учитывать в сборе средств"
-                value={token?.settings["addToGoal"]}
+                value={token?.settings["addToGoal"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
                     token.settings["addToGoal"] = newValue;
@@ -92,7 +92,7 @@ export const DonationPlatformsSection = observer(({}) => {
               />
               <LightLabeledSwitchComponent
                 label="Запускать рулетку"
-                value={token?.settings["triggerReel"]}
+                value={token?.settings["triggerReel"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
                     token.settings["triggerReel"] = newValue;
@@ -101,7 +101,7 @@ export const DonationPlatformsSection = observer(({}) => {
               />
               <LightLabeledSwitchComponent
                 label="Учитывать в таймере до конца трансляции"
-                value={token?.settings["triggerDonaton"]}
+                value={token?.settings["triggerDonaton"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
                     token.settings["triggerDonaton"] = newValue;
@@ -143,12 +143,16 @@ export const DonationPlatformsSection = observer(({}) => {
               token.system === "DonatePay" ||
               token.system === "DonatePay.eu" ||
               token.system === "DonationAlerts" ||
-              token.system === "UnofficialDonationAlerts",
+              token.system === "UnofficialDonationAlerts" ||
+              token.system === "DonateX",
           )
           .map((token) => (
             <Card
               key={token.id}
               onClick={() => {
+                if (token.settings === undefined) {
+                  token.settings = {};
+                }
                 setToken(token);
                 setOriginToken(structuredClone(toJS(token)));
                 integrationSettingsDialogState.show = true;
