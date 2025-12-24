@@ -3,6 +3,7 @@ import { TwitchAlertsWidgetSettings } from "./TwitchAlertsWidgetSettings";
 
 export const TwitchAlertsWidget = observer(
   ({ settings }: { settings: TwitchAlertsWidgetSettings }) => {
-    return <></>;
+    return <>
+    </>;
   },
 );

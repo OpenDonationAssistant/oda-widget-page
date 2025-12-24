@@ -14,7 +14,6 @@ import { produce } from "immer";
 import { getRndInteger } from "../../../utils";
 import { log } from "../../../logging";
 import { observer } from "mobx-react-lite";
-import { CSSProperties } from "react";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import classes from "./AnimationProperty.module.css";
 
@@ -26,14 +25,15 @@ export interface AnimationPropertyValue {
 export const AnimationPropertyComponent = observer(
   ({
     value,
-    displayName,
   }: {
     value: AnimationPropertyValue;
-    displayName: string;
   }) => {
     return (
       <Flex gap={6}>
-        <SmallLabeledContainer displayName={displayName} className={`${classes.half}`}>
+        <SmallLabeledContainer
+          displayName="Название"
+          className={`${classes.half}`}
+        >
           <Select
             className="full-width"
             value={value.animation}
@@ -43,7 +43,10 @@ export const AnimationPropertyComponent = observer(
             onChange={(selected) => (value.animation = selected)}
           />
         </SmallLabeledContainer>
-        <SmallLabeledContainer displayName="Продолжительность" className={`${classes.half}`}>
+        <SmallLabeledContainer
+          displayName="Продолжительность цикла(скорость)"
+          className={`${classes.half}`}
+        >
           <InputNumber
             value={value.duration}
             addon="ms"
@@ -170,7 +173,7 @@ export class AnimationProperty extends DefaultWidgetProperty<AnimationPropertyVa
     return `animate__animated animate__${this.value.animation} ${this._target === "idle" ? "animate__infinite" : ""}`;
   }
 
-  public calcCss(): CSSProperties {
+  public calcCss() {
     if (!this.value.duration) {
       return {};
     }

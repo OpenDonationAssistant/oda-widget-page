@@ -1,3 +1,4 @@
+import { AdvancedTextProperty } from "../../components/ConfigurationPage/widgetproperties/AdvancedText/AdvancedTextProperty";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";

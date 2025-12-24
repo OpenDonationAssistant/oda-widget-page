@@ -29,7 +29,10 @@ export const BaseEditableString = observer(
       <>
         {!edit && (
           <Flex justify="center" align="center" className={className}>
-            <div className={`${size === "normal" ? classes.variablename : classes.smallvariablename}`} onClick={onClick}>
+            <div
+              className={`${size === "normal" ? classes.variablename : classes.smallvariablename}`}
+              onClick={onClick}
+            >
               {label === null || label === undefined || label === ""
                 ? placeholder
                 : label}
@@ -50,7 +53,7 @@ export const BaseEditableString = observer(
               style={{ height: "38px" }}
               value={value}
               onChange={(value) => {
-                setValue((old) => value.target.value);
+                setValue((_) => value.target.value);
               }}
             />
             <NotBorderedIconButton

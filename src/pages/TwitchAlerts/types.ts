@@ -39,6 +39,11 @@ export interface TwitchAlertContainer {
   deleteAlert: ({ index, id }: { index?: number; id?: string }) => void;
 }
 
+export interface TreeLeaf {
+  element: Element<any>;
+  children: TreeLeaf[];
+}
+
 export class TwitchAlert {
   private _container: TwitchAlertContainer;
   private _data: TwitchAlertData;
@@ -53,18 +58,40 @@ export class TwitchAlert {
   }
 
   public get elements(): Element<any>[] {
-    return this._data.elements.map((element) =>
-      ElementFactory.fromData(this, element)
-    );
+    const index = new Map<string, Element<any>>();
+    const elements = this._data.elements.map((element) => {
+      const converted = ElementFactory.fromData(this, element);
+      index.set(element.id, converted);
+      return converted;
+    });
+    elements.forEach((element) => {
+      if (element.data.containerId) {
+        const container = index.get(element.data.containerId);
+        if (container) {
+          container.children.push(element);
+        }
+      }
+    });
+    return elements;
   }
-  public addElement({ data }: { data: ElementData<any> }) {
+
+  public addElement({
+    data,
+    parent,
+  }: {
+    data: ElementData<any>;
+    parent: ElementData<any> | null;
+  }) {
+    data.containerId = parent?.id ?? null;
     this._data.elements.push(data);
   }
-  public deleteElement({ name }: { name?: string }) {
+
+  public deleteElement({ id }: { id: string }) {
     this._data.elements = this._data.elements.filter(
-      (element) => element.name !== name,
+      (element) => element.id !== id,
     );
   }
+
   public delete() {
     this._container.deleteAlert({ id: this._data.id });
   }

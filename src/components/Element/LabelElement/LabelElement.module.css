@@ -4,14 +4,42 @@
   color: var(--oda-color-950);
 }
 
+.templates {
+  width: 100%;
+  margin-top: 18px;
+  margin-bottom: 18px;
+  color: var(--oda-color-950);
+  & .titles {
+    & div {
+      font-size: 21px !important;
+    }
+    font-weight: 600;
+  }
+}
+
+.textcontainer {
+  position: relative;
+  width: 100%;
+  & textarea {
+    width: 100%;
+  }
+}
+
+.textoptions {
+  width: 100%;
+  position: absolute;
+  bottom: 12px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
 .addshadowbutton {
   border: 1px solid var(--oda-color-250);
 }
 
 .selectedalign {
   color: var(--oda-primary-color);
-  border-top: 2px solid var(--oda-primary-color);
-  border-bottom: 2px solid var(--oda-primary-color);
+  font-size: 30px !important;
 }
 
 .alignbutton {
@@ -24,7 +52,7 @@
 }
 
 .text {
-  border: 1px solid #36363F;
+  border: 1px solid #36363f;
   border-radius: 9px;
   background: none;
   flex-grow: 1;
@@ -38,5 +66,5 @@
 }
 
 .small {
-  height: 60px;
+  height: 150px;
 }

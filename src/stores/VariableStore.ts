@@ -4,18 +4,54 @@ import { makeAutoObservable } from "mobx";
 import { createContext } from "react";
 import { log } from "../logging";
 
+export interface LabelTemplate {
+  value: string;
+  description: string;
+  example: string;
+}
+
+export interface VariableDescription {
+  name: string;
+  description: string;
+}
+
+export interface TemplateSettings {
+  variables: VariableDescription[];
+  templates: LabelTemplate[];
+}
+
 export interface VariableStore {
   variables: Variable[];
+  templating: TemplateSettings;
+  addTemplate(template: LabelTemplate): void;
+  addVariableDescription(variable: VariableDescription): void;
   processTemplate: (template: string) => string;
   load: () => void;
 }
 
 export class DefaultVariableStore implements VariableStore {
   private _variables: Variable[] = [];
+  private _templates: LabelTemplate[] = [];
+  private _variablesDescription: VariableDescription[] = [];
 
   constructor() {
     makeAutoObservable(this);
     this.load();
+  }
+
+  public get templating() {
+    return {
+      variables: this._variablesDescription,
+      templates: this._templates,
+    };
+  }
+
+  public addVariableDescription(variable: VariableDescription) {
+    this._variablesDescription.push(variable);
+  }
+
+  public addTemplate(template: LabelTemplate) {
+    this._templates.push(template);
   }
 
   private client() {
@@ -65,5 +101,8 @@ export class DefaultVariableStore implements VariableStore {
 export const VariableStoreContext = createContext<VariableStore>({
   variables: [],
   processTemplate: (template: string) => template,
+  addTemplate: (template: LabelTemplate) => {},
+  addVariableDescription: (variable: VariableDescription) => {},
+  templating: { variables: [], templates: [] },
   load: () => {},
 });

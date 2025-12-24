@@ -7,8 +7,6 @@ import {
   ColorStop,
   GRADIENT_TYPE,
 } from "./ColorProperty";
-import { produce } from "immer";
-import { toJS } from "mobx";
 import classes from "./ColorPropertyComponent.module.css";
 import InputNumber from "../components/InputNumber";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
@@ -34,17 +32,11 @@ const ColorStopComponent = observer(
             value={color.stop.value}
             onChange={(value) => {
               if (value === undefined || value === null) return;
-              const updated = produce(
-                toJS(property.value),
-                (draft: ColorPropertyValue) => {
-                  const stop = draft.colors[index].stop;
-                  if (stop) {
-                    stop.value = value;
-                  }
-                },
-              );
-              property.value = updated;
-              onChange && onChange(updated);
+              const stop = property.value.colors[index].stop;
+              if (stop) {
+                stop.value = value;
+              }
+              onChange && onChange(property.value);
             }}
             addon={
               <Select
@@ -61,17 +53,11 @@ const ColorStopComponent = observer(
                   },
                 ]}
                 onChange={(value) => {
-                  const updated = produce(
-                    toJS(property.value),
-                    (draft: ColorPropertyValue) => {
-                      const stop = draft.colors[index].stop;
-                      if (stop) {
-                        stop.unit = value;
-                      }
-                    },
-                  );
-                  property.value = updated;
-                  onChange && onChange(updated);
+                  const stop = property.value.colors[index].stop;
+                  if (stop) {
+                    stop.unit = value;
+                  }
+                  onChange && onChange(property.value);
                 }}
               />
             }
@@ -94,14 +80,8 @@ const AddColorToGradient = observer(
       <Button
         className={`${classes.addbutton}`}
         onClick={() => {
-          const updated = produce(
-            toJS(property.value),
-            (draft: ColorPropertyValue) => {
-              draft.colors.push({ color: "#FFFFFF" });
-            },
-          );
-          property.value = updated;
-          onChange && onChange(updated);
+          property.value.colors.push({ color: "#FFFFFF" });
+          onChange && onChange(property.value);
         }}
       >
         <Flex>
@@ -141,14 +121,8 @@ const GradientSettings = observer(
               },
             ]}
             onChange={(value) => {
-              const updated = produce(
-                toJS(property.value),
-                (draft: ColorPropertyValue) => {
-                  draft.gradientType = value;
-                },
-              );
-              property.value = updated;
-              onChange && onChange(updated);
+              property.value.gradientType = value;
+              onChange && onChange(property.value);
             }}
           />
           <Segmented
@@ -165,14 +139,8 @@ const GradientSettings = observer(
               },
             ]}
             onChange={(value) => {
-              const updated = produce(
-                toJS(property.value),
-                (draft: ColorPropertyValue) => {
-                  draft.repeating = value === 1;
-                },
-              );
-              property.value = updated;
-              onChange && onChange(updated);
+              property.value.repeating = value === 1;
+              onChange && onChange(property.value);
             }}
           />
         </SmallLabeledContainer>
@@ -185,14 +153,8 @@ const GradientSettings = observer(
                 if (value === null || value === undefined) {
                   return;
                 }
-                const updated = produce(
-                  toJS(property.value),
-                  (draft: ColorPropertyValue) => {
-                    draft.angle = value;
-                  },
-                );
-                property.value = updated;
-                onChange && onChange(updated);
+                property.value.angle = value;
+                onChange && onChange(property.value);
               }}
             />
           </SmallLabeledContainer>
@@ -224,14 +186,8 @@ const GradientColors = observer(
                   showText
                   value={color.color}
                   onChange={(value) => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        draft.colors[index].color = value.toRgbString();
-                      },
-                    );
-                    property.value = updated;
-                    onChange && onChange(updated);
+                    property.value.colors[index].color = value.toRgbString();
+                    onChange && onChange(property.value);
                   }}
                 />
                 <Flex
@@ -243,21 +199,15 @@ const GradientColors = observer(
                   <Switch
                     value={color.stop !== undefined}
                     onChange={(value) => {
-                      const updated = produce(
-                        toJS(property.value),
-                        (draft: ColorPropertyValue) => {
-                          if (value) {
-                            draft.colors[index].stop = {
-                              value: 0,
-                              unit: COLOR_STOP_UNIT.PIXEL,
-                            };
-                          } else {
-                            draft.colors[index].stop = undefined;
-                          }
-                        },
-                      );
-                      property.value = updated;
-                      onChange && onChange(updated);
+                      if (value) {
+                        property.value.colors[index].stop = {
+                          value: 0,
+                          unit: COLOR_STOP_UNIT.PIXEL,
+                        };
+                      } else {
+                        property.value.colors[index].stop = undefined;
+                      }
+                      onChange && onChange(property.value);
                     }}
                   />
                   <span className={classes.colorStopLabel}>
@@ -266,14 +216,8 @@ const GradientColors = observer(
                 </Flex>
                 <NotBorderedIconButton
                   onClick={() => {
-                    const updated = produce(
-                      toJS(property.value),
-                      (draft: ColorPropertyValue) => {
-                        draft.colors.splice(index, 1);
-                      },
-                    );
-                    property.value = updated;
-                    onChange && onChange(updated);
+                    property.value.colors.splice(index, 1);
+                    onChange && onChange(property.value);
                   }}
                 >
                   <CloseIcon color="#FF8888" />
@@ -320,14 +264,8 @@ export const ColorPropertyComponent = observer(
             ]}
             value={property.value.gradient ? 3 : 2}
             onChange={(value) => {
-              const updated = produce(
-                toJS(property.value),
-                (draft: ColorPropertyValue) => {
-                  draft.gradient = value === 3;
-                },
-              );
-              property.value = updated;
-              onChange && onChange(updated);
+              property.value.gradient = value === 3;
+              onChange && onChange(property.value);
             }}
           />
         </LabeledContainer>
@@ -337,14 +275,8 @@ export const ColorPropertyComponent = observer(
             value={property.value.colors[0].color}
             showText
             onChange={(value) => {
-              const updated = produce(
-                toJS(property.value),
-                (draft: ColorPropertyValue) => {
-                  draft.colors[0].color = value.toRgbString();
-                },
-              );
-              property.value = updated;
-              onChange && onChange(updated);
+              property.value.colors[0].color = value.toRgbString();
+              onChange && onChange(property.value);
             }}
           />
         )}

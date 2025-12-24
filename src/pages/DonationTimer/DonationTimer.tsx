@@ -84,7 +84,6 @@ export const DonationTimer = observer(
 
     return (
       <>
-        {settings.titleFontProperty.createFontImport()}
         {time && (
           <Flex
             align="center"
@@ -108,9 +107,9 @@ export const DonationTimer = observer(
               }}
               className={`${classes.background}`}
             />
-            <AlignmentRenderer alignment={settings.textAlign}>
+            <AlignmentRenderer alignment={settings.textAlign.value}>
               <TextRenderer
-                font={settings.titleFontProperty}
+                font={settings.titleFontProperty.value}
                 text={text.replace("<time>", `${time}`)}
               />
             </AlignmentRenderer>

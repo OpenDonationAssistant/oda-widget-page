@@ -1,9 +1,11 @@
 .variablename{
   font-size: 28px;
+  font-weight: 900;
 }
 
 .smallvariablename {
-  font-size: 18px;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .rename {

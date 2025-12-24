@@ -63,7 +63,7 @@ export const DonatonWidget = observer(
       <div className={`${classes.textholder}`} style={style}>
         <TextRenderer
           text={settings.textProperty.replace("<time>", `${time}`)}
-          font={titleFont}
+          font={titleFont.value}
         />
       </div>
     );

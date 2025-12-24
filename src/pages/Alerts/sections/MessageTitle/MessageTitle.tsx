@@ -25,10 +25,10 @@ export const MessageTitle = observer(() => {
   }
 
   return (
-    <AlignmentRenderer alignment={state.titleAlignment}>
+    <AlignmentRenderer alignment={state.titleAlignment.value}>
       <div className={state.headerClassName} style={state.headerStyle}>
         <div className={`${classes.messageheader}`} style={state.titleStyle}>
-          <TextRenderer text={state.title} font={state.titleFont} />
+          <TextRenderer text={state.title} font={state.titleFont.value} />
           <div style={state.titleImageStyle} className={classes.image} />
         </div>
       </div>

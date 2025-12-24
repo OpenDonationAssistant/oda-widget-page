@@ -1,0 +1,18 @@
+.childname {
+  font-size: 21px;
+  border: 1px solid var(--oda-color-300);
+  border-radius: 6px;
+  padding-left: 12px;
+  padding-right: 3px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  color: var(--oda-color-1000);
+  & svg {
+    margin-top: 1px;
+  }
+}
+
+.componentselector {
+  color: var(--oda-color-1000);
+  height: 24px;
+}

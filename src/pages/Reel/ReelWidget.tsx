@@ -110,7 +110,7 @@ export const ReelWidget = observer(
                 <li key={option} className={`glide__slide ${classes.reelitem}`}>
                   <TextRenderer
                     text={option}
-                    font={settings.titleFontProperty}
+                    font={settings.titleFontProperty.value}
                   />
                 </li>
               </div>

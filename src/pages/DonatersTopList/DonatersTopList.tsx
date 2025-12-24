@@ -136,7 +136,7 @@ export const DonatersTopList = observer(
           >
             <TextRenderer
               text={`${record.nickname} - ${record.amount} RUB`}
-              font={settings.messageFont}
+              font={settings.messageFont.value}
             />
           </div>
         ));
@@ -195,7 +195,7 @@ export const DonatersTopList = observer(
               ...{ textAlign: settings.headerAlignment },
             }}
           >
-            <TextRenderer text={title} font={settings.headerFont} />
+            <TextRenderer text={title} font={settings.headerFont.value} />
           </div>
         )}
         {settings.carousel.value.enabled && (

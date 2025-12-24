@@ -61,6 +61,7 @@
   width: 100%;
   left: 2vw;
   height: 100vh;
+  border-radius: 0px;
 }
 
 .title {

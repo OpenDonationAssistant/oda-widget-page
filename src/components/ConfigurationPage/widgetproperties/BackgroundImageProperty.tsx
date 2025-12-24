@@ -1,4 +1,10 @@
-import { CSSProperties, ReactNode, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -13,6 +19,17 @@ import SubActionButton from "../../Button/SubActionButton";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import { fullUri, handleFileUpload } from "../../../utils";
+import SecondaryButton from "../../Button/SecondaryButton";
+import { CatalogItem, CatalogStoreContext } from "../../../stores/CatalogStore";
+import {
+  ModalStateContext,
+  Panel,
+  Overlay,
+  Title,
+  ModalState,
+} from "../../Overlay/Overlay";
+import { Card, CardList } from "../../Cards/CardsComponent";
+import PrimaryButton from "../../Button/PrimaryButton";
 
 export interface ImagePropertyValue {
   name: string | null;
@@ -21,6 +38,69 @@ export interface ImagePropertyValue {
   repeat: boolean;
   opacity: number;
 }
+
+const CatalogBrowse = ({
+  onChange,
+}: {
+  onChange: (item: CatalogItem) => void;
+}) => {
+  const catalog = useContext(CatalogStoreContext);
+  const [page, setPage] = useState<number>(0);
+  const [selected, setSelected] = useState<CatalogItem | null>(null);
+  const modalState = useContext(ModalStateContext);
+
+  useEffect(() => {
+    catalog.loadPage(page);
+  }, [page]);
+
+  return (
+    <Overlay>
+      <Panel>
+        <Title>Галерея</Title>
+        <CardList className={`${classes.fontlist} withscroll`}>
+          {catalog.items.slice(0, page * 12 + 12).map((item) => (
+            <Card
+              selected={item.id === selected?.id}
+              className={`${classes.fontpreview}`}
+              key={item.id}
+              onClick={() => {
+                setSelected(item);
+              }}
+            >
+              <img src={item.url} alt="" />
+            </Card>
+          ))}
+        </CardList>
+        <Flex className={`${classes.browsebuttons}`} justify="space-between">
+          <SecondaryButton
+            onClick={() => {
+              setPage(0);
+              setSelected(null);
+              modalState.show = false;
+            }}
+          >
+            Отменить
+          </SecondaryButton>
+          <SecondaryButton onClick={() => setPage((old) => old + 1)}>
+            Показать ещё
+          </SecondaryButton>
+          <PrimaryButton
+            disabled={!selected}
+            onClick={() => {
+              setPage(0);
+              modalState.show = false;
+              if (selected) {
+                onChange(selected);
+              }
+            }}
+          >
+            Принять
+          </PrimaryButton>
+        </Flex>
+      </Panel>
+    </Overlay>
+  );
+};
 
 export const DEFAULT_IMAGE_PROPERTY_VALUE = {
   name: null,
@@ -41,29 +121,50 @@ export const ImagePropertyComponent = observer(
     onChange?: (value: ImagePropertyValue) => void;
   }) => {
     const [image, setImage] = useState<string>(value.url ?? "");
+    const parentModalState = useContext(ModalStateContext);
+    const [modalState] = useState<ModalState>(
+      () => new ModalState(parentModalState),
+    );
 
     useEffect(() => {
       fullUri(value.url).then(setImage);
     }, [value.url]);
 
     return (
-      <>
+      <ModalStateContext.Provider value={modalState}>
+        <CatalogBrowse
+          onChange={(item) => {
+            value.url = item.url;
+            value.name = "Системное изображение";
+            onChange?.(value);
+          }}
+        />
         <LabeledContainer displayName={displayName}>
           {!value.url && (
-            <label className={`${classes.upload}`}>
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleFileUpload(e).then((result) => {
-                    value.url = result.url;
-                    value.name = result.name;
-                    onChange?.(value);
-                  })
-                }
-              />
-              <span className="material-symbols-sharp">upload</span>
-              <Trans i18nKey="button-upload" />
-            </label>
+            <Flex gap={6} className="full-width">
+              <label className={`${classes.upload}`}>
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    handleFileUpload(e).then((result) => {
+                      value.url = result.url;
+                      value.name = result.name;
+                      onChange?.(value);
+                    })
+                  }
+                />
+                <span className="material-symbols-sharp">upload</span>
+                <Trans i18nKey="button-upload" />
+              </label>
+              <SecondaryButton
+                onClick={() => {
+                  modalState.show = true;
+                }}
+              >
+                <span className="material-symbols-sharp">folder</span>
+                <Trans i18nKey="button-browse" />
+              </SecondaryButton>
+            </Flex>
           )}
           {value.url && (
             <Flex vertical={true} className="full-width" justify="space-around">
@@ -76,12 +177,7 @@ export const ImagePropertyComponent = observer(
                 <div>{value.name}</div>
                 <Flex align="center" gap={6}>
                   <Image.PreviewGroup>
-                    <Image
-                      width={200}
-                      height={28}
-                      className={`${classes.preview}`}
-                      src={`${image}`}
-                    />
+                    <Image className={`${classes.preview}`} src={`${image}`} />
                   </Image.PreviewGroup>
                   <SubActionButton
                     onClick={() => {
@@ -155,7 +251,7 @@ export const ImagePropertyComponent = observer(
             </Flex>
           )}
         </LabeledContainer>
-      </>
+      </ModalStateContext.Provider>
     );
   },
 );

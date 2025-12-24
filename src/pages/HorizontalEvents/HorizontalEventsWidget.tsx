@@ -50,7 +50,7 @@ export const HorizontalEventsWidget = observer(
           >
             <TextRenderer
               text={settings.headerText.value}
-              font={settings.headerFont}
+              font={settings.headerFont.value}
             />
           </div>
         )}
@@ -68,18 +68,18 @@ export const HorizontalEventsWidget = observer(
             >
               <TextRenderer
                 text={it.nickname ?? "Аноним"}
-                font={settings.eventsNicknameFont}
+                font={settings.eventsNicknameFont.value}
               />{" "}
               {settings.showAmount.value && (
                 <TextRenderer
                   text={`- ${it.amount?.major}RUB`}
-                  font={settings.eventsAmountFont}
+                  font={settings.eventsAmountFont.value}
                 />
               )}
               {settings.showMessage.value && (
                 <TextRenderer
                   text={it.message ? ` - ${it.message}` : ""}
-                  font={settings.eventsMessageFont}
+                  font={settings.eventsMessageFont.value}
                 />
               )}
             </Flex>

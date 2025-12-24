@@ -245,7 +245,7 @@ export const FontSettingsOverlay = observer(
                       ? "The quick brown fox jumps over the lazy dog"
                       : "Съешь же еще этих мягких французских булок да выпей чаю"
                   }
-                  font={property}
+                  font={property.value}
                 />
               </div>
               <div

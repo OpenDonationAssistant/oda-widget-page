@@ -38,6 +38,7 @@ export class ModalState {
     }
     makeAutoObservable(this);
   }
+
   public handleEscape() {
     if (this.show && this._onTop) {
       log.debug({ state: this }, "handle keypress");

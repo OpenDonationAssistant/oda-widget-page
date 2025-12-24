@@ -2,8 +2,58 @@ import { CSSProperties, ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import InputNumber from "../components/InputNumber";
-import { Flex } from "antd";
+import { Flex, Segmented } from "antd";
 import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
+import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+
+export interface HeightPropertyValue {
+  type: "min" | "max" | "fixed";
+  value: number;
+}
+
+export const HeightPropertyComponent = observer(
+  ({ property }: { property: HeightPropertyValue }) => {
+    return (
+      <LabeledContainer displayName="Высота">
+        <Flex vertical className="full-width" gap={9}>
+          <Segmented
+            className="full-width"
+            options={[
+              {
+                label: "Минимальная",
+                value: "min",
+              },
+              {
+                label: "Фиксированная",
+                value: "fixed",
+              },
+              {
+                label: "Максимальная",
+                value: "max",
+              },
+            ]}
+            value={property.type}
+            onChange={(value) => {
+              property.type = value as "min" | "max" | "fixed";
+            }}
+          />
+          {property.type === "fixed" && (
+            <InputNumber
+              value={property.value}
+              addon="px"
+              onChange={(newValue) => {
+                if (newValue === null || newValue === undefined) {
+                  return;
+                }
+                property.value = newValue;
+              }}
+            />
+          )}
+        </Flex>
+      </LabeledContainer>
+    );
+  },
+);
 
 export class HeightProperty extends DefaultWidgetProperty<number> {
   constructor({

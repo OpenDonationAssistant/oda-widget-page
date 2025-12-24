@@ -10,15 +10,31 @@
   }
 }
 
+.opened {
+  &:hover {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+}
+
 .adddalertbutton {
   text-align: center;
   width: 100%;
   background-color: var(--oda-color-150);
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   color: var(--oda-primary-color);
   height: 52px;
   &:hover{
     background-color: var(--oda-color-250);
   }
+}
+
+.wrapper {
+  background-color: var(--oda-color-150);
+  border-radius: 12px;
+}
+
+.content {
+  padding: 12px;
 }

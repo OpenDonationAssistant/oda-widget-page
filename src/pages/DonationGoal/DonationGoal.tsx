@@ -148,7 +148,7 @@ export const DonationGoal = observer(
               <div className={`${classes.goalitem}`}>
                 {settings.showTitle && (
                   <AlignmentRenderer
-                    alignment={settings.titleTextAlign}>
+                    alignment={settings.titleTextAlign.value}>
                     <div
                       style={{
                         ...titleBorderStyle,
@@ -164,7 +164,7 @@ export const DonationGoal = observer(
                     >
                       <TextRenderer
                         text={variables.processTemplate(goal.briefDescription)}
-                        font={settings.titleFontProperty}
+                        font={settings.titleFontProperty.value}
                       />
                     </div>
                   </AlignmentRenderer>
@@ -216,7 +216,7 @@ export const DonationGoal = observer(
                       className={`${classes.goalamount}`}
                     >
                       <TextRenderer
-                        font={settings.amountFontProperty}
+                        font={settings.amountFontProperty.value}
                         text={variables
                           .processTemplate(settings.labelTemplate)
                           .replaceAll(

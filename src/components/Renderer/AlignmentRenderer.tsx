@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import { AlignmentProperty } from "../ConfigurationPage/widgetproperties/AlignmentProperty";
 import { Flex } from "antd";
 
-function getAlignment(alignment: AlignmentProperty) {
-  switch (alignment.value) {
+function getAlignment(alignment: string) {
+  switch (alignment) {
     case "left":
       return "flex-start";
     case "center":
@@ -22,7 +22,7 @@ export const AlignmentRenderer = observer(
     alignment,
   }: {
     children: ReactNode;
-    alignment: AlignmentProperty;
+    alignment: string;
   }) => {
     return (
       <Flex className="full-width" justify={getAlignment(alignment)}>

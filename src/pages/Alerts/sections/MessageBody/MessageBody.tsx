@@ -25,13 +25,13 @@ export const MessageBody = observer(() => {
   }
 
   return (
-    <AlignmentRenderer alignment={state.messageAlignment}>
+    <AlignmentRenderer alignment={state.messageAlignment.value}>
       <div
         className={state.messageContainerClassName}
         style={state.messageContainerStyle}
       >
         <div className={`${classes.messagebody}`} style={state.messageStyle}>
-          <TextRenderer text={state.message} font={state.messageFont} />
+          <TextRenderer text={state.message} font={state.messageFont.value} />
           <div style={state.messageImageStyle} className={classes.image} />
         </div>
       </div>

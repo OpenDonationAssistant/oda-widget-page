@@ -5,9 +5,9 @@ import {
   TwitchAlert,
 } from "./types";
 import { Trans, useTranslation } from "react-i18next";
-import { useContext, useRef, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import { PresetStoreContext } from "../../stores/PresetStore";
-import { Flex, Select, Slider, Tabs } from "antd";
+import { Flex, Select, Slider, Switch, Tabs } from "antd";
 import classes from "./TwitchAlertsItemSettings.module.css";
 import {
   EditableString,
@@ -27,9 +27,7 @@ import {
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
-import CollapseLikeButton, {
-  CollapseLikeUploadButton,
-} from "../../components/Button/CollapseLikeButton";
+import { CollapseLikeUploadButton } from "../../components/Button/CollapseLikeButton";
 import SubActionButton from "../../components/Button/SubActionButton";
 import { PresetsComponent } from "../../components/ConfigurationPage/PresetsComponent";
 import { ResizableBox } from "react-resizable";
@@ -37,18 +35,24 @@ import { SaveButtons } from "../../components/Button/SaveButtons";
 import { handleFileUpload, loadAudio } from "../../utils";
 import SmallLabeledContainer from "../../components/SmallLabeledContainer/SmallLabeledContainer";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
-import AddIcon from "../../icons/AddIcon";
-import { List, ListItem } from "../../components/List/List";
+import {
+  AddListItemButton,
+  CollapsibleListItem,
+  List,
+} from "../../components/List/List";
 import { Element, ElementData } from "../../components/Element/Element";
-import ArrowUp from "../../icons/ArrowUp";
-import ArrowDown from "../../icons/ArrowDown";
 import {
   Card,
   CardList,
   CardTitle,
 } from "../../components/Cards/CardsComponent";
-import { log } from "../../logging";
-import { DEFAULT_LABEL_ELEMENT_SETTINGS } from "../../components/Element/LabelElement";
+import { ElementRenderer } from "../../components/Element/ElementRenderer";
+import { DEFAULT_MEDIA_ELEMENT_SETTINGS } from "../../components/Element/MediaElement/MediaElement";
+import { DEFAULT_LABEL_ELEMENT_SETTINGS } from "../../components/Element/LabelElement/LabelElement";
+import { uuidv7 } from "uuidv7";
+import { DEFAULT_CONTAINER_ELEMENT_SETTINGS } from "../../components/Element/ContainerElement/ContainerElement";
+import { LightLabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
+import { AdvancedSettingsStoreContext } from "../../stores/AdvancedSettingsStore";
 
 function play(buffer: ArrayBuffer | null) {
   if (!buffer) {
@@ -105,134 +109,194 @@ const GeneralTab = observer(({ alert }: { alert: TwitchAlert }) => {
           </NotBorderedIconButton>
         </Flex>
       ))}
-      <CollapseLikeButton
+      <AddListItemButton
+        label="Добавить условие"
         onClick={() => {
           alert.data.triggers.push({
             type: TWITCH_ALERT_TRIGGERS[0],
           });
         }}
-      >
-        Добавить условие
-      </CollapseLikeButton>
+      />
     </Flex>
   );
 });
 
 const ElementsItemComponent = observer(
-  ({ element }: { element: Element<any> }) => {
-    const [opened, setOpened] = useState<boolean>(false);
+  ({ element }: { element: Element<any>; advanced?: boolean }) => {
     const parentModalState = useContext(ModalStateContext);
     const [deleteDialogState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+    const advanced = useContext(AdvancedSettingsStoreContext).enabled;
 
     return (
-      <>
-        <Flex vertical className={`${classes.element}`}>
-          <ListItem
-            onClick={() => setOpened(!opened)}
-            first={
+      <CollapsibleListItem
+        first={
+          <Flex align="center" gap={6}>
+            {advanced ? (
               <SmallEditableString
                 label={element.data.name}
                 onChange={(value) => (element.data.name = value)}
               />
-            }
-            second={
-              <Flex align="center" justify="flex-end" gap={3}>
-                <ModalStateContext.Provider value={deleteDialogState}>
-                  <Overlay>
-                    <Warning
-                      action={() => {
-                        deleteDialogState.show = false;
-                        element.delete();
-                      }}
-                    >
-                      Вы точно хотите удалить оповещение?
-                    </Warning>
-                  </Overlay>
-                  <BorderedIconButton
-                    onClick={() => (deleteDialogState.show = true)}
-                  >
-                    <CloseIcon color="#FF8888" />
-                  </BorderedIconButton>
-                </ModalStateContext.Provider>
-                {opened ? <ArrowUp /> : <ArrowDown />}
-              </Flex>
-            }
-          />
-          {opened && (
-            <div className={`${classes.elementsettings}`}>
-              {element.markup()}
-            </div>
-          )}
-        </Flex>
-      </>
+            ) : (
+              <span className={`${classes.elementtitle}`}>
+                {element.data.name}
+              </span>
+            )}
+            <Switch
+              checked={element.data.enabled}
+              onChange={(value) => (element.data.enabled = value)}
+            />
+          </Flex>
+        }
+        second={
+          <Flex align="center" justify="flex-end" gap={3}>
+            <ModalStateContext.Provider value={deleteDialogState}>
+              <Overlay>
+                <Warning
+                  action={() => {
+                    deleteDialogState.show = false;
+                    element.delete();
+                  }}
+                >
+                  Вы точно хотите удалить оповещение?
+                </Warning>
+              </Overlay>
+              {advanced && (
+                <BorderedIconButton
+                  onClick={() => (deleteDialogState.show = true)}
+                >
+                  <CloseIcon color="#FF8888" />
+                </BorderedIconButton>
+              )}
+            </ModalStateContext.Provider>
+          </Flex>
+        }
+      >
+        {element.markup()}
+      </CollapsibleListItem>
     );
   },
 );
 
-const ElementsTab = observer(({ alert }: { alert: TwitchAlert }) => {
-  const parentModalState = useContext(ModalStateContext);
-  const [addElementDialogState] = useState<ModalState>(
-    () => new ModalState(parentModalState),
-  );
-  const [selected, setSelected] = useState<string>("");
+class AddElementDialogState {
+  constructor(
+    public modalState: ModalState,
+    public parent: ElementData<any> | null,
+  ) {}
 
-  return (
-    <div className={`${classes.tabcontainer}`}>
-      <List>
-        {alert.elements.map((element, index) => (
-          <ElementsItemComponent key={index} element={element} />
-        ))}
-        <ModalStateContext.Provider value={addElementDialogState}>
-          <CollapseLikeButton
-            onClick={() => {
-              addElementDialogState.show = true;
+  public addTo(element: ElementData<any> | null) {
+    this.parent = element;
+    this.modalState.show = true;
+  }
+}
+
+export const AddElementDialogStateContext = createContext(
+  new AddElementDialogState(new ModalState(), null),
+);
+
+const ElementsTab = observer(
+  ({ alert, elements }: { alert: TwitchAlert; elements: Element<any>[] }) => {
+    const parentModalState = useContext(ModalStateContext);
+    const [addElementDialogState] = useState<ModalState>(
+      () => new ModalState(parentModalState),
+    );
+    const advanced = useContext(AdvancedSettingsStoreContext);
+    const dialogState = new AddElementDialogState(addElementDialogState, null);
+
+    return (
+      <div className={`${classes.tabcontainer}`}>
+        <div className={`${classes.mode}`}>
+          <LightLabeledSwitchComponent
+            label="Расширенный режим"
+            value={advanced.enabled}
+            onChange={() => {
+              advanced.enabled = !advanced.enabled;
             }}
-          >
-            <AddIcon color="var(--oda-primary-color)" />
-            <div>Добавить элемент</div>
-          </CollapseLikeButton>
-          <Overlay>
-            <Panel>
-              <Title>Добавить элемент</Title>
-              <CardList>
-                <Card
+          />
+        </div>
+        <List>
+          <AddElementDialogStateContext.Provider value={dialogState}>
+            {elements.map((element, index) => (
+              <ElementsItemComponent key={index} element={element} />
+            ))}
+            <ModalStateContext.Provider value={addElementDialogState}>
+              {advanced.enabled && (
+                <AddListItemButton
+                  label="Добавить элемент"
                   onClick={() => {
-                    alert.addElement({
-                      data: {
-                        type: "label",
-                        name: "Надпись",
-                        settings: DEFAULT_LABEL_ELEMENT_SETTINGS,
-                      },
-                    });
-                    addElementDialogState.show = false;
+                    dialogState.addTo(null);
                   }}
-                >
-                  <CardTitle>Надпись</CardTitle>
-                </Card>
-                <Card
-                  onClick={() => {
-                    addElementDialogState.show = false;
-                    alert.addElement({
-                      data: {
-                        type: "media",
-                        name: "Изображение/Видео",
-                        settings: {},
-                      },
-                    });
-                  }}
-                >
-                  <CardTitle>Изображение/Видео</CardTitle>
-                </Card>
-              </CardList>
-            </Panel>
-          </Overlay>
-        </ModalStateContext.Provider>
-      </List>
-    </div>
-  );
-});
+                />
+              )}
+              <Overlay>
+                <Panel>
+                  <Title>Добавить элемент</Title>
+                  <CardList>
+                    <Card
+                      onClick={() => {
+                        alert.addElement({
+                          data: {
+                            id: uuidv7(),
+                            containerId: null,
+                            type: "label",
+                            name: "Надпись",
+                            enabled: true,
+                            settings: DEFAULT_LABEL_ELEMENT_SETTINGS,
+                          },
+                          parent: dialogState.parent,
+                        });
+                        addElementDialogState.show = false;
+                      }}
+                    >
+                      <CardTitle>Надпись</CardTitle>
+                    </Card>
+                    <Card
+                      onClick={() => {
+                        alert.addElement({
+                          data: {
+                            id: uuidv7(),
+                            containerId: null,
+                            type: "media",
+                            name: "Изображение/Видео",
+                            enabled: true,
+                            settings: DEFAULT_MEDIA_ELEMENT_SETTINGS,
+                          },
+                          parent: dialogState.parent,
+                        });
+                        addElementDialogState.show = false;
+                      }}
+                    >
+                      <CardTitle>Изображение/Видео</CardTitle>
+                    </Card>
+                    <Card
+                      onClick={() => {
+                        alert.addElement({
+                          data: {
+                            id: uuidv7(),
+                            containerId: null,
+                            type: "container",
+                            name: "Контейнер",
+                            enabled: true,
+                            settings: DEFAULT_CONTAINER_ELEMENT_SETTINGS,
+                          },
+                          parent: dialogState.parent,
+                        });
+                        addElementDialogState.show = false;
+                      }}
+                    >
+                      <CardTitle>Container</CardTitle>
+                    </Card>
+                  </CardList>
+                </Panel>
+              </Overlay>
+            </ModalStateContext.Provider>
+          </AddElementDialogStateContext.Provider>
+        </List>
+      </div>
+    );
+  },
+);
 
 const AudioTab = observer(({ alert }: { alert: TwitchAlert }) => {
   return (
@@ -324,6 +388,8 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
   const preview = useRef<HTMLElement | null>(null);
   const presetStore = useContext(PresetStoreContext);
 
+  const elements = alert.elements;
+
   return (
     <Flex vertical style={{ height: "100%" }} gap={12}>
       <Flex
@@ -339,8 +405,14 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
         />
         <CloseOverlayButton />
       </Flex>
-      <Flex style={{ height: "96vh", maxHeight: "calc(100vh - 100px)" }} gap={6}>
-        <Flex vertical className={`${classes.contentpanel} ${classes.settingspanel} withscroll`}>
+      <Flex
+        style={{ height: "96vh", maxHeight: "calc(100vh - 100px)" }}
+        gap={6}
+      >
+        <Flex
+          vertical
+          className={`${classes.contentpanel} ${classes.settingspanel} withscroll`}
+        >
           <Tabs
             size="small"
             type="card"
@@ -354,7 +426,7 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
               {
                 key: "visual",
                 label: "Отображение",
-                children: [<ElementsTab alert={alert} />],
+                children: [<ElementsTab alert={alert} elements={elements} />],
               },
               {
                 key: "audio",
@@ -381,7 +453,11 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
               axis="both"
               minConstraints={[400, 100]}
             >
-              <div style={{ margin: "auto" }}></div>
+              {elements
+                .filter((element) => element.data.containerId === null)
+                .map((element) => (
+                  <ElementRenderer element={element} key={element.data.id} />
+                ))}
             </ResizableBox>
           </Flex>
           <SaveButtons />
