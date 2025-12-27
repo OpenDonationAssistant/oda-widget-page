@@ -33,6 +33,8 @@ import RouletteIcon from "../icons/widgets/RouletteIcon";
 import { socket } from "../socket";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
+import { SocialsWidgetSettings } from "../pages/Socials/SocialsWidgetSettings";
+import { MarqueeWidgetSettings } from "../pages/Marquee/MarqueeWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -184,6 +186,24 @@ export const WIDGET_TYPES = [
     description:
       "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
     create: () => new RouletteWidgetSettings(),
+  },
+  {
+    name: "social",
+    title: "Cоциальные ссылки",
+    icon: <span className="material-symbols-sharp">qr_code_2</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Показывает QR коды для ссылок на социальные сети.",
+    create: () => new SocialsWidgetSettings(),
+  },
+  {
+    name: "marquee",
+    title: "Бегущая строка",
+    icon: <span className="material-symbols-sharp">subtitles</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Отображает текст бегущей строкой.",
+    create: () => new MarqueeWidgetSettings(),
   },
 ];
 

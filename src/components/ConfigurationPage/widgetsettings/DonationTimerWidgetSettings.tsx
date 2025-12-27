@@ -1,23 +1,124 @@
 import { ReactNode } from "react";
-import { AnimatedFontProperty } from "../widgetproperties/AnimatedFontProperty";
 import { BooleanProperty } from "../widgetproperties/BooleanProperty";
-import { BorderProperty } from "../widgetproperties/BorderProperty";
-import { TextProperty } from "../widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-} from "../widgetproperties/ColorProperty";
-import { RoundingProperty } from "../widgetproperties/RoundingProperty";
-import { PaddingProperty } from "../widgetproperties/PaddingProperty";
-import { BlurProperty } from "../widgetproperties/BlurProperty";
-import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { DonationTimer } from "../../../pages/DonationTimer/DonationTimer";
 import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
-import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
+import { ElementsProperty } from "../../Element/ElementsProperty";
+
+const DEFAULT_ELEMENTS = [
+  {
+    id: "019b52ec-a1e2-7ed8-b85d-7a821329ddef",
+    name: "Надпись",
+    type: "label",
+    enabled: true,
+    settings: {
+      font: {
+        family: "mulish",
+        size: 36,
+        color: {
+          angle: 0,
+          colors: [
+            {
+              color: "rgb(255, 255, 255)",
+            },
+          ],
+          gradient: false,
+          repeating: false,
+          gradientType: 0,
+        },
+        outline: {
+          color: "#000000",
+          width: 0,
+          enabled: false,
+        },
+        weight: true,
+        italic: false,
+        underline: false,
+        shadows: [],
+        animation: "none",
+        animationType: "entire",
+        animationSpeed: "slow",
+      },
+      align: "center",
+      value: "Без поддержки уже <time>",
+      width: {
+        type: "max",
+        value: 100,
+      },
+      border: {
+        top: {
+          type: "solid",
+          color: "rgb(190, 200, 248)",
+          width: 3,
+        },
+        left: {
+          type: "solid",
+          color: "rgb(190, 200, 248)",
+          width: 3,
+        },
+        right: {
+          type: "solid",
+          color: "rgb(190, 200, 248)",
+          width: 3,
+        },
+        bottom: {
+          type: "solid",
+          color: "rgb(190, 200, 248)",
+          width: 3,
+        },
+        isSame: true,
+      },
+      height: {
+        type: "min",
+        value: 100,
+      },
+      shadow: {
+        shadows: [],
+      },
+      justify: "center",
+      padding: {
+        top: 18,
+        left: 18,
+        right: 18,
+        bottom: 18,
+        isSame: true,
+      },
+      rounding: {
+        isSame: true,
+        topLeft: 18,
+        topRight: 18,
+        bottomLeft: 18,
+        bottomRight: 18,
+      },
+      animation: {
+        duration: 0,
+        animation: "none",
+      },
+      backgroundColor: {
+        angle: 0,
+        colors: [
+          {
+            color: "rgb(22, 22, 24)",
+          },
+        ],
+        gradient: false,
+        repeating: false,
+        gradientType: 0,
+      },
+      backgroundImage: {
+        url: null,
+        name: null,
+        size: "auto",
+        repeat: false,
+        opacity: 1,
+      },
+    },
+    containerId: null,
+  },
+];
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -32,125 +133,18 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
           value: true,
           displayName: "widget-donation-timer-refresh",
         }),
-        new TextProperty({
-          name: "text",
-          value: "Без донатов уже <time>",
-          displayName: "widget-donation-timer-text",
-        }),
-        new AnimatedFontProperty({
-          name: "titleFont",
-        }),
       ],
     });
 
     this.addSection({
-      key: "style",
-      title: "Стиль",
+      key: "elements",
+      title: "Отображение",
       properties: [
-        new AlignmentProperty({
-          name: "textAlign",
-          displayName: "text-alignment",
-        }),
-        new ColorProperty({
-          name: "backgroundColor",
-          displayName: "background-color",
-          target: ColorPropertyTarget.BACKGROUND,
-          value: {
-            angle: 0,
-            colors: [
-              {
-                color: "rgba(0, 0, 0, 0)",
-              },
-            ],
-            gradient: false,
-            repeating: false,
-            gradientType: 0,
-          },
-        }),
-        new BorderProperty({
-          name: "border",
-        }),
-        new RoundingProperty({
-          name: "rounding",
-        }),
-        new PaddingProperty({
-          name: "padding",
-        }),
-        new BoxShadowProperty({
-          name: "boxShadow",
-          displayName: "Тени виджета",
-          help: "Устанавливает тени виджета.",
+        new ElementsProperty({
+          value: DEFAULT_ELEMENTS,
         }),
       ],
     });
-  }
-
-  public get boxShadowProperty(): BoxShadowProperty {
-    return (
-      (this.get("boxShadow") as BoxShadowProperty) ||
-      new BoxShadowProperty({
-        name: "boxShadow",
-        displayName: "Тени виджета",
-        help: "Устанавливает тени виджета.",
-      })
-    );
-  }
-
-  public get textAlign(): AlignmentProperty {
-    return this.get("textAlign") as AlignmentProperty;
-  }
-
-  public get blurProperty(): BlurProperty {
-    return (
-      (this.get("blur") as BlurProperty) || new BlurProperty({ name: "blur" })
-    );
-  }
-
-  public get textProperty(): string {
-    return this.get("text")?.value || "Стрим будет идти еще <time>";
-  }
-
-  public get titleFontProperty(): AnimatedFontProperty {
-    return (
-      (this.get("titleFont") as AnimatedFontProperty) ||
-      new AnimatedFontProperty({
-        name: "titleFont",
-      })
-    );
-  }
-
-  public get backgroundColorProperty(): ColorProperty {
-    return (
-      (this.get("backgroundColor") as ColorProperty) ||
-      new ColorProperty({
-        name: "backgroundColor",
-        displayName: "background-color",
-        target: ColorPropertyTarget.BACKGROUND,
-      })
-    );
-  }
-
-  public get borderProperty(): BorderProperty {
-    return (
-      (this.get("border") as BorderProperty) ||
-      new BorderProperty({ name: "border" })
-    );
-  }
-
-  public get paddingProperty(): PaddingProperty {
-    return (
-      (this.get("padding") as PaddingProperty) ||
-      new PaddingProperty({
-        name: "padding",
-      })
-    );
-  }
-
-  public get roundingProperty(): RoundingProperty {
-    return (
-      (this.get("rounding") as RoundingProperty) ||
-      new RoundingProperty({ name: "rounding" })
-    );
   }
 
   public get resetOnLoad(): boolean {
@@ -162,6 +156,13 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         displayName: "widget-donation-timer-refresh",
       });
     return resetOnLoad.value;
+  }
+
+  public get elements() {
+    return (
+      (this.get("elements") ??
+        new ElementsProperty({ value: [] })) as ElementsProperty
+    ).elements;
   }
 
   public help(): ReactNode {

@@ -39,11 +39,6 @@ export interface TwitchAlertContainer {
   deleteAlert: ({ index, id }: { index?: number; id?: string }) => void;
 }
 
-export interface TreeLeaf {
-  element: Element<any>;
-  children: TreeLeaf[];
-}
-
 export class TwitchAlert {
   private _container: TwitchAlertContainer;
   private _data: TwitchAlertData;

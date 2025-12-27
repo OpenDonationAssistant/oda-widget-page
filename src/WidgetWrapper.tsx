@@ -11,6 +11,10 @@ import {
 } from "./socket";
 import { messageCallbackType } from "@stomp/stompjs";
 import { FontContext, FontStore } from "./stores/FontStore";
+import {
+  DefaultVariableStore,
+  VariableStoreContext,
+} from "./stores/VariableStore";
 
 const overflowHiddenForRootElement = (
   <style
@@ -46,6 +50,8 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
     return <></>;
   }
 
+  const variables = new DefaultVariableStore();
+
   return (
     <>
       {overflowHiddenForRootElement}
@@ -65,9 +71,11 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
           },
         }}
       >
-        <FontContext.Provider value={new FontStore()}>
-          {children}
-        </FontContext.Provider>
+        <VariableStoreContext.Provider value={variables}>
+          <FontContext.Provider value={new FontStore()}>
+            {children}
+          </FontContext.Provider>
+        </VariableStoreContext.Provider>
       </WidgetSettingsContext.Provider>
     </>
   );

@@ -1,71 +1,58 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { log } from "../../logging";
-import classes from "./DonatonWidget.module.css";
 import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { TextRenderer } from "../../components/Renderer/TextRenderer";
+import { VariableStoreContext } from "../../stores/VariableStore";
+import { uuidv7 } from "uuidv7";
+import { ElementRenderer } from "../../components/Element/ElementRenderer";
 
 export const DonatonWidget = observer(
   ({ settings }: { settings: DonatonWidgetSettings }) => {
-    const [time, setTime] = useState<String>("");
-    const [style, setStyle] = useState<CSSProperties>({});
+    const variables = useContext(VariableStoreContext);
 
     // TODO: or ahooks?
     useEffect(() => {
       const intervalId = setInterval(() => {
-        if (!settings.timerEndProperty.timestamp) {
+        if (!settings.timerEndProperty.value.timestamp) {
           return;
         }
-        log.debug({ endTime: settings.timerEndProperty.timestamp });
+        log.debug({ endTime: settings.timerEndProperty.value.timestamp });
         const now = Date.now();
-        const end = Date.parse(`${settings.timerEndProperty.timestamp}`);
+        const end = Date.parse(`${settings.timerEndProperty.value.timestamp}`);
         const difference = end - now;
         if (difference < 0) {
-          setTime("00:00:00");
+          variables.addVariable({
+            name: "time",
+            type: "string",
+            value: "00:00:00",
+            id: uuidv7(),
+          });
           return;
         }
         log.debug({ now: now, end: end, diff: difference });
         const hours = Math.floor(difference / 36e5);
         const minutes = Math.floor((difference % 36e5) / 60000);
         const seconds = Math.floor((difference % 60000) / 1000);
-        setTime(
-          `${hours < 10 ? "0" + hours : hours}:${
+        variables.addVariable({
+          name: "time",
+          type: "string",
+          value: `${hours < 10 ? "0" + hours : hours}:${
             minutes < 10 ? "0" + minutes : minutes
           }:${seconds < 10 ? "0" + seconds : seconds}`,
-        );
+          id: uuidv7(),
+        });
       }, 1000);
       return () => clearInterval(intervalId);
     }, [settings]);
 
-    const titleFont = settings.titleFontProperty;
-
-    useEffect(() => {
-      settings.backgroundImageProperty.calcCss().then((css) => {
-        log.debug({ css: css }, "setting style");
-        setStyle({
-          ...settings.borderProperty.calcCss(),
-          ...settings.backgroundColorProperty.calcCss(),
-          ...settings.paddingProperty.calcCss(),
-          ...settings.roundingProperty.calcCss(),
-          ...settings.shadowProperty.calcCss(),
-          ...css,
-        });
-      });
-    }, [
-      settings.backgroundImageProperty.value,
-      settings.borderProperty.value,
-      settings.paddingProperty.value,
-      settings.roundingProperty.value,
-      settings.shadowProperty.value,
-    ]);
-
     return (
-      <div className={`${classes.textholder}`} style={style}>
-        <TextRenderer
-          text={settings.textProperty.replace("<time>", `${time}`)}
-          font={titleFont.value}
-        />
-      </div>
+      <>
+        {settings.elements
+          .filter((element) => element.data.containerId === null)
+          .map((element) => (
+            <ElementRenderer element={element} key={element.data.id} />
+          ))}
+      </>
     );
   },
 );

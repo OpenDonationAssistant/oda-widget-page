@@ -1,6 +1,13 @@
 import { ReactNode } from "react";
 
 export interface ElementContainer {
+  addElement({
+    data,
+    parentId,
+  }: {
+    data: ElementData<any>;
+    parentId: string | null;
+  }): void;
   deleteElement({ id }: { id: string }): void;
   elements: Element<any>[];
 }

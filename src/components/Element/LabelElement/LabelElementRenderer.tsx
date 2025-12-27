@@ -8,7 +8,8 @@ import { ContainerElementRenderer } from "../ContainerElement/ContainerElementRe
 export const LabelElementRenderer = observer(
   ({ settings }: { settings: LabelElementSettings }) => {
     const variables = useContext(VariableStoreContext);
-    const text = variables.processTemplate(settings.value);
+    const dynamicText = variables.processTemplate(settings.value);
+    const text = dynamicText.text;
     const textLen = text.trim().length;
 
     if (settings.hideEmpty && textLen === 0) {
@@ -16,7 +17,9 @@ export const LabelElementRenderer = observer(
     }
 
     return (
-      <ContainerElementRenderer settings={settings}>
+      <ContainerElementRenderer
+        settings={{ ...settings, ...{ direction: "row" } }}
+      >
         <TextRenderer
           text={text}
           font={settings.font}

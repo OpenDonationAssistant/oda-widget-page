@@ -16,9 +16,85 @@ import { BoxShadowPropertyComponent } from "../../ConfigurationPage/widgetproper
 import { AnimationPropertyComponent } from "../../ConfigurationPage/widgetproperties/AnimationProperty";
 import SubActionButton from "../../Button/SubActionButton";
 import { AdvancedSettingsStoreContext } from "../../../stores/AdvancedSettingsStore";
-import { AddElementDialogStateContext } from "../../../pages/TwitchAlerts/TwitchAlertsItemSettings";
 import { NotBorderedIconButton } from "../../IconButton/IconButton";
 import CloseIcon from "../../../icons/CloseIcon";
+import { AddElementDialogStateContext } from "../ElementsTab";
+
+export const ElementList = observer(
+  ({
+    elementId,
+    nested,
+    container,
+  }: {
+    elementId: string;
+    nested: Element<any>[];
+    container: ElementContainer;
+  }) => {
+    const addElementDialogState = useContext(AddElementDialogStateContext);
+
+    const advanced = useContext(AdvancedSettingsStoreContext).enabled;
+    if (!advanced) {
+      return <></>;
+    }
+
+    return (
+      <LabeledContainer
+        displayName="Вложенные элементы"
+        buttons={
+          <Flex align="center" gap={6}>
+            <SubActionButton
+              onClick={() => {
+                addElementDialogState.addTo(elementId);
+              }}
+            >
+              Создать
+            </SubActionButton>
+            <Select
+              value={null}
+              placeholder="Привязать"
+              style={{ height: "30px" }}
+              options={container.elements
+                .filter((element) => element.data.containerId !== elementId)
+                .filter((element) => element.data.id !== elementId)
+                .map((element) => ({
+                  value: element.data.id,
+                  label: element.data.name,
+                }))}
+              onChange={(value) => {
+                const child = container.elements.find(
+                  (element) => element.data.id === value,
+                );
+                if (child) {
+                  child.data.containerId = elementId;
+                }
+              }}
+            />
+          </Flex>
+        }
+      >
+        <Flex className="full-width" gap={9} align="center" wrap>
+          {nested.map((element, index) => (
+            <Flex
+              key={element.data.id}
+              align="center"
+              wrap
+              className={`${classes.childname}`}
+            >
+              <div>{element.data.name}</div>
+              <NotBorderedIconButton
+                onClick={() => {
+                  element.data.containerId = null;
+                }}
+              >
+                <CloseIcon color="#FF8888" />
+              </NotBorderedIconButton>
+            </Flex>
+          ))}
+        </Flex>
+      </LabeledContainer>
+    );
+  },
+);
 
 export const ContainerElementSettingsComponent = observer(
   ({
@@ -31,85 +107,34 @@ export const ContainerElementSettingsComponent = observer(
     container: ElementContainer;
   }) => {
     const advanced = useContext(AdvancedSettingsStoreContext).enabled;
-    const addElementDialogState = useContext(AddElementDialogStateContext);
 
     return (
       <Flex vertical gap={18}>
+        <ElementList
+          elementId={data.id}
+          nested={nested}
+          container={container}
+        />
         {advanced && (
-          <>
-            <LabeledContainer
-              displayName="Вложенные элементы"
-              buttons={
-                <Flex align="center" gap={6}>
-                  <SubActionButton
-                    onClick={() => {
-                      addElementDialogState.addTo(data);
-                    }}
-                  >
-                    Создать
-                  </SubActionButton>
-                  <Select
-                    value={null}
-                    placeholder="Привязать"
-                    style={{ height: "30px" }}
-                    options={container.elements
-                      .filter((element) => element.data.id !== data.id)
-                      .map((element) => ({
-                        value: element.data.id,
-                        label: element.data.name,
-                      }))}
-                    onChange={(value) => {
-                      const child = container.elements.find(
-                        (element) => element.data.id === value,
-                      );
-                      if (child) {
-                        child.data.containerId = data.id;
-                      }
-                    }}
-                  />
-                </Flex>
-              }
-            >
-              <Flex className="full-width" gap={9} align="center" wrap>
-                {nested.map((element, index) => (
-                  <Flex
-                    key={element.data.id}
-                    align="center"
-                    wrap
-                    className={`${classes.childname}`}
-                  >
-                    <div>{element.data.name}</div>
-                    <NotBorderedIconButton
-                      onClick={() => {
-                        element.data.containerId = null;
-                      }}
-                    >
-                      <CloseIcon color="#FF8888" />
-                    </NotBorderedIconButton>
-                  </Flex>
-                ))}
-              </Flex>
-            </LabeledContainer>
-            <LabeledContainer displayName="Расположение содержимого">
-              <Segmented
-                className="full-width"
-                options={[
-                  {
-                    value: "row",
-                    label: "Горизонтально",
-                  },
-                  {
-                    value: "column",
-                    label: "Вертикально",
-                  },
-                  {
-                    value: "stack",
-                    label: "Поверх друг друга",
-                  },
-                ]}
-              />
-            </LabeledContainer>
-          </>
+          <LabeledContainer displayName="Расположение содержимого">
+            <Segmented
+              className="full-width"
+              options={[
+                {
+                  value: "row",
+                  label: "Горизонтально",
+                },
+                {
+                  value: "column",
+                  label: "Вертикально",
+                },
+                {
+                  value: "stack",
+                  label: "Поверх друг друга",
+                },
+              ]}
+            />
+          </LabeledContainer>
         )}
         <ColorPropertyComponent
           property={{

@@ -1,25 +1,129 @@
 import { ReactNode } from "react";
-import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
-import { BorderProperty } from "../../widgetproperties/BorderProperty";
-import { TextProperty } from "../../widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "../AbstractWidgetSettings";
 import classes from "../AbstractWidgetSettings.module.css";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-} from "../../widgetproperties/ColorProperty";
-import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
-import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
-import {
-  DateTimeProperty,
-  DateTimePropertyValue,
-} from "../../widgetproperties/DateTimeProperty";
+import { DateTimeProperty } from "../../widgetproperties/DateTimeProperty";
 import { DonatonPriceProperty } from "./DonatonPriceProperty";
 import { DonatonWidget } from "../../../../pages/Donaton/DonatonWidget";
-import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
-import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { ElementsProperty } from "../../../Element/ElementsProperty";
+
+const DEFAULT_ELEMENTS = [{
+  id: "019b5738-35e2-7583-afe3-6b44d4158d92",
+  name: "Надпись",
+  type: "label",
+  enabled: true,
+  settings: {
+    font: {
+      size: 36,
+      color: {
+        angle: 0,
+        colors: [
+          {
+            color: "rgb(255, 255, 255)",
+          },
+        ],
+        gradient: false,
+        repeating: false,
+        gradientType: 0,
+      },
+      family: "mulish",
+      italic: false,
+      weight: true,
+      outline: {
+        color: "#000000",
+        width: 0,
+        enabled: false,
+      },
+      shadows: [],
+      animation: "none",
+      underline: false,
+      animationType: "entire",
+      animationSpeed: "slow",
+    },
+    align: "center",
+    value: "Осталось еще <time>",
+    width: {
+      type: "max",
+      value: 100,
+    },
+    border: {
+      top: {
+        type: "solid",
+        color: "rgb(190, 200, 248)",
+        width: 3,
+      },
+      left: {
+        type: "solid",
+        color: "rgb(190, 200, 248)",
+        width: 3,
+      },
+      right: {
+        type: "solid",
+        color: "rgb(190, 200, 248)",
+        width: 3,
+      },
+      bottom: {
+        type: "solid",
+        color: "rgb(190, 200, 248)",
+        width: 3,
+      },
+      isSame: true,
+    },
+    height: {
+      type: "min",
+      value: 100,
+    },
+    shadow: {
+      shadows: [],
+    },
+    justify: "center",
+    padding: {
+      top: 18,
+      left: 18,
+      right: 18,
+      bottom: 18,
+      isSame: true,
+    },
+    rounding: {
+      isSame: true,
+      topLeft: 18,
+      topRight: 18,
+      bottomLeft: 18,
+      bottomRight: 18,
+    },
+    animation: {
+      duration: 0,
+      animation: "none",
+    },
+    backgroundColor: {
+      angle: 0,
+      colors: [
+        {
+          color: "rgb(22, 22, 24)",
+        },
+      ],
+      gradient: false,
+      repeating: false,
+      gradientType: 0,
+    },
+    backgroundImage: {
+      url: null,
+      name: null,
+      size: "auto",
+      repeat: false,
+      opacity: 1,
+    },
+  },
+  containerId: null,
+}];
+
+const defaultTimerEndProperty = () =>
+  new DateTimeProperty({
+    name: "timer-end",
+    displayName: "widget-donaton-timer-end",
+    help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
+  });
 
 export class DonatonWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -28,150 +132,30 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
     this.addSection({
       key: "general",
       title: "Общие",
-      properties: [
-        new TextProperty({
-          name: "text",
-          value: "Стрим будет идти еще <time>",
-          displayName: "widget-donaton-timer-text",
-          help: "Надпись на таймере",
-        }),
-        new AnimatedFontProperty({
-          name: "titleFont",
-          value: {
-            size: 24,
-            outline: {
-              enabled: false,
-              width: 0,
-              color: "rgb(255, 255, 255)",
-            },
-            color: {
-              angle: 0,
-              colors: [
-                {
-                  color: "#684aff",
-                },
-              ],
-              gradient: false,
-              repeating: false,
-              gradientType: 0,
-            },
-            family: "Play",
-            italic: false,
-            weight: true,
-            animation: "none",
-            animationSpeed: "normal",
-            underline: false,
-            animationType: "entire",
-            shadows:[]
-          },
-        }),
-        new DonatonPriceProperty(),
-        new DateTimeProperty({
-          name: "timer-end",
-          displayName: "widget-donaton-timer-end",
-          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
-        }),
-      ],
+      properties: [new DonatonPriceProperty(), defaultTimerEndProperty()],
     });
-
     this.addSection({
-      key: "style",
-      title: "Стиль",
+      key: "elements",
+      title: "Отображение",
       properties: [
-        new ColorProperty({
-          name: "backgroundColor",
-          displayName: "background-color",
-          target: ColorPropertyTarget.BACKGROUND,
-          value: {
-            angle: 0,
-            colors: [
-              {
-                color: "rgba(0, 0, 0, 0)",
-              },
-            ],
-            gradient: false,
-            repeating: false,
-            gradientType: 0,
-          },
+        new ElementsProperty({
+          value: DEFAULT_ELEMENTS,
         }),
-        new BackgroundImageProperty({ name: "backgroundImage" }),
-        new BorderProperty({
-          name: "border",
-        }),
-        new PaddingProperty({
-          name: "padding",
-        }),
-        new RoundingProperty({
-          name: "rounding",
-        }),
-        new BoxShadowProperty({ name: "shadow" }),
       ],
     });
   }
 
-  public get textProperty(): string {
-    return this.get("text")?.value || "Стрим будет идти еще <time>";
-  }
-
-  public get timerEndProperty(): DateTimePropertyValue {
-    return this.get("timer-end")?.value || { timestamp: Date.now() };
-  }
-
-  public get titleFontProperty(): AnimatedFontProperty {
+  public get timerEndProperty(): DateTimeProperty {
     return (
-      (this.get("titleFont") as AnimatedFontProperty) ||
-      new AnimatedFontProperty({
-        name: "titleFont",
-      })
+      (this.get("timer-end") as DateTimeProperty) ?? defaultTimerEndProperty()
     );
   }
 
-  public get backgroundColorProperty(): ColorProperty {
+  public get elements() {
     return (
-      (this.get("backgroundColor") as ColorProperty) ||
-      new ColorProperty({
-        name: "backgroundColor",
-        displayName: "background-color",
-        target: ColorPropertyTarget.BACKGROUND,
-      })
-    );
-  }
-
-  public get borderProperty(): BorderProperty {
-    return (
-      (this.get("border") as BorderProperty) ||
-      new BorderProperty({ name: "border" })
-    );
-  }
-
-  public get paddingProperty(): PaddingProperty {
-    return (
-      (this.get("padding") as PaddingProperty) ||
-      new PaddingProperty({
-        name: "padding",
-      })
-    );
-  }
-
-  public get roundingProperty(): RoundingProperty {
-    return (
-      (this.get("rounding") as RoundingProperty) ||
-      new RoundingProperty({ name: "rounding" })
-    );
-  }
-
-  public get shadowProperty(): BoxShadowProperty {
-    return (
-      (this.get("shadow") as BoxShadowProperty) ||
-      new BoxShadowProperty({ name: "shadow" })
-    );
-  }
-
-  public get backgroundImageProperty(): BackgroundImageProperty {
-    return (
-      (this.get("backgroundImage") as BackgroundImageProperty) ||
-      new BackgroundImageProperty({ name: "backgroundImage" })
-    );
+      (this.get("elements") ??
+        new ElementsProperty({ value: [] })) as ElementsProperty
+    ).elements;
   }
 
   public help(): ReactNode {

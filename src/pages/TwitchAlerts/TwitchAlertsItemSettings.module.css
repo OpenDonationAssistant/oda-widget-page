@@ -46,20 +46,10 @@ button.deletetriggerbutton {
   align-items: center;
 }
 
-.tabcontainer {
-  padding-top: 12px;
-}
-
 .tabsubtitle {
   font-size: 28px;
   color: var(--oda-color-950);
   font-weight: 600;
-}
-
-.mode {
-  margin-bottom: 12px;
-  padding-left: 12px;
-  padding-right: 12px;
 }
 
 .note {
@@ -72,10 +62,8 @@ button.deletetriggerbutton {
   border-radius: 9px;
   padding: 12px;
   & .filenamecontainer {
-    /* border: 1px solid #36363d; */
     border-radius: 9px;
     width: 100%;
-    /* padding: 6px; */
     & .filename {
       font-size: 21px;
       flex: 1 1 auto;
@@ -90,10 +78,4 @@ button.deletetriggerbutton {
 
 .elementsettings {
   padding: 12px;
-}
-
-.elementtitle{
-  font-size: 24px;
-  color: var(--oda-color-950);
-  font-weight: 900;
 }

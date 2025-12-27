@@ -5,23 +5,12 @@ import {
   TwitchAlert,
 } from "./types";
 import { Trans, useTranslation } from "react-i18next";
-import { createContext, useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { PresetStoreContext } from "../../stores/PresetStore";
-import { Flex, Select, Slider, Switch, Tabs } from "antd";
+import { Flex, Select, Slider, Tabs } from "antd";
 import classes from "./TwitchAlertsItemSettings.module.css";
-import {
-  EditableString,
-  SmallEditableString,
-} from "../../components/RenamableLabel/EditableString";
-import {
-  CloseOverlayButton,
-  ModalState,
-  ModalStateContext,
-  Overlay,
-  Panel,
-  Title,
-  Warning,
-} from "../../components/Overlay/Overlay";
+import { EditableString } from "../../components/RenamableLabel/EditableString";
+import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import {
   BorderedIconButton,
   NotBorderedIconButton,
@@ -35,24 +24,9 @@ import { SaveButtons } from "../../components/Button/SaveButtons";
 import { handleFileUpload, loadAudio } from "../../utils";
 import SmallLabeledContainer from "../../components/SmallLabeledContainer/SmallLabeledContainer";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
-import {
-  AddListItemButton,
-  CollapsibleListItem,
-  List,
-} from "../../components/List/List";
-import { Element, ElementData } from "../../components/Element/Element";
-import {
-  Card,
-  CardList,
-  CardTitle,
-} from "../../components/Cards/CardsComponent";
+import { AddListItemButton } from "../../components/List/List";
 import { ElementRenderer } from "../../components/Element/ElementRenderer";
-import { DEFAULT_MEDIA_ELEMENT_SETTINGS } from "../../components/Element/MediaElement/MediaElement";
-import { DEFAULT_LABEL_ELEMENT_SETTINGS } from "../../components/Element/LabelElement/LabelElement";
-import { uuidv7 } from "uuidv7";
-import { DEFAULT_CONTAINER_ELEMENT_SETTINGS } from "../../components/Element/ContainerElement/ContainerElement";
-import { LightLabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
-import { AdvancedSettingsStoreContext } from "../../stores/AdvancedSettingsStore";
+import { ElementsTab } from "../../components/Element/ElementsTab";
 
 function play(buffer: ArrayBuffer | null) {
   if (!buffer) {
@@ -120,183 +94,6 @@ const GeneralTab = observer(({ alert }: { alert: TwitchAlert }) => {
     </Flex>
   );
 });
-
-const ElementsItemComponent = observer(
-  ({ element }: { element: Element<any>; advanced?: boolean }) => {
-    const parentModalState = useContext(ModalStateContext);
-    const [deleteDialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
-    const advanced = useContext(AdvancedSettingsStoreContext).enabled;
-
-    return (
-      <CollapsibleListItem
-        first={
-          <Flex align="center" gap={6}>
-            {advanced ? (
-              <SmallEditableString
-                label={element.data.name}
-                onChange={(value) => (element.data.name = value)}
-              />
-            ) : (
-              <span className={`${classes.elementtitle}`}>
-                {element.data.name}
-              </span>
-            )}
-            <Switch
-              checked={element.data.enabled}
-              onChange={(value) => (element.data.enabled = value)}
-            />
-          </Flex>
-        }
-        second={
-          <Flex align="center" justify="flex-end" gap={3}>
-            <ModalStateContext.Provider value={deleteDialogState}>
-              <Overlay>
-                <Warning
-                  action={() => {
-                    deleteDialogState.show = false;
-                    element.delete();
-                  }}
-                >
-                  Вы точно хотите удалить оповещение?
-                </Warning>
-              </Overlay>
-              {advanced && (
-                <BorderedIconButton
-                  onClick={() => (deleteDialogState.show = true)}
-                >
-                  <CloseIcon color="#FF8888" />
-                </BorderedIconButton>
-              )}
-            </ModalStateContext.Provider>
-          </Flex>
-        }
-      >
-        {element.markup()}
-      </CollapsibleListItem>
-    );
-  },
-);
-
-class AddElementDialogState {
-  constructor(
-    public modalState: ModalState,
-    public parent: ElementData<any> | null,
-  ) {}
-
-  public addTo(element: ElementData<any> | null) {
-    this.parent = element;
-    this.modalState.show = true;
-  }
-}
-
-export const AddElementDialogStateContext = createContext(
-  new AddElementDialogState(new ModalState(), null),
-);
-
-const ElementsTab = observer(
-  ({ alert, elements }: { alert: TwitchAlert; elements: Element<any>[] }) => {
-    const parentModalState = useContext(ModalStateContext);
-    const [addElementDialogState] = useState<ModalState>(
-      () => new ModalState(parentModalState),
-    );
-    const advanced = useContext(AdvancedSettingsStoreContext);
-    const dialogState = new AddElementDialogState(addElementDialogState, null);
-
-    return (
-      <div className={`${classes.tabcontainer}`}>
-        <div className={`${classes.mode}`}>
-          <LightLabeledSwitchComponent
-            label="Расширенный режим"
-            value={advanced.enabled}
-            onChange={() => {
-              advanced.enabled = !advanced.enabled;
-            }}
-          />
-        </div>
-        <List>
-          <AddElementDialogStateContext.Provider value={dialogState}>
-            {elements.map((element, index) => (
-              <ElementsItemComponent key={index} element={element} />
-            ))}
-            <ModalStateContext.Provider value={addElementDialogState}>
-              {advanced.enabled && (
-                <AddListItemButton
-                  label="Добавить элемент"
-                  onClick={() => {
-                    dialogState.addTo(null);
-                  }}
-                />
-              )}
-              <Overlay>
-                <Panel>
-                  <Title>Добавить элемент</Title>
-                  <CardList>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "label",
-                            name: "Надпись",
-                            enabled: true,
-                            settings: DEFAULT_LABEL_ELEMENT_SETTINGS,
-                          },
-                          parent: dialogState.parent,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Надпись</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "media",
-                            name: "Изображение/Видео",
-                            enabled: true,
-                            settings: DEFAULT_MEDIA_ELEMENT_SETTINGS,
-                          },
-                          parent: dialogState.parent,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Изображение/Видео</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "container",
-                            name: "Контейнер",
-                            enabled: true,
-                            settings: DEFAULT_CONTAINER_ELEMENT_SETTINGS,
-                          },
-                          parent: dialogState.parent,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Container</CardTitle>
-                    </Card>
-                  </CardList>
-                </Panel>
-              </Overlay>
-            </ModalStateContext.Provider>
-          </AddElementDialogStateContext.Provider>
-        </List>
-      </div>
-    );
-  },
-);
 
 const AudioTab = observer(({ alert }: { alert: TwitchAlert }) => {
   return (

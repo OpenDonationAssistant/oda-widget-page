@@ -15,7 +15,7 @@
   flex: 1 1;
   color: var(--oda-main-text-color);
   & span {
-    font-size: 16px;
+    font-size: 24px;
     color: var(--oda-main-text-color);
     margin-left: 5px;
     &[class*="material-symbols-sharp"] {

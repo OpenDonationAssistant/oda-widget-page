@@ -23,13 +23,9 @@ export interface AnimationPropertyValue {
 }
 
 export const AnimationPropertyComponent = observer(
-  ({
-    value,
-  }: {
-    value: AnimationPropertyValue;
-  }) => {
+  ({ value }: { value: AnimationPropertyValue }) => {
     return (
-      <Flex gap={6}>
+      <Flex gap={6} className="full-width">
         <SmallLabeledContainer
           displayName="Название"
           className={`${classes.half}`}

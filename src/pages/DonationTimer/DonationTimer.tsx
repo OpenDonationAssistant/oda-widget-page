@@ -1,14 +1,13 @@
-import { CSSProperties } from "react";
-import { useEffect, useState } from "react";
-import classes from "./DonationTimer.module.css";
+import { useContext, useEffect, useState } from "react";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
-import { Flex } from "antd";
 import { HistoryStore } from "../History/HistoryStore";
 import { observer } from "mobx-react-lite";
 import { reaction, toJS } from "mobx";
 import { log } from "../../logging";
-import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
-import { TextRenderer } from "../../components/Renderer/TextRenderer";
+import { ElementRenderer } from "../../components/Element/ElementRenderer";
+import { VariableStoreContext } from "../../stores/VariableStore";
+import { uuidv7 } from "uuidv7";
+import { Variable } from "../Automation/AutomationState";
 
 export const DonationTimer = observer(
   ({
@@ -19,7 +18,7 @@ export const DonationTimer = observer(
     store: HistoryStore;
   }) => {
     const [lastDonationTime, setLastDonationTime] = useState<Date | null>(null);
-    const [time, setTime] = useState<String>("");
+    const variables = useContext(VariableStoreContext);
 
     useEffect(() => {
       setLastDonationTime(new Date());
@@ -49,72 +48,28 @@ export const DonationTimer = observer(
         const hours = Math.floor((difference % (24 * 36e5)) / 36e5);
         const minutes = Math.floor((difference % 36e5) / 60000);
         const seconds = Math.floor((difference % 60000) / 1000);
-        setTime(
-          `${days > 0 ? days + "D " : ""}${hours < 10 ? "0" + hours : hours}:${
-            minutes < 10 ? "0" + minutes : minutes
-          }:${seconds < 10 ? "0" + seconds : seconds}`,
-        );
+        const time = `${days > 0 ? days + "D " : ""}${hours < 10 ? "0" + hours : hours}:${
+          minutes < 10 ? "0" + minutes : minutes
+        }:${seconds < 10 ? "0" + seconds : seconds}`;
+        const timeVariable = {
+          name: "time",
+          type: "string",
+          value: time,
+          id: uuidv7(),
+        } as Variable;
+
+        variables.addVariable(timeVariable);
       }, 1000);
       return () => clearInterval(intervalId);
     }, [lastDonationTime]);
 
-    const text = settings.textProperty;
-
-    const backgroundStyle = settings.backgroundColorProperty.calcCss();
-
-    const borderStyle = settings.borderProperty.calcCss();
-
-    const roundingStyle = settings.roundingProperty.calcCss();
-
-    const paddingStyle = settings.paddingProperty.calcCss();
-
-    const filterStyle = settings.blurProperty.calcCss();
-
-    const boxShadowStyle = settings.boxShadowProperty.calcCss();
-
-    const heightStyle: CSSProperties = {
-      height: `calc(100% - ${2 * settings.boxShadowProperty.requiredHeight}px)`,
-      marginTop: `${settings.boxShadowProperty.requiredHeight}px`,
-    };
-
-    const widthStyle: CSSProperties = {
-      width: `calc(100% - ${2 * settings.boxShadowProperty.requiredWidth}px)`,
-      marginLeft: `${settings.boxShadowProperty.requiredWidth}px`,
-    };
-
     return (
       <>
-        {time && (
-          <Flex
-            align="center"
-            justify="flex-start"
-            id="donationTimer"
-            style={{
-              ...paddingStyle,
-              ...borderStyle,
-              ...roundingStyle,
-              ...boxShadowStyle,
-              ...heightStyle,
-              ...widthStyle,
-            }}
-            className={`${classes.timer}`}
-          >
-            <div
-              style={{
-                ...backgroundStyle,
-                ...filterStyle,
-                ...roundingStyle,
-              }}
-              className={`${classes.background}`}
-            />
-            <AlignmentRenderer alignment={settings.textAlign.value}>
-              <TextRenderer
-                font={settings.titleFontProperty.value}
-                text={text.replace("<time>", `${time}`)}
-              />
-            </AlignmentRenderer>
-          </Flex>
-        )}
+        {settings.elements
+          .filter((element) => element.data.containerId === null)
+          .map((element) => (
+            <ElementRenderer element={element} key={element.data.id} />
+          ))}
       </>
     );
   },

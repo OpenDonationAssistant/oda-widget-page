@@ -1,0 +1,15 @@
+.tabcontainer {
+  padding-top: 12px;
+}
+
+.mode {
+  margin-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.elementtitle{
+  font-size: 24px;
+  color: var(--oda-color-950);
+  font-weight: 900;
+}

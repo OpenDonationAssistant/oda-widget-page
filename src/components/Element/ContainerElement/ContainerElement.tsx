@@ -29,6 +29,7 @@ import { ContainerElementSettingsComponent } from "./ContainerElementSettingsCom
 export interface ContainerElementSettings {
   align: "left" | "center" | "right";
   justify: "top" | "center" | "bottom";
+  direction: "row" | "column" | "stack";
   backgroundImage: ImagePropertyValue;
   backgroundColor: ColorPropertyValue;
   width: WidthPropertyValue;
@@ -43,6 +44,7 @@ export interface ContainerElementSettings {
 export const DEFAULT_CONTAINER_ELEMENT_SETTINGS = {
   align: "center" as "left" | "center" | "right",
   justify: "top" as "top" | "center" | "bottom",
+  direction: "row" as "row" | "column" | "stack",
   backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
   border: DEFAULT_BORDER_PROPERTY_VALUE,
   padding: DEFAULT_PADDING_PROPERTY_VALUE,

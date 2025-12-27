@@ -17,10 +17,7 @@ import { HeightPropertyValue } from "../../ConfigurationPage/widgetproperties/He
 import { ImagePropertyValue } from "../../ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { fullUri } from "../../../utils";
 import { AnimationPropertyValue } from "../../ConfigurationPage/widgetproperties/AnimationProperty";
-import { AlignmentRenderer } from "../../Renderer/AlignmentRenderer";
 import { ContainerElementSettings } from "./ContainerElement";
-import { log } from "../../../logging";
-import { reaction } from "mobx";
 
 function createBorderRule(border: Border) {
   return `${border.width}px ${border.type} ${border.color}`;
@@ -217,6 +214,19 @@ function calcJustify(value: "top" | "center" | "bottom"): CSSProperties {
   return style;
 }
 
+function calcAlignment(alignment: string): CSSProperties {
+  switch (alignment) {
+    case "left":
+      return { alignItems: "flex-start" };
+    case "center":
+      return { alignItems: "center" };
+    case "right":
+      return { alignItems: "flex-end" };
+    default:
+      return { alignItems: "flex-start" };
+  }
+}
+
 export const ContainerElementRenderer = observer(
   ({
     children,
@@ -262,12 +272,11 @@ export const ContainerElementRenderer = observer(
               ...imageStyle,
               ...{ overflow: "hidden" },
               ...(style ?? {}),
+              ...calcAlignment(settings.align),
             }}
             className={calcAnimation(settings.animation)}
           >
-            <AlignmentRenderer alignment={settings.align}>
-              {children}
-            </AlignmentRenderer>
+            {children}
           </div>
         )}
       </>

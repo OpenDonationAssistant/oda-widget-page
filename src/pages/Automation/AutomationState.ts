@@ -14,6 +14,39 @@ export interface Variable {
   id: string;
 }
 
+export class StringVariable implements Variable {
+  private _name: string;
+  private _value: string;
+  private _id: string;
+
+  constructor(name: string, value: string){
+    this._name = name;
+    this._value = value;
+    this._id = uuidv7();
+    makeAutoObservable(this);
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  public set value(newValue: string){
+    this._value = newValue;
+  }
+
+  public get value() {
+    return this._value;
+  }
+
+  public get id() {
+    return this._id;
+  }
+
+  public get type(): "string" | "number"{
+    return "string";
+  }
+}
+
 export interface AutomationTrigger {
   id: string | null;
   name: string | null;
