@@ -49,7 +49,7 @@ const vkplayer = (
     pause: () => player.pause(),
     paused: () => player.getState() !== "playing",
     show: (show: boolean) => {
-      videoElement.hidden = show;
+      videoElement.hidden = !show;
     },
     volume: (value: number) => {
       player.setVolume(value);
@@ -110,7 +110,7 @@ const youtube = (
     pause: () => player.pause(),
     paused: () => player.paused(),
     show: (show: boolean) => {
-      holder.hidden = show;
+      holder.hidden = !show;
     },
     volume: (value: number) => player.volume(value),
     currentTime: () => player.currentTime(),

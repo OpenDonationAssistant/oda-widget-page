@@ -9,14 +9,20 @@ import { PlayerStore } from "../../components/PlayerPopup/Player";
 export default function PlayerPopupPage({}) {
   const { settings, conf, widgetId } = useLoaderData() as WidgetData;
 
-  const player = new PlayerStore({ widgetId: widgetId, conf: conf.topic });
+  const widgetSettings = Widget.configFromJson(
+    settings,
+  ) as PlayerPopupWidgetSettings;
+  const audioOnly = widgetSettings.audioOnlyProperty.value;
+
+  const player = new PlayerStore({
+    widgetId: widgetId,
+    conf: conf.topic,
+    hidePlayer: audioOnly,
+  });
 
   return (
     <WidgetWrapper>
-      <PlayerPopup
-        player={player}
-        settings={Widget.configFromJson(settings) as PlayerPopupWidgetSettings}
-      />
+      <PlayerPopup player={player} settings={widgetSettings} />
     </WidgetWrapper>
   );
 }
