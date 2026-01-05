@@ -18,7 +18,11 @@ export interface ElementData<Type> {
   type: string;
   enabled: boolean;
   containerId: string | null;
+  level: number;
+  advanced: boolean;
+  advancedLevel: number;
   settings: Type;
+  order: number;
 }
 
 export class Element<Type> {

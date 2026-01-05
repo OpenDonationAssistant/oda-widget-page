@@ -1,0 +1,17 @@
+.goalprogressbar {
+  grid-row: 2;
+  grid-column: 1;
+  width: 100%;
+  min-width: 200px;
+}
+
+.goalfilled {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+.goalunfilled {
+  grid-row: 2;
+  grid-column: 1;
+  justify-self: flex-end;
+}

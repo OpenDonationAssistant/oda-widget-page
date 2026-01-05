@@ -13,6 +13,8 @@ export interface LabelTemplate {
 export interface VariableDescription {
   name: string;
   description: string;
+  type: string;
+  nested?: VariableDescription[];
 }
 
 export interface TemplateSettings {
@@ -26,12 +28,17 @@ export interface VariableStore {
   addTemplate(template: LabelTemplate): void;
   addVariable(variable: Variable): void;
   addVariableDescription(variable: VariableDescription): void;
+  getValue(
+    name: string,
+    defaultValue: string | number | Array<Variable> | Array<Array<Variable>>,
+  ): string | number | Array<Variable> | Array<Array<Variable>>;
   processTemplate: (template: string) => DynamicText;
-  load: () => void;
+  load(): void;
+  clone(): VariableStore;
 }
 
 interface TextProvider {
-  value: string | number;
+  value: string | number | Array<Variable> | Array<Array<Variable>>;
 }
 
 export class DynamicText {
@@ -59,9 +66,10 @@ export class DynamicText {
 }
 
 class VariableStorage {
-  private _variables: Variable[] = [];
+  private _variables: Variable[];
 
-  constructor() {
+  constructor(variables?: Variable[]) {
+    this._variables = variables ?? [];
     makeAutoObservable(this);
   }
 
@@ -78,6 +86,10 @@ class VariableStorage {
 
   public get variables() {
     return this._variables;
+  }
+
+  public clone(): VariableStorage {
+    return new VariableStorage([...this._variables]);
   }
 }
 
@@ -113,6 +125,7 @@ class DefaultTemplateProcessor implements TemplateProcessor {
         inTemplate = true;
         continue;
       }
+
       if (char === ">") {
         const usedVariable = this._context.variables.find(
           (variable) => variable.name === variableName,
@@ -138,19 +151,48 @@ class DefaultTemplateProcessor implements TemplateProcessor {
 }
 
 class LocalVariableStore implements VariableStore {
-  private _storage = new VariableStorage();
+  private _storage: VariableStorage;
+  private _templates: LabelTemplate[];
+  private _descriptions: VariableDescription[];
+  private _processor: DefaultTemplateProcessor;
 
-  constructor() {
+  constructor(
+    storage?: VariableStorage,
+    templates?: LabelTemplate[],
+    descriptions?: VariableDescription[],
+  ) {
+    this._storage = storage ?? new VariableStorage();
+    this._templates = templates ?? [];
+    this._descriptions = descriptions ?? [];
+    this._processor = new DefaultTemplateProcessor(this._storage);
     makeAutoObservable(this);
   }
+  getValue(
+    name: string,
+    defaultValue: string | number | Variable[] | Variable[][],
+  ): string | number | Variable[] | Variable[][] {
+    const variable = this._storage.variables.find((item) => item.name === name);
+    return variable?.value ?? defaultValue;
+  }
 
-  private _processor: TemplateProcessor = new DefaultTemplateProcessor(
-    this._storage,
-  );
-  public templating: TemplateSettings = { variables: [], templates: [] };
+  public get templating(): TemplateSettings {
+    return { variables: this._descriptions, templates: [] };
+  }
+
   public addTemplate(template: LabelTemplate): void {}
 
-  public addVariableDescription(variable: VariableDescription): void {}
+  public addVariableDescription(variable: VariableDescription): void {
+    const existed = this._descriptions.find(
+      (description) => description.name === variable.name,
+    );
+    if (existed) {
+      existed.nested = variable.nested;
+      existed.description = variable.description;
+      existed.type = variable.type;
+    } else {
+      this._descriptions.push(variable);
+    }
+  }
 
   public addVariable(variable: Variable): void {
     this._storage.addVariable(variable);
@@ -165,18 +207,31 @@ class LocalVariableStore implements VariableStore {
   }
 
   public load(): void {}
+  public clone(): VariableStore {
+    return new LocalVariableStore(this._storage.clone(), this._templates, [
+      ...this._descriptions,
+    ]);
+  }
 }
 
 export class DefaultVariableStore implements VariableStore {
-  private _storage: VariableStorage = new VariableStorage();
-  private _processor: TemplateProcessor = new DefaultTemplateProcessor(
-    this._storage,
-  );
+  private _storage: VariableStorage;
+  private _processor: TemplateProcessor;
 
-  constructor() {
+  constructor(storage?: VariableStorage) {
+    this._storage = storage ?? new VariableStorage();
+    this._processor = new DefaultTemplateProcessor(this._storage);
     makeAutoObservable(this);
     this.load();
   }
+  getValue(
+    name: string,
+    defaultValue: string | number | Variable[] | Variable[][],
+  ): string | number | Variable[] | Variable[][] {
+    const variable = this._storage.variables.find((item) => item.name === name);
+    return variable?.value ?? defaultValue;
+  }
+
   templating: TemplateSettings = { variables: [], templates: [] };
   addTemplate(template: LabelTemplate): void {
     throw new Error("Method not implemented.");
@@ -216,6 +271,10 @@ export class DefaultVariableStore implements VariableStore {
           });
         }),
       );
+  }
+
+  public clone(): VariableStore {
+    return new DefaultVariableStore(this._storage.clone());
   }
 }
 

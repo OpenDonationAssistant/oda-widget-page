@@ -5,6 +5,14 @@ import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
 import classes from "./AbstractWidgetSettings.module.css";
+import { ElementsProperty } from "../../Element/ElementsProperty";
+import { ElementData } from "../../Element/Element";
+import {
+  VariableDescription,
+  VariableStoreContext,
+} from "../../../stores/VariableStore";
+import { VariableScope } from "./VariableScope";
+import { ElementDescription, ElementFactory } from "../../Element/ElementFactory";
 
 export interface SettingsSection {
   key: string;
@@ -25,6 +33,22 @@ export class AbstractWidgetSettings {
     });
   }
 
+  protected addElementsTab(
+    elements?: ElementData<any>[],
+    available?: ElementDescription[],
+  ): void {
+    this.addSection({
+      key: "elements",
+      title: "Отображение",
+      properties: [
+        new ElementsProperty({
+          value: elements ?? [],
+          available: available ?? ElementFactory.list()
+        }),
+      ],
+    });
+  }
+
   public copy(): AbstractWidgetSettings {
     return new AbstractWidgetSettings({
       sections: this.sections.map((section) => {
@@ -35,6 +59,10 @@ export class AbstractWidgetSettings {
         };
       }),
     });
+  }
+
+  protected get variables(): VariableDescription[] {
+    return [];
   }
 
   protected get sections() {
@@ -99,24 +127,15 @@ export class AbstractWidgetSettings {
   };
 
   public markup(): ReactNode {
-    // if (this._sections.length > 1) {
     return (
-      <AntTabs
-        className={`${classes.settings}`}
-        type="card"
-        items={this._sections.map(this.tabPaneGenerator)}
-      />
+      <VariableScope descriptions={this.variables}>
+        <AntTabs
+          className={`${classes.settings}`}
+          type="card"
+          items={this._sections.map(this.tabPaneGenerator)}
+        />
+      </VariableScope>
     );
-    // }
-    // return (
-    //   <Flex vertical className="full-width">
-    //     {this._sections.at(0)?.properties.map((prop) => (
-    //       <div key={prop.name} className="settings-item">
-    //         {prop.markup()}
-    //       </div>
-    //     ))}
-    //   </Flex>
-    // );
   }
 
   public help(): ReactNode {

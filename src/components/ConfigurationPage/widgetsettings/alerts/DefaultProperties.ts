@@ -1,29 +1,11 @@
-import { AnimatedFontProperty } from "../../widgetproperties/AnimatedFontProperty";
-import { AnimationProperty } from "../../widgetproperties/AnimationProperty";
-import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
-import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
-import { BorderProperty } from "../../widgetproperties/BorderProperty";
-import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-  GRADIENT_TYPE,
-} from "../../widgetproperties/ColorProperty";
-import { HeightProperty } from "../../widgetproperties/HeightProperty";
+import { ElementFactory } from "../../../Element/ElementFactory";
+import { ElementsProperty } from "../../../Element/ElementsProperty";
 import { NumberProperty } from "../../widgetproperties/NumberProperty";
-import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
-import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
-import {
-  SELECTION_TYPE,
-  SingleChoiceProperty,
-} from "../../widgetproperties/SingleChoiceProperty";
 import { TextProperty } from "../../widgetproperties/TextProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
-import { WidthProperty } from "../../widgetproperties/WidthProperty";
 import { Alert } from "./Alerts";
 import { DurationProperty } from "./DurationProperty";
-import { LayoutProperty } from "./LayoutProperty";
 
 export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new DefaultWidgetProperty({
@@ -37,66 +19,9 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new DurationProperty({
     name: "duration",
   }),
-  new AnimationProperty({
-    name: "totalAppearance",
-    target: "in"
-  }),
-  new AnimationProperty({
-    name: "totalAnimation",
-    displayName: "Анимация отображения",
-    target: "idle"
-  }),
-  new AnimationProperty({
-    name: "totalDisappearance",
-    displayName: "Анимация исчезновения",
-    target: "out"
-  }),
-  new LayoutProperty(),
-  new WidthProperty({ name: "totalWidth" }),
-  new HeightProperty({ name: "totalHeight" }),
-  new BorderProperty({
-    name: "totalBorder",
-  }),
-  new ColorProperty({
-    name: "totalBackgroundColor",
-    displayName: "widget-donaterslist-title-background-color",
-    value: {
-      gradient: false,
-      gradientType: GRADIENT_TYPE.LINEAR,
-      repeating: false,
-      colors: [{ color: "rgba(0,0,0,0)" }],
-      angle: 0,
-    },
-    target: ColorPropertyTarget.BACKGROUND,
-  }),
-  new BackgroundImageProperty({
-    name: "totalBackgroundImage",
-  }),
-  new RoundingProperty({
-    name: "totalRounding",
-  }),
-  new PaddingProperty({
-    name: "totalPadding",
-  }),
-  new BoxShadowProperty({
-    name: "totalShadow",
-  }),
-  new BooleanProperty({
-    name: "imageBackgroundBlur",
-    value: false,
-    displayName: "image-background-blur"
-  }),
-  new DurationProperty({
-    name: "imageDuration",
-  }),
-  new VolumeProperty({
-    name: "imageVolume",
-  }),
-  new WidthProperty({
-    name: "imageWidth",
-  }),
-  new HeightProperty({
-    name: "imageHeight",
+  new ElementsProperty({
+    value: [],
+    available: ElementFactory.list()
   }),
   new NumberProperty({
     name: "audioDelay",
@@ -106,38 +31,6 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new VolumeProperty({
     name: "audio-volume",
-  }),
-  new AnimatedFontProperty({
-    name: "headerFont",
-  }),
-  new TextProperty({
-    name: "nicknameTextTemplate",
-    value: "<username> - <amount>",
-    displayName: "Текст",
-  }),
-  new AnimatedFontProperty({
-    name: "font",
-  }),
-  new NumberProperty({
-    name: "imageAppearanceDelay",
-    value: 0,
-    displayName: "Задержка появления",
-    addon: "ms",
-  }),
-  new AnimationProperty({
-    name: "imageAppearance",
-    displayName: "Анимация появления",
-    target: "in"
-  }),
-  new AnimationProperty({
-    name: "imageAnimation",
-    displayName: "Анимация отображения",
-    target: "idle"
-  }),
-  new AnimationProperty({
-    name: "imageDisappearance",
-    displayName: "Анимация исчезновения",
-    target: "out"
   }),
   new DefaultWidgetProperty({
     name: "enableVoiceForHeader",
@@ -231,39 +124,11 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
 Пользователь всемирной сети Интернет, известный как <username>, поддержал стримера денежным переводом в размере <amount> рублей
 Очень рады <username> и <amount> рублям`,
   }),
-  new TextProperty({
-    displayName: "Текст",
-    name: "messageTemplate",
-    value: "<message>",
-  }),
-  new DurationProperty({
-    name: "messageDuration",
-  }),
   new NumberProperty({
     name: "messageVoiceDelay",
     value: 0,
     displayName: "Задержка озвучки сообщения",
     addon: "ms",
-  }),
-  new NumberProperty({
-    name: "messageAppearanceDelay",
-    value: 0,
-    displayName: "Задержка появления",
-    addon: "ms",
-  }),
-  new AnimationProperty({
-    name: "messageAppearance",
-    target: "in"
-  }),
-  new AnimationProperty({
-    name: "messageAnimation",
-    displayName: "Анимация отображения",
-    target: "idle"
-  }),
-  new AnimationProperty({
-    name: "messageDisappearance",
-    displayName: "Анимация исчезновения",
-    target: "out"
   }),
   new DefaultWidgetProperty({
     name: "enableVoiceForMessage",
@@ -271,114 +136,5 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new VolumeProperty({
     name: "voiceVolume",
-  }),
-  new BorderProperty({ name: "imageBorder" }),
-  new RoundingProperty({ name: "imageRounding" }),
-  new PaddingProperty({ name: "imagePadding" }),
-  new BoxShadowProperty({ name: "imageShadow" }),
-  new BooleanProperty({
-    name: "showHeader",
-    value: true,
-    displayName: "widget-donaterslist-show-header",
-  }),
-  new DurationProperty({
-    name: "headerDuration",
-  }),
-  new NumberProperty({
-    name: "headerAppearanceDelay",
-    value: 0,
-    displayName: "Задержка появления",
-    addon: "ms",
-  }),
-  new AnimationProperty({
-    name: "headerAppearance",
-    target: "in"
-  }),
-  new AnimationProperty({
-    name: "headerAnimation",
-    displayName: "Анимация",
-    target:"idle"
-  }),
-  new AnimationProperty({
-    name: "headerDisappearance",
-    displayName: "Анимация исчезновения",
-    target:"out"
-  }),
-  new WidthProperty({ name: "headerWidth" }),
-  new HeightProperty({ name: "headerHeight" }),
-  new SingleChoiceProperty({
-    name: "headerAlignment",
-    value: "center",
-    displayName: "widget-donaterslist-list-alignment",
-    options: ["left", "center", "right"],
-    selectionType: SELECTION_TYPE.SEGMENTED,
-  }),
-  new ColorProperty({
-    name: "titleBackgroundColor",
-    displayName: "widget-donaterslist-title-background-color",
-    value: {
-      gradient: false,
-      gradientType: GRADIENT_TYPE.LINEAR,
-      repeating: false,
-      colors: [{ color: "rgba(0,0,0,0)" }],
-      angle: 0,
-    },
-    target: ColorPropertyTarget.BACKGROUND,
-  }),
-  new BackgroundImageProperty({
-    name: "headerBackgroundImage",
-  }),
-  new BorderProperty({
-    name: "headerBorder",
-  }),
-  new RoundingProperty({
-    name: "headerRounding",
-  }),
-  new PaddingProperty({
-    name: "headerPadding",
-  }),
-  new BoxShadowProperty({
-    name: "headerBoxShadow",
-  }),
-  new BooleanProperty({
-    name: "showMessage",
-    value: true,
-    displayName: "widget-donaterslist-show-message",
-  }),
-  new WidthProperty({ name: "messageWidth" }),
-  new HeightProperty({ name: "messageHeight" }),
-  new SingleChoiceProperty({
-    name: "messageAlignment",
-    value: "center",
-    displayName: "widget-donaterslist-list-alignment",
-    options: ["left", "center", "right"],
-    selectionType: SELECTION_TYPE.SEGMENTED,
-  }),
-  new ColorProperty({
-    name: "messageBackgroundColor",
-    displayName: "widget-donaterslist-title-background-color",
-    value: {
-      gradient: false,
-      gradientType: GRADIENT_TYPE.LINEAR,
-      repeating: false,
-      colors: [{ color: "rgba(0,0,0,0)" }],
-      angle: 0,
-    },
-    target: ColorPropertyTarget.BACKGROUND,
-  }),
-  new BackgroundImageProperty({
-    name: "messageBackgroundImage",
-  }),
-  new BorderProperty({
-    name: "messageBorder",
-  }),
-  new RoundingProperty({
-    name: "messageRounding",
-  }),
-  new PaddingProperty({
-    name: "messagePadding",
-  }),
-  new BoxShadowProperty({
-    name: "messageBoxShadow",
   }),
 ];

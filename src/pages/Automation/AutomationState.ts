@@ -9,8 +9,8 @@ import { AutomationTriggerController } from "./AutomationTriggerController";
 
 export interface Variable {
   name: string;
-  type: "string" | "number";
-  value: string | number;
+  type: "string" | "number" | "list" | "matrix";
+  value: string | number | Array<Variable> | Array<Array<Variable>>;
   id: string;
 }
 
@@ -42,7 +42,7 @@ export class StringVariable implements Variable {
     return this._id;
   }
 
-  public get type(): "string" | "number"{
+  public get type(): "string"{
     return "string";
   }
 }

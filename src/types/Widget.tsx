@@ -6,7 +6,7 @@ import { WidgetStore } from "../stores/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
 import { MediaWidgetSettings } from "../components/ConfigurationPage/widgetsettings/MediaWidgetSettings";
 import { PlayerInfoWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerInfoWidgetSettings";
-import { DonatersTopListWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
+import { DonatersTopListWidgetSettings } from "../pages/DonatersTopList/DonatersTopListWidgetSettings";
 import { DonationTimerWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { DonationGoalWidgetSettings } from "../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { PaymentAlertsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
@@ -203,6 +203,15 @@ export const WIDGET_TYPES = [
     category: "onscreen",
     preview: "",
     description: "Отображает текст бегущей строкой.",
+    create: () => new MarqueeWidgetSettings(),
+  },
+  {
+    name: "popup",
+    title: "Всплывающее окно",
+    icon: <span className="material-symbols-sharp">float_landscape_2</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Показывает периодически контент внутри.",
     create: () => new MarqueeWidgetSettings(),
   },
 ];

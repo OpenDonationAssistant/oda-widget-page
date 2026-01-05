@@ -10,6 +10,7 @@
   margin-bottom: 18px;
   color: var(--oda-color-950);
   & .titles {
+    border-bottom: 1px solid var(--oda-color-250);
     & div {
       font-size: 21px !important;
     }

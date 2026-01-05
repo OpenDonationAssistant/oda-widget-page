@@ -110,15 +110,23 @@ export const DEFAULT_IMAGE_PROPERTY_VALUE = {
   opacity: 1,
 };
 
+export interface ImagePropertyComponentOptions {
+  showOpacity?: boolean;
+  showSize?: boolean;
+  showRepeat?: boolean;
+}
+
 export const ImagePropertyComponent = observer(
   ({
     value,
     displayName,
     onChange,
+    options,
   }: {
     value: ImagePropertyValue;
     displayName: string;
     onChange?: (value: ImagePropertyValue) => void;
+    options?: ImagePropertyComponentOptions;
   }) => {
     const [image, setImage] = useState<string>(value.url ?? "");
     const parentModalState = useContext(ModalStateContext);
@@ -129,6 +137,10 @@ export const ImagePropertyComponent = observer(
     useEffect(() => {
       fullUri(value.url).then(setImage);
     }, [value.url]);
+
+    const showOpacity = options?.showOpacity ?? true;
+    const showSize = options?.showSize ?? true;
+    const showRepeat = options?.showRepeat ?? true;
 
     return (
       <ModalStateContext.Provider value={modalState}>
@@ -168,85 +180,96 @@ export const ImagePropertyComponent = observer(
           )}
           {value.url && (
             <Flex vertical={true} className="full-width" justify="space-around">
-              <Flex
-                gap={10}
-                align="center"
-                className={`${classes.previewcontainer}`}
-                justify="space-between"
-              >
-                <div>{value.name}</div>
-                <Flex align="center" gap={6}>
-                  <Image.PreviewGroup>
-                    <Image className={`${classes.preview}`} src={`${image}`} />
-                  </Image.PreviewGroup>
-                  <SubActionButton
-                    onClick={() => {
-                      value.name = null;
-                      value.url = null;
-                      value.size = "auto";
-                      value.repeat = false;
-                      value.opacity = 1;
-                      onChange?.(value);
-                    }}
-                  >
-                    <div>Загрузить</div>
-                  </SubActionButton>
-                  <SubActionButton
-                    onClick={() => {
-                      value.name = null;
-                      value.url = null;
-                      value.size = "auto";
-                      value.repeat = false;
-                      value.opacity = 1;
-                      onChange?.(value);
-                    }}
-                  >
-                    <CloseIcon color="#FF8888" />
-                    <div>Удалить</div>
-                  </SubActionButton>
+              <SmallLabeledContainer displayName="Изображение">
+                <Flex
+                  gap={10}
+                  align="center"
+                  className={`${classes.previewcontainer}`}
+                  justify="space-between"
+                >
+                  <div>{value.name}</div>
+                  <Flex align="center" gap={6}>
+                    <Image.PreviewGroup>
+                      <Image
+                        className={`${classes.preview}`}
+                        src={`${image}`}
+                      />
+                    </Image.PreviewGroup>
+                    <SubActionButton
+                      onClick={() => {
+                        value.name = null;
+                        value.url = null;
+                        value.size = "auto";
+                        value.repeat = false;
+                        value.opacity = 1;
+                        onChange?.(value);
+                      }}
+                    >
+                      <div>Загрузить</div>
+                    </SubActionButton>
+                    <SubActionButton
+                      onClick={() => {
+                        value.name = null;
+                        value.url = null;
+                        value.size = "auto";
+                        value.repeat = false;
+                        value.opacity = 1;
+                        onChange?.(value);
+                      }}
+                    >
+                      <CloseIcon color="#FF8888" />
+                      <div>Удалить</div>
+                    </SubActionButton>
+                  </Flex>
                 </Flex>
-              </Flex>
+              </SmallLabeledContainer>
               <Flex gap={6} align="bottom">
-                <SmallLabeledContainer displayName="Прозрачность">
-                  <InputNumber
-                    value={value.opacity}
-                    onChange={(updated) => {
-                      if (updated === null || updated === undefined) {
-                        return;
-                      }
-                      value.opacity = updated;
-                      onChange?.(value);
-                    }}
-                  />
-                </SmallLabeledContainer>
-                <SmallLabeledContainer displayName="Размер">
-                  <Select
-                    className={`${classes.size}`}
-                    value={value.size}
-                    options={[
-                      { label: "original", value: "auto" },
-                      { label: "cover", value: "cover" },
-                      { label: "contain", value: "contain" },
-                      { label: "fit", value: "100% 100%" },
-                    ]}
-                    onChange={(updated) => {
-                      value.size = updated;
-                      onChange?.(value);
-                    }}
-                  />
-                </SmallLabeledContainer>
-                <SmallLabeledContainer displayName="Если размер меньше виджета">
-                  <Flex className={`${classes.repeatbutton}`} align="top">
-                    <LightLabeledSwitchComponent
-                      label="Повтор"
-                      value={value.repeat}
-                      onChange={(checked) => {
-                        value.repeat = checked;
+                {showOpacity && (
+                  <SmallLabeledContainer displayName="Прозрачность">
+                    <InputNumber
+                      value={value.opacity}
+                      onChange={(updated) => {
+                        if (updated === null || updated === undefined) {
+                          return;
+                        }
+                        value.opacity = updated;
                         onChange?.(value);
                       }}
                     />
-                  </Flex>
-                </SmallLabeledContainer>
+                  </SmallLabeledContainer>
+                )}
+                {showSize && (
+                  <SmallLabeledContainer displayName="Размер">
+                    <Select
+                      className={`${classes.size}`}
+                      value={value.size}
+                      options={[
+                        { label: "original", value: "auto" },
+                        { label: "cover", value: "cover" },
+                        { label: "contain", value: "contain" },
+                        { label: "fit", value: "100% 100%" },
+                      ]}
+                      onChange={(updated) => {
+                        value.size = updated;
+                        onChange?.(value);
+                      }}
+                    />
+                  </SmallLabeledContainer>
+                )}
+                {showRepeat && (
+                  <SmallLabeledContainer displayName="Если размер меньше виджета">
+                    <Flex className={`${classes.repeatbutton}`} align="top">
+                      <LightLabeledSwitchComponent
+                        label="Повтор"
+                        value={value.repeat}
+                        onChange={(checked) => {
+                          value.repeat = checked;
+                          onChange?.(value);
+                        }}
+                      />
+                    </Flex>
+                  </SmallLabeledContainer>
+                )}
               </Flex>
             </Flex>
           )}

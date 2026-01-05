@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
 } from "react";
 import { log } from "../../logging";
 import { createPortal } from "react-dom";

@@ -1,7 +1,7 @@
 import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import "./DonatersTopList.css";
 import { Flex } from "antd";
-import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
+import { DonatersTopListWidgetSettings } from "./DonatersTopListWidgetSettings";
 import { AbstractDonatersListStore } from "./DonatersListStore";
 import { observer } from "mobx-react-lite";
 import { log } from "../../logging";

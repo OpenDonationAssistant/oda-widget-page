@@ -33,6 +33,7 @@ import { uploadBlob } from "../../../../utils";
 import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
 import { TriggersStoreContext } from "./triggers/TriggersStore";
+import { ElementsTab } from "../../../Element/ElementsTab";
 
 const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
@@ -135,19 +136,14 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
                   children: [<GeneralTab alert={alert} />],
                 },
                 {
-                  key: "layout",
-                  label: t("Layout"),
-                  children: [<LayoutTab alert={alert} />],
-                },
-                {
                   key: "sound",
                   label: t("tab-alert-audio"),
                   children: [<SoundTab alert={alert} />],
                 },
                 {
-                  key: "image",
-                  label: t("tab-alert-image"),
-                  children: [<ImageTab alert={alert} />],
+                  key: "elements",
+                  label: "Отображение",
+                  children: [<ElementsTab alert={alert} />],
                 },
                 {
                   key: "header",

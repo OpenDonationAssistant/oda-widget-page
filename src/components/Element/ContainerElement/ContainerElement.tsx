@@ -30,6 +30,8 @@ export interface ContainerElementSettings {
   align: "left" | "center" | "right";
   justify: "top" | "center" | "bottom";
   direction: "row" | "column" | "stack";
+  gap: number;
+  rotation: number;
   backgroundImage: ImagePropertyValue;
   backgroundColor: ColorPropertyValue;
   width: WidthPropertyValue;
@@ -45,6 +47,8 @@ export const DEFAULT_CONTAINER_ELEMENT_SETTINGS = {
   align: "center" as "left" | "center" | "right",
   justify: "top" as "top" | "center" | "bottom",
   direction: "row" as "row" | "column" | "stack",
+  gap: 9,
+  rotation: 0,
   backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
   border: DEFAULT_BORDER_PROPERTY_VALUE,
   padding: DEFAULT_PADDING_PROPERTY_VALUE,

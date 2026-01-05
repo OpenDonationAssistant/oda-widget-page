@@ -37,6 +37,7 @@ export interface LabelElementSettings {
   hideEmpty: boolean;
   align: "left" | "center" | "right";
   justify: "top" | "center" | "bottom";
+  direction: "row" | "column";
   backgroundImage: ImagePropertyValue;
   backgroundColor: ColorPropertyValue;
   width: WidthPropertyValue;
@@ -53,6 +54,7 @@ export const DEFAULT_LABEL_ELEMENT_SETTINGS = {
   font: DEFAULT_FONT_PROPERTY_VALUE,
   align: "left",
   justify: "center",
+  direction: "row",
   backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
   backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
   width: { type: "max", value: 100 },

@@ -4,7 +4,8 @@ import { Flex } from "antd";
 import classes from "./SocialsWidgetSettings.module.css";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import { ElementsProperty } from "../../components/Element/ElementsProperty";
-import { SocialsWidget } from "./SocialsWidget";
+import { ElementFactory } from "../../components/Element/ElementFactory";
+import { ElementsWidget } from "../../components/Element/ElementsWidget";
 
 export class SocialsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -16,6 +17,7 @@ export class SocialsWidgetSettings extends AbstractWidgetSettings {
           properties: [
             new ElementsProperty({
               value: [],
+              available: ElementFactory.list(),
             }),
           ],
         },
@@ -26,7 +28,7 @@ export class SocialsWidgetSettings extends AbstractWidgetSettings {
   public get elements() {
     return (
       (this.get("elements") ??
-        new ElementsProperty({ value: [] })) as ElementsProperty
+        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
     ).elements;
   }
 
@@ -64,6 +66,6 @@ export class SocialsWidgetSettings extends AbstractWidgetSettings {
   }
 
   public demo(): ReactNode {
-    return <SocialsWidget settings={this} />;
+    return <ElementsWidget settings={this} />;
   }
 }

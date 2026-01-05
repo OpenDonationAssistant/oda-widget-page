@@ -2,6 +2,13 @@
   padding-top: 12px;
 }
 
+.indent {
+  background-color: var(--oda-color-950);
+  padding: 6px;
+  border-radius: 6px;
+  margin-right: 3px;
+}
+
 .mode {
   margin-bottom: 12px;
   padding-left: 12px;

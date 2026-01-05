@@ -38,6 +38,7 @@ import { uploadBlob } from "../../utils";
 import { PresetsComponent } from "./PresetsComponent";
 import DeleteWidgetModal from "./DeleteWidgetModal";
 import { ListItem } from "../List/List";
+import { log } from "../../logging";
 
 const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -85,6 +86,7 @@ const HelpButton = observer(({ widget }: { widget: Widget }) => {
 
 const WidgetSettingsWindow = observer(
   ({ children, widget }: { children: ReactNode; widget: Widget }) => {
+    log.debug("rendering widget settings window");
     return widget.config.hasDemo() ? (
       <FullscreenPanel>{children}</FullscreenPanel>
     ) : (

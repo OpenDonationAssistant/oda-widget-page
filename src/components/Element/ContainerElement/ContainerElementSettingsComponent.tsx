@@ -19,6 +19,7 @@ import { AdvancedSettingsStoreContext } from "../../../stores/AdvancedSettingsSt
 import { NotBorderedIconButton } from "../../IconButton/IconButton";
 import CloseIcon from "../../../icons/CloseIcon";
 import { AddElementDialogStateContext } from "../ElementsTab";
+import InputNumber from "../../ConfigurationPage/components/InputNumber";
 
 export const ElementList = observer(
   ({
@@ -136,6 +137,24 @@ export const ContainerElementSettingsComponent = observer(
             />
           </LabeledContainer>
         )}
+        <LabeledContainer displayName="Расстояние между элементами">
+          <InputNumber
+            value={data.settings.gap}
+            addon="px"
+            onChange={(value) => {
+              data.settings.gap = Number(value);
+            }}
+          />
+        </LabeledContainer>
+        <LabeledContainer displayName="Поворот содержимого по часовой стрелке">
+          <InputNumber
+            value={data.settings.rotation}
+            addon="deg"
+            onChange={(value) => {
+              data.settings.rotation = Number(value);
+            }}
+          />
+        </LabeledContainer>
         <ColorPropertyComponent
           property={{
             value: data.settings.backgroundColor,

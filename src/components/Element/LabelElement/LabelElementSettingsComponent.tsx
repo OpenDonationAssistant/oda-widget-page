@@ -26,6 +26,20 @@ import { AnimationPropertyComponent } from "../../ConfigurationPage/widgetproper
 import { BoxShadowPropertyComponent } from "../../ConfigurationPage/widgetproperties/BoxShadowProperty";
 import SecondaryButton from "../../Button/SecondaryButton";
 import PrimaryButton from "../../Button/PrimaryButton";
+import { VariableStoreContext } from "../../../stores/VariableStore";
+
+function mapType(type: string) {
+  switch (type) {
+    case "number":
+      return "Число";
+    case "list":
+    case "matrix":
+      return "Список";
+    case "string":
+    default:
+      return "Строка";
+  }
+}
 
 const LabelTemplatesOverlay = observer(() => {
   const parentModalState = useContext(ModalStateContext);
@@ -33,18 +47,45 @@ const LabelTemplatesOverlay = observer(() => {
     () => new ModalState(parentModalState),
   );
 
+  const variables = useContext(VariableStoreContext);
+
   return (
     <ModalStateContext.Provider value={templatesModalState}>
       <Overlay>
         <Panel>
-          <Title>Доступные шаблоны и переменные</Title>
-          <Flex vertical className={`${classes.templates}`}>
-            <Row className={`${classes.titles}`}>
-              <Col span={8}>Шаблон</Col>
-              <Col span={8}>Описание</Col>
-              <Col span={8}>Пример результата</Col>
-            </Row>
-          </Flex>
+          <Title>Шаблоны и Переменные</Title>
+          {variables.templating.variables.length > 0 && (
+            <Flex vertical className={`${classes.templates}`}>
+              <Row className={`${classes.titles}`}>
+                <Col span={10}>Переменная</Col>
+                <Col span={10}>Описание</Col>
+                <Col span={4}>Тип</Col>
+              </Row>
+              {variables.templating.variables.map((variable) => (
+                <Row key={variable.name}>
+                  <Col span={10}>{variable.name}</Col>
+                  <Col span={10}>{variable.description}</Col>
+                  <Col span={4}>{mapType(variable.type)}</Col>
+                </Row>
+              ))}
+            </Flex>
+          )}
+          {variables.templating.templates.length > 0 && (
+            <Flex vertical className={`${classes.templates}`}>
+              <Row className={`${classes.titles}`}>
+                <Col span={8}>Шаблон</Col>
+                <Col span={8}>Описание</Col>
+                <Col span={8}>Пример результата</Col>
+              </Row>
+              {variables.templating.templates.map((template) => (
+                <Row key={template.value}>
+                  <Col span={12}>{template.value}</Col>
+                  <Col span={12}>{template.description}</Col>
+                  <Col span={6}>{template.example}</Col>
+                </Row>
+              ))}
+            </Flex>
+          )}
           <Flex className="full-width" justify="flex-end" gap={9}>
             <SecondaryButton
               onClick={() => {
@@ -121,6 +162,24 @@ export const LabelElementSettingsComponent = observer(
               className={`${classes.textoptions}`}
               wrap
             >
+              <Flex align="center">
+                <span
+                  className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.direction === "row" ? classes.selectedalign : ""}`}
+                  onClick={() => {
+                    data.settings.direction = "row";
+                  }}
+                >
+                  text_rotation_none
+                </span>
+                <span
+                  className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.direction === "column" ? classes.selectedalign : ""}`}
+                  onClick={() => {
+                    data.settings.direction = "column";
+                  }}
+                >
+                  text_rotate_vertical
+                </span>
+              </Flex>
               <Flex align="center">
                 <span
                   className={`material-symbols-sharp ${classes.alignbutton} ${data.settings.justify === "top" ? classes.selectedalign : ""}`}

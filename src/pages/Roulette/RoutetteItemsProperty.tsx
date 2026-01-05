@@ -4,7 +4,7 @@ import { ReactNode, useState } from "react";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import { RouletteItem, RouletteItemData } from "../../stores/ReelStore";
-import { List, ListItem } from "../../components/List/List";
+import { AddListItemButton, List, ListItem } from "../../components/List/List";
 import CollapseLikeButton from "../../components/Button/CollapseLikeButton";
 import { Flex, Input } from "antd";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
@@ -23,6 +23,7 @@ import { DEFAULT_COLOR_PROPERTY_VALUE } from "../../components/ConfigurationPage
 
 const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
   const [opened, setOpened] = useState<boolean>(false);
+
   return (
     <Flex className={`${classes.itemcontainer}`} vertical>
       <ListItem
@@ -51,15 +52,19 @@ const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
             />
           </LabeledContainer>
           <LabeledContainer displayName="Вероятность выпадения">
-            <SmallLabeledContainer displayName="Вес">
-              <InputNumber
-                value={item.data.weight}
-                onChange={(e) => (item.data.weight = e)}
-              />
-            </SmallLabeledContainer>
-            <SmallLabeledContainer displayName="Итоговая вероятность">
-              <div>{item.probability}%</div>
-            </SmallLabeledContainer>
+            <Flex gap={9} className="full-width">
+              <SmallLabeledContainer displayName="Вес">
+                <InputNumber
+                  value={item.data.weight}
+                  onChange={(e) => (item.data.weight = e)}
+                />
+              </SmallLabeledContainer>
+              <SmallLabeledContainer displayName="Итоговая вероятность">
+                <div className={`${classes.probability}`}>
+                  {item.probability}%
+                </div>
+              </SmallLabeledContainer>
+            </Flex>
           </LabeledContainer>
           <ColorPropertyComponent
             property={{
@@ -71,6 +76,11 @@ const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
           <ImagePropertyComponent
             displayName="Фоновое изображение"
             value={item.data.backgroundImage}
+            options={{
+              showOpacity: false,
+              showSize: false,
+              showRepeat: false,
+            }}
           />
         </Flex>
       )}
@@ -85,13 +95,12 @@ const RouletteItemsPropertyComponent = observer(
         {property.items.map((item, index) => (
           <RouletteItemComponent key={index} item={item} />
         ))}
-        <CollapseLikeButton
+        <AddListItemButton
+          label="Добавить лот"
           onClick={() => {
             property.addRouletteItem();
           }}
-        >
-          Добавить лот
-        </CollapseLikeButton>
+        />
       </List>
     );
   },
@@ -109,21 +118,21 @@ export class RouletteItemsProperty extends DefaultWidgetProperty<
           name: "Час супер седюсера",
           weight: 1,
           backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
-          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
+          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
         },
         {
           id: "2",
           name: "Кусок из детского видео",
           weight: 1,
           backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
-          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
+          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
         },
         {
           id: "3",
           name: "Какой-то вопрос",
           weight: 1,
           backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
-          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
+          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
         },
       ],
       displayName: "Лоты",

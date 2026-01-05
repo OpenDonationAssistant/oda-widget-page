@@ -14,6 +14,10 @@ const DEFAULT_ELEMENTS = [
     name: "Надпись",
     type: "label",
     enabled: true,
+    level: 0,
+    advanced: false,
+    advancedLevel: 0,
+    order: 0,
     settings: {
       font: {
         family: "mulish",

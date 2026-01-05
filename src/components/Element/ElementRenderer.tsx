@@ -6,6 +6,12 @@ import { Element } from "./Element";
 import { MarqueeElementRenderer } from "./MarqueeElement/MarqueeElementRenderer";
 import { SlideShowElementRenderer } from "./SlideShowElement/SlideShowElementRenderer";
 import { QRElementRenderer } from "./QRElement/QRElementRenderer";
+import { RepeaterElementRenderer } from "./RepeaterElement/RepeaterElementRenderer";
+import { TimedElementRenderer } from "./TimedElement/TimedElementRenderer";
+import { ProgressElementRenderer } from "./ProgressElement/ProgressElementRenderer";
+import { ProgressElementSvgRenderer } from "./ProgressElementSvg/ProgressElementSvgRenderer";
+import { WheelElementRenderer } from "./WheelElement/WheelElementRenderer";
+import { ReelElementRenderer } from "./ReelElement/ReelElementRenderer";
 
 export const ElementRenderer = observer(
   ({ element }: { element: Element<any> }) => {
@@ -43,9 +49,37 @@ export const ElementRenderer = observer(
       );
     }
     if (element.data.type === "qrcode") {
+      return <QRElementRenderer settings={element.data.settings} />;
+    }
+    if (element.data.type === "repeater") {
       return (
-        <QRElementRenderer settings={element.data.settings}/>
+        <RepeaterElementRenderer settings={element.data.settings}>
+          {element.children.map((child) => (
+            <ElementRenderer key={child.data.id} element={child} />
+          ))}
+        </RepeaterElementRenderer>
       );
+    }
+    if (element.data.type === "timed") {
+      return (
+        <TimedElementRenderer settings={element.data.settings}>
+          {element.children.map((child) => (
+            <ElementRenderer key={child.data.id} element={child} />
+          ))}
+        </TimedElementRenderer>
+      );
+    }
+    if (element.data.type === "progress") {
+      return <ProgressElementRenderer settings={element.data.settings} />;
+    }
+    if (element.data.type === "progress-svg") {
+      return <ProgressElementSvgRenderer settings={element.data.settings} />;
+    }
+    if (element.data.type === "wheel") {
+      return <WheelElementRenderer settings={element.data.settings} />;
+    }
+    if (element.data.type === "reel") {
+      return <ReelElementRenderer settings={element.data.settings} />;
     }
     return <></>;
   },

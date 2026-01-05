@@ -1,14 +1,5 @@
 import { ReactNode, useContext } from "react";
-import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
-import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-  DEFAULT_COLOR_PROPERTY_VALUE,
-} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
-import { ReelItemBackgroundProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemBackgroundProperty";
-import { ReelItemListProperty } from "../../components/ConfigurationPage/widgetproperties/ReelItemListProperty";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import SubActionButton from "../../components/Button/SubActionButton";
@@ -18,21 +9,20 @@ import { useTranslation } from "react-i18next";
 import { publish } from "../../socket";
 import { getRndInteger } from "../../utils";
 import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
-import { ReelWidget } from "./ReelWidget";
-import { DemoReelStore } from "../../stores/ReelStore";
-import { ReelWinningEffectProperty } from "./ReelWinningEffectProperty";
-import { log } from "../../logging";
+import { DemoReelStore, ReelStoreContext } from "../../stores/ReelStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
-import { DEFAULT_IMAGE_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
+import { ElementsWidget } from "../../components/Element/ElementsWidget";
+import { ElementsProperty } from "../../components/Element/ElementsProperty";
+import { RouletteItemsProperty } from "../Roulette/RoutetteItemsProperty";
 
 export class ReelWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({
       sections: [
         {
-          key: "general",
-          title: "tab-reel-general",
+          key: "items",
+          title: "Лоты",
           properties: [
             new NumberProperty({
               name: "requiredAmount",
@@ -40,99 +30,21 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
               addon: "₽",
               displayName: "widget-reel-required-amount",
             }),
-            new AnimatedFontProperty({
-              name: "titleFont",
-            }),
-            new BorderProperty({
-              name: "widgetBorder",
-            }),
-            new BorderProperty({
-              name: "cardBorder",
-            }),
-            new ColorProperty({
-              name: "selectionColor",
-              displayName: "widget-reel-background-color",
-              target: ColorPropertyTarget.BACKGROUND,
-            }),
-            new ReelWinningEffectProperty(),
-            new NumberProperty({
-              name: "perView",
-              value: 5,
-              addon: "карт", // TODO: localize
-              displayName: "widget-reel-displayed-amount",
-            }),
-            new NumberProperty({
-              name: "speed",
-              value: 250,
-              addon: "ms",
-              displayName: "widget-reel-turning-time",
-            }),
-            new NumberProperty({
-              name: "time",
-              value: 10,
-              addon: "sec",
-              displayName: "widget-reel-waiting-time",
-            }),
-          ],
-        },
-        {
-          key: "prizes",
-          title: "tab-reel-prizes",
-          properties: [
-            new ReelItemListProperty(),
-            new ReelItemBackgroundProperty(),
+            new RouletteItemsProperty(),
           ],
         },
       ],
     });
-  }
 
-  public get titleFontProperty() {
-    return this.get("titleFont") as AnimatedFontProperty;
-  }
-  public get widgetBorderProperty() {
-    return this.get("widgetBorder") as BorderProperty;
-  }
-
-  public get cardBorderProperty() {
-    return this.get("cardBorder") as BorderProperty;
-  }
-
-  public get selectionColorProperty() {
-    return this.get("selectionColor") as ColorProperty;
-  }
-
-  public get perViewProperty() {
-    return this.get("perView") as NumberProperty;
-  }
-
-  public get speedProperty() {
-    return this.get("speed") as NumberProperty;
-  }
-
-  public get timeProperty() {
-    return this.get("time") as NumberProperty;
-  }
-
-  public get optionListProperty() {
-    return this.get("optionList") as ReelItemListProperty;
-  }
-
-  public get reelWinningEffectProperty() {
-    log.debug({ settings: this }, "searching reelWinningEffectProperty");
-    return this.get("reelWinningEffect") as ReelWinningEffectProperty;
-  }
-
-  public get itemBackgroundProperty() {
-    return this.get("backgroundImage") as ReelItemBackgroundProperty;
+    super.addElementsTab();
   }
 
   runReel(id: string, conf: any) {
-    const optionList = this.optionListProperty.value;
+    const optionList = this.itemsProperty.value;
     const choosenIndex = getRndInteger(0, optionList.length - 1);
     publish(conf.topic.reel, {
       type: "trigger",
-      selection: optionList[choosenIndex],
+      selection: optionList[choosenIndex].name,
       widgetId: id,
     });
   }
@@ -184,29 +96,28 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
+  public get elements() {
+    return (
+      (this.get("elements") ??
+        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
+    ).elements;
+  }
+
+  public get itemsProperty(): RouletteItemsProperty {
+    return this.get("roulette-items") as RouletteItemsProperty;
+  }
+
   public hasDemo(): boolean {
     return true;
   }
 
   public demo(): ReactNode {
     return (
-      <ReelWidget
-        settings={this}
-        store={
-          new DemoReelStore(
-            20000,
-            this.optionListProperty.value.map((name) => {
-              return {
-                id: name,
-                name: name,
-                weight: 1,
-                backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
-                backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
-              };
-            }),
-          )
-        }
-      />
+      <ReelStoreContext.Provider
+        value={new DemoReelStore(20000, this.itemsProperty.value)}
+      >
+        <ElementsWidget settings={this} />
+      </ReelStoreContext.Provider>
     );
   }
 }

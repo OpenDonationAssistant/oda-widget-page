@@ -227,6 +227,10 @@ function calcAlignment(alignment: string): CSSProperties {
   }
 }
 
+function calcRotation(value: number): CSSProperties {
+  return { transform: `rotate(${value}deg)` };
+}
+
 export const ContainerElementRenderer = observer(
   ({
     children,
@@ -269,6 +273,7 @@ export const ContainerElementRenderer = observer(
               ...calcHeight(settings.height),
               ...calcJustify(settings.justify),
               ...calcAnimationDuration(settings.animation),
+              ...calcRotation(settings.rotation),
               ...imageStyle,
               ...{ overflow: "hidden" },
               ...(style ?? {}),

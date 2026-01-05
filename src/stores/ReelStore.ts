@@ -7,7 +7,11 @@ import {
   DEFAULT_IMAGE_PROPERTY_VALUE,
   ImagePropertyValue,
 } from "../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
-import { ColorPropertyValue, DEFAULT_COLOR_PROPERTY_VALUE } from "../components/ConfigurationPage/widgetproperties/ColorProperty";
+import {
+  ColorPropertyValue,
+  DEFAULT_COLOR_PROPERTY_VALUE,
+} from "../components/ConfigurationPage/widgetproperties/ColorProperty";
+import { createContext } from "react";
 
 export interface RouletteItemData {
   id: string;
@@ -33,7 +37,7 @@ export class RouletteItem {
         return acc + item;
       });
 
-    return (this.data.weight / total) * 100;
+    return Math.round((this.data.weight / total) * 100);
   }
 
   public delete() {
@@ -148,10 +152,14 @@ export class DemoReelStore implements ReelStore {
   constructor(timeToSpin: number, options: RouletteItemData[]) {
     makeAutoObservable(this);
     this._data = options;
-    log.debug({ timeToSpin: timeToSpin }, "configuring demo reel");
+    log.debug(
+      { timeToSpin: timeToSpin, options: options },
+      "configuring demo reel",
+    );
     const generateSelection = () => {
       log.debug("generating selection");
-      this._selection = this._data[getRndInteger(0, this._data.length - 1)].id;
+      this._selection =
+        this._data[getRndInteger(0, this._data.length - 1)].name;
       setTimeout(() => {
         log.debug("clearing selection");
         this._selection = null;
@@ -167,9 +175,11 @@ export class DemoReelStore implements ReelStore {
         {
           id: option.id,
           name: option.name,
-          weight: 1,
-          backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
-          backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
+          weight: option.weight ?? 1,
+          backgroundColor:
+            option.backgroundColor ?? DEFAULT_COLOR_PROPERTY_VALUE,
+          backgroundImage:
+            option.backgroundImage ?? DEFAULT_IMAGE_PROPERTY_VALUE,
         },
         this,
       );
@@ -181,10 +191,12 @@ export class DemoReelStore implements ReelStore {
   }
 
   public get options(): string[] {
-    return this._data.map((option) => option.id);
+    return this._data.map((option) => option.name);
   }
 
   public get selection(): string | null {
     return this._selection;
   }
 }
+
+export const ReelStoreContext = createContext<ReelStore | null>(null);

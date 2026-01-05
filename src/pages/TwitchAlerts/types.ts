@@ -72,12 +72,12 @@ export class TwitchAlert {
 
   public addElement({
     data,
-    parent,
+    parentId,
   }: {
     data: ElementData<any>;
-    parent: ElementData<any> | null;
+    parentId: string | null;
   }) {
-    data.containerId = parent?.id ?? null;
+    data.containerId = parentId;
     this._data.elements.push(data);
   }
 

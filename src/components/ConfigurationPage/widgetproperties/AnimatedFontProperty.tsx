@@ -39,7 +39,7 @@ export interface FontPropertyValue {
   animationSpeed: string;
 }
 
-export const DEFAULT_FONT_PROPERTY_VALUE = {
+export const DEFAULT_FONT_PROPERTY_VALUE: FontPropertyValue = {
   family: "Roboto",
   size: 24,
   color: produce(DEFAULT_COLOR_PROPERTY_VALUE, (draft) => {

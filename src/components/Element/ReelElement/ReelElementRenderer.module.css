@@ -6,10 +6,13 @@
   padding-right: 5px;
 
   font-size: 30px;
-  height: min-content;
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
 }
 
 .reelitemcontainer {
+  overflow: hidden;
   border: 1px solid;
   border-radius: 20px;
   display: flex;
@@ -20,6 +23,9 @@
 .active {
   background-color: green;
   color: white;
+}
+
+.useblink {
   animation: blinker 1s linear infinite;
 }
 

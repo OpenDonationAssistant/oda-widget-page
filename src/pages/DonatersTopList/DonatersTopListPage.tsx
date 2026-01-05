@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
 import { DonatersTopList } from "./DonatersTopList";
-import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
+import { DonatersTopListWidgetSettings } from "./DonatersTopListWidgetSettings";
 import { DonatersListStore } from "./DonatersListStore";
 import { DefaultHistoryStore } from "../History/HistoryStore";
 

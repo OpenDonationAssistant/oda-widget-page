@@ -27,6 +27,7 @@ import InputNumber from "../../components/ConfigurationPage/components/InputNumb
 import { AddListItemButton } from "../../components/List/List";
 import { ElementRenderer } from "../../components/Element/ElementRenderer";
 import { ElementsTab } from "../../components/Element/ElementsTab";
+import { ElementFactory } from "../../components/Element/ElementFactory";
 
 function play(buffer: ArrayBuffer | null) {
   if (!buffer) {
@@ -223,7 +224,13 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
               {
                 key: "visual",
                 label: "Отображение",
-                children: [<ElementsTab alert={alert} elements={elements} />],
+                children: [
+                  <ElementsTab
+                    alert={alert}
+                    elements={elements}
+                    available={ElementFactory.list()}
+                  />,
+                ],
               },
               {
                 key: "audio",

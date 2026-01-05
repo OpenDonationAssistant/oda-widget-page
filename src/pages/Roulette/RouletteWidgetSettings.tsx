@@ -2,73 +2,40 @@ import { ReactNode } from "react";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "./RouletteWidgetSettings.module.css";
 import { RouletteItemsProperty } from "./RoutetteItemsProperty";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-  GRADIENT_TYPE,
-} from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
-import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
-import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
-import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
-import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
-import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
-import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
-import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
-import { RouletteWidget } from "./RouletteWidget";
-import { DemoReelStore } from "../../stores/ReelStore";
+import { DemoReelStore, ReelStoreContext } from "../../stores/ReelStore";
+import { log } from "../../logging";
+import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
+import { ElementsProperty } from "../../components/Element/ElementsProperty";
+import { ElementsWidget } from "../../components/Element/ElementsWidget";
 
 export class RouletteWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     super({
       sections: [
         {
-          key: "general",
-          title: "Общие",
-          properties: [
-            new ColorProperty({
-              name: "widgetBackgroundColor",
-              displayName: "background-color",
-              value: {
-                gradient: false,
-                angle: 0,
-                repeating: false,
-                gradientType: GRADIENT_TYPE.LINEAR,
-                colors: [{ color: "#FFFFFF00" }],
-              },
-              target: ColorPropertyTarget.BACKGROUND,
-            }),
-            new BackgroundImageProperty({
-              name: "backgroundImage",
-            }),
-            new WidthProperty({
-              name: "width",
-            }),
-            new HeightProperty({
-              name: "height",
-            }),
-            new BorderProperty({
-              name: "border",
-            }),
-            new PaddingProperty({
-              name: "padding",
-            }),
-            new RoundingProperty({
-              name: "rounding",
-            }),
-            new BoxShadowProperty({
-              name: "boxShadow",
-              displayName: "Тени виджета",
-              help: "Устанавливает тени виджета.",
-            }),
-          ],
-        },
-        {
           key: "items",
           title: "Лоты",
-          properties: [new RouletteItemsProperty()],
+          properties: [
+            new NumberProperty({
+              name: "requiredAmount",
+              value: 100,
+              addon: "₽",
+              displayName: "widget-reel-required-amount",
+            }),
+            new RouletteItemsProperty(),
+          ],
         },
       ],
     });
+
+    super.addElementsTab();
+  }
+
+  public get elements() {
+    return (
+      (this.get("elements") ??
+        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
+    ).elements;
   }
 
   public get itemsProperty(): RouletteItemsProperty {
@@ -99,11 +66,14 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
   }
 
   public demo(): ReactNode {
+    log.debug("rendering widget settings window");
+
     return (
-      <RouletteWidget
-        settings={this}
-        store={new DemoReelStore(20000, this.itemsProperty.value)}
-      />
+      <ReelStoreContext.Provider
+        value={new DemoReelStore(20000, this.itemsProperty.value)}
+      >
+        <ElementsWidget settings={this} />
+      </ReelStoreContext.Provider>
     );
   }
 }

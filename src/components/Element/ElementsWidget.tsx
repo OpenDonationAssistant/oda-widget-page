@@ -1,9 +1,16 @@
 import { observer } from "mobx-react-lite";
-import { SocialsWidgetSettings } from "./SocialsWidgetSettings";
-import { ElementRenderer } from "../../components/Element/ElementRenderer";
+import { ElementRenderer } from "./ElementRenderer";
+import { Element } from "./Element";
 
-export const SocialsWidget = observer(
-  ({ settings }: { settings: SocialsWidgetSettings }) => {
+export interface SettingsWithElements {
+  elements: Element<any>[];
+}
+
+export const ElementsWidget = observer(
+  ({ settings }: { settings: SettingsWithElements }) => {
+
+
+
     return (
       <>
         {settings.elements

@@ -1,20 +1,29 @@
 import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
 import { Element, ElementContainer, ElementData } from "./Element";
-import { ElementFactory } from "./ElementFactory";
+import { ElementDescription, ElementFactory } from "./ElementFactory";
 import { ElementsTab } from "./ElementsTab";
 
 export class ElementsProperty
   extends DefaultWidgetProperty<ElementData<any>[]>
   implements ElementContainer
 {
-  constructor({ value }: { value: ElementData<any>[] }) {
+  private _availableElements: ElementDescription[] = [];
+
+  constructor({
+    value,
+    available,
+  }: {
+    value: ElementData<any>[];
+    available: ElementDescription[];
+  }) {
     super({
       name: "elements",
-      value,
+      value: value,
       displayName: "Элементы",
       help: undefined,
     });
+    this._availableElements = available;
   }
 
   addElement({
@@ -51,6 +60,12 @@ export class ElementsProperty
   }
 
   markup(): ReactNode {
-    return <ElementsTab elements={this.elements} alert={this} />;
+    return (
+      <ElementsTab
+        elements={this.elements}
+        available={this._availableElements}
+        alert={this}
+      />
+    );
   }
 }

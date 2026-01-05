@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Element, ElementContainer, ElementData } from "./Element";
+import { Element, ElementContainer } from "./Element";
 import { createContext, useContext, useState } from "react";
 import {
   ModalState,
@@ -16,16 +16,11 @@ import { Flex, Switch } from "antd";
 import { AddListItemButton, CollapsibleListItem, List } from "../List/List";
 import { Card, CardList, CardTitle } from "../Cards/CardsComponent";
 import { uuidv7 } from "uuidv7";
-import { DEFAULT_LABEL_ELEMENT_SETTINGS } from "./LabelElement/LabelElement";
-import { DEFAULT_MEDIA_ELEMENT_SETTINGS } from "./MediaElement/MediaElement";
-import { DEFAULT_CONTAINER_ELEMENT_SETTINGS } from "./ContainerElement/ContainerElement";
 import { SmallEditableString } from "../RenamableLabel/EditableString";
 import { BorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
-import { DEFAULT_MARQUEE_ELEMENT_SETTINGS } from "./MarqueeElement/MarqueeElement";
-import { DEFAULT_SLIDESHOW_ELEMENT_SETTINGS } from "./SlideShowElement/SlideShowElement";
-import { DEFAULT_QR_ELEMENT_SETTINGS } from "./QRElement/QRElement";
-import { DEFAULT_TIMED_ELEMENT_SETTINGS } from "./TimedElement/TimedElement";
+import { ElementDescription, ElementFactory } from "./ElementFactory";
+import { log } from "../../logging";
 
 class AddElementDialogState {
   constructor(
@@ -55,6 +50,14 @@ const ElementsItemComponent = observer(
       <CollapsibleListItem
         first={
           <Flex align="center" gap={6}>
+            {!advanced &&
+              Array.from(Array(element.data.level + 1).keys()).map(() => (
+                <div className={`${classes.indent}`} />
+              ))}
+            {advanced &&
+              Array.from(Array(element.data.advancedLevel + 1).keys()).map(() => (
+                <div className={`${classes.indent}`} />
+              ))}
             {advanced ? (
               <SmallEditableString
                 label={element.data.name}
@@ -105,9 +108,11 @@ export const ElementsTab = observer(
   ({
     alert,
     elements,
+    available
   }: {
     alert: ElementContainer;
     elements: Element<any>[];
+    available: ElementDescription[];
   }) => {
     const parentModalState = useContext(ModalStateContext);
     const [addElementDialogState] = useState<ModalState>(
@@ -129,9 +134,11 @@ export const ElementsTab = observer(
         </div>
         <List>
           <AddElementDialogStateContext.Provider value={dialogState}>
-            {elements.map((element, index) => (
-              <ElementsItemComponent key={index} element={element} />
-            ))}
+            {elements
+              .sort((a, b) => a.data.order - b.data.order)
+              .map((element, index) => (
+                <ElementsItemComponent key={index} element={element} />
+              ))}
             <ModalStateContext.Provider value={addElementDialogState}>
               {advanced.enabled && (
                 <AddListItemButton
@@ -145,132 +152,51 @@ export const ElementsTab = observer(
                 <Panel>
                   <Title>Добавить элемент</Title>
                   <CardList>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "label",
-                            name: "Надпись",
-                            enabled: true,
-                            settings: DEFAULT_LABEL_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Надпись</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "media",
-                            name: "Изображение/Видео",
-                            enabled: true,
-                            settings: DEFAULT_MEDIA_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Изображение/Видео</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "container",
-                            name: "Контейнер",
-                            enabled: true,
-                            settings: DEFAULT_CONTAINER_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Контейнер</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "marquee",
-                            name: "Бегущая строка",
-                            enabled: true,
-                            settings: DEFAULT_MARQUEE_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Бегущая строка</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "slideshow",
-                            name: "Слайдшоу",
-                            enabled: true,
-                            settings: DEFAULT_SLIDESHOW_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Слайдшоу</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "qrcode",
-                            name: "QR код",
-                            enabled: true,
-                            settings: DEFAULT_QR_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>QR код</CardTitle>
-                    </Card>
-                    <Card
-                      onClick={() => {
-                        alert.addElement({
-                          data: {
-                            id: uuidv7(),
-                            containerId: null,
-                            type: "timed",
-                            name: "Всплывающее окно",
-                            enabled: true,
-                            settings: DEFAULT_TIMED_ELEMENT_SETTINGS,
-                          },
-                          parentId: dialogState.parentId,
-                        });
-                        addElementDialogState.show = false;
-                      }}
-                    >
-                      <CardTitle>Всплывающее окно</CardTitle>
-                    </Card>
+                    {available.map((element) => (
+                      <Card
+                        key={element.type}
+                        onClick={() => {
+                          let level = 0;
+                          let advancedLevel = 0;
+                          if (dialogState.parentId) {
+                            level =
+                              (elements.find(
+                                (el) => el.data.id === dialogState.parentId,
+                              )?.data.level ?? -1) + (element.advanced ? 0 : 1);
+                            advancedLevel =
+                              (elements.find(
+                                (el) => el.data.id === dialogState.parentId,
+                              )?.data.advancedLevel ?? -1) + 1;
+                          }
+                          log.debug(
+                            {
+                              element: element,
+                              level: level,
+                              advancedLevel: advancedLevel,
+                            },
+                            "adding element",
+                          );
+                          alert.addElement({
+                            data: {
+                              id: uuidv7(),
+                              containerId: null,
+                              level: level,
+                              advanced: element.advanced,
+                              advancedLevel: advancedLevel,
+                              type: element.type,
+                              name: element.name,
+                              enabled: true,
+                              settings: element.settings,
+                              order: elements.length,
+                            },
+                            parentId: dialogState.parentId,
+                          });
+                          addElementDialogState.show = false;
+                        }}
+                      >
+                        <CardTitle>{element.name}</CardTitle>
+                      </Card>
+                    ))}
                   </CardList>
                 </Panel>
               </Overlay>
