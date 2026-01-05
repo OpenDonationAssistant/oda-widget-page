@@ -103,6 +103,7 @@ const youtube = (
     sources: [song],
   };
   const holder = document.createElement("div");
+  holder.id = "holder";
   parent.appendChild(holder);
   const player = videojs(holder, options);
   return {
@@ -110,7 +111,7 @@ const youtube = (
     pause: () => player.pause(),
     paused: () => player.paused(),
     show: (show: boolean) => {
-      holder.hidden = !show;
+      holder.style.display = show ? "initial" : "none";
     },
     volume: (value: number) => player.volume(value),
     currentTime: () => player.currentTime(),
