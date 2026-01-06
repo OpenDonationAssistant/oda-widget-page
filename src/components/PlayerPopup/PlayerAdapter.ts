@@ -111,7 +111,7 @@ const youtube = (
     pause: () => player.pause(),
     paused: () => player.paused(),
     show: (show: boolean) => {
-      holder.style.display = show ? "initial" : "none";
+      parent.style.display = show ? "initial" : "none";
     },
     volume: (value: number) => player.volume(value),
     currentTime: () => player.currentTime(),
