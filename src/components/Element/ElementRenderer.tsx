@@ -12,6 +12,7 @@ import { ProgressElementRenderer } from "./ProgressElement/ProgressElementRender
 import { ProgressElementSvgRenderer } from "./ProgressElementSvg/ProgressElementSvgRenderer";
 import { WheelElementRenderer } from "./WheelElement/WheelElementRenderer";
 import { ReelElementRenderer } from "./ReelElement/ReelElementRenderer";
+import { AnimationsElementRenderer } from "./AnimationsElement/AnimationsElementRenderer";
 
 export const ElementRenderer = observer(
   ({ element }: { element: Element<any> }) => {
@@ -80,6 +81,15 @@ export const ElementRenderer = observer(
     }
     if (element.data.type === "reel") {
       return <ReelElementRenderer settings={element.data.settings} />;
+    }
+    if (element.data.type === "animations") {
+      return (
+        <AnimationsElementRenderer settings={element.data.settings}>
+          {element.children.map((child) => (
+            <ElementRenderer key={child.data.id} element={child} />
+          ))}
+        </AnimationsElementRenderer>
+      );
     }
     return <></>;
   },

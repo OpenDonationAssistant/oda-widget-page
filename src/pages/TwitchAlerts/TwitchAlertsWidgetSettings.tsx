@@ -12,6 +12,10 @@ export class TwitchAlertsWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
+  public get twitchAlertsProperty(): TwitchAlertsProperty {
+    return this.get("alerts") as TwitchAlertsProperty;
+  }
+
   public hasDemo(): boolean {
     return false;
   }

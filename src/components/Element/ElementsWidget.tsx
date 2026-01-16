@@ -9,8 +9,6 @@ export interface SettingsWithElements {
 export const ElementsWidget = observer(
   ({ settings }: { settings: SettingsWithElements }) => {
 
-
-
     return (
       <>
         {settings.elements

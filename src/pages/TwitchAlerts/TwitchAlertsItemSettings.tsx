@@ -5,7 +5,7 @@ import {
   TwitchAlert,
 } from "./types";
 import { Trans, useTranslation } from "react-i18next";
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { PresetStoreContext } from "../../stores/PresetStore";
 import { Flex, Select, Slider, Tabs } from "antd";
 import classes from "./TwitchAlertsItemSettings.module.css";
@@ -28,6 +28,11 @@ import { AddListItemButton } from "../../components/List/List";
 import { ElementRenderer } from "../../components/Element/ElementRenderer";
 import { ElementsTab } from "../../components/Element/ElementsTab";
 import { ElementFactory } from "../../components/Element/ElementFactory";
+import { DemoTwitchAlertsStore } from "./TwitchAlertsStore";
+import { StateMachineContext } from "../../components/Element/StateMachine/StateMachine";
+import { StateMachineRenderer } from "../../components/Element/StateMachine/StateMachineRenderer";
+import { ElementsWidget } from "../../components/Element/ElementsWidget";
+import { log } from "../../logging";
 
 function play(buffer: ArrayBuffer | null) {
   if (!buffer) {
@@ -188,6 +193,16 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
 
   const elements = alert.elements;
 
+  useEffect(() => {
+    const store = new DemoTwitchAlertsStore(alert);
+    return () => {
+      log.debug("Stop demo twich store");
+      store.stop();
+    };
+  },[alert]);
+
+  log.debug("Render item content");
+
   return (
     <Flex vertical style={{ height: "100%" }} gap={12}>
       <Flex
@@ -257,11 +272,11 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
               axis="both"
               minConstraints={[400, 100]}
             >
-              {elements
-                .filter((element) => element.data.containerId === null)
-                .map((element) => (
-                  <ElementRenderer element={element} key={element.data.id} />
-                ))}
+              <StateMachineContext.Provider value={alert.state}>
+                <StateMachineRenderer>
+                  <ElementsWidget settings={alert} />
+                </StateMachineRenderer>
+              </StateMachineContext.Provider>
             </ResizableBox>
           </Flex>
           <SaveButtons />

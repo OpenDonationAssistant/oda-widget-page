@@ -52,6 +52,11 @@ button.deletetriggerbutton {
   font-weight: 600;
 }
 
+.tabcontainer {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
 .note {
   padding-left: 12px;
   font-size: 15px;

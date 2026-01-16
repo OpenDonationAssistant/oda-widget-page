@@ -2,7 +2,8 @@ import { observer } from "mobx-react-lite";
 import { CSSProperties, useContext, useEffect, useState } from "react";
 import { AnimationPropertyValue } from "../../ConfigurationPage/widgetproperties/AnimationProperty";
 import { AnimationsElementSettings } from "./AnimationsElement";
-import { StateMachineContext } from "../StateMachine";
+import { StateMachineContext } from "../StateMachine/StateMachine";
+import { sleep } from "../../../utils";
 
 function calcAnimation(value: AnimationPropertyValue): string {
   if (value.animation === "none") {
@@ -24,49 +25,43 @@ export const AnimationsElementRenderer = observer(
   ({
     children,
     settings,
-    elementId,
   }: {
     children: React.ReactNode;
     settings: AnimationsElementSettings;
-    elementId: string;
   }) => {
-    const [show, setShow] = useState<boolean>(false);
     const [style, setStyle] = useState<CSSProperties>({});
     const [className, setClassName] = useState<string>("");
     const stateMachine = useContext(StateMachineContext);
 
     useEffect(() => {
-      if (
-        stateMachine.state === "start" &&
-        settings.inAnimation.animation !== "none"
-      ) {
-        setShow(true);
-        const timeoutId = setTimeout(() => {
-          stateMachine.setComponentState(elementId, true);
-        }, settings.inAnimation.duration);
-        setStyle(calcAnimationDuration(settings.inAnimation));
-        setClassName(calcAnimation(settings.inAnimation));
-        return () => clearTimeout(timeoutId);
-      }
-      if (
-        stateMachine.state === "end" &&
-        settings.outAnimation.animation !== "none"
-      ) {
-        const timeoutId = setTimeout(() => {
-          setShow(false);
-          stateMachine.setComponentState(elementId, true);
-        }, settings.outAnimation.duration);
-
-        setStyle(calcAnimationDuration(settings.outAnimation));
-        setClassName(calcAnimation(settings.outAnimation));
-        return () => clearTimeout(timeoutId);
-      }
-      stateMachine.setComponentState(elementId, true);
-    }, [stateMachine.state]);
-
-    if (!show) {
-      return <></>;
-    }
+      stateMachine.addCallback("visible", () => {
+        if (settings.inAnimation.animation !== "none") {
+          setStyle(calcAnimationDuration(settings.inAnimation));
+          setClassName(calcAnimation(settings.inAnimation));
+          return sleep(settings.inAnimation.duration);
+        } else {
+          setStyle({});
+          return Promise.resolve();
+        }
+      });
+      stateMachine.addCallback("hidden", () => {
+        if (settings.outAnimation.animation !== "none") {
+          setStyle(calcAnimationDuration(settings.outAnimation));
+          setClassName(calcAnimation(settings.outAnimation));
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              setClassName("");
+              setStyle({ display: "none" });
+              resolve();
+            }, settings.outAnimation.duration);
+          });
+        } else {
+          setClassName("");
+          setStyle({ display: "none" });
+          return Promise.resolve();
+        }
+      });
+    }, [stateMachine]);
 
     return (
       <div className={className} style={style}>

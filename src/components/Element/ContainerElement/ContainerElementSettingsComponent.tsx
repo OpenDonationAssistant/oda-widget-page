@@ -55,18 +55,23 @@ export const ElementList = observer(
               placeholder="Привязать"
               style={{ height: "30px" }}
               options={container.elements
-                .filter((element) => element.data.containerId !== elementId)
                 .filter((element) => element.data.id !== elementId)
                 .map((element) => ({
                   value: element.data.id,
                   label: element.data.name,
                 }))}
               onChange={(value) => {
+                const parent = container.elements.find(
+                  (element) => element.data.id === elementId,
+                );
                 const child = container.elements.find(
                   (element) => element.data.id === value,
                 );
-                if (child) {
+                if (child && parent) {
                   child.data.containerId = elementId;
+                  child.data.level =
+                    parent.data.level + (child.data.advanced ? 0 : 1);
+                  child.data.advancedLevel = parent.data.advancedLevel + 1;
                 }
               }}
             />

@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { Element, ElementData } from "../../components/Element/Element";
 import { ElementFactory } from "../../components/Element/ElementFactory";
+import { StateMachine } from "../../components/Element/StateMachine/StateMachine";
+import { sleep } from "../../utils";
 
 export const TWITCH_ALERT_TRIGGERS = ["never", "follow", "subscribe", "gift"];
 
@@ -42,6 +44,7 @@ export interface TwitchAlertContainer {
 export class TwitchAlert {
   private _container: TwitchAlertContainer;
   private _data: TwitchAlertData;
+  private _state: StateMachine = new StateMachine();
 
   constructor(
     public data: TwitchAlertData,
@@ -50,6 +53,20 @@ export class TwitchAlert {
     this._data = data;
     this._container = container;
     makeAutoObservable(this);
+  }
+
+  public show() {
+    return this._state.goTo("visible")
+      .then(() => sleep(5000))
+      .then(() => this._state.goTo("hidden"));
+  }
+
+  public hide() {
+    return this._state.goTo("hidden");
+  }
+
+  public get state(){
+    return this._state;
   }
 
   public get elements(): Element<any>[] {
