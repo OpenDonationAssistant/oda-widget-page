@@ -5,6 +5,7 @@ export interface ListenerOptions {
   durable?: string;
   autoDelete?: string;
   ack?: string;
+  ttl?: number;
 }
 
 interface Listener {
@@ -17,20 +18,29 @@ interface Listener {
 const socket = new Client({
   brokerURL: process.env.REACT_APP_WS_ENDPOINT,
 });
+const defaultTtl = (1000*60*60*24).toString(); // 24 hours
 
 socket.reconnectDelay = 500;
 log.debug("Creating socket client");
 var listeners: Listener[] = [];
 socket.activate();
-socket.onConnect = () => {
-  listeners.forEach((listener) => {
-    socket.subscribe(listener.topic, listener.onMessage, {
-      id: `${listener.id}-${listener.topic}`,
+
+function createOptions(listener: Listener) {
+  const id = `${listener.topic}-${listener.id}`;
+  return {
+      id: id,
       durable: listener.options.durable ?? "true",
       "auto-delete": listener.options.autoDelete ?? "false",
       ack: listener.options.ack ?? "client",
-    });
-    log.debug(`Subscribed to ${listener.topic} for ${listener.id}`);
+      "x-queue-name": id,
+      "x-message-ttl": listener.options.ttl?.toString() ?? defaultTtl,
+      "x-expires": listener.options.ttl?.toString() ?? defaultTtl
+  };
+}
+
+socket.onConnect = () => {
+  listeners.forEach((listener) => {
+    socket.subscribe(listener.topic, listener.onMessage, createOptions(listener));
   });
 };
 
@@ -41,20 +51,16 @@ function subscribe(
   options?: ListenerOptions,
 ) {
   log.info(`Creating subscription ${topic} for ${id}`);
-  if (socket.connected) {
-    socket.subscribe(topic, onMessage, {
-      id: `${id}-${topic}`,
-      durable: "true",
-      "auto-delete": "false",
-      ack: "client",
-    });
-  }
-  listeners.push({
+  const listener = {
     id: id,
     topic: topic,
     onMessage: onMessage,
     options: options ?? {},
-  });
+  };
+  if (socket.connected) {
+    socket.subscribe(topic, onMessage, createOptions(listener));
+  }
+  listeners.push(listener);
 
   log.info(`${id} connected to ${topic}`);
 }
@@ -78,7 +84,7 @@ function setupCommandListener(widgetId: string, reloadFn: Function) {
         message.ack();
       }
     }
-  }, { durable: "false", autoDelete: "true", ack: "auto" });
+  }, { durable: "false", autoDelete: "true", ack: "auto", ttl: 1000*60*5 });
 }
 
 function cleanupCommandListener(widgetId: string) {

@@ -49,7 +49,7 @@ const vkplayer = (
     pause: () => player.pause(),
     paused: () => player.getState() !== "playing",
     show: (show: boolean) => {
-      videoElement.hidden = show;
+      videoElement.hidden = !show;
     },
     volume: (value: number) => {
       player.setVolume(value);
@@ -103,6 +103,7 @@ const youtube = (
     sources: [song],
   };
   const holder = document.createElement("div");
+  holder.id = "holder";
   parent.appendChild(holder);
   const player = videojs(holder, options);
   return {
@@ -110,7 +111,7 @@ const youtube = (
     pause: () => player.pause(),
     paused: () => player.paused(),
     show: (show: boolean) => {
-      holder.hidden = show;
+      parent.style.display = show ? "initial" : "none";
     },
     volume: (value: number) => player.volume(value),
     currentTime: () => player.currentTime(),

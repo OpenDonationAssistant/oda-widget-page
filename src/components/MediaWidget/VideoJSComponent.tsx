@@ -212,7 +212,7 @@ export default function VideoJSComponent({
       pause: player.pause,
       paused: () => player.getState() !== "playing",
       volume: (value: number) => {
-        player.setVolume(value);
+        player.setVolume(value); // TODO: NPE
       },
       currentTime: (time: number | undefined) => {
         if (!time) {

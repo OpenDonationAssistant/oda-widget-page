@@ -25,20 +25,24 @@ export class PlayerStore implements AbstractPlayerStore {
   widgetId: string;
   conf: PlayerConfiguration;
   private _volume: number = 0.5;
+  private _hidePlayer: boolean = false;
 
   constructor({
     widgetId,
     conf,
     song,
+    hidePlayer = false
   }: {
     widgetId: string;
     conf: PlayerConfiguration;
     song?: Song;
+    hidePlayer?: boolean;
   }) {
     log.debug("Creating player controller");
     this.widgetId = widgetId;
     this.conf = conf;
     this.song = song ?? null;
+    this._hidePlayer = hidePlayer;
     this.listen();
   }
 
@@ -68,6 +72,9 @@ export class PlayerStore implements AbstractPlayerStore {
     );
     this.player?.volume(this._volume);
     this.player?.on(PlayerAdapterEvent.PLAY, () => {
+      if (this._hidePlayer) {
+        this.player?.show(false);
+      }
       if (PLAYER_STATE.SHOULD_BE_STOPED === this.state){
         this.player?.pause();
         this.player?.show(false);
