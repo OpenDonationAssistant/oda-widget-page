@@ -37,6 +37,7 @@ export class SystemTrigger implements Trigger {
           options={[
             { value: "ODA", label: "ODA" },
             { value: "DonationAlerts", label: "DonationAlerts" },
+            { value: "DonateX", label: "DonateX" },
             { value: "DonatePay.ru", label: "DonatePay.ru" },
             { value: "DonatePay.eu", label: "DonatePay.eu" },
           ]}
