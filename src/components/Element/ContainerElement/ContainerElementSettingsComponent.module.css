@@ -13,6 +13,15 @@
 }
 
 .componentselector {
-  color: var(--oda-color-1000);
   height: 24px;
+  &:hover {
+    transform: translateY(-2px);
+  }
+  & [class*="ant-select-selection-placeholder"]{
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--oda-color-950);
+    margin-right: 12px;
+    font-family: 'Mulish Variable';
+  }
 }

@@ -195,23 +195,31 @@ function calcAnimationDuration(value: AnimationPropertyValue) {
   };
 }
 
-function calcJustify(value: "top" | "center" | "bottom"): CSSProperties {
-  const style: CSSProperties = {
+function calcDirection(value: "row" | "column" | "stack"): CSSProperties {
+  if (value === "stack") {
+    return {
+      display: "grid"
+    };
+  }
+  return {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: value,
   };
+}
+
+function calcGap(value: number): CSSProperties {
+  return { gap: `${value}px` };
+}
+
+function calcJustify(value: "top" | "center" | "bottom"): CSSProperties {
   switch (value) {
     case "top":
-      style.justifyContent = "flex-start";
-      break;
+      return { justifyContent: "flex-start" };
     case "center":
-      style.justifyContent = "center";
-      break;
+      return { justifyContent: "center" };
     case "bottom":
-      style.justifyContent = "flex-end";
-      break;
+      return { justifyContent: "flex-end" };
   }
-  return style;
 }
 
 function calcAlignment(alignment: string): CSSProperties {
@@ -237,7 +245,7 @@ export const ContainerElementRenderer = observer(
     settings,
     style,
   }: {
-    children: ReactNode;
+    children: ReactNode | ReactNode[];
     settings: ContainerElementSettings;
     style?: CSSProperties;
   }) => {
@@ -271,6 +279,8 @@ export const ContainerElementRenderer = observer(
               ...calcBackgroundColor(settings.backgroundColor),
               ...calcWidth(settings.width),
               ...calcHeight(settings.height),
+              ...calcDirection(settings.direction),
+              ...calcGap(settings.gap),
               ...calcJustify(settings.justify),
               ...calcAnimationDuration(settings.animation),
               ...calcRotation(settings.rotation),
@@ -281,7 +291,16 @@ export const ContainerElementRenderer = observer(
             }}
             className={calcAnimation(settings.animation)}
           >
-            {children}
+            {children instanceof Array && (
+              <>
+                {children.map((child) => (
+                  <div style={{ gridColumn: 1, gridRow: 1 }}>
+                    {child}
+                  </div>
+                ))}
+              </>
+            )}
+            {!(children instanceof Array) && children}
           </div>
         )}
       </>

@@ -32,7 +32,7 @@ import { uuidv7 } from "uuidv7";
 import { uploadBlob } from "../../../../utils";
 import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
-import { TriggersStoreContext } from "./triggers/TriggersStore";
+import { TriggersStoreContext } from "../../../../stores/triggers/TriggersStore";
 import { ElementsTab } from "../../../Element/ElementsTab";
 
 const SaveButtons = observer(() => {

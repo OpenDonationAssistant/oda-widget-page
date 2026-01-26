@@ -288,7 +288,7 @@ const router = createBrowserRouter([
     loader: widgetSettingsLoader,
   },
   {
-    path: "/twitch-alerts/:widgetId",
+    path: "/alerts/:widgetId",
     element: <TwitchAlertsPage />,
     loader: widgetSettingsLoader,
   },

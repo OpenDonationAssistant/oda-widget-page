@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { StateMachine, StateMachineContext } from "./StateMachine";
+import { log } from "../../../logging";
 
 export const StateMachineRenderer = ({
   children,
@@ -12,10 +13,12 @@ export const StateMachineRenderer = ({
 
   useEffect(() => {
     stateMachine.addCallback("visible", () => {
+      log.debug("go to visible state");
       setShow(true);
       return nestedState.goTo("visible");
     });
     stateMachine.addCallback("hidden", () => {
+      log.debug("go to unvisible state");
       return nestedState.goTo("hidden").then(() => setShow(false));
     });
   }, [stateMachine]);

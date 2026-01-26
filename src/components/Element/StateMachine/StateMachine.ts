@@ -11,7 +11,7 @@ export class StateMachine {
     makeAutoObservable(this);
   }
 
-  public addCallback(target: ElementState, callback: () => Promise<void>) {
+  public addCallback(target: ElementState, callback: () => Promise<any>) {
     this._callbacks.push((state: ElementState) => {
       if (state !== target) {
         return Promise.resolve();

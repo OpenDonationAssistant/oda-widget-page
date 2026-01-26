@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import { useTranslation } from "react-i18next";
 import ArrowUp from "../../icons/ArrowUp";
 import ArrowDown from "../../icons/ArrowDown";
+import AddIcon from "../../icons/AddIcon";
 
 export const ListItem = ({
   first,
@@ -86,7 +87,7 @@ export const AddListItemButton = ({
   return (
     <button className={`${classes.adddalertbutton}`} onClick={onClick}>
       <Flex justify="center" align="center" gap={3}>
-        <span className="material-symbols-sharp">add</span>
+        <AddIcon color="var(--oda-primary-color)" />
         <div>{t(label)}</div>
       </Flex>
     </button>

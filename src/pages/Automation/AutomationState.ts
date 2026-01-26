@@ -9,6 +9,7 @@ import { AutomationTriggerController } from "./AutomationTriggerController";
 
 export interface Variable {
   name: string;
+  tags: string[];
   type: "string" | "number" | "list" | "matrix";
   value: string | number | Array<Variable> | Array<Array<Variable>>;
   id: string;
@@ -18,11 +19,13 @@ export class StringVariable implements Variable {
   private _name: string;
   private _value: string;
   private _id: string;
+  private _tags: string[];
 
-  constructor(name: string, value: string){
+  constructor(name: string, value: string, tags?: string[]) {
     this._name = name;
     this._value = value;
     this._id = uuidv7();
+    this._tags = tags ?? [];
     makeAutoObservable(this);
   }
 
@@ -44,6 +47,10 @@ export class StringVariable implements Variable {
 
   public get type(): "string"{
     return "string";
+  }
+
+  public get tags() {
+    return this._tags;
   }
 }
 
@@ -185,6 +192,7 @@ export class AutomationState {
           response.data.variables?.map((variable) => {
             return {
               name: variable.name,
+              tags: ["manual"],
               type: "number" === variable.type ? "number" : "string",
               value: variable.value,
               id: variable.id,
@@ -213,6 +221,7 @@ export class AutomationState {
   public addVariable(type: "string" | "number") {
     this._variables.push({
       name: "",
+      tags: ["manual"],
       type: type,
       value: type === "string" ? "" : 0,
       id: uuidv7(),

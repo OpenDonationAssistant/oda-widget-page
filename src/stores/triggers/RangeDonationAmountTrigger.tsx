@@ -1,15 +1,21 @@
 import { makeAutoObservable } from "mobx";
-import { DonationEvent, Trigger } from "./AlertTriggerInterface";
+import {
+  TriggerCause,
+  Trigger,
+  DonationTriggerCause,
+} from "./AlertTriggerInterface";
 import { ReactNode } from "react";
-import InputNumber from "../../../components/InputNumber";
+import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 
 export const RANDE_DONATION_AMOUNT_TRIGGER = {
   description: "сумма больше или равна",
   type: "at-least-donation-amount",
+  category: "donation",
 };
 
 export class RangeDonationAmountTrigger implements Trigger {
   type = RANDE_DONATION_AMOUNT_TRIGGER.type;
+  category = "donation";
   description = RANDE_DONATION_AMOUNT_TRIGGER.description;
   min: number = 0;
 
@@ -20,20 +26,16 @@ export class RangeDonationAmountTrigger implements Trigger {
     makeAutoObservable(this);
   }
 
-  isTriggered(event: DonationEvent): boolean {
-    return event.amount.major >= this.min;
-  }
-
-  public compare(other: Trigger): number {
-    if (other instanceof RangeDonationAmountTrigger) {
-      return this.min - other.min;
+  priorityFor(event: TriggerCause): number {
+    if (event.type !== "donation") {
+      return -1;
     }
-    return 0;
+    return (event as DonationTriggerCause).amount.major - this.min;
   }
 
   public markup(): ReactNode {
     return (
-      <div style={{ display: "inline-block", width: "50%" }}>
+      <div style={{ width: "100%" }}>
         <InputNumber
           value={this.min}
           addon="руб."

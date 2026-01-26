@@ -5,8 +5,13 @@ export interface Amount {
   currency: string;
 }
 
-export interface DonationEvent {
+export interface TriggerCause {
   id: string;
+  type: string;
+}
+
+export interface DonationTriggerCause extends TriggerCause {
+  type: "donation";
   amount: Amount;
   system: string;
 }
@@ -14,12 +19,13 @@ export interface DonationEvent {
 export interface TriggerType {
   description: string;
   type: string;
+  category: string;
 }
 
 export interface Trigger {
   type: string;
+  category: string;
   description: string;
-  isTriggered(event: DonationEvent): boolean;
+  priorityFor(event: TriggerCause): number;
   markup(): ReactNode;
-  compare(other: Trigger): number;
 }

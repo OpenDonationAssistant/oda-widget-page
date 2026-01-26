@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import { AlignmentProperty } from "../ConfigurationPage/widgetproperties/AlignmentProperty";
 import { Flex } from "antd";
 
 function getAlignment(alignment: string) {

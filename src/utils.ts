@@ -63,11 +63,12 @@ export function loadAudio(name: string): Promise<ArrayBuffer | void> {
   if (!name.startsWith("http")) {
     url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${name}`;
   }
+  const headers = url.indexOf("oda-shared") !== -1 ? undefined : {
+    Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+  }
   return fetch(url, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-    },
+    headers: headers,
   }).then((response) => response.arrayBuffer());
 }
 

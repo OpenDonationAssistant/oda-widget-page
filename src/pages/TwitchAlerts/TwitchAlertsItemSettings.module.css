@@ -84,3 +84,8 @@ button.deletetriggerbutton {
 .elementsettings {
   padding: 12px;
 }
+
+.speechcontainer {
+  border: 1px solid var(--oda-color-250);
+  border-radius: 9px;
+}

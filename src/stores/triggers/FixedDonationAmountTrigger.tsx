@@ -1,15 +1,21 @@
 import { ReactNode } from "react";
-import { DonationEvent, Trigger } from "./AlertTriggerInterface";
-import InputNumber from "../../../components/InputNumber";
+import {
+  TriggerCause,
+  Trigger,
+  DonationTriggerCause,
+} from "./AlertTriggerInterface";
+import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import { makeAutoObservable } from "mobx";
 
 export const FIXED_DONATION_AMOUNT_TRIGGER = {
   type: "fixed-donation-amount",
   description: "сумма равна",
+  category: "donation",
 };
 
 export class FixedDonationAmountTrigger implements Trigger {
   type = FIXED_DONATION_AMOUNT_TRIGGER.type;
+  category = "donation";
   description = FIXED_DONATION_AMOUNT_TRIGGER.description;
   amount = 0;
 
@@ -20,20 +26,18 @@ export class FixedDonationAmountTrigger implements Trigger {
     makeAutoObservable(this);
   }
 
-  isTriggered(event: DonationEvent): boolean {
-    return event.amount.major === this.amount;
-  }
-
-  public compare(other: Trigger): number {
-    if (other instanceof FixedDonationAmountTrigger) {
-      return this.amount - other.amount;
+  priorityFor(event: TriggerCause): number {
+    if (event.type !== "donation") {
+      return -1;
     }
-    return 0;
+    return (event as DonationTriggerCause).amount.major === this.amount
+      ? 0
+      : -1;
   }
 
   public markup(): ReactNode {
     return (
-      <div style={{ display: "inline-block", width: "50%" }}>
+      <div style={{ width: "100%" }}>
         <InputNumber
           value={this.amount}
           addon="руб."

@@ -35,7 +35,7 @@ import { AddAlertWizardStoreContext } from "./AddAlertWizard";
 import { PresetWindow } from "../../PresetsComponent";
 import { Preset } from "../../../../types/Preset";
 import { deepEqual } from "../../../../utils";
-import { TriggersStore } from "./triggers/TriggersStore";
+import { TriggersStore } from "../../../../stores/triggers/TriggersStore";
 
 function testAlert(topic: string, alert: Alert) {
   publish(topic, {

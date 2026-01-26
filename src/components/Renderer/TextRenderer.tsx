@@ -1,4 +1,4 @@
-import { CSSProperties, useContext } from "react";
+import { CSSProperties } from "react";
 import { getRndInteger } from "../../utils";
 import { FontPropertyValue } from "../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import {
@@ -8,7 +8,6 @@ import {
 import { log } from "../../logging";
 import { observer } from "mobx-react-lite";
 import FontImport from "../FontImport/FontImport";
-import { DynamicText, VariableStoreContext } from "../../stores/VariableStore";
 
 function containerStyle(font: FontPropertyValue): CSSProperties {
   log.debug({ font: font }, "containerStyle");

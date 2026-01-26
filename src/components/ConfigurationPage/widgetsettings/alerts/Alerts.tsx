@@ -5,14 +5,14 @@ import { log } from "../../../../logging";
 import { produce } from "immer";
 import { WidgetProperty } from "../../widgetproperties/WidgetProperty";
 import {
-  DonationEvent,
+  TriggerCause,
   Trigger,
   TriggerType,
-} from "./triggers/AlertTriggerInterface";
-import { TriggersStore } from "./triggers/TriggersStore";
-import { LESS_THAN_DONATION_AMOUNT_TRIGGER } from "./triggers/LessThanDonationAmountTrigger";
-import { FIXED_DONATION_AMOUNT_TRIGGER } from "./triggers/FixedDonationAmountTrigger";
-import { RANDE_DONATION_AMOUNT_TRIGGER } from "./triggers/RangeDonationAmountTrigger";
+} from "../../../../stores/triggers/AlertTriggerInterface";
+import { TriggersStore } from "../../../../stores/triggers/TriggersStore";
+import { LESS_THAN_DONATION_AMOUNT_TRIGGER } from "../../../../stores/triggers/LessThanDonationAmountTrigger";
+import { FIXED_DONATION_AMOUNT_TRIGGER } from "../../../../stores/triggers/FixedDonationAmountTrigger";
+import { RANDE_DONATION_AMOUNT_TRIGGER } from "../../../../stores/triggers/RangeDonationAmountTrigger";
 
 export class Alert {
   private _id: string;
@@ -123,7 +123,7 @@ export class Alert {
     this._audio = null;
   }
 
-  public firedBy(event: DonationEvent): boolean {
+  public firedBy(event: TriggerCause): boolean {
     return this.triggers.every((trigger) => trigger.isTriggered(event));
   }
 

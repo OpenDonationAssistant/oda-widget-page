@@ -2,13 +2,14 @@ import { makeAutoObservable } from "mobx";
 import { Element, ElementData } from "../../components/Element/Element";
 import { ElementFactory } from "../../components/Element/ElementFactory";
 import { StateMachine } from "../../components/Element/StateMachine/StateMachine";
-import { sleep } from "../../utils";
+import { log } from "../../logging";
+import {
+  Trigger,
+  TriggerCause,
+} from "../../stores/triggers/AlertTriggerInterface";
+import { TriggersStore } from "../../stores/triggers/TriggersStore";
 
 export const TWITCH_ALERT_TRIGGERS = ["never", "follow", "subscribe", "gift"];
-
-interface TwitchAlertTrigger {
-  type: string;
-}
 
 interface TwitchAlertAudio {
   delay: number;
@@ -24,7 +25,8 @@ export interface TwitchAlertAudioFile extends TwitchAlertAudio {
 
 export interface TwitchAlertAudioTTS extends TwitchAlertAudio {
   type: "tts";
-  template: string;
+  name: string;
+  templates: string[];
 }
 
 export interface TwitchAlertData {
@@ -32,8 +34,8 @@ export interface TwitchAlertData {
   name: string;
   enabled: boolean;
   elements: ElementData<any>[];
-  triggers: TwitchAlertTrigger[];
-  audio: (TwitchAlertAudioTTS | TwitchAlertAudioFile)[];
+  triggers: Trigger[];
+  audio: (TwitchAlertAudioTTS | TwitchAlertAudioFile)[][];
 }
 
 export interface TwitchAlertContainer {
@@ -45,6 +47,7 @@ export class TwitchAlert {
   private _container: TwitchAlertContainer;
   private _data: TwitchAlertData;
   private _state: StateMachine = new StateMachine();
+  private _triggerFactory = new TriggersStore();
 
   constructor(
     public data: TwitchAlertData,
@@ -55,17 +58,34 @@ export class TwitchAlert {
     makeAutoObservable(this);
   }
 
+  public canBeTriggered(cause: TriggerCause): number[] {
+    const priorities = this._data.triggers
+      .map((trigger) => this._triggerFactory.loadTrigger(trigger))
+      .map((trigger) => trigger.priorityFor(cause))
+      .sort((a, b) => b - a);
+    log.debug(
+      { priorities: priorities, alert: this._data.id },
+      "calculating priorities",
+    );
+    if (priorities.length === 0) {
+      return [];
+    }
+    if (priorities.at(0) === -1) {
+      return [];
+    }
+    return priorities;
+  }
+
   public show() {
-    return this._state.goTo("visible")
-      .then(() => sleep(5000))
-      .then(() => this._state.goTo("hidden"));
+    log.debug({ id: this._data.id, name: this._data.name }, "showing alert");
+    return this._state.goTo("visible");
   }
 
   public hide() {
     return this._state.goTo("hidden");
   }
 
-  public get state(){
+  public get state() {
     return this._state;
   }
 
@@ -90,18 +110,66 @@ export class TwitchAlert {
   public addElement({
     data,
     parentId,
+    index
   }: {
     data: ElementData<any>;
     parentId: string | null;
+    index?: number;
   }) {
     data.containerId = parentId;
-    this._data.elements.push(data);
+    if (parentId === null){
+      data.order = index ? index : this._data.elements.length;
+      data.level = 0;
+      data.advancedLevel = 0;
+      this.insert(data);
+    } else {
+      const parent = this._data.elements.find(
+        (element) => element.id === parentId
+      );
+      data.level =
+        data.level + (data.advanced ? 0 : 1);
+      data.advancedLevel = (parent?.advancedLevel ?? -1) + 1;
+      if (index){
+        data.order = index;
+      } else {
+        data.order = (parent?.order ?? 0) + this._data.elements.filter((element) => element.containerId === parentId).length + 1;
+      }
+      this.insert(data);
+    }
+  }
+
+  private insert(data: ElementData<any>) {
+      const updated = this._data.elements
+        .map((element) => {
+          if (element.order >= data.order) {
+            element.order++;
+          }
+          return element;
+        });
+      updated.push(data);
+      this._data.elements = updated;
   }
 
   public deleteElement({ id }: { id: string }) {
-    this._data.elements = this._data.elements.filter(
-      (element) => element.id !== id,
-    );
+    const index = this._data.elements.findIndex((element) => element.id === id);
+    if (index === -1) {
+      return;
+    }
+    const orderOfDeletedElement = this._data.elements[index].order;
+    this._data.elements = this._data.elements
+      .filter(
+        (element) => element.id !== id,
+      )
+      .map(element => {
+        if (element.order > orderOfDeletedElement) {
+          element.order--;
+        }
+        if (element.containerId === id) {
+          element.containerId = null;
+          element.advancedLevel--;
+        }
+        return element
+      })
   }
 
   public delete() {

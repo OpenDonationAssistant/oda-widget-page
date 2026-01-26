@@ -28,7 +28,7 @@ export const LabelElementRenderer = observer(
       <ContainerElementRenderer
         settings={{
           ...settings,
-          ...{ direction: "row", gap: 0, rotation: 0 },
+          ...{ direction: "column", gap: 0, rotation: 0 },
         }}
         style={style}
       >

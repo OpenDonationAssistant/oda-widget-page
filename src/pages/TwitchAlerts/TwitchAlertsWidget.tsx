@@ -1,13 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { TwitchAlertsWidgetSettings } from "./TwitchAlertsWidgetSettings";
 import { StateMachineContext } from "../../components/Element/StateMachine/StateMachine";
-import { DefaultTwitchAlertsStore } from "./TwitchAlertsStore";
+import { AlertsStore } from "../../stores/alerts/TwitchAlertsStore";
 import { StateMachineRenderer } from "../../components/Element/StateMachine/StateMachineRenderer";
 import { ElementsWidget } from "../../components/Element/ElementsWidget";
 
 export const TwitchAlertsWidget = observer(
-  ({ settings }: { settings: TwitchAlertsWidgetSettings }) => {
-    const store = new DefaultTwitchAlertsStore(settings);
+  ({ store }: { store: AlertsStore }) => {
 
     return (
       <>

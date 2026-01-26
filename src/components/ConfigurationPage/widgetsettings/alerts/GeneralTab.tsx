@@ -5,14 +5,14 @@ import CollapseLikeButton from "../../../Button/CollapseLikeButton";
 import classes from "./GeneralTab.module.css";
 import { NotBorderedIconButton } from "../../../IconButton/IconButton";
 import CloseIcon from "../../../../icons/CloseIcon";
-import { Trigger } from "./triggers/AlertTriggerInterface";
-import { UnknownTrigger } from "./triggers/UnknownTrigger";
+import { Trigger } from "../../../../stores/triggers/AlertTriggerInterface";
+import { UnknownTrigger } from "../../../../stores/triggers/UnknownTrigger";
 import { useContext } from "react";
-import { TriggersStoreContext } from "./triggers/TriggersStore";
-import { FixedDonationAmountTrigger } from "./triggers/FixedDonationAmountTrigger";
-import { RangeDonationAmountTrigger } from "./triggers/RangeDonationAmountTrigger";
-import { SystemTrigger } from "./triggers/SystemTrigger";
-import { LessThanDonationAmountTrigger } from "./triggers/LessThanDonationAmountTrigger";
+import { TriggersStoreContext } from "../../../../stores/triggers/TriggersStore";
+import { FixedDonationAmountTrigger } from "../../../../stores/triggers/FixedDonationAmountTrigger";
+import { RangeDonationAmountTrigger } from "../../../../stores/triggers/RangeDonationAmountTrigger";
+import { SystemTrigger } from "../../../../stores/triggers/SystemTrigger";
+import { LessThanDonationAmountTrigger } from "../../../../stores/triggers/LessThanDonationAmountTrigger";
 import { log } from "../../../../logging";
 
 const TriggerComponent = observer(

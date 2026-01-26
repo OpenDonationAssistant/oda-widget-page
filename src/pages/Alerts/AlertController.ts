@@ -15,7 +15,6 @@ import { ColorProperty } from "../../components/ConfigurationPage/widgetproperti
 import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
 import { CSSProperties } from "react";
-import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
 import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
@@ -243,7 +242,6 @@ export class AlertController {
     if (this._premoderation === true && data.force !== true) {
       return this.voiceController
         ?.playSource(
-          //`${process.env.REACT_APP_FILE_API_ENDPOINT}/assets/premoderation-sound.wav`,
           this._recipientId === "tabularussia"
             ? "https://cdn.oda.digital/assets/100new.mp3"
             : "https://cdn.oda.digital/assets/bonk.mp3",

@@ -1,6 +1,9 @@
+import { createContext } from "react";
 import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/Alerts";
 import { log } from "../../logging";
+import { TwitchAlertAudioFile, TwitchAlertAudioTTS } from "../../pages/TwitchAlerts/types";
 import { getRndInteger, sleep } from "../../utils";
+import { VariableStore } from "../../stores/VariableStore";
 
 function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
@@ -15,11 +18,6 @@ export class VoiceController {
   audioCtx = new AudioContext();
   playingSource: AudioBufferSourceNode | null = null;
   onEndHandler: any | null = null;
-  private _streamerName: string;
-
-  constructor(streamerName: string) {
-    this._streamerName = streamerName;
-  }
 
   // TODO: использовать axios
   private loadAudio(url: string): Promise<ArrayBuffer> {
@@ -42,18 +40,37 @@ export class VoiceController {
     });
   }
 
-  playSource(src: string): Promise<void | AudioBuffer> {
-    const volume = 100;
+  playQueue(queue: (TwitchAlertAudioTTS|TwitchAlertAudioFile)[], variables: VariableStore): Promise<void | AudioBuffer> {
+    if (queue.length === 0) {
+      return Promise.resolve();
+    }
+    const audio = queue.at(0);
+    if (!audio) {
+      return Promise.resolve();
+    }
+    if (audio.type === "file") {
+      return sleep(audio.delay)
+        .then(() => this.playSource(audio.url, audio.volume))
+        .then(() => this.playQueue(queue.slice(1), variables));
+    }
+    if (audio.type === "tts"){
+      const message = audio.templates.at(getRndInteger(0, audio.templates.length)) ?? "";
+      return this.voiceByGoogle(variables.processTemplate(message).text)
+        .then((buffer) => this.pronounce(buffer, audio.volume));
+    }
+    return Promise.resolve();
+  }
+
+  playSource(src: string, volume?: number): Promise<void | AudioBuffer> {
+    const headers = src.indexOf("oda-shared") !== -1 ? undefined : {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    }
     return fetch(src, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-      },
+      headers: headers
     })
       .then((response) => response.arrayBuffer())
-      .then((buffer) => {
-        this.pronounce(structuredClone(buffer), volume);
-      });
+      .then((buffer) => this.pronounce(structuredClone(buffer), volume ?? 100));
   }
 
   pronounceTitle(alert: Alert, data: any): Promise<void | AudioBuffer> {
@@ -87,12 +104,13 @@ export class VoiceController {
       templates.length > 1
         ? templates[getRndInteger(0, templates.length)]
         : text;
-    const resultText = choosenTemplate
-      .trim()
-      .replace("<username>", data.nickname ? data.nickname : "Аноним")
-      .replace("<amount>", data.amount.major)
-      .replace("<minoramount>", data.amount.major * 100)
-      .replace("<streamer>", this._streamerName);
+    const resultText = this._variables.processTemplate(choosenTemplate);
+    // const resultText = choosenTemplate
+    //   .trim()
+    //   .replace("<username>", data.nickname ? data.nickname : "Аноним")
+    //   .replace("<amount>", data.amount.major)
+    //   .replace("<minoramount>", data.amount.major * 100)
+    //   .replace("<streamer>", this._streamerName);
     try {
       if (resultText.length > 0) {
         return sleep(alert.property("headerVoiceDelay") as number)
@@ -208,3 +226,7 @@ export class VoiceController {
     }
   }
 }
+
+export const VoiceControllerContext = createContext<VoiceController>(
+  new VoiceController(""),
+);

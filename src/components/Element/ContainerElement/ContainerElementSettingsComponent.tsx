@@ -53,7 +53,7 @@ export const ElementList = observer(
             <Select
               value={null}
               placeholder="Привязать"
-              style={{ height: "30px" }}
+              className={`${classes.componentselector}`}
               options={container.elements
                 .filter((element) => element.data.id !== elementId)
                 .map((element) => ({
@@ -61,17 +61,15 @@ export const ElementList = observer(
                   label: element.data.name,
                 }))}
               onChange={(value) => {
-                const parent = container.elements.find(
-                  (element) => element.data.id === elementId,
-                );
                 const child = container.elements.find(
                   (element) => element.data.id === value,
                 );
-                if (child && parent) {
-                  child.data.containerId = elementId;
-                  child.data.level =
-                    parent.data.level + (child.data.advanced ? 0 : 1);
-                  child.data.advancedLevel = parent.data.advancedLevel + 1;
+                if (child) {
+                  container.deleteElement({ id: child.data.id });
+                  container.addElement({
+                    data: child.data,
+                    parentId: elementId,
+                  });
                 }
               }}
             />
@@ -89,7 +87,8 @@ export const ElementList = observer(
               <div>{element.data.name}</div>
               <NotBorderedIconButton
                 onClick={() => {
-                  element.data.containerId = null;
+                  container.deleteElement({ id: element.data.id });
+                  container.addElement({ data: element.data, parentId: null });
                 }}
               >
                 <CloseIcon color="#FF8888" />
@@ -139,6 +138,10 @@ export const ContainerElementSettingsComponent = observer(
                   label: "Поверх друг друга",
                 },
               ]}
+              value={data.settings.direction}
+              onChange={(value) => {
+                data.settings.direction = value as "row" | "column" | "stack";
+              }}
             />
           </LabeledContainer>
         )}

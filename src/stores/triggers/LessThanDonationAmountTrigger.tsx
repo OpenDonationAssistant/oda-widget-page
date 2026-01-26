@@ -1,14 +1,20 @@
 import { makeAutoObservable } from "mobx";
-import { DonationEvent, Trigger } from "./AlertTriggerInterface";
-import InputNumber from "../../../components/InputNumber";
+import {
+  TriggerCause,
+  Trigger,
+  DonationTriggerCause,
+} from "./AlertTriggerInterface";
+import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 
 export const LESS_THAN_DONATION_AMOUNT_TRIGGER = {
   description: "сумма меньше",
   type: "less-than-donation-amount",
+  category: "donation",
 };
 
 export class LessThanDonationAmountTrigger implements Trigger {
   type = LESS_THAN_DONATION_AMOUNT_TRIGGER.type;
+  category = "donation";
   description = LESS_THAN_DONATION_AMOUNT_TRIGGER.description;
   amount = 0;
 
@@ -19,20 +25,16 @@ export class LessThanDonationAmountTrigger implements Trigger {
     makeAutoObservable(this);
   }
 
-  isTriggered(event: DonationEvent): boolean {
-    return event.amount.major < this.amount;
-  }
-
-  public compare(other: Trigger): number {
-    if (other instanceof LessThanDonationAmountTrigger) {
-      return other.amount - this.amount;
+  priorityFor(event: TriggerCause): number {
+    if (event.type !== "donation") {
+      return -1;
     }
-    return 0;
+    return this.amount - (event as DonationTriggerCause).amount.major;
   }
 
   markup = () => {
     return (
-      <div style={{ display: "inline-block", width: "50%" }}>
+      <div style={{ width: "100%" }}>
         <InputNumber
           value={this.amount}
           addon="руб."

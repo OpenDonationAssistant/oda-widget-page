@@ -19,7 +19,7 @@ import { uuidv7 } from "uuidv7";
 import { SmallEditableString } from "../RenamableLabel/EditableString";
 import { BorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
-import { ElementDescription, ElementFactory } from "./ElementFactory";
+import { ElementDescription } from "./ElementFactory";
 import { log } from "../../logging";
 
 class AddElementDialogState {
@@ -50,14 +50,10 @@ const ElementsItemComponent = observer(
       <CollapsibleListItem
         first={
           <Flex align="center" gap={6}>
-            {!advanced &&
-              Array.from(Array(element.data.level + 1).keys()).map(() => (
-                <div className={`${classes.indent}`} />
-              ))}
             {advanced &&
-              Array.from(Array(element.data.advancedLevel + 1).keys()).map(() => (
-                <div className={`${classes.indent}`} />
-              ))}
+              Array.from(Array(element.data.advancedLevel + 1).keys()).map(
+                () => <div className={`${classes.indent}`} />,
+              )}
             {advanced ? (
               <SmallEditableString
                 label={element.data.name}
@@ -88,11 +84,37 @@ const ElementsItemComponent = observer(
                 </Warning>
               </Overlay>
               {advanced && (
-                <BorderedIconButton
-                  onClick={() => (deleteDialogState.show = true)}
-                >
-                  <CloseIcon color="#FF8888" />
-                </BorderedIconButton>
+                <>
+                  <BorderedIconButton
+                    onClick={() => {
+                      element.moveDown();
+                    }}
+                  >
+                    <span
+                      style={{ color: "var(--oda-color-950)" }}
+                      className="material-symbols-sharp"
+                    >
+                      keyboard_double_arrow_down
+                    </span>
+                  </BorderedIconButton>
+                  <BorderedIconButton
+                    onClick={() => {
+                      element.moveUp();
+                    }}
+                  >
+                    <span
+                      style={{ color: "var(--oda-color-950)" }}
+                      className="material-symbols-sharp"
+                    >
+                      keyboard_double_arrow_up
+                    </span>
+                  </BorderedIconButton>
+                  <BorderedIconButton
+                    onClick={() => (deleteDialogState.show = true)}
+                  >
+                    <CloseIcon color="#FF8888" />
+                  </BorderedIconButton>
+                </>
               )}
             </ModalStateContext.Provider>
           </Flex>
@@ -108,7 +130,7 @@ export const ElementsTab = observer(
   ({
     alert,
     elements,
-    available
+    available,
   }: {
     alert: ElementContainer;
     elements: Element<any>[];
@@ -158,15 +180,24 @@ export const ElementsTab = observer(
                         onClick={() => {
                           let level = 0;
                           let advancedLevel = 0;
+                          let order = elements.length;
                           if (dialogState.parentId) {
+                            const parent = elements.find(
+                              (el) => el.data.id === dialogState.parentId,
+                            );
                             level =
-                              (elements.find(
-                                (el) => el.data.id === dialogState.parentId,
-                              )?.data.level ?? -1) + (element.advanced ? 0 : 1);
+                              (parent?.data.level ?? -1) +
+                              (element.advanced ? 0 : 1);
                             advancedLevel =
-                              (elements.find(
-                                (el) => el.data.id === dialogState.parentId,
-                              )?.data.advancedLevel ?? -1) + 1;
+                              (parent?.data.advancedLevel ?? -1) + 1;
+
+                            order =
+                              (parent?.data.order ?? 0) +
+                              elements.filter(
+                                (el) =>
+                                  el.data.containerId === dialogState.parentId,
+                              ).length +
+                              1;
                           }
                           log.debug(
                             {
@@ -187,7 +218,7 @@ export const ElementsTab = observer(
                               name: element.name,
                               enabled: true,
                               settings: element.settings,
-                              order: elements.length,
+                              order: order,
                             },
                             parentId: dialogState.parentId,
                           });

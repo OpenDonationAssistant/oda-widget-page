@@ -81,63 +81,6 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     return <TestAlertPopup />;
   }
 
-  public prepareConfig(): { name: string; value: any }[] {
-    if (this._alerts === undefined) {
-      return [];
-    }
-    return [
-      {
-        name: "premoderation",
-        value: toJS(this.get("premoderation")?.value),
-      },
-      {
-        name: "pause-media",
-        value: this.get("pause-media")?.value,
-      },
-      {
-        name: this._alerts.name,
-        value: this._alerts.config(),
-      },
-    ];
-  }
-
-  public set(key: string, value: any, asInitialValue = false): void {
-    log.debug(
-      { key: key, value: value },
-      "calling payment alerts widget settings",
-    );
-    this.sections = this.sections.map((section) => {
-      section.properties = section.properties.map((prop) => {
-        if (prop.name === key) {
-          if ("alerts" === key) {
-            const updated = PaymentAlertsProperty.fromConfig(value);
-            this._alerts = updated;
-            log.debug({ updated: toJS(updated) }, "updated payment alerts");
-            if (asInitialValue) {
-              updated.markSaved();
-            }
-            return updated;
-          }
-          const updated = prop.copy();
-          updated.value = value;
-          updated.markSaved();
-          log.debug(
-            { updated: toJS(updated), value: value },
-            "updated payment alerts property",
-          );
-          return updated;
-        }
-        return prop;
-      });
-      this.makeIndex();
-      return section;
-    });
-    log.debug(
-      { sections: this.sections },
-      "updated payment alert widget settings",
-    );
-  }
-
   public hasDemo(): boolean {
     return false;
   }

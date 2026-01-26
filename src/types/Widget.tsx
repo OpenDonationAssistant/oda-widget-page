@@ -47,7 +47,7 @@ export const WIDGET_TYPES = [
     create: () => new PaymentAlertsWidgetSettings(),
   },
   {
-    name: "twitch-alerts",
+    name: "alerts",
     title: "Оповещения для Twitch",
     icon: <AlertsIcon />,
     category: "onscreen",

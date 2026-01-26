@@ -23,11 +23,32 @@ import SubActionButton from "../../components/Button/SubActionButton";
 import CopyIcon from "../../icons/CopyIcon";
 import { TwitchAlert, TwitchAlertData } from "./types";
 import { ItemContent } from "./TwitchAlertsItemSettings";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
+import { publish } from "../../socket";
 
 export const TWITCH_ALERT_DEFAULT_NAME = "<Без названия>";
 
+function testAlert(topic: string, alert: TwitchAlert) {
+  publish(topic, {
+    id: uuidv7(),
+    type: "TriggerAlert",
+    variables: [
+      {
+        name: "alertId",
+        value: alert.data.id,
+      },
+      {
+        name: "username",
+        value: "testuser"
+      }
+    ]
+  })
+}
+
 const TwitchAlertItemComponent = observer(
   ({ alert }: { alert: TwitchAlert }) => {
+    const { conf } = useLoaderData() as WidgetData;
     const selection = useContext(SelectedIndexContext);
     const parentModalState = useContext(ModalStateContext);
     const [deleteDialogState] = useState<ModalState>(
@@ -50,7 +71,9 @@ const TwitchAlertItemComponent = observer(
           }
           second={
             <Flex align="center" justify="flex-end" gap={3}>
-              <SubActionButton onClick={() => {}}>
+              <SubActionButton onClick={() => {
+                testAlert(conf.topic.events, alert);
+              }}>
                 <div>Тест</div>
               </SubActionButton>
               <BorderedIconButton
@@ -140,7 +163,7 @@ export class TwitchAlertsProperty extends DefaultWidgetProperty<
       enabled: true,
       triggers: [],
       elements: [],
-      audio: [],
+      audio: [[]],
     });
     log.debug({ settings: this }, "updated twitch alerts");
   }

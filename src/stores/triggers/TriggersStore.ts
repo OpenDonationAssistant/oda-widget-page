@@ -15,6 +15,7 @@ import { SYSTEM_TRIGGER, SystemTrigger } from "./SystemTrigger";
 import { UNKNOWN_TRIGGER, UnknownTrigger } from "./UnknownTrigger";
 import { Trigger, TriggerType } from "./AlertTriggerInterface";
 import { makeAutoObservable } from "mobx";
+import { TwitchSimpleTrigger } from "./TwitchSimpleTrigger";
 
 export class TriggersStore {
   private _types: TriggerType[] = [
@@ -23,6 +24,31 @@ export class TriggersStore {
     LESS_THAN_DONATION_AMOUNT_TRIGGER,
     SYSTEM_TRIGGER,
     UNKNOWN_TRIGGER,
+    {
+      type: "TwitchChannelCheerEvent",
+      description: "Twitch Cheer",
+      category: "twitch",
+    },
+    {
+      type: "TwitchChannelFollowEvent",
+      description: "Twitch Follow",
+      category: "twitch",
+    },
+    {
+      type: "TwitchChannelRaidEvent",
+      description: "Twitch Raid",
+      category: "twitch",
+    },
+    {
+      type: "TwitchChannelSubscribeEvent",
+      description: "Twitch Subscribe",
+      category: "twitch",
+    },
+    {
+      type: "TwitchChannelSubscriptionGift",
+      description: "Twitch Subscription Gift",
+      category: "twitch",
+    },
   ];
   private _added: Trigger[] = [];
 
@@ -34,10 +60,16 @@ export class TriggersStore {
     return this._types.find((t) => t.type === type);
   }
 
-  public get available(): TriggerType[] {
+  public available(added: Trigger[]): TriggerType[] {
     const additionalFilters: ((t: TriggerType) => boolean)[] = [];
-    this._added.forEach((t) => {
-      if (t.type === FIXED_DONATION_AMOUNT_TRIGGER.type) {
+    added.forEach((a) => {
+      additionalFilters.push(
+        (checked: TriggerType) => checked.category === a.category,
+      );
+      if (a.category === "twitch") {
+        additionalFilters.push((checked: TriggerType) => false);
+      }
+      if (a.type === FIXED_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== RANDE_DONATION_AMOUNT_TRIGGER.type,
         );
@@ -45,12 +77,12 @@ export class TriggersStore {
           (t: TriggerType) => t.type !== LESS_THAN_DONATION_AMOUNT_TRIGGER.type,
         );
       }
-      if (t.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
+      if (a.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
       }
-      if (t.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
+      if (a.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
@@ -79,6 +111,15 @@ export class TriggersStore {
         return new LessThanDonationAmountTrigger();
       case "system":
         return new SystemTrigger();
+      case "TwitchChannelCheerEvent":
+      case "TwitchChannelFollowEvent":
+      case "TwitchChannelPollBeginEvent":
+      case "TwitchChannelRaidEvent":
+      case "TwitchChannelSubscribeEvent":
+      case "TwitchChannelSubscriptionGift":
+      case "TwitchChannelSubscriptionGiftEvent":
+      case "TwitchChannelSubscriptionMessageEvent":
+        return new TwitchSimpleTrigger(type);
       default:
         return new UnknownTrigger();
     }
@@ -100,6 +141,15 @@ export class TriggersStore {
         );
       case "system":
         return new SystemTrigger((trigger as SystemTrigger).system);
+      case "TwitchChannelCheerEvent":
+      case "TwitchChannelFollowEvent":
+      case "TwitchChannelPollBeginEvent":
+      case "TwitchChannelRaidEvent":
+      case "TwitchChannelSubscribeEvent":
+      case "TwitchChannelSubscriptionGift":
+      case "TwitchChannelSubscriptionGiftEvent":
+      case "TwitchChannelSubscriptionMessageEvent":
+        return new TwitchSimpleTrigger(trigger.type);
       default:
         return new UnknownTrigger();
     }

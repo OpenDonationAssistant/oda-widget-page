@@ -27,6 +27,7 @@ export interface VariableStore {
   templating: TemplateSettings;
   addTemplate(template: LabelTemplate): void;
   addVariable(variable: Variable): void;
+  clear(tag: string): void;
   addVariableDescription(variable: VariableDescription): void;
   getValue(
     name: string,
@@ -86,6 +87,10 @@ class VariableStorage {
 
   public get variables() {
     return this._variables;
+  }
+
+  public clear(tag: string){
+    this._variables = this._variables.filter(variable => !variable.tags.includes(tag));
   }
 
   public clone(): VariableStorage {
@@ -201,6 +206,9 @@ class LocalVariableStore implements VariableStore {
   public get variables(): Variable[] {
     return this._storage.variables;
   }
+  public clear(tag: string){
+    this._storage.clear(tag);
+  }
 
   public processTemplate(template: string): DynamicText {
     return this._processor.processTemplate(template);
@@ -250,6 +258,9 @@ export class DefaultVariableStore implements VariableStore {
   public get variables(): Variable[] {
     return this._storage.variables;
   }
+  public clear(tag: string){
+    this._storage.clear(tag);
+  }
 
   private client() {
     return DefaultApiFactory(
@@ -265,6 +276,7 @@ export class DefaultVariableStore implements VariableStore {
         response.data.forEach((variable) => {
           this._storage.addVariable({
             name: variable.name,
+            tags: ["manual"],
             type: "string",
             value: variable.value,
             id: variable.id,

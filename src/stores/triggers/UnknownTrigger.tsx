@@ -1,21 +1,19 @@
 import { ReactNode } from "react";
-import { DonationEvent, Trigger } from "./AlertTriggerInterface";
+import { TriggerCause, Trigger } from "./AlertTriggerInterface";
 
 export const UNKNOWN_TRIGGER = {
   description: "никогда",
   type: "never",
+  category: "unknown",
 };
 
 export class UnknownTrigger implements Trigger {
   type = UNKNOWN_TRIGGER.type;
+  category = "unknown";
   description = UNKNOWN_TRIGGER.description;
 
-  isTriggered(event: DonationEvent): boolean {
-    return false;
-  }
-
-  compare(other: Trigger): number {
-    return 0;
+  priorityFor(event: TriggerCause): number {
+    return -1;
   }
 
   public markup(): ReactNode {
