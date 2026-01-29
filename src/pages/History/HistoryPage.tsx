@@ -177,6 +177,13 @@ export const HistoryComponent = observer(
                       (historyStore.showDonatePayEu = update)
                     }
                   />
+                  <LabeledSwitchComponent
+                    value={historyStore.showDonateX}
+                    label="DonateX"
+                    onChange={(update) =>
+                      (historyStore.showDonateX = update)
+                    }
+                  />
                 </div>
               </Flex>
             </Panel>

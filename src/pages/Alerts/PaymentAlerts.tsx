@@ -857,7 +857,7 @@ const PaymentAlerts = observer(
                 addToGoal: token.settings.addToGoal,
                 id: uuidv7(),
                 paymentId: uuidv7(),
-                system: "DonationAlerts",
+                system: "DonateX",
                 externalId: donation.id
               },
               {},

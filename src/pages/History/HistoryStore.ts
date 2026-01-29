@@ -53,6 +53,7 @@ export interface HistoryStore {
   showDonatePay: boolean;
   showDonatePayEu: boolean;
   showDonateStream: boolean;
+  showDonateX: boolean;
 }
 
 export class DefaultHistoryStore implements HistoryStore {
@@ -67,6 +68,7 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showDonatePay: boolean;
   private _showDonatePayEu: boolean;
   private _showDonateStream: boolean;
+  private _showDonateX: boolean;
   private _widgetId: string;
   private _active: string | null = null;
 
@@ -85,6 +87,7 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePay = this.readValue(`${widgetId}.showDonatePay`);
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
+    this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
     makeAutoObservable(this);
     this.load()
       .then(() => {
@@ -188,6 +191,9 @@ export class DefaultHistoryStore implements HistoryStore {
     }
     if (this._showDonateStream) {
       systems.push("Donate.Stream");
+    }
+    if (this._showDonateX) {
+      systems.push("DonateX");
     }
     return this.client()
       .getHistory(
@@ -350,6 +356,17 @@ export class DefaultHistoryStore implements HistoryStore {
       JSON.stringify(value),
     );
     this._showDonateStream = value;
+    this.reset();
+  }
+  public get showDonateX() {
+    return this._showDonateX;
+  }
+  public set showDonateX(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showDonateX`,
+      JSON.stringify(value),
+    );
+    this._showDonateX = value;
     this.reset();
   }
 }
