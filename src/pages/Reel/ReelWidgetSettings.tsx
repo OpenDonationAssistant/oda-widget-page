@@ -1,6 +1,5 @@
 import { ReactNode, useContext } from "react";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import SubActionButton from "../../components/Button/SubActionButton";
 import { useLoaderData } from "react-router";
@@ -13,30 +12,25 @@ import { DemoReelStore, ReelStoreContext } from "../../stores/ReelStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import { ElementsWidget } from "../../components/Element/ElementsWidget";
-import { ElementsProperty } from "../../components/Element/ElementsProperty";
 import { RouletteItemsProperty } from "../Roulette/RoutetteItemsProperty";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 
-export class ReelWidgetSettings extends AbstractWidgetSettings {
+export class ReelWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({
-      sections: [
-        {
-          key: "items",
-          title: "Лоты",
-          properties: [
-            new NumberProperty({
-              name: "requiredAmount",
-              value: 100,
-              addon: "₽",
-              displayName: "widget-reel-required-amount",
-            }),
-            new RouletteItemsProperty(),
-          ],
-        },
+    super();
+    super.addSection({
+      key: "items",
+      title: "Лоты",
+      properties: [
+        new NumberProperty({
+          name: "requiredAmount",
+          value: 100,
+          addon: "₽",
+          displayName: "widget-reel-required-amount",
+        }),
+        new RouletteItemsProperty(),
       ],
     });
-
-    super.addElementsTab();
   }
 
   runReel(id: string, conf: any) {
@@ -96,19 +90,8 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
-  public get elements() {
-    return (
-      (this.get("elements") ??
-        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
-    ).elements;
-  }
-
   public get itemsProperty(): RouletteItemsProperty {
     return this.get("roulette-items") as RouletteItemsProperty;
-  }
-
-  public hasDemo(): boolean {
-    return true;
   }
 
   public demo(): ReactNode {

@@ -1,23 +1,21 @@
 import { DonationGoalProperty } from "../widgetproperties/DonationGoalProperty";
-import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
 import classes from "./AbstractWidgetSettings.module.css";
 import { ReactNode } from "react";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { VariableDescription } from "../../../stores/VariableStore";
-import { ElementsProperty } from "../../Element/ElementsProperty";
 import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
+import { ElementsWidgetSettings } from "../../Element/ElementsWidgetSettings";
 
-export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
+export class DonationGoalWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({ sections: [] });
+    super();
     this.addSection({
       key: "goals",
       title: "tab-donationgoal-goals",
       properties: [new DonationGoalProperty()],
     });
-    this.addElementsTab();
   }
 
   public copy(): DonationGoalWidgetSettings {
@@ -72,17 +70,6 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         ],
       },
     ];
-  }
-
-  public get elements() {
-    return (
-      (this.get("elements") ??
-        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
-    ).elements;
-  }
-
-  public hasDemo() {
-    return true;
   }
 
   // <DonationGoal settings={this} state={new DemoDonationGoalState(this)} />

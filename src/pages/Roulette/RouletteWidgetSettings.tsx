@@ -1,41 +1,27 @@
 import { ReactNode } from "react";
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "./RouletteWidgetSettings.module.css";
 import { RouletteItemsProperty } from "./RoutetteItemsProperty";
 import { DemoReelStore, ReelStoreContext } from "../../stores/ReelStore";
-import { log } from "../../logging";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
-import { ElementsProperty } from "../../components/Element/ElementsProperty";
 import { ElementsWidget } from "../../components/Element/ElementsWidget";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 
-export class RouletteWidgetSettings extends AbstractWidgetSettings {
+export class RouletteWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({
-      sections: [
-        {
-          key: "items",
-          title: "Лоты",
-          properties: [
-            new NumberProperty({
-              name: "requiredAmount",
-              value: 100,
-              addon: "₽",
-              displayName: "widget-reel-required-amount",
-            }),
-            new RouletteItemsProperty(),
-          ],
-        },
+    super();
+    super.addSection({
+      key: "items",
+      title: "Лоты",
+      properties: [
+        new NumberProperty({
+          name: "requiredAmount",
+          value: 100,
+          addon: "₽",
+          displayName: "widget-reel-required-amount",
+        }),
+        new RouletteItemsProperty(),
       ],
     });
-
-    super.addElementsTab();
-  }
-
-  public get elements() {
-    return (
-      (this.get("elements") ??
-        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
-    ).elements;
   }
 
   public get itemsProperty(): RouletteItemsProperty {
@@ -61,13 +47,7 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
-  public hasDemo(): boolean {
-    return true;
-  }
-
   public demo(): ReactNode {
-    log.debug("rendering widget settings window");
-
     return (
       <ReelStoreContext.Provider
         value={new DemoReelStore(20000, this.itemsProperty.value)}

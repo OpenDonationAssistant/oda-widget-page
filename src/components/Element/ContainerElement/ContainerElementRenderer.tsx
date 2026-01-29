@@ -18,6 +18,7 @@ import { ImagePropertyValue } from "../../ConfigurationPage/widgetproperties/Bac
 import { fullUri } from "../../../utils";
 import { AnimationPropertyValue } from "../../ConfigurationPage/widgetproperties/AnimationProperty";
 import { ContainerElementSettings } from "./ContainerElement";
+import classes from "./ContainerElementRenderer.module.css";
 
 function createBorderRule(border: Border) {
   return `${border.width}px ${border.type} ${border.color}`;
@@ -198,7 +199,7 @@ function calcAnimationDuration(value: AnimationPropertyValue) {
 function calcDirection(value: "row" | "column" | "stack"): CSSProperties {
   if (value === "stack") {
     return {
-      display: "grid"
+      display: "grid",
     };
   }
   return {
@@ -289,18 +290,9 @@ export const ContainerElementRenderer = observer(
               ...(style ?? {}),
               ...calcAlignment(settings.align),
             }}
-            className={calcAnimation(settings.animation)}
+            className={`${calcAnimation(settings.animation)} ${classes.container}`}
           >
-            {children instanceof Array && (
-              <>
-                {children.map((child) => (
-                  <div style={{ gridColumn: 1, gridRow: 1 }}>
-                    {child}
-                  </div>
-                ))}
-              </>
-            )}
-            {!(children instanceof Array) && children}
+            {children}
           </div>
         )}
       </>

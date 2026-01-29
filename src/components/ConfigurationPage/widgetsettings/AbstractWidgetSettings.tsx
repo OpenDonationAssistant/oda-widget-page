@@ -9,7 +9,6 @@ import { ElementsProperty } from "../../Element/ElementsProperty";
 import { ElementData } from "../../Element/Element";
 import {
   VariableDescription,
-  VariableStoreContext,
 } from "../../../stores/VariableStore";
 import { VariableScope } from "./VariableScope";
 import { ElementDescription, ElementFactory } from "../../Element/ElementFactory";

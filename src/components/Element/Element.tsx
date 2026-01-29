@@ -11,6 +11,8 @@ export interface ElementContainer {
     index?: number;
   }): void;
   deleteElement({ id }: { id: string }): void;
+  moveDown(id: string): void;
+  moveUp(id: string): void;
   elements: Element<any>[];
 }
 
@@ -53,43 +55,12 @@ export class Element<Type> {
     this._container?.deleteElement({ id: this._data.id });
   }
 
-  public moveUp() {
-    const targetOrder = this.data.order - 1;
-    const minOrder =
-      this.container?.elements.find(
-        (element) => element.data.id === this.data.containerId,
-      )?.data.order ?? 0;
-    if (targetOrder <= minOrder) {
-      return;
-    }
-    this.container?.deleteElement({ id: this.data.id });
-    this.container?.addElement({
-      data: this.data,
-      parentId: this.data.containerId,
-      index: targetOrder,
-    });
+  public moveDown() {
+    this._container?.moveDown(this.data.id);
   }
 
-  public moveDown() {
-    const targetOrder = this.data.order + 1;
-    const minOrder =
-      this.container?.elements.find(
-        (element) => element.data.id === this.data.containerId,
-      )?.data.order ?? 0;
-    const maxOrder =
-      minOrder +
-      (this.container?.elements.filter(
-        (element) => element.data.containerId === this.data.containerId,
-      ).length ?? 0);
-    if (targetOrder >= maxOrder) {
-      return;
-    }
-    this.container?.deleteElement({ id: this.data.id });
-    this.container?.addElement({
-      data: this.data,
-      parentId: this.data.containerId,
-      index: targetOrder,
-    });
+  public moveUp() {
+    this._container?.moveUp(this.data.id);
   }
 
   markup(): ReactNode {

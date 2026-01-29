@@ -1,36 +1,10 @@
 import { ReactNode } from "react";
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { Flex } from "antd";
 import classes from "./SocialsWidgetSettings.module.css";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
-import { ElementsProperty } from "../../components/Element/ElementsProperty";
-import { ElementFactory } from "../../components/Element/ElementFactory";
-import { ElementsWidget } from "../../components/Element/ElementsWidget";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 
-export class SocialsWidgetSettings extends AbstractWidgetSettings {
-  constructor() {
-    super({
-      sections: [
-        {
-          key: "elements",
-          title: "elements",
-          properties: [
-            new ElementsProperty({
-              value: [],
-              available: ElementFactory.list(),
-            }),
-          ],
-        },
-      ],
-    });
-  }
-
-  public get elements() {
-    return (
-      (this.get("elements") ??
-        new ElementsProperty({ value: [], available: [] })) as ElementsProperty
-    ).elements;
-  }
+export class SocialsWidgetSettings extends ElementsWidgetSettings {
 
   public help(): ReactNode {
     return (
@@ -61,11 +35,4 @@ export class SocialsWidgetSettings extends AbstractWidgetSettings {
     );
   }
 
-  public hasDemo(): boolean {
-    return true;
-  }
-
-  public demo(): ReactNode {
-    return <ElementsWidget settings={this} />;
-  }
 }

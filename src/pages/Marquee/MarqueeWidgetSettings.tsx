@@ -2,24 +2,12 @@ import { ReactNode } from "react";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
-import { ElementsProperty } from "../../components/Element/ElementsProperty";
 import classes from "./MarqueeWidgetSettings.module.css";
 
 export class MarqueeWidgetSettings extends AbstractWidgetSettings {
   constructor() {
-    super({
-      sections: [
-        {
-          key: "elements",
-          title: "elements",
-          properties: [
-            new ElementsProperty({
-              value: [],
-            }),
-          ],
-        },
-      ],
-    });
+    super({ sections: []});
+    super.addElementsTab();
   }
 
   public help(): ReactNode {
