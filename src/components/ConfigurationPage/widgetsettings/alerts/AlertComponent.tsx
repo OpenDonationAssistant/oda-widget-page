@@ -2,13 +2,11 @@ import { Alert } from "./Alerts";
 import { useTranslation } from "react-i18next";
 import { Tabs as AntTabs, Flex } from "antd";
 import { observer } from "mobx-react-lite";
-import ImageTab from "./ImageTab";
 import GeneralTab from "./GeneralTab";
 import { HeaderTab } from "./HeaderTab";
 import { MessageTab } from "./MessageTab";
 import { SoundTab } from "./SoundTab";
 import { VoiceTab } from "./VoiceTab";
-import { LayoutTab } from "./LayoutTab";
 import classes from "./AlertComponent.module.css";
 import { toBlob } from "html-to-image";
 import {
@@ -30,7 +28,6 @@ import { log } from "../../../../logging";
 import { PresetStoreContext } from "../../../../stores/PresetStore";
 import { uuidv7 } from "uuidv7";
 import { uploadBlob } from "../../../../utils";
-import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
 import { TriggersStoreContext } from "../../../../stores/triggers/TriggersStore";
 import { ElementsTab } from "../../../Element/ElementsTab";
@@ -100,12 +97,12 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
     if (alert.video) {
       properties.push({ name: "video", value: alert.video });
     }
-    const preset = new Preset({
+    const preset = {
       name: name,
       owner: "doesntmatter",
       showcase: url ?? "",
       properties: properties,
-    });
+    };
     return presetStore.save(preset, "alert");
   }
 
@@ -142,8 +139,8 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
                 },
                 {
                   key: "elements",
-                  label: "Отображение",
-                  children: [<ElementsTab alert={alert} />],
+                  label: "Внешний вид",
+                  children: [],
                 },
                 {
                   key: "header",

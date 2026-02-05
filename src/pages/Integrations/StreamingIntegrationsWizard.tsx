@@ -40,6 +40,15 @@ export const ChooseStreamingPlatformComponent = observer(() => {
       >
         <CardTitle>VKLive</CardTitle>
       </Card>
+      <Card
+        selected={selection.id === "kick"}
+        onClick={() => {
+          selection.id = "kick";
+          continuation.canContinue = true;
+        }}
+      >
+        <CardTitle>Kick</CardTitle>
+      </Card>
     </CardList>
   );
 });
@@ -66,7 +75,7 @@ export const StreamingIntegrationsWizard = observer(() => {
                 log.debug("opening vklive");
                 localStorage.setItem(state, "vklive");
                 window.open(
-                  `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&state=${state}`
+                  `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&state=${state}`,
                 );
                 return Promise.resolve(true);
               }
@@ -75,6 +84,17 @@ export const StreamingIntegrationsWizard = observer(() => {
                 localStorage.setItem(state, "twitch");
                 window.open(
                   "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=2f9aljaudj3678kp4gc9bj99tb7bev&redirect_uri=https://widgets.oda.digital&scope=channel%3Aread%3Aredemptions+user%3Aread%3Aemail+moderator%3Aread%3Ashoutouts+moderator%3Aread%3Afollowers+channel%3Aread%3apredictions+channel%3Aread%3Ahype_train+channel%3Aread%3Agoals+bits%3Aread+channel%3Aread%3Apolls&state=" +
+                    state,
+                );
+                return Promise.resolve(true);
+              }
+              if (selection.id === "youtube") {
+              }
+              if (selection.id === "kick") {
+                log.debug("opening kick");
+                localStorage.setItem(state, "kick");
+                window.open(
+                  "https://id.kick.com/oauth/authorize?response_type=code&client_id=01KGJ3VGHMWQ3DATBFVNJYMG41&redirect_uri=http://localhost:3001&scope=user%3Aread+channel%3Aread+events%3Asubscribe&code_challenge=019c254d-c165-75e4-be26-e6c5c68da338&code_challenge_method=plain&state=" +
                     state,
                 );
                 return Promise.resolve(true);

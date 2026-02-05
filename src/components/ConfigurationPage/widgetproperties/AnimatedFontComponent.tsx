@@ -2,7 +2,6 @@ import { Trans } from "react-i18next";
 
 import { ColorPicker, Flex, Input, Select, Switch } from "antd";
 
-import { produce } from "immer";
 import { AnimatedFontProperty } from "./AnimatedFontProperty";
 import classes from "./AnimatedFontComponent.module.css";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
@@ -303,12 +302,7 @@ export const FontSettingsOverlay = observer(
                             if (value === null || value === undefined) {
                               return;
                             }
-                            property.value = produce(
-                              toJS(property.value),
-                              (draft) => {
-                                draft.size = value;
-                              },
-                            );
+                            property.value.size = value;
                             if (onChange) onChange(property);
                           }}
                         />
@@ -322,12 +316,7 @@ export const FontSettingsOverlay = observer(
                           className="full-width"
                           value={property.value.family}
                           onChange={(selected) => {
-                            property.value = produce(
-                              toJS(property.value),
-                              (draft) => {
-                                draft.family = selected;
-                              },
-                            );
+                            property.value.family = selected;
                             if (onChange) onChange(property);
                           }}
                           options={fontList.sort().map((font) => {
@@ -342,12 +331,7 @@ export const FontSettingsOverlay = observer(
                         <BorderedIconButton
                           className={`${property.value.weight ? classes.selected : classes.notselected}`}
                           onClick={() => {
-                            property.value = produce(
-                              toJS(property.value),
-                              (draft) => {
-                                draft.weight = !draft.weight;
-                              },
-                            );
+                            property.value.weight = !property.value.weight;
                             if (onChange) onChange(property);
                           }}
                         >
@@ -365,12 +349,7 @@ export const FontSettingsOverlay = observer(
                         <BorderedIconButton
                           className={`${property.value.underline ? classes.selected : classes.notselected}`}
                           onClick={() => {
-                            property.value = produce(
-                              toJS(property.value),
-                              (draft) => {
-                                draft.underline = !draft.underline;
-                              },
-                            );
+                            property.value.underline = !property.value.underline;
                             if (onChange) onChange(property);
                           }}
                         >
@@ -388,12 +367,7 @@ export const FontSettingsOverlay = observer(
                         <BorderedIconButton
                           className={`${property.value.italic ? classes.selected : classes.notselected}`}
                           onClick={() => {
-                            property.value = produce(
-                              toJS(property.value),
-                              (draft) => {
-                                draft.italic = !draft.italic;
-                              },
-                            );
+                            property.value.italic = !property.value.italic;
                             if (onChange) onChange(property);
                           }}
                         >
@@ -444,9 +418,7 @@ export const FontSettingsOverlay = observer(
                 <ColorPropertyComponent
                   onChange={(value) => {
                     log.debug({ newValue: value }, "changing color");
-                    property.value = produce(toJS(property.value), (draft) => {
-                      draft.color = value;
-                    });
+                    property.value.color = value;
                     if (onChange) onChange(property);
                   }}
                   property={
@@ -473,12 +445,7 @@ export const FontSettingsOverlay = observer(
                   <Switch
                     value={property.value.outline.enabled}
                     onChange={(checked) => {
-                      property.value = produce(
-                        toJS(property.value),
-                        (draft) => {
-                          draft.outline.enabled = checked;
-                        },
-                      );
+                      property.value.outline.enabled = checked;
                     }}
                   />
                 </Flex>
@@ -492,12 +459,7 @@ export const FontSettingsOverlay = observer(
                           if (value === null || value === undefined) {
                             return;
                           }
-                          property.value = produce(
-                            toJS(property.value),
-                            (draft) => {
-                              draft.outline.width = value;
-                            },
-                          );
+                          property.value.outline.width = value;
                           if (onChange) onChange(property);
                         }}
                       />
@@ -512,12 +474,7 @@ export const FontSettingsOverlay = observer(
                         showText
                         value={property.value.outline.color}
                         onChange={(color) => {
-                          property.value = produce(
-                            toJS(property.value),
-                            (draft) => {
-                              draft.outline.color = color.toRgbString();
-                            },
-                          );
+                          property.value.outline.color = color.toRgbString();
                         }}
                       />
                     </SmallLabeledContainer>

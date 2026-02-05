@@ -1,28 +1,14 @@
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 import { HorizontalEventsModeProperty } from "./HorizontalEventsModeProperty";
 
-export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
+export class HorizontalEventsWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({ sections: [] });
-
-    this.addSection({
-      key: "general",
-      title: "Общие",
-      properties: [
-        new HorizontalEventsModeProperty(),
-      ],
-    });
-
-    this.addElementsTab();
-  }
-
-  public hasDemo(): boolean {
-    return true;
-  }
-
-  public demo() {
-    return (
-      <></>
-    );
+    super([
+      {
+        key: "general",
+        title: "Общие",
+        properties: [new HorizontalEventsModeProperty()],
+      },
+    ]);
   }
 }

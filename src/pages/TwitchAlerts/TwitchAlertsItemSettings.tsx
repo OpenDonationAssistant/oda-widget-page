@@ -26,7 +26,7 @@ import SubActionButton from "../../components/Button/SubActionButton";
 import { PresetsComponent } from "../../components/ConfigurationPage/PresetsComponent";
 import { ResizableBox } from "react-resizable";
 import { SaveButtons } from "../../components/Button/SaveButtons";
-import { handleFileUpload, loadAudio } from "../../utils";
+import { handleFileUpload, uploadBlob } from "../../utils";
 import SmallLabeledContainer from "../../components/SmallLabeledContainer/SmallLabeledContainer";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import { AddListItemButton } from "../../components/List/List";
@@ -44,34 +44,9 @@ import AddIcon from "../../icons/AddIcon";
 import RunIcon from "../../icons/RunIcon";
 import { TriggersStoreContext } from "../../stores/triggers/TriggersStore";
 import { UNKNOWN_TRIGGER } from "../../stores/triggers/UnknownTrigger";
-
-function play(buffer: ArrayBuffer | null) {
-  if (!buffer) {
-    return Promise.resolve();
-  }
-  const audioCtx = new AudioContext();
-  return new Promise<void>((resolve) => {
-    audioCtx.decodeAudioData(
-      buffer,
-      (buf) => {
-        const gainNode = audioCtx.createGain();
-        gainNode.connect(audioCtx.destination);
-
-        let source = audioCtx.createBufferSource();
-        source.connect(gainNode);
-        source.buffer = buf;
-        source.loop = false;
-        source.start(0);
-        source.addEventListener("ended", () => {
-          resolve();
-        });
-      },
-      (err) => {
-        console.log(err);
-      },
-    );
-  });
-}
+import { uuidv7 } from "uuidv7";
+import { toBlob } from "html-to-image";
+import { VoiceControllerContext } from "../../logic/voice/VoiceController";
 
 const GeneralTab = observer(({ alert }: { alert: TwitchAlert }) => {
   const factory = useContext(TriggersStoreContext);
@@ -164,6 +139,7 @@ const AudioCatalog = ({
 
 const AudioTab = observer(({ alert }: { alert: TwitchAlert }) => {
   const firstLineLength = alert.data.audio.at(0)?.length ?? 0;
+  const voiceController = useContext(VoiceControllerContext);
 
   return (
     <Flex vertical className={`${classes.tabcontainer}`} gap={27}>
@@ -192,13 +168,9 @@ const AudioTab = observer(({ alert }: { alert: TwitchAlert }) => {
                     {(audio as TwitchAlertAudioFile).name}
                   </div>
                   <SubActionButton
-                    onClick={() => {
-                      loadAudio(audio.url).then((buffer) => {
-                        if (buffer) {
-                          play(buffer);
-                        }
-                      });
-                    }}
+                    onClick={() =>
+                      voiceController.playSource(audio.url, audio.volume)
+                    }
                   >
                     <Flex align="center" gap={3}>
                       <RunIcon />
@@ -391,6 +363,30 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
     };
   }, [alert]);
 
+  async function savePreset(): Promise<string | void> {
+    if (!preview.current) {
+      return Promise.resolve();
+    }
+    const name = uuidv7();
+    const blob = await toBlob(preview.current);
+    if (!blob) {
+      return Promise.resolve();
+    }
+    const url = (await uploadBlob(blob, `${name}.png`)).url;
+    const preset = {
+      name: name,
+      owner: "doesntmatter",
+      showcase: url ?? "",
+      properties: [
+        {
+          name: "elements",
+          value: alert.data.elements,
+        },
+      ],
+    };
+    return presetStore.save(preset, "alert");
+  }
+
   return (
     <Flex vertical style={{ height: "100%" }} gap={12}>
       <Flex
@@ -426,7 +422,7 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
               },
               {
                 key: "visual",
-                label: "Отображение",
+                label: "Внешний вид",
                 children: [
                   <ElementsTab
                     alert={alert}
@@ -445,8 +441,10 @@ export const ItemContent = observer(({ alert }: { alert: TwitchAlert }) => {
         </Flex>
         <Flex vertical gap={9} className={`${classes.contentpanel}`}>
           <Flex justify="flex-start" gap={9}>
-            <SubActionButton onClick={() => {}}>Создать шаблон</SubActionButton>
-            <PresetsComponent target={alert.data} presetStore={presetStore} />
+            <SubActionButton onClick={savePreset}>
+              Создать шаблон
+            </SubActionButton>
+            <PresetsComponent target={alert} presetStore={presetStore} />
           </Flex>
           <Flex
             ref={preview}

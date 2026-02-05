@@ -5,11 +5,11 @@ import { DefaultApiFactory as WidgetApiFactory } from "@opendonationassistant/od
 
 export interface PresetStore {
   for: (type: string | null | undefined) => Promise<Preset[]>;
-  save: (preset: Preset, type: string) => void,
+  save: (preset: Preset, type: string) => void;
 }
 
 export class DefaultPresetStore implements PresetStore {
-  private client(){
+  private client() {
     return WidgetApiFactory(
       undefined,
       process.env.REACT_APP_WIDGET_API_ENDPOINT,
@@ -21,28 +21,30 @@ export class DefaultPresetStore implements PresetStore {
       return Promise.resolve([]);
     }
     log.debug({ type: type }, "loading templates");
-    return this.client().listTemplates(type)
+    return this.client()
+      .listTemplates(type)
       .then((response) => {
         return response.data.map((template) => {
           const props = template.properties.map((prop) => {
             return { name: prop["name"], value: prop["value"] };
           });
-          return new Preset({
+          return {
             name: template.id,
             owner: template.recipientId,
             properties: props,
             showcase: template.showcase,
-          });
+          };
         });
       });
   }
 
+  // TODO: use preset fields, not preset because we don't know recipientId
   public save(preset: Preset, type: string) {
-    log.debug({preset: preset} ,"Saving preset");
+    log.debug({ preset: preset }, "Saving preset");
     this.client().createTemplate({
       widgetType: type,
       showcase: preset.showcase,
-      properties: preset.properties
+      properties: preset.properties,
     });
   }
 }

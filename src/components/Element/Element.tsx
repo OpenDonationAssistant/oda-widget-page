@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Preset } from "../../types/Preset";
 
 export interface ElementContainer {
   addElement({
@@ -14,6 +15,7 @@ export interface ElementContainer {
   moveDown(id: string): void;
   moveUp(id: string): void;
   elements: Element<any>[];
+  apply(preset: Preset): void;
 }
 
 export interface ElementData<Type> {

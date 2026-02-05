@@ -228,5 +228,5 @@ export class VoiceController {
 }
 
 export const VoiceControllerContext = createContext<VoiceController>(
-  new VoiceController(""),
+  new VoiceController(),
 );

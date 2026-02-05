@@ -4,6 +4,7 @@ import { Element, ElementContainer, ElementData } from "./Element";
 import { ElementDescription, ElementFactory } from "./ElementFactory";
 import { ElementsTab } from "./ElementsTab";
 import { log } from "../../logging";
+import { Preset } from "../../types/Preset";
 
 interface Scope {
   start: number;
@@ -209,6 +210,11 @@ export class ElementsProperty
       }
     });
     return elements;
+  }
+
+  public apply(preset: Preset): void {
+    this.value =
+      preset.properties.find((it) => it.name === "elements")?.value ?? [];
   }
 
   markup(): ReactNode {

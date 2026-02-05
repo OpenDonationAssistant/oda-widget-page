@@ -171,6 +171,9 @@ function calcHeight(value: HeightPropertyValue) {
 
 function resolveUri(value: ImagePropertyValue) {
   return fullUri(value.url).then((url) => {
+    if (!url) {
+      return {};
+    }
     return {
       backgroundImage: `url(${url})`,
       backgroundSize: value.size,

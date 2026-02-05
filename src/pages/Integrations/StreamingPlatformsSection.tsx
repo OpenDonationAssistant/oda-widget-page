@@ -49,7 +49,8 @@ export const StreamingPlatformsSection = observer(() => {
             (token) =>
               token.system === "Twitch" ||
               token.system === "YouTube" ||
-              token.system === "VKLive",
+              token.system === "VKLive" ||
+              token.system === "Kick",
           )
           .map((token) => (
             <Card key={token.id} onClick={() => {}}>

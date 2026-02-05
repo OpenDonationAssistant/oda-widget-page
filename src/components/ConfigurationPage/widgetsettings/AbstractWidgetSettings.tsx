@@ -5,13 +5,8 @@ import { Tabs as AntTabs } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
 import classes from "./AbstractWidgetSettings.module.css";
-import { ElementsProperty } from "../../Element/ElementsProperty";
-import { ElementData } from "../../Element/Element";
-import {
-  VariableDescription,
-} from "../../../stores/VariableStore";
+import { VariableDescription } from "../../../stores/VariableStore";
 import { VariableScope } from "./VariableScope";
-import { ElementDescription, ElementFactory } from "../../Element/ElementFactory";
 
 export interface SettingsSection {
   key: string;
@@ -29,22 +24,6 @@ export class AbstractWidgetSettings {
     makeObservable<AbstractWidgetSettings, "_sections">(this, {
       _sections: observable,
       unsaved: computed,
-    });
-  }
-
-  protected addElementsTab(
-    elements?: ElementData<any>[],
-    available?: ElementDescription[],
-  ): void {
-    this.addSection({
-      key: "elements",
-      title: "Отображение",
-      properties: [
-        new ElementsProperty({
-          value: elements ?? [],
-          available: available ?? ElementFactory.list()
-        }),
-      ],
     });
   }
 

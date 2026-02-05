@@ -5,47 +5,45 @@ import {
   SELECTION_TYPE,
   SingleChoiceProperty,
 } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 
-export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
+export class DonatersTopListWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({ sections: [] });
-
-    this.addSection({
-      key: "content",
-      title: "tab-donaters-list-content",
-      properties: [
-        new SingleChoiceProperty({
-          name: "type",
-          value: "Top",
-          displayName: "widget-donaterslist-widget-type",
-          options: ["Top", "Last"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        }),
-        new SingleChoiceProperty({
-          name: "period",
-          value: "month",
-          displayName: "widget-donaterslist-period",
-          options: ["month", "day"],
-          selectionType: SELECTION_TYPE.SEGMENTED,
-        }),
-        new NumberProperty({
-          name: "topsize",
-          value: 3,
-          displayName: "widget-donaterslist-donaters-amount",
-        }),
-        new BooleanProperty({
-          name: "hideEmpty",
-          value: false,
-          displayName: "widget-donaterslist-hide-empty",
-        }),
-      ],
-    });
-
-    this.addElementsTab();
+    super([
+      {
+        key: "content",
+        title: "tab-donaters-list-content",
+        properties: [
+          new SingleChoiceProperty({
+            name: "type",
+            value: "Top",
+            displayName: "widget-donaterslist-widget-type",
+            options: ["Top", "Last"],
+            selectionType: SELECTION_TYPE.SEGMENTED,
+          }),
+          new SingleChoiceProperty({
+            name: "period",
+            value: "month",
+            displayName: "widget-donaterslist-period",
+            options: ["month", "day"],
+            selectionType: SELECTION_TYPE.SEGMENTED,
+          }),
+          new NumberProperty({
+            name: "topsize",
+            value: 3,
+            displayName: "widget-donaterslist-donaters-amount",
+          }),
+          new BooleanProperty({
+            name: "hideEmpty",
+            value: false,
+            displayName: "widget-donaterslist-hide-empty",
+          }),
+        ],
+      },
+    ]);
   }
 
   public get type(): "Top" | "Last" {
@@ -62,21 +60,6 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
 
   public get hideEmpty(): boolean {
     return this.get("hideEmpty")?.value;
-  }
-
-  public hasDemo() {
-    return true;
-  }
-
-  public demo() {
-    return <></>;
-    // return (
-    //   <DonatersTopList
-    //     settings={this}
-    //     topListStore={new DemoListStore()}
-    //     historyStore={new DemoHistoryStore()}
-    //   />
-    // );
   }
 
   public help(): ReactNode {

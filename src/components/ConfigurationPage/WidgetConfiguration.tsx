@@ -31,7 +31,6 @@ import { Card } from "../Cards/CardsComponent";
 import SubActionButton from "../Button/SubActionButton";
 import PrimaryButton from "../Button/PrimaryButton";
 import SecondaryButton from "../Button/SecondaryButton";
-import { Preset } from "../../types/Preset";
 import { PresetStoreContext } from "../../stores/PresetStore";
 import { uuidv7 } from "uuidv7";
 import { uploadBlob } from "../../utils";
@@ -39,6 +38,9 @@ import { PresetsComponent } from "./PresetsComponent";
 import DeleteWidgetModal from "./DeleteWidgetModal";
 import { ListItem } from "../List/List";
 import { log } from "../../logging";
+import { Preset } from "../../types/Preset";
+import { ElementsWidgetSettings } from "../Element/ElementsWidgetSettings";
+import { ElementsProperty } from "../Element/ElementsProperty";
 
 const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -103,16 +105,24 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
     if (!preview.current) {
       return Promise.resolve();
     }
+    if (!(widget.config instanceof ElementsWidgetSettings)) {
+      return;
+    }
     const name = uuidv7();
     const canvas = await snapdom(preview.current);
     const blob = await canvas.toBlob({ type: "webp" });
     const url = (await uploadBlob(blob, `${name}.webp`)).url;
-    const preset = new Preset({
+    const preset = {
       name: name,
       owner: widget.ownerId,
       showcase: url ?? "",
-      properties: widget.config.prepareConfig(),
-    });
+      properties: [
+        {
+          name: "elements",
+          value: (widget.config.get("elements") as ElementsProperty).value,
+        },
+      ],
+    } as Preset;
     return presetStore.save(preset, widget.type);
   }
 

@@ -23,7 +23,9 @@ import {
 import SecondaryButton from "../Button/SecondaryButton";
 import PrimaryButton from "../Button/PrimaryButton";
 import { Alert } from "./widgetsettings/alerts/Alerts";
-import { TwitchAlertData } from "../../pages/TwitchAlerts/types";
+import { TwitchAlert, TwitchAlertData } from "../../pages/TwitchAlerts/types";
+import { ElementsWidgetSettings } from "../Element/ElementsWidgetSettings";
+import { log } from "../../logging";
 
 const PreviewImage = observer(
   ({ preset, onSelect }: { preset: Preset; onSelect: () => void }) => {
@@ -69,14 +71,12 @@ export const PresetWindow = ({
       setPersonal(presets.filter((preset) => preset.owner !== "ODA"));
       const systemPresets = presets.filter((preset) => preset.owner === "ODA");
       if (systemPresets.length === 0) {
-        systemPresets.push(
-          new Preset({
-            name: "default",
-            owner: "ODA",
-            properties: [],
-            showcase: "",
-          }),
-        );
+        systemPresets.push({
+          name: "default",
+          owner: "ODA",
+          properties: [],
+          showcase: "",
+        });
       }
       setSystem(systemPresets);
       setLoading(false);
@@ -127,7 +127,7 @@ export const PresetsComponent = observer(
     target,
   }: {
     presetStore: PresetStore;
-    target: Widget | Alert | TwitchAlertData;
+    target: Widget | Alert | TwitchAlert;
   }) => {
     const parentModalState = useContext(ModalStateContext);
     const [modalState] = useState<ModalState>(
@@ -159,6 +159,7 @@ export const PresetsComponent = observer(
               <Flex gap={9} className={`${classes.buttons}`} justify="flex-end">
                 <SecondaryButton
                   onClick={() => {
+                    setSelected(null);
                     modalState.show = false;
                   }}
                 >
@@ -167,9 +168,15 @@ export const PresetsComponent = observer(
                 <PrimaryButton
                   onClick={() => {
                     if (target instanceof Widget) {
-                      selected?.applyTo(target.config, target.type);
-                    } else if (target instanceof Alert) {
-                      selected?.applyTo(target, "alert");
+                      if (target.config instanceof ElementsWidgetSettings) {
+                        log.debug(
+                          { selected: selected },
+                          "apply elements widget settings",
+                        );
+                        target.config.apply(selected!);
+                      }
+                    } else if (target instanceof TwitchAlert) {
+                      target.apply(selected!);
                     }
                     modalState.show = false;
                   }}

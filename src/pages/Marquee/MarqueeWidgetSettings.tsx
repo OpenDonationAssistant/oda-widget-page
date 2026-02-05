@@ -1,15 +1,10 @@
 import { ReactNode } from "react";
-import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import classes from "./MarqueeWidgetSettings.module.css";
+import { ElementsWidgetSettings } from "../../components/Element/ElementsWidgetSettings";
 
-export class MarqueeWidgetSettings extends AbstractWidgetSettings {
-  constructor() {
-    super({ sections: []});
-    super.addElementsTab();
-  }
-
+export class MarqueeWidgetSettings extends ElementsWidgetSettings {
   public help(): ReactNode {
     return (
       <>
@@ -37,13 +32,5 @@ export class MarqueeWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
-  }
-
-  public hasDemo(): boolean {
-    return true;
-  }
-
-  public demo(): ReactNode {
-    return <></>;
   }
 }

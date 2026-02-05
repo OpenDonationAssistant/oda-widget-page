@@ -16,6 +16,9 @@ import { AnimationsElementRenderer } from "./AnimationsElement/AnimationsElement
 
 export const ElementRenderer = observer(
   ({ element }: { element: Element<any> }) => {
+    if (element.data.enabled === false) {
+      return <></>;
+    }
     if (element.data.type === "label") {
       return <LabelElementRenderer settings={element.data.settings} />;
     }
