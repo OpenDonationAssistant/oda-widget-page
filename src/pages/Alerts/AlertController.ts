@@ -15,7 +15,6 @@ import { ColorProperty } from "../../components/ConfigurationPage/widgetproperti
 import { BackgroundImageProperty } from "../../components/ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
 import { CSSProperties } from "react";
-import { SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
 import { AnimationProperty } from "../../components/ConfigurationPage/widgetproperties/AnimationProperty";
 import { toJS } from "mobx";
 import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";

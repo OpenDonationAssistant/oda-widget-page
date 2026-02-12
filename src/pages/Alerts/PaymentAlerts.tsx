@@ -761,7 +761,7 @@ const PaymentAlerts = observer(
         .filter((token) => token.system === "UnofficialDonationAlerts")
         .forEach((token) => {
           const socket = connect("wss://socket.donationalerts.com/", {
-          // const socket = connect("wss://widgets.oda.digital", {
+            // const socket = connect("wss://widgets.oda.digital", {
             reconnection: true,
             reconnectionDelayMax: 5000,
             reconnectionDelay: 1000,
@@ -814,12 +814,14 @@ const PaymentAlerts = observer(
                 paymentId: uuidv7(),
                 system: "DonationAlerts",
                 externalId: donation.id,
-                alertMedia: {
-                  url: donation.tts_url.replace(
-                    "files.donationalerts.com",
-                    "widgets.oda.digital",
-                  ),
-                },
+                alertMedia: donation.tts_url
+                  ? {
+                      url: donation.tts_url.replace(
+                        "files.donationalerts.com",
+                        "widgets.oda.digital",
+                      ),
+                    }
+                  : null,
               },
               {},
             );
@@ -859,7 +861,7 @@ const PaymentAlerts = observer(
                 id: uuidv7(),
                 paymentId: uuidv7(),
                 system: "DonateX",
-                externalId: donation.id
+                externalId: donation.id,
               },
               {},
             );
