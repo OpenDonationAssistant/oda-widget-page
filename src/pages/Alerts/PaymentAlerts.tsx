@@ -760,7 +760,8 @@ const PaymentAlerts = observer(
       tokens
         .filter((token) => token.system === "UnofficialDonationAlerts")
         .forEach((token) => {
-          const socket = connect("wss://socket.donationalerts.ru:443", {
+          const socket = connect("wss://socket.donationalerts.com/", {
+          // const socket = connect("wss://widgets.oda.digital", {
             reconnection: true,
             reconnectionDelayMax: 5000,
             reconnectionDelay: 1000,
