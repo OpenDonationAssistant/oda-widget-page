@@ -790,6 +790,12 @@ const PaymentAlerts = observer(
 
           socket.on("donation", function (msg) {
             const donation = JSON.parse(msg);
+            if (
+              donation.message &&
+              donation.message.startsWith("Memealerts:")
+            ) {
+              return;
+            }
             console.log({ donation: donation }, "New donation");
             HistoryService(
               undefined,
