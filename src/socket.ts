@@ -17,15 +17,17 @@ interface Listener {
 
 const socket = new Client({
   brokerURL: process.env.REACT_APP_WS_ENDPOINT,
+  // connectHeaders: {
+    // passcode: localStorage.getItem("access-token") ?? ""
+  // },
+  reconnectDelay: 500,
 });
-const defaultTtl = (1000*60*60*24).toString(); // 24 hours
 
-socket.reconnectDelay = 500;
-log.debug("Creating socket client");
 var listeners: Listener[] = [];
 socket.activate();
 
 function createOptions(listener: Listener) {
+  const defaultTtl = (1000*60*60*24).toString(); // 24 hours
   const id = `${listener.topic}-${listener.id}`;
   return {
       id: id,

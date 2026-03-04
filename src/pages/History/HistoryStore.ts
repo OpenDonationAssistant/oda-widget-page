@@ -1,11 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import {
   Amount,
-  Attachment,
+  HistoryItemDataTargetGoal,
+  HistoryItemDataAttachment,
+  HistoryItemDataReelResult,
   HistoryItemDataActionRequest,
   DefaultApiFactory as HistoryService,
-  ReelResult,
-  TargetGoal,
 } from "@opendonationassistant/oda-history-service-client";
 import { log } from "../../logging";
 import { createContext } from "react";
@@ -27,10 +27,10 @@ export interface HistoryItem {
   amount: Amount;
   nickname: string;
   system: string;
-  goals: TargetGoal[];
-  rouletteResults: ReelResult[];
+  goals: HistoryItemDataTargetGoal[];
+  rouletteResults: HistoryItemDataReelResult[];
   message: string;
-  attachments: Attachment[];
+  attachments: HistoryItemDataAttachment[];
   actions: HistoryItemDataActionRequest[];
   timestamp: Date;
   date: string;
@@ -198,7 +198,6 @@ export class DefaultHistoryStore implements HistoryStore {
     return this.client()
       .getHistory(
         {
-          recipientId: this._recipientId,
           systems: systems,
         },
         { params: { size: this._pageSize, page: this._pageNumber } },
@@ -210,30 +209,30 @@ export class DefaultHistoryStore implements HistoryStore {
           .map((item) => {
             return {
               id: item.id ?? "",
-              originId: item.paymentId ?? "",
+              originId: item.originId ?? "",
               amount: item.amount ?? { major: 0, minor: 0, currency: "RUB" },
               nickname: item.nickname ?? "Аноним",
               goals: item.goals ?? [],
               message: item.message ?? "",
               attachments: item.attachments ?? [],
               actions: item.actions ?? [],
-              timestamp: item.authorizationTimestamp
-                ? new Date(item.authorizationTimestamp)
+              timestamp: item.timestamp
+                ? new Date(item.timestamp)
                 : new Date(),
               date: dateTimeFormat.format(
-                item.authorizationTimestamp
-                  ? new Date(item.authorizationTimestamp)
+                item.timestamp
+                  ? new Date(item.timestamp)
                   : new Date(),
               ),
               time: timeFormat.format(
-                item.authorizationTimestamp
-                  ? new Date(item.authorizationTimestamp)
+                item.timestamp
+                  ? new Date(item.timestamp)
                   : new Date(),
               ),
-              active: item.paymentId === this._active,
+              active: item.originId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
-              media: item.alertMedia ?? null,
+              media: null
             };
           })
           .filter((item) => {

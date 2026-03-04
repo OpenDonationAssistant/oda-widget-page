@@ -117,7 +117,13 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
       >
         <EditableString
           label={alert.property("name")}
-          onChange={(value) => alert.set("name", value)}
+          onChange={(value) => {
+            const property = alert.get("name");
+            if (!property) {
+              return;
+            }
+            property.value = value;
+          }}
         />
         <CloseOverlayButton />
       </Flex>

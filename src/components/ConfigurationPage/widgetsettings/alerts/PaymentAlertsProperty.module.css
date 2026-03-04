@@ -32,3 +32,40 @@
     font-size: 21px;
   }
 }
+
+.searchbutton {
+  width: 100%;
+  border-radius: none;
+  border-bottom: 1px solid var(--oda-secondary-text-color);
+}
+
+.filterbuttons {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+[class*="newstyle"]{
+  .smallinput {
+    &[class*="ant-input"] {
+      height: 36px;
+      font-size: 15px;
+      border: none;
+    }
+  }
+
+  .smallsegmented {
+    color: var(--oda-secondary-text-color);
+    &[class*="ant-segmented"] {
+      & [class*="ant-segmented-group"] {
+        & [class*="ant-segmented-item-label"] {
+          min-height: unset;
+          line-height: unset;
+        }
+        & [class*="ant-segmented-item"] {
+          height: unset;
+          font-size: 15px;
+        }
+      }
+    }
+  }
+}
