@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [ "master" ]
+  workflow_dispatch:
 
 permissions: write-all
 
@@ -11,6 +12,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
@@ -25,3 +32,8 @@ jobs:
         push: true
         tags: ghcr.io/opendonationassistant/oda-widget-page:${{ github.RUN_NUMBER }}
         build-args: gpr_token=${{ secrets.GPR_TOKEN }}
+
+    - name: Create and push tag
+      run: |
+        git tag "${{ github.RUN_NUMBER }}"
+        git push origin "${{ github.RUN_NUMBER }}"
