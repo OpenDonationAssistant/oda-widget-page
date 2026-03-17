@@ -1,12 +1,12 @@
 import classes from "./CloseIcon.module.css";
 
-export default function CloseIcon({ color }: { color?: string }) {
+export default function CloseIcon({ color, size }: { color?: string; size?: number }) {
   return (
     <>
       <svg
         className={`${classes.icon}`}
-        width="24"
-        height="24"
+        width={size ?? 24}
+        height={size ?? 24}
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
       >

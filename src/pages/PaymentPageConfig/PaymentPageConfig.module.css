@@ -121,3 +121,13 @@ a.url {
   padding-right: 10px;
   text-align: left;
 }
+
+.deletesocialbutton {
+  height: 56px;
+  align-self: flex-end;
+}
+
+.sociallink {
+  width: 100%;
+  margin-bottom: 12px;
+}

@@ -3,7 +3,7 @@ import classes from "./PaymentPageConfig.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
-import { Flex, Input, QRCode } from "antd";
+import { Flex, Input, QRCode, Select } from "antd";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import UtilityButton from "../../components/Button/UtilityButton";
@@ -15,6 +15,9 @@ import {
   Overlay,
   Waiting,
 } from "../../components/Overlay/Overlay";
+import { AddListItemButton } from "../../components/List/List";
+import { NotBorderedIconButton } from "../../components/IconButton/IconButton";
+import CloseIcon from "../../icons/CloseIcon";
 
 export default function PaymentPageConfigPage() {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -23,15 +26,19 @@ export default function PaymentPageConfigPage() {
   const [email, setEmail] = useState("");
   const [fio, setFio] = useState("");
   const [inn, setInn] = useState("");
+  const [socials, setSocials] = useState<Map<string, string>[]>([]);
   const [arbitraryText, setArbitraryText] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [payButtonText, setPayButtonText] = useState<string | null>(null);
+
   const [imageUrl, setImageUrl] = useState<string>(
     "https://api.oda.digital/public/commonlogo.png",
   );
+
   const [backUrl, setBackUrl] = useState<string>(
     "https://api.oda.digital/public/commonback.jpg",
   );
+
   const executionStore = useContext(ExecutionStoreContext);
   const parentModalState = useContext(ModalStateContext);
   const [dialogState] = useState<ModalState>(
@@ -67,6 +74,11 @@ export default function PaymentPageConfigPage() {
     setInn(paymentPageConfig.current?.inn ?? "");
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
     setPayButtonText(paymentPageConfig.current?.payButtonText ?? null);
+    if (paymentPageConfig.current?.socials) {
+      setSocials([...paymentPageConfig.current?.socials]);
+    } else {
+      setSocials([]);
+    }
   }
 
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -266,6 +278,88 @@ export default function PaymentPageConfigPage() {
               />
             </Flex>
           </Flex>
+        </Flex>
+        <Flex className={`${classes.panel}`} vertical>
+          <div style={{ marginBottom: "9px" }}>Социальные ссылки</div>
+          {socials.map((link) => (
+            <Flex gap={12} className={`${classes.sociallink}`}>
+              <Flex vertical>
+                <div className={classes.fieldname}>Название</div>
+                <Select
+                  value={link.keys().next().value}
+                  style={{ height: "100%", minWidth: "150px" }}
+                  options={[
+                    {
+                      value: "twitch",
+                      label: "Twitch",
+                    },
+                    {
+                      value: "vk",
+                      label: "ВКонтакте",
+                    },
+                    {
+                      value: "youtube",
+                      label: "YouTube",
+                    },
+                    {
+                      value: "trovo",
+                      label: "Trovo",
+                    },
+                    {
+                      value: "boosty",
+                      label: "Boosty",
+                    },
+                    {
+                      value: "kick",
+                      label: "Kick",
+                    },
+                  ]}
+                  onChange={(newKey) => {
+                    if (paymentPageConfig?.current) {
+                      const oldKey = link.keys().next().value;
+                      paymentPageConfig.current.changeSocial(oldKey, newKey);
+                      setHasChanges(true);
+                    }
+                  }}
+                />
+              </Flex>
+              <Flex vertical style={{ flexGrow: 1 }}>
+                <div className={classes.fieldname}>Ссылка</div>
+                <Input
+                  value={link.values().next().value}
+                  onChange={(e) => {
+                    if (paymentPageConfig?.current) {
+                      paymentPageConfig.current.updateSocial(
+                        link.keys().next().value,
+                        e.target.value,
+                      );
+                      setHasChanges(true);
+                    }
+                  }}
+                />
+              </Flex>
+              <NotBorderedIconButton
+                className={`${classes.deletesocialbutton}`}
+                onClick={() => {
+                  if (paymentPageConfig?.current) {
+                    paymentPageConfig.current.deleteSocial(
+                      link.keys().next().value,
+                    );
+                    setHasChanges(true);
+                  }
+                }}
+              >
+                <CloseIcon color="#FF8888" size={36} />
+              </NotBorderedIconButton>
+            </Flex>
+          ))}
+          <AddListItemButton
+            onClick={() => {
+              paymentPageConfig.current?.addSocial("", "");
+              setHasChanges(true);
+            }}
+            label="Добавить ссылку"
+          />
         </Flex>
         {hasChanges && (
           <Flex gap={12} justify="flex-end" className={`${classes.buttons}`}>
