@@ -30,7 +30,6 @@ import VideoIcon from "../icons/widgets/VideoIcon";
 import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
-import { socket } from "../socket";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
 
@@ -183,6 +182,16 @@ export const WIDGET_TYPES = [
     preview: "",
     description:
       "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
+    create: () => new RouletteWidgetSettings(),
+  },
+  {
+    name: "action-queue",
+    title: "Заказ действий",
+    icon: <span className="material-symbols-sharp">pending_actions</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Позволяет задать и управлять действиями, которые донатер может 'заказать' на стриме",
     create: () => new RouletteWidgetSettings(),
   },
 ];
@@ -340,15 +349,6 @@ export class Widget {
       )
       .then(() => {
         this.config.markSaved();
-      })
-      .then(() => {
-        socket.publish({
-          destination: "/topic/commands",
-          body: JSON.stringify({
-            id: this.id,
-            command: "reload",
-          }),
-        });
       });
   }
 
