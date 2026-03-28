@@ -71,32 +71,32 @@ import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
 
-window.onerror = (message, source, lineno, colno, error) => {
-  console.log("Handling window onerror");
-  errorStore.setError(
-    "Произошла ошибка. Попробуйте позже",
-    `${message}\n${source}:${lineno}:${colno}`,
-  );
-  return true;
-};
-
-window.onunhandledrejection = (event) => {
-  console.log("Handling window onunhandledrejection");
-  errorStore.setError(
-    "Произошла ошибка. Попробуйте позже",
-    String(event.reason),
-  );
-  event.preventDefault();
-};
-
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const message = error.response?.data?.message ?? error.message;
-    errorStore.setError("Произошла ошибка. Попробуйте позже", message);
-    return Promise.reject(error);
-  },
-);
+// window.onerror = (message, source, lineno, colno, error) => {
+//   console.log("Handling window onerror");
+//   errorStore.setError(
+//     "Произошла ошибка. Попробуйте позже",
+//     `${message}\n${source}:${lineno}:${colno}`,
+//   );
+//   return true;
+// };
+//
+// window.onunhandledrejection = (event) => {
+//   console.log("Handling window onunhandledrejection");
+//   errorStore.setError(
+//     "Произошла ошибка. Попробуйте позже",
+//     String(event.reason),
+//   );
+//   event.preventDefault();
+// };
+//
+// axios.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     const message = error.response?.data?.message ?? error.message;
+//     errorStore.setError("Произошла ошибка. Попробуйте позже", message);
+//     return Promise.reject(error);
+//   },
+// );
 
 async function widgetSettingsLoader({
   params,
