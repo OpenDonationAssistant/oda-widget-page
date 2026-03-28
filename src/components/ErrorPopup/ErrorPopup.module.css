@@ -1,0 +1,11 @@
+.errormodal{
+  & [class*="ant-modal-header"]{
+  }
+  & [class*="ant-modal-body"]{
+    padding-left: 20px;
+  }
+  & [class*="ant-modal-footer"]{
+    display: flex;
+    flex-direction: row-reverse;
+  }
+}

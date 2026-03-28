@@ -75,6 +75,7 @@ export class DonatersListStore implements AbstractDonatersListStore {
   ) {
     log.debug("create subscription");
     subscribe(widgetId, topic, (message: any) => {
+      log.debug("receive message with updates for donaters");
       this.updateDonaters(period, type);
       message.ack();
     });

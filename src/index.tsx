@@ -61,6 +61,39 @@ import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
 import { AccountPage } from "./pages/Account/AccountPage";
 import TwitchAlertsPage from "./pages/TwitchAlerts/TwitchAlertsPage";
+import {
+  ErrorStore,
+  ErrorStoreContext,
+  initGlobalErrorStore,
+} from "./stores/ErrorStore";
+import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
+
+const errorStore = new ErrorStore();
+initGlobalErrorStore(errorStore);
+
+window.onerror = (message, source, lineno, colno, error) => {
+  console.log("Handling window onerror");
+  errorStore.setError(
+    "Произошла ошибка. Попробуйте позже",
+    `${message}\n${source}:${lineno}:${colno}`,
+  );
+  return true;
+};
+
+window.onunhandledrejection = (event) => {
+  console.log("Handling window onunhandledrejection");
+  errorStore.setError("Произошла ошибка. Попробуйте позже", String(event.reason));
+  event.preventDefault();
+};
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error.response?.data?.message ?? error.message;
+    errorStore.setError("Произошла ошибка. Попробуйте позже", message);
+    return Promise.reject(error);
+  },
+);
 
 async function widgetSettingsLoader({
   params,
@@ -371,12 +404,15 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-      }}
-    >
-      <RouterProvider router={router} />
-    </ConfigProvider>,
+    <ErrorStoreContext.Provider value={errorStore}>
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+        }}
+      >
+        <RouterProvider router={router} />
+        <ErrorPopup />
+      </ConfigProvider>
+    </ErrorStoreContext.Provider>,
   );
 }
