@@ -82,7 +82,10 @@ window.onerror = (message, source, lineno, colno, error) => {
 
 window.onunhandledrejection = (event) => {
   console.log("Handling window onunhandledrejection");
-  errorStore.setError("Произошла ошибка. Попробуйте позже", String(event.reason));
+  errorStore.setError(
+    "Произошла ошибка. Попробуйте позже",
+    String(event.reason),
+  );
   event.preventDefault();
 };
 
@@ -411,7 +414,6 @@ if (rootElement) {
         }}
       >
         <RouterProvider router={router} />
-        <ErrorPopup />
       </ConfigProvider>
     </ErrorStoreContext.Provider>,
   );
