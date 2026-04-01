@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { DefaultApiFactory as TwitchService } from "@opendonationassistant/oda-twitch-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
 import { WidgetStoreContext } from "../../stores/WidgetStore";
@@ -245,7 +246,26 @@ export default function ConfigurationPage() {
           .getTwitchToken({
             authorizationCode: code,
           })
-          .then(() => {
+          .then((response) => {
+            RecipientService(
+              undefined,
+              process.env.REACT_APP_HISTORY_API_ENDPOINT,
+            )
+              .listTokens()
+              .then((response) => {
+                response.data
+                  .filter((token) => {
+                    token.system === "Twitch";
+                  })
+                  .forEach((token) => {
+                    TwitchService(
+                      undefined,
+                      process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                    ).subscribeTwitchEvents({
+                      userAccessToken: token.token,
+                    });
+                  });
+              });
             state.show = true;
           });
       }
