@@ -17,6 +17,13 @@ export interface RouletteItemData {
   backgroundImage: ImagePropertyValue;
 }
 
+interface Variable {
+  id: string;
+  name: string;
+  value: any;
+  type: string;
+}
+
 export class RouletteItem {
   constructor(
     public data: RouletteItemData,
@@ -65,7 +72,7 @@ export class DefaultReelStore implements ReelStore {
     this._settings = settings;
     makeAutoObservable(this);
     this.shuffle();
-    this.listen(widgetId, conf.topic.reel);
+    this.listen(widgetId, conf.topic.events);
   }
 
   public get items(): RouletteItem[] {
@@ -98,9 +105,15 @@ export class DefaultReelStore implements ReelStore {
   private listen(widgetId: string, topic: string) {
     subscribe(widgetId, topic, (message) => {
       let json = JSON.parse(message.body);
-      log.info({ message: json, widgetId: widgetId }, "Received reel command");
-      if (json.widgetId === widgetId) {
-        this._selection = [...this._selection, json.selection];
+      if (json.type !== "ReelResult") {
+        return;
+      }
+      log.info({ message: json, widgetId: widgetId }, "Received reel results");
+      const variables = json.variables as Variable[];
+      const messageWidgetId = variables.find((variable) => variable.name === "widgetId")?.value;
+      const title = variables.find((variable) => variable.name === "title")?.value;
+      if (messageWidgetId === widgetId) {
+        this._selection = [...this._selection, title];
       }
       this.handleSelection();
       message.ack();

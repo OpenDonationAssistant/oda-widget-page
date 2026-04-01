@@ -61,6 +61,7 @@ import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
 import { AccountPage } from "./pages/Account/AccountPage";
 import TwitchAlertsPage from "./pages/TwitchAlerts/TwitchAlertsPage";
+import { BotsPage } from "./pages/Bots/BotsPage";
 import {
   ErrorStore,
   ErrorStoreContext,
@@ -152,6 +153,9 @@ function detectPage(path: string): Page {
   }
   if (path.indexOf("integrations") > 0) {
     return Page.INTEGRATIONS;
+  }
+  if (path.indexOf("bots") > 0) {
+    return Page.BOTS;
   }
   if (path.endsWith("account")) {
     return Page.ACCOUNT;
@@ -304,6 +308,11 @@ const router = createBrowserRouter([
       {
         path: "integrations/*",
         element: <IntegrationsPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "bots",
+        element: <BotsPage />,
         loader: widgetSettingsLoader,
       },
       {

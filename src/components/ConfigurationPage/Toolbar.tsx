@@ -20,6 +20,7 @@ enum Page {
   AUTOMATION,
   GUIDES,
   INTEGRATIONS,
+  BOTS,
   ACCOUNT,
 }
 
@@ -66,6 +67,27 @@ const buttons: Section[] = [
     active: <IntegrationIcon color="var(--oda-color-800)" />,
     nonactive: <IntegrationIcon color="var(--oda-color-500)" />,
     label: "menu-integrations",
+  },
+  {
+    page: Page.BOTS,
+    url: "/configuration/bots",
+    active: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-800)", marginRight: "3px" }}
+      >
+        robot_2
+      </span>
+    ),
+    nonactive: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-500)", marginRight: "3px" }}
+      >
+        robot_2
+      </span>
+    ),
+    label: "menu-bots",
   },
   {
     page: Page.AUTOMATION,
