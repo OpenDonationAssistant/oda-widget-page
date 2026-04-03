@@ -26,6 +26,9 @@ export function SlideShowComponent({
       () => {
         setContainerClassName(`animate__animated animate__${outAnimation?.type ?? ""}`);
         setTimeout(() => {
+          if (slides.length === 0) {
+            return;
+          }
           setIndex((index + 1) % slides.length);
           setContainerClassName(`animate__animated animate__${inAnimation?.type ?? "flipInY"}`);
           setTimeout(
