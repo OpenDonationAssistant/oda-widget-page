@@ -1,3 +1,8 @@
 .copybutton{
   color: white;
 }
+
+.selectchatbutton {
+  width: 100%;
+  flex-grow: 1;
+}

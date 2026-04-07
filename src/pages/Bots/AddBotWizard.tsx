@@ -16,6 +16,7 @@ import { Bot, BotStoreContext, Chat } from "../../stores/BotStore";
 import { Flex, QRCode, Select } from "antd";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import classes from "./AddBotWizard.module.css";
+import UtilityButton from "../../components/Button/UtilityButton";
 
 const ChoosePlatformComponent = observer(
   ({ selection }: { selection: AddBotOperationStore }) => {
@@ -88,23 +89,31 @@ const ChooseChatComponent = observer(
     return (
       <>
         {chats && (
-          <Flex vertical>
-            <div style={{ color: "white" }}>
+          <Flex vertical className="full-width">
+            <div style={{ color: "white", marginBottom: "6px" }}>
               Выберите чат, в который хотите добавить бота.
             </div>
-            <Select
+            <Flex
+              justify="space-between"
+              align="center"
+              gap={9}
               className="full-width"
-              value={selection.chat?.id}
-              options={chats.map((chat) => {
-                return { label: chat.title, value: chat.id };
-              })}
-              onChange={(value) => {
-                const selected = chats.find((chat) => chat.id === value);
-                if (selected) {
-                  selection.chat = selected;
-                }
-              }}
-            />
+            >
+              <Select
+                className={`${classes.selectchatbutton}`}
+                value={selection.chat?.id}
+                options={chats.map((chat) => {
+                  return { label: chat.title, value: chat.id };
+                })}
+                onChange={(value) => {
+                  const selected = chats.find((chat) => chat.id === value);
+                  if (selected) {
+                    selection.chat = selected;
+                  }
+                }}
+              />
+              <UtilityButton onClick={() => {}}>Обновить</UtilityButton>
+            </Flex>
           </Flex>
         )}
         {!chats && <div>loading...</div>}
@@ -191,9 +200,10 @@ export const AddBotWizard = observer(() => {
           isInformation: true,
         },
       ],
-      dynamicStepAmount: true,
+      dynamicStepAmount: false,
       reset: () => {
         log.debug("resetting integration page wizard");
+        selection.type = null;
       },
     }),
   );

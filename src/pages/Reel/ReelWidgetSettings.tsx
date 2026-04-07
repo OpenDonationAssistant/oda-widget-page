@@ -130,10 +130,18 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
   runReel(id: string, conf: any) {
     const optionList = this.optionListProperty.value;
     const choosenIndex = getRndInteger(0, optionList.length - 1);
-    publish(conf.topic.reel, {
-      type: "trigger",
-      selection: optionList[choosenIndex],
-      widgetId: id,
+    publish(conf.topic.events, {
+      type: "ReelResult",
+      variables:[
+        {
+          name: "widgetId",
+          value: id,
+        },
+        {
+          name: "title",
+          value: optionList[choosenIndex],
+        }
+      ],
     });
   }
 

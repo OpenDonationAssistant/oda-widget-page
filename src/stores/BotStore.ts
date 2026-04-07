@@ -1,33 +1,89 @@
-import {
-  DefaultApiFactory as MaxApiFactory
-} from "@opendonationassistant/oda-max-service-client";
-import { makeAutoObservable } from "mobx";
+import { DefaultApiFactory as MaxApiFactory } from "@opendonationassistant/oda-max-service-client";
+import { makeAutoObservable, reaction } from "mobx";
 import { createContext } from "react";
+import { uuidv7 } from "uuidv7";
 
-export interface Bot {
-  id: string;
-  type: string;
-  enabled: boolean;
+export class Bot {
+  constructor(
+    public id: string,
+    public type: string,
+    public enabled: boolean,
+  ) {
+    makeAutoObservable(this);
+  }
+
+  public get name(): string {
+    return this.type.toUpperCase();
+  }
+
+  public createAnnouncer(): Announcer {
+    return new Announcer(uuidv7(), "Стрим начался!", [], true);
+  }
 }
 
 export interface Chat {
-  id: string;
+  id: number;
   title: string;
 }
 
-export interface MaxButton{
-  text: string;
-  url: string;
+export class MaxButton {
+  constructor(
+    public text: string,
+    public url: string,
+  ) {
+    makeAutoObservable(this);
+  }
 }
 
-export interface Announcer {
-  id: string;
-  text: string;
-  buttons: MaxButton[];
+export class Announcer {
+  constructor(
+    private _id: string,
+    private _text: string,
+    private _buttons: MaxButton[],
+    private _enabled: boolean = true,
+    private _changed: boolean = false,
+  ) {
+    makeAutoObservable(this);
+  }
+
+  public get id(): string {
+    return this._id;
+  }
+
+  public get text(): string {
+    return this._text;
+  }
+
+  public set text(value: string) {
+    this._text = value;
+    this._changed = true;
+  }
+
+  public get enabled(): boolean {
+    return this._enabled;
+  }
+
+  public set enabled(value: boolean) {
+    this._enabled = value;
+    this._changed = true;
+  }
+
+  public get changed(): boolean {
+    return this._changed;
+  }
+
+  public addButton(text: string, url: string) {
+    this._buttons.push(new MaxButton(text, url));
+    this._changed = true;
+  }
+
+  public deleteButton(index: number): void {
+    this._buttons.splice(index, 1);
+    this._changed = true;
+  }
 }
 
 export class BotStore {
-
   private _bots: any[] = [];
 
   constructor() {
@@ -35,23 +91,28 @@ export class BotStore {
     this.refresh();
   }
 
-  public announcers(bot: Bot){
-    return this.client().announcers()
-      .then((data) => {
-        const item = data.data.at(0);
-        if (!item){
-          return;
-        }
-        return { id: item.id, text: item.text, buttons: item.buttons.map((it) => ({ text: it.text, url: it.url })) };
-      })
+  public announcers(bot: Bot): Promise<Announcer[]> {
+    return this.client()
+      .announcers()
+      .then((data) =>
+        data.data.map(
+          (item) =>
+            new Announcer(
+              item.id,
+              item.text,
+              item.buttons.map((it) => new MaxButton(it.text, it.url)),
+              item.enabled,
+            ),
+        ),
+      );
   }
 
   public refresh() {
-    this.client().accounts()
-      .then((data) => 
-        this._bots = data.data.map(
-          (bot) => ({ type: "max", enabled: true, id: bot.id })
-        )
+    this.client()
+      .accounts()
+      .then(
+        (data) =>
+          (this._bots = data.data.map((bot) => new Bot(bot.id, "max", true))),
       );
   }
 
@@ -59,12 +120,13 @@ export class BotStore {
     return this.client().addAnnouncer({
       chatId: Number(chat.id),
       text: text,
-      buttons: []
+      buttons: [],
     });
   }
 
   public getLink(type: string): Promise<string> {
-    return this.client().generateLink()
+    return this.client()
+      .generateLink()
       .then((data) => data.data["link"]);
   }
 
@@ -72,13 +134,15 @@ export class BotStore {
     return MaxApiFactory(undefined, process.env.REACT_APP_MAX_API_ENDPOINT);
   }
 
+  public removeBot(bot: Bot) {
+    this.client().deleteAccount({ id: bot.id });
+    this._bots = this._bots.filter((it) => it.id !== bot.id);
+  }
+
   public chats(): Promise<Chat[]> {
-    return this.client().listAvailableChats()
-      .then((data) => 
-        data.data.map(
-          (it) => ({ id: it.id, title: it.title })
-        )
-      );
+    return this.client()
+      .listAvailableChats()
+      .then((data) => data.data.map((it) => ({ id: it.id, title: it.title })));
   }
 
   public get bots() {
@@ -86,4 +150,4 @@ export class BotStore {
   }
 }
 
-export const BotStoreContext = createContext<BotStore|null>(null);
+export const BotStoreContext = createContext<BotStore | null>(null);

@@ -7,8 +7,8 @@ import {
   Panel,
   Title,
 } from "../../components/Overlay/Overlay";
-import { Bot, BotStoreContext, MaxButton } from "../../stores/BotStore";
-import { Flex } from "antd";
+import { Announcer, Bot, BotStoreContext } from "../../stores/BotStore";
+import { Flex, Input, Switch } from "antd";
 import { LightLabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./BotCard.module.css";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
@@ -17,6 +17,102 @@ import TextArea from "antd/es/input/TextArea";
 import { Card, CardTitle } from "../../components/Cards/CardsComponent";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import SecondaryButton from "../../components/Button/SecondaryButton";
+import {
+  BorderedIconButton,
+  NotBorderedIconButton,
+} from "../../components/IconButton/IconButton";
+import CloseIcon from "../../icons/CloseIcon";
+
+const AnnouncerComponent = observer(
+  ({ announcer }: { announcer: Announcer }) => {
+    const modalState = useContext(ModalStateContext);
+
+    return (
+      <Flex vertical gap={18} className={`${classes.container}`}>
+        <LightLabeledSwitchComponent
+          label="Делать анонс стрима"
+          value={announcer?.enabled || false}
+          onChange={(newValue) => {
+            if (announcer) {
+              announcer.enabled = newValue;
+            }
+          }}
+        />
+        {announcer?.enabled && (
+          <LightLabeledSwitchComponent
+            label="Удалять анонс по завершению стрима"
+            value={announcer?.enabled || false}
+            onChange={(newValue) => {
+              if (announcer) {
+                announcer.enabled = newValue;
+              }
+            }}
+          />
+        )}
+        {announcer?.enabled && (
+          <LabeledContainer displayName="Текст анонса">
+            <TextArea
+              value={announcer?.text}
+              onChange={(e) => {
+                if (announcer) {
+                  announcer.text = e.target.value;
+                }
+              }}
+            />
+          </LabeledContainer>
+        )}
+        {announcer?.enabled && (
+          <LabeledContainer displayName="Ссылки">
+            <Flex vertical className="full-width" gap={9}>
+              {announcer?.buttons.map((button, index) => (
+                <Flex key={index} gap={6} align="center">
+                  <Input
+                    value={button.text}
+                    placeholder="Текст"
+                    onChange={(e) => {
+                      button.text = e.target.value;
+                    }}
+                  />
+                  <Input
+                    value={button.url}
+                    placeholder="Ссылка"
+                    onChange={(e) => {
+                      button.url = e.target.value;
+                    }}
+                  />
+                  <NotBorderedIconButton
+                    onClick={() => {
+                      announcer?.deleteButton(index);
+                    }}
+                  >
+                    <CloseIcon color="#FF8888" />
+                  </NotBorderedIconButton>
+                </Flex>
+              ))}
+              <AddListItemButton
+                label="button-add-link"
+                onClick={() => {
+                  announcer?.addButton("", "");
+                }}
+              />
+            </Flex>
+          </LabeledContainer>
+        )}
+        <Flex
+          align="center"
+          justify="flex-end"
+          gap={12}
+          className={`${classes.buttons}`}
+        >
+          <SecondaryButton onClick={() => (modalState.show = false)}>
+            Отменить
+          </SecondaryButton>
+          <PrimaryButton onClick={() => {}}>Сохранить</PrimaryButton>
+        </Flex>
+      </Flex>
+    );
+  },
+);
 
 export const BotCard = observer(({ bot }: { bot: Bot }) => {
   const parentModalState = useContext(ModalStateContext);
@@ -25,15 +121,11 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
   );
   const botStore = useContext(BotStoreContext);
 
-  const [text, setText] = useState<string>("");
-  const [buttons, setButtons] = useState<MaxButton[]>([]);
+  const [announcer, setAnnouncer] = useState<Announcer | undefined>(undefined);
 
   useEffect(() => {
     botStore?.announcers(bot).then((data) => {
-      if (data) {
-        setText(data.text);
-        setButtons(data.buttons ?? []);
-      }
+      setAnnouncer(data[0] ?? bot.createAnnouncer());
     });
   }, [bot]);
 
@@ -45,52 +137,25 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
             <Title>
               <div>Настройки интеграции MAX</div>
             </Title>
-            <Flex vertical gap={18} className={`${classes.container}`}>
-              <LightLabeledSwitchComponent
-                label="Делать анонс стрима"
-                value={bot.enabled}
-                onChange={(newValue) => {}}
-              />
-              <LabeledContainer displayName="Текст анонса">
-                <TextArea value={text} onChange={(e) => {}} />
-              </LabeledContainer>
-              <LabeledContainer displayName="Ссылки">
-                {buttons.map((button, number) => (
-                  <Flex key={number}>
-                    <div>{button.text}</div>
-                    <div>{button.url}</div>
-                  </Flex>
-                ))}
-                <AddListItemButton
-                  label="button-add-link"
-                  onClick={() => {
-                    setButtons([...buttons, ...[{ text: "", url: "" }]]);
-                  }}
-                />
-              </LabeledContainer>
-              <Flex
-                align="center"
-                justify="flex-end"
-                gap={12}
-                className={`${classes.buttons}`}
-              >
-                <SecondaryButton
-                  onClick={() => (botSettingsDialogState.show = false)}
-                >
-                  Отменить
-                </SecondaryButton>
-                <PrimaryButton onClick={() => {}}>Сохранить</PrimaryButton>
-              </Flex>
-            </Flex>
+            {announcer && <AnnouncerComponent announcer={announcer} />}
           </Panel>
         </Overlay>
         <Card
           key={bot.id}
-          children={<CardTitle>{bot.type}</CardTitle>}
           onClick={() => {
             botSettingsDialogState.show = true;
           }}
-        />
+        >
+          <Flex justify="space-between" className="full-width" align="top">
+            <Flex align="center" gap={6}>
+              <CardTitle>{bot.name}</CardTitle>
+              <Switch checked={bot.enabled} />
+            </Flex>
+            <BorderedIconButton onClick={() => botStore?.removeBot(bot)}>
+              <CloseIcon color="#FF8888" />
+            </BorderedIconButton>
+          </Flex>
+        </Card>
       </ModalStateContext.Provider>
     </>
   );
