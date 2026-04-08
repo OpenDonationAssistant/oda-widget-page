@@ -34,74 +34,57 @@ const AnnouncerComponent = observer(
     return (
       <Flex vertical gap={18} className={`${classes.container}`}>
         <LightLabeledSwitchComponent
-          label="Делать анонс стрима"
-          value={announcer?.enabled || false}
+          label="Удалять анонс по завершению стрима"
+          value={announcer.enabled || false}
           onChange={(newValue) => {
-            if (announcer) {
-              announcer.enabled = newValue;
-            }
+            announcer.enabled = newValue;
           }}
         />
-        {announcer?.enabled && (
-          <LightLabeledSwitchComponent
-            label="Удалять анонс по завершению стрима"
-            value={announcer?.enabled || false}
-            onChange={(newValue) => {
+        <LabeledContainer displayName="Текст анонса">
+          <TextArea
+            value={announcer?.text}
+            onChange={(e) => {
               if (announcer) {
-                announcer.enabled = newValue;
+                announcer.text = e.target.value;
               }
             }}
           />
-        )}
-        {announcer?.enabled && (
-          <LabeledContainer displayName="Текст анонса">
-            <TextArea
-              value={announcer?.text}
-              onChange={(e) => {
-                if (announcer) {
-                  announcer.text = e.target.value;
-                }
+        </LabeledContainer>
+        <LabeledContainer displayName="Ссылки">
+          <Flex vertical className="full-width" gap={9}>
+            {announcer.buttons.map((button, index) => (
+              <Flex key={index} gap={6} align="center">
+                <Input
+                  value={button.text}
+                  placeholder="Текст"
+                  onChange={(e) => {
+                    button.text = e.target.value;
+                  }}
+                />
+                <Input
+                  value={button.url}
+                  placeholder="Ссылка"
+                  onChange={(e) => {
+                    button.url = e.target.value;
+                  }}
+                />
+                <NotBorderedIconButton
+                  onClick={() => {
+                    announcer.deleteButton(index);
+                  }}
+                >
+                  <CloseIcon color="#FF8888" />
+                </NotBorderedIconButton>
+              </Flex>
+            ))}
+            <AddListItemButton
+              label="button-add-link"
+              onClick={() => {
+                announcer?.addButton("", "");
               }}
             />
-          </LabeledContainer>
-        )}
-        {announcer?.enabled && (
-          <LabeledContainer displayName="Ссылки">
-            <Flex vertical className="full-width" gap={9}>
-              {announcer?.buttons.map((button, index) => (
-                <Flex key={index} gap={6} align="center">
-                  <Input
-                    value={button.text}
-                    placeholder="Текст"
-                    onChange={(e) => {
-                      button.text = e.target.value;
-                    }}
-                  />
-                  <Input
-                    value={button.url}
-                    placeholder="Ссылка"
-                    onChange={(e) => {
-                      button.url = e.target.value;
-                    }}
-                  />
-                  <NotBorderedIconButton
-                    onClick={() => {
-                      announcer?.deleteButton(index);
-                    }}
-                  >
-                    <CloseIcon color="#FF8888" />
-                  </NotBorderedIconButton>
-                </Flex>
-              ))}
-              <AddListItemButton
-                label="button-add-link"
-                onClick={() => {
-                  announcer?.addButton("", "");
-                }}
-              />
-            </Flex>
-          </LabeledContainer>
-        )}
+          </Flex>
+        </LabeledContainer>
         <Flex
           align="center"
           justify="flex-end"
@@ -135,10 +118,29 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
             </Title>
             <List>
               {bot.announcers.map((announcer) => (
-                <CollapsibleListItem title={"Делать анонс"} actions={<></>}>
+                <CollapsibleListItem
+                  title={
+                    <Flex align="center" gap={6}>
+                      <div>Анонс стрима</div>
+                      <Switch
+                        checked={announcer.enabled}
+                        onChange={(e) => (announcer.enabled = e)}
+                      />
+                    </Flex>
+                  }
+                  actions={<></>}
+                >
                   <AnnouncerComponent announcer={announcer} />
                 </CollapsibleListItem>
               ))}
+              <Flex>
+                <AddListItemButton
+                  label="button-add-announcer"
+                  onClick={() => {
+                    bot.createAnnouncer();
+                  }}
+                />
+              </Flex>
             </List>
           </Panel>
         </Overlay>

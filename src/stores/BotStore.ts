@@ -2,6 +2,7 @@ import { DefaultApiFactory as MaxApiFactory } from "@opendonationassistant/oda-m
 import { makeAutoObservable, reaction } from "mobx";
 import { createContext } from "react";
 import { uuidv7 } from "uuidv7";
+import { Loadable } from "../components/Loading/LoadingComponent";
 
 export class Bot {
   constructor(
@@ -97,12 +98,16 @@ export class Announcer {
   }
 }
 
-export class BotStore {
+export class BotStore implements Loadable {
   private _bots: any[] = [];
 
   constructor() {
     makeAutoObservable(this);
     this.refresh();
+  }
+
+  public load(): Promise<void> {
+    return this.refresh();
   }
 
   public announcers(bot: Bot): Promise<Announcer[]> {
@@ -132,9 +137,12 @@ export class BotStore {
 
   public addAnnouncer(bot: Bot, chat: Chat, text: string) {
     return this.client().addAnnouncer({
+      accountId: bot.id,
       chatId: Number(chat.id),
       text: text,
       buttons: [],
+      trigger: "streamStart",
+      type: "announceAndDelete",
     });
   }
 

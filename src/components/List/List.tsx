@@ -15,7 +15,7 @@ export const CollapsibleListItem = ({
 }) => {
   const [opened, setOpened] = useState<boolean>(false);
   return (
-    <Flex>
+    <Flex vertical>
       <ListItem
         first={title}
         second={actions}

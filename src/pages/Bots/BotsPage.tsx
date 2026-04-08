@@ -5,6 +5,7 @@ import { AddBotWizard } from "./AddBotWizard";
 import { BotStore, BotStoreContext } from "../../stores/BotStore";
 import { useState } from "react";
 import { BotCard } from "./BotCard";
+import { LoadingComponent } from "../../components/Loading/LoadingComponent";
 
 export const BotsPage = observer(() => {
   const { t } = useTranslation();
@@ -13,14 +14,16 @@ export const BotsPage = observer(() => {
   return (
     <>
       <h1>{t("menu-bots")}</h1>
-      <BotStoreContext.Provider value={botStore}>
-        <CardList>
-          {botStore.bots.map((bot) => (
-            <BotCard key={bot.id} bot={bot} />
-          ))}
-          <AddBotWizard />
-        </CardList>
-      </BotStoreContext.Provider>
+      <LoadingComponent loadable={botStore}>
+        <BotStoreContext.Provider value={botStore}>
+          <CardList>
+            {botStore.bots.map((bot) => (
+              <BotCard key={bot.id} bot={bot} />
+            ))}
+            <AddBotWizard />
+          </CardList>
+        </BotStoreContext.Provider>
+      </LoadingComponent>
     </>
   );
 });
