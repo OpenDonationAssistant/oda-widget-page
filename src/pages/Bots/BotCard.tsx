@@ -12,7 +12,11 @@ import { Flex, Input, Switch } from "antd";
 import { LightLabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./BotCard.module.css";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
-import { AddListItemButton } from "../../components/List/List";
+import {
+  AddListItemButton,
+  CollapsibleListItem,
+  List,
+} from "../../components/List/List";
 import TextArea from "antd/es/input/TextArea";
 import { Card, CardTitle } from "../../components/Cards/CardsComponent";
 import PrimaryButton from "../../components/Button/PrimaryButton";
@@ -121,14 +125,6 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
   );
   const botStore = useContext(BotStoreContext);
 
-  const [announcer, setAnnouncer] = useState<Announcer | undefined>(undefined);
-
-  useEffect(() => {
-    botStore?.announcers(bot).then((data) => {
-      setAnnouncer(data[0] ?? bot.createAnnouncer());
-    });
-  }, [bot]);
-
   return (
     <>
       <ModalStateContext.Provider value={botSettingsDialogState}>
@@ -137,7 +133,13 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
             <Title>
               <div>Настройки интеграции MAX</div>
             </Title>
-            {announcer && <AnnouncerComponent announcer={announcer} />}
+            <List>
+              {bot.announcers.map((announcer) => (
+                <CollapsibleListItem title={"Делать анонс"} actions={<></>}>
+                  <AnnouncerComponent announcer={announcer} />
+                </CollapsibleListItem>
+              ))}
+            </List>
           </Panel>
         </Overlay>
         <Card

@@ -1,8 +1,30 @@
-import { MouseEventHandler, ReactNode } from "react";
+import { MouseEventHandler, ReactNode, useState } from "react";
 import { log } from "../../logging";
 import classes from "./List.module.css";
 import { Flex } from "antd";
 import { useTranslation } from "react-i18next";
+
+export const CollapsibleListItem = ({
+  title,
+  actions,
+  children,
+}: {
+  title: ReactNode;
+  actions: ReactNode;
+  children: ReactNode;
+}) => {
+  const [opened, setOpened] = useState<boolean>(false);
+  return (
+    <Flex>
+      <ListItem
+        first={title}
+        second={actions}
+        onClick={() => setOpened(!opened)}
+      />
+      {opened && children}
+    </Flex>
+  );
+};
 
 export const ListItem = ({
   first,

@@ -112,7 +112,13 @@ const ChooseChatComponent = observer(
                   }
                 }}
               />
-              <UtilityButton onClick={() => {}}>Обновить</UtilityButton>
+              <UtilityButton
+                onClick={() => {
+                  botStore?.refresh();
+                }}
+              >
+                Обновить
+              </UtilityButton>
             </Flex>
           </Flex>
         )}

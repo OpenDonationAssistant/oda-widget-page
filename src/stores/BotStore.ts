@@ -8,6 +8,8 @@ export class Bot {
     public id: string,
     public type: string,
     public enabled: boolean,
+    private _announcers: Announcer[] = [],
+    private _unsaved: boolean = false,
   ) {
     makeAutoObservable(this);
   }
@@ -16,8 +18,16 @@ export class Bot {
     return this.type.toUpperCase();
   }
 
-  public createAnnouncer(): Announcer {
-    return new Announcer(uuidv7(), "Стрим начался!", [], true);
+  public get unsaved(): boolean {
+    return this._unsaved;
+  }
+
+  public createAnnouncer(): void {
+    this._announcers.push(new Announcer(uuidv7(), "Стрим начался!", [], true));
+  }
+
+  public get announcers(): Announcer[] {
+    return this._announcers;
   }
 }
 
@@ -68,6 +78,10 @@ export class Announcer {
     this._changed = true;
   }
 
+  public get buttons(): MaxButton[] {
+    return this._buttons;
+  }
+
   public get changed(): boolean {
     return this._changed;
   }
@@ -107,13 +121,13 @@ export class BotStore {
       );
   }
 
-  public refresh() {
-    this.client()
-      .accounts()
-      .then(
-        (data) =>
-          (this._bots = data.data.map((bot) => new Bot(bot.id, "max", true))),
-      );
+  public refresh(): Promise<void> {
+    return Promise.all([
+      this.client().accounts(),
+      this.client().announcers(),
+    ]).then(([accounts, announcers]) => {
+      this._bots = accounts.data.map((bot) => new Bot(bot.id, "max", true));
+    });
   }
 
   public addAnnouncer(bot: Bot, chat: Chat, text: string) {
