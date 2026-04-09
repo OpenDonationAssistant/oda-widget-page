@@ -16,7 +16,7 @@
     "@opendonationassistant/oda-files-service-client": "^0.0.1",
     "@opendonationassistant/oda-font-service-client": "^0.7.0",
     "@opendonationassistant/oda-history-service-client": "^0.8.1",
-    "@opendonationassistant/oda-max-service-client": "^0.0.8",
+    "@opendonationassistant/oda-max-service-client": "^0.0.11",
     "@opendonationassistant/oda-media-service-client": "^0.5.0",
     "@opendonationassistant/oda-news-service-client": "^0.2.0",
     "@opendonationassistant/oda-payment-service-client": "^0.1.5",

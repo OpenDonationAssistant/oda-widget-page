@@ -4,23 +4,35 @@
   background-color: var(--oda-color-150);
   border: none;
   border-radius: 12px;
-  font-size: 21px;
+  font-size: 24px;
+  font-weight: 900;
   &:hover {
     background-color: var(--oda-color-250);
     cursor: pointer;
   }
 }
 
+.collapsible {
+  background-color: var(--oda-color-150);
+  border-radius: 12px;
+}
+
+.listitemcontent{
+  padding: 12px 15px;
+  background-color: var(--oda-color-150);
+  border: none;
+  border-radius: 12px;
+}
+
 .adddalertbutton {
-  margin-top: 3px;
   font-size: 21px;
   text-align: center;
   width: 100%;
   background-color: var(--oda-color-150);
   border: none;
-  border-radius: 9px;
+  border-radius: 12px;
   color: var(--oda-primary-color);
-  height: 52px;
+  height: 60px;
   &:hover{
     background-color: var(--oda-color-250);
   }

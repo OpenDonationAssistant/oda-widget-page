@@ -80,7 +80,7 @@ initGlobalErrorStore(errorStore);
 //   );
 //   return true;
 // };
-//
+// //
 // window.onunhandledrejection = (event) => {
 //   console.log("Handling window onunhandledrejection");
 //   errorStore.setError(
@@ -89,7 +89,7 @@ initGlobalErrorStore(errorStore);
 //   );
 //   event.preventDefault();
 // };
-//
+
 // axios.interceptors.response.use(
 //   (response) => response,
 //   (error) => {
@@ -424,6 +424,7 @@ if (rootElement) {
       >
         <RouterProvider router={router} />
       </ConfigProvider>
+      <ErrorPopup />
     </ErrorStoreContext.Provider>,
   );
 }

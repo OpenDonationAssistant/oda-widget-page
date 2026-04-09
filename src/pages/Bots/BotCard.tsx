@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   ModalState,
   ModalStateContext,
@@ -19,23 +19,20 @@ import {
 } from "../../components/List/List";
 import TextArea from "antd/es/input/TextArea";
 import { Card, CardTitle } from "../../components/Cards/CardsComponent";
-import PrimaryButton from "../../components/Button/PrimaryButton";
-import SecondaryButton from "../../components/Button/SecondaryButton";
 import {
   BorderedIconButton,
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
+import { SaveOrCancel } from "../../components/Button/SaveButtons";
 
 const AnnouncerComponent = observer(
   ({ announcer }: { announcer: Announcer }) => {
-    const modalState = useContext(ModalStateContext);
-
     return (
       <Flex vertical gap={18} className={`${classes.container}`}>
         <LightLabeledSwitchComponent
           label="Удалять анонс по завершению стрима"
-          value={announcer.enabled || false}
+          value={false}
           onChange={(newValue) => {
             announcer.enabled = newValue;
           }}
@@ -85,17 +82,6 @@ const AnnouncerComponent = observer(
             />
           </Flex>
         </LabeledContainer>
-        <Flex
-          align="center"
-          justify="flex-end"
-          gap={12}
-          className={`${classes.buttons}`}
-        >
-          <SecondaryButton onClick={() => (modalState.show = false)}>
-            Отменить
-          </SecondaryButton>
-          <PrimaryButton onClick={() => {}}>Сохранить</PrimaryButton>
-        </Flex>
       </Flex>
     );
   },
@@ -128,20 +114,35 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
                       />
                     </Flex>
                   }
-                  actions={<></>}
+                  actions={
+                    <BorderedIconButton
+                      onClick={() => {
+                        announcer.delete();
+                      }}
+                    >
+                      <CloseIcon color="#FF8888" />
+                    </BorderedIconButton>
+                  }
                 >
                   <AnnouncerComponent announcer={announcer} />
                 </CollapsibleListItem>
               ))}
-              <Flex>
-                <AddListItemButton
-                  label="button-add-announcer"
-                  onClick={() => {
-                    bot.createAnnouncer();
-                  }}
-                />
-              </Flex>
+              <AddListItemButton
+                label="button-add-announcer"
+                onClick={() => {
+                  bot.createAnnouncer();
+                }}
+              />
             </List>
+            <SaveOrCancel
+              changeable={bot}
+              onCancel={() => {
+                botSettingsDialogState.show = false;
+              }}
+              onSave={() => {
+                botSettingsDialogState.show = false;
+              }}
+            />
           </Panel>
         </Overlay>
         <Card

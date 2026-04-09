@@ -3,6 +3,8 @@ import { log } from "../../logging";
 import classes from "./List.module.css";
 import { Flex } from "antd";
 import { useTranslation } from "react-i18next";
+import ArrowUp from "../../icons/ArrowUp";
+import ArrowDown from "../../icons/ArrowDown";
 
 export const CollapsibleListItem = ({
   title,
@@ -15,13 +17,18 @@ export const CollapsibleListItem = ({
 }) => {
   const [opened, setOpened] = useState<boolean>(false);
   return (
-    <Flex vertical>
+    <Flex vertical className={`${classes.collapsible}`}>
       <ListItem
         first={title}
-        second={actions}
+        second={
+          <Flex align="center" gap={3}>
+            {actions}
+            {opened ? <ArrowUp /> : <ArrowDown />}
+          </Flex>
+        }
         onClick={() => setOpened(!opened)}
       />
-      {opened && children}
+      {opened && <div className={`${classes.listitemcontent}`}>{children}</div>}
     </Flex>
   );
 };
