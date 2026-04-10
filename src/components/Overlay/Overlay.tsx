@@ -1,13 +1,6 @@
 import { Flex } from "antd";
 import classes from "./Overlay.module.css";
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, createContext, useContext, useEffect, useRef } from "react";
 import { log } from "../../logging";
 import { createPortal } from "react-dom";
 import { makeAutoObservable } from "mobx";
@@ -38,6 +31,7 @@ export class ModalState {
     }
     makeAutoObservable(this);
   }
+
   public handleEscape() {
     if (this.show && this._onTop) {
       log.debug({ state: this }, "handle keypress");
@@ -63,6 +57,12 @@ export class ModalState {
       this._parent.onTop = !show;
     }
     this._show = show;
+  }
+  public open() {
+    this.show = true;
+  }
+  public close() {
+    this.show = false;
   }
   public get show() {
     return this._show;
@@ -105,7 +105,13 @@ export const Panel = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Dialog = ({ children, center }: { children: ReactNode, center?: boolean }) => {
+export const Dialog = ({
+  children,
+  center,
+}: {
+  children: ReactNode;
+  center?: boolean;
+}) => {
   return (
     <Flex vertical justify={center ? "center" : "flex-start"} align="center">
       <Flex

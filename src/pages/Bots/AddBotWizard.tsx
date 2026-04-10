@@ -74,60 +74,6 @@ const AddingBotComponent = observer(
   },
 );
 
-const ChooseChatComponent = observer(
-  ({ selection }: { selection: AddBotOperationStore }) => {
-    const botStore = useContext(BotStoreContext);
-    const [chats, setChats] = useState<Chat[] | null>(null);
-
-    useEffect(() => {
-      if (!selection.type) {
-        return;
-      }
-      botStore?.chats().then((chats) => setChats(chats));
-    }, [selection.type]);
-
-    return (
-      <>
-        {chats && (
-          <Flex vertical className="full-width">
-            <div style={{ color: "white", marginBottom: "6px" }}>
-              Выберите чат, в который хотите добавить бота.
-            </div>
-            <Flex
-              justify="space-between"
-              align="center"
-              gap={9}
-              className="full-width"
-            >
-              <Select
-                className={`${classes.selectchatbutton}`}
-                value={selection.chat?.id}
-                options={chats.map((chat) => {
-                  return { label: chat.title, value: chat.id };
-                })}
-                onChange={(value) => {
-                  const selected = chats.find((chat) => chat.id === value);
-                  if (selected) {
-                    selection.chat = selected;
-                  }
-                }}
-              />
-              <UtilityButton
-                onClick={() => {
-                  botStore?.refresh();
-                }}
-              >
-                Обновить
-              </UtilityButton>
-            </Flex>
-          </Flex>
-        )}
-        {!chats && <div>loading...</div>}
-      </>
-    );
-  },
-);
-
 class AddBotOperationStore {
   private _bot: Bot | null = null;
   private _chat: Chat | null = null;
@@ -182,25 +128,8 @@ export const AddBotWizard = observer(() => {
           subtitle: "Подключите бота к вашему аккаунту",
           content: <AddingBotComponent selection={selection} />,
           handler: () => {
-            return Promise.resolve(true);
-          },
-          isInformation: true,
-        },
-        {
-          title: "Добавить бота",
-          subtitle: "Выберите чат, в котором хотите добавить бота",
-          content: <ChooseChatComponent selection={selection} />,
-          handler: () => {
             return (
-              botStore
-                ?.addAnnouncer(
-                  selection.bot!,
-                  selection.chat!,
-                  "Стрим начался!",
-                )
-                .then(() => {
-                  return true;
-                }) ?? Promise.resolve(true)
+              botStore?.refresh().then(() => true) ?? Promise.resolve(true)
             );
           },
           isInformation: true,

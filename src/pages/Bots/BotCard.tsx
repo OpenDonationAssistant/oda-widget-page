@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
 import {
-  ModalState,
+  Dialog,
   ModalStateContext,
   Overlay,
   Panel,
   Title,
 } from "../../components/Overlay/Overlay";
-import { Announcer, Bot, BotStoreContext } from "../../stores/BotStore";
-import { Flex, Input, Switch } from "antd";
+import { Announcer, Bot, BotStoreContext, Chat } from "../../stores/BotStore";
+import { Flex, Input, Switch, Select } from "antd";
 import { LightLabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./BotCard.module.css";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
@@ -25,28 +25,31 @@ import {
 } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import { SaveOrCancel } from "../../components/Button/SaveButtons";
+import { AnnouncerDataAnnouncerType } from "@opendonationassistant/oda-max-service-client";
+import { useModal } from "../../components/Overlay/UseModal";
+import UtilityButton from "../../components/Button/UtilityButton";
 
 const AnnouncerComponent = observer(
   ({ announcer }: { announcer: Announcer }) => {
     return (
       <Flex vertical gap={18} className={`${classes.container}`}>
-        <LightLabeledSwitchComponent
-          label="Удалять анонс по завершению стрима"
-          value={false}
-          onChange={(newValue) => {
-            announcer.enabled = newValue;
-          }}
-        />
         <LabeledContainer displayName="Текст анонса">
           <TextArea
-            value={announcer?.text}
+            value={announcer.text}
             onChange={(e) => {
-              if (announcer) {
-                announcer.text = e.target.value;
-              }
+              announcer.text = e.target.value;
             }}
           />
         </LabeledContainer>
+        <LightLabeledSwitchComponent
+          label="Удалять анонс по завершению стрима"
+          value={announcer.type === AnnouncerDataAnnouncerType.StreamAndDelete}
+          onChange={(newValue) => {
+            announcer.type = newValue
+              ? AnnouncerDataAnnouncerType.StreamAndDelete
+              : AnnouncerDataAnnouncerType.Stream;
+          }}
+        />
         <LabeledContainer displayName="Ссылки">
           <Flex vertical className="full-width" gap={9}>
             {announcer.buttons.map((button, index) => (
@@ -77,7 +80,7 @@ const AnnouncerComponent = observer(
             <AddListItemButton
               label="button-add-link"
               onClick={() => {
-                announcer?.addButton("", "");
+                announcer.addButton("", "");
               }}
             />
           </Flex>
@@ -87,16 +90,73 @@ const AnnouncerComponent = observer(
   },
 );
 
-export const BotCard = observer(({ bot }: { bot: Bot }) => {
-  const parentModalState = useContext(ModalStateContext);
-  const [botSettingsDialogState] = useState<ModalState>(
-    () => new ModalState(parentModalState),
+const AddAnnouncerComponent = ({ bot: bot }: { bot: Bot }) => {
+  const { modalState } = useModal();
+  const botStore = useContext(BotStoreContext);
+  const [selection, setSelection] = useState<Chat | null>(null);
+
+  return (
+    <ModalStateContext.Provider value={modalState}>
+      <Overlay>
+        <Dialog>
+          <Title>Выберите чат</Title>
+          <Flex
+            justify="space-between"
+            align="center"
+            gap={9}
+            className="full-width"
+          >
+            <Select
+              className={`${classes.selectchatbutton}`}
+              value={selection?.id}
+              options={botStore?.chats.map((chat) => {
+                return { label: chat.title, value: chat.id };
+              })}
+              onChange={(value) => {
+                setSelection(
+                  botStore?.chats.find((chat) => chat.id === value) ?? null,
+                );
+              }}
+            />
+            <UtilityButton
+              onClick={() => {
+                botStore?.refreshChats();
+              }}
+            >
+              Обновить
+            </UtilityButton>
+          </Flex>
+          <SaveOrCancel
+            saveLabel="Выбрать"
+            changeable={{
+              changed: !!selection,
+              save: () => {
+                if (selection) {
+                  bot.createAnnouncer(selection.id);
+                  modalState.show = false;
+                }
+              },
+            }}
+          />
+        </Dialog>
+      </Overlay>
+      <AddListItemButton
+        label="button-add-announcer"
+        onClick={() => {
+          modalState.open();
+        }}
+      />
+    </ModalStateContext.Provider>
   );
+};
+
+export const BotCard = observer(({ bot }: { bot: Bot }) => {
+  const { modalState } = useModal();
   const botStore = useContext(BotStoreContext);
 
   return (
     <>
-      <ModalStateContext.Provider value={botSettingsDialogState}>
+      <ModalStateContext.Provider value={modalState}>
         <Overlay>
           <Panel>
             <Title>
@@ -127,34 +187,21 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
                   <AnnouncerComponent announcer={announcer} />
                 </CollapsibleListItem>
               ))}
-              <AddListItemButton
-                label="button-add-announcer"
-                onClick={() => {
-                  bot.createAnnouncer();
-                }}
-              />
+              <AddAnnouncerComponent bot={bot} />
             </List>
-            <SaveOrCancel
-              changeable={bot}
-              onCancel={() => {
-                botSettingsDialogState.show = false;
-              }}
-              onSave={() => {
-                botSettingsDialogState.show = false;
-              }}
-            />
+            <SaveOrCancel changeable={bot} />
           </Panel>
         </Overlay>
         <Card
           key={bot.id}
           onClick={() => {
-            botSettingsDialogState.show = true;
+            modalState.show = true;
           }}
         >
           <Flex justify="space-between" className="full-width" align="top">
             <Flex align="center" gap={6}>
               <CardTitle>{bot.name}</CardTitle>
-              <Switch checked={bot.enabled} />
+              <Switch checked={bot.enabled} onChange={(e) => bot.toggle()} />
             </Flex>
             <BorderedIconButton onClick={() => botStore?.removeBot(bot)}>
               <CloseIcon color="#FF8888" />

@@ -1,4 +1,7 @@
-import { DefaultApiFactory as MaxApiFactory } from "@opendonationassistant/oda-max-service-client";
+import {
+  AnnouncerDataAnnouncerType,
+  DefaultApiFactory as MaxApiFactory,
+} from "@opendonationassistant/oda-max-service-client";
 import { makeAutoObservable } from "mobx";
 import { createContext } from "react";
 import { uuidv7 } from "uuidv7";
@@ -21,11 +24,18 @@ export class Bot {
     makeAutoObservable(this);
   }
 
-  public createAnnouncer(): void {
+  public createAnnouncer(chatId: number): void {
     this._changed = true;
     this._addedAnnouncers.push(
       new Announcer(
-        { id: uuidv7(), text: "Стрим начался!", buttons: [] },
+        {
+          id: uuidv7(),
+          text: "Стрим начался!",
+          buttons: [],
+          type: AnnouncerDataAnnouncerType.StreamAndDelete,
+          enabled: true,
+          chatId: chatId,
+        },
         this,
       ),
     );
@@ -44,14 +54,24 @@ export class Bot {
         id: it.id,
         text: it.text,
         buttons: it.buttons,
+        type: it.type,
+        enabled: it.enabled,
+        chatId: it.chatId,
       })),
       this._announcers.map((it) => ({
         id: it.id,
         text: it.text,
         buttons: it.buttons,
+        type: it.type,
+        enabled: it.enabled,
+        chatId: it.chatId,
       })),
       this._deletedAnnouncers.map((it) => it.id),
     );
+  }
+
+  public reload(): void {
+    this._store.refresh();
   }
 
   public get name(): string {
@@ -64,6 +84,10 @@ export class Bot {
 
   public get changed(): boolean {
     return this._changed || this._announcers.some((it) => it.changed);
+  }
+
+  public toggle() {
+    this._store.toggleBot(this);
   }
 }
 
@@ -108,13 +132,15 @@ export interface AnnouncerData {
   id: string;
   text: string;
   buttons: MaxButton[];
+  type: AnnouncerDataAnnouncerType;
+  enabled: boolean;
+  chatId: number;
 }
 
 export class Announcer {
   constructor(
     private _data: AnnouncerData,
     private _bot: Bot,
-    private _enabled: boolean = true,
     private _changed: boolean = false,
   ) {
     makeAutoObservable(this);
@@ -122,6 +148,19 @@ export class Announcer {
 
   public get id(): string {
     return this._data.id;
+  }
+
+  public get chatId(): number {
+    return this._data.chatId;
+  }
+
+  public get type(): AnnouncerDataAnnouncerType {
+    return this._data.type;
+  }
+
+  public set type(value: AnnouncerDataAnnouncerType) {
+    this._data.type = value;
+    this._changed = true;
   }
 
   public get text(): string {
@@ -134,11 +173,11 @@ export class Announcer {
   }
 
   public get enabled(): boolean {
-    return this._enabled;
+    return this._data.enabled;
   }
 
   public set enabled(value: boolean) {
-    this._enabled = value;
+    this._data.enabled = value;
     this._changed = true;
   }
 
@@ -167,6 +206,7 @@ export class Announcer {
 
 export class BotStore implements Loadable {
   private _bots: Bot[] = [];
+  private _chats: Chat[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -177,23 +217,35 @@ export class BotStore implements Loadable {
     return this.refresh();
   }
 
+  public refreshChats(): Promise<void> {
+    return this.client()
+      .listAvailableChats()
+      .then((data) => {
+        this._chats = data.data.map((it) => ({ id: it.id, title: it.title }));
+      });
+  }
+
   public refresh(): Promise<void> {
     return Promise.all([
       this.client().accounts(),
       this.client().announcers(),
+      this.refreshChats(),
     ]).then(([accounts, announcers]) => {
       this._bots = accounts.data.map(
         (bot) =>
           new Bot(
             bot.id,
             "max",
-            true,
+            bot.enabled,
             announcers.data.map((it) => ({
               id: it.id,
               text: it.text,
               buttons: it.buttons.map(
                 (button) => new MaxButton(button.text, button.url),
               ),
+              type: it.announcerType,
+              enabled: it.enabled,
+              chatId: it.chatId,
             })),
             this,
           ),
@@ -215,10 +267,9 @@ export class BotStore implements Loadable {
             text: button.text,
             url: button.url,
           })),
-          type: "announceAndDelete",
+          type: it.type,
           accountId: botId,
-          trigger: "onStreamStart",
-          chatId: 0,
+          chatId: it.chatId,
         })),
         deleted: deleted,
         updated: updated.map((it) => ({
@@ -228,10 +279,10 @@ export class BotStore implements Loadable {
             text: button.text,
             url: button.url,
           })),
-          type: "announceAndDelete",
+          type: it.type,
           accountId: botId,
-          trigger: "onStreamStart",
-          chatId: 0,
+          chatId: it.chatId,
+          enabled: it.enabled,
         })),
       })
       .then(() => this.refresh());
@@ -252,14 +303,18 @@ export class BotStore implements Loadable {
     this._bots = this._bots.filter((it) => it.id !== bot.id);
   }
 
-  public chats(): Promise<Chat[]> {
-    return this.client()
-      .listAvailableChats()
-      .then((data) => data.data.map((it) => ({ id: it.id, title: it.title })));
+  public get chats(): Chat[] {
+    return this._chats;
   }
 
   public get bots() {
     return this._bots;
+  }
+
+  public toggleBot(bot: Bot) {
+    this.client()
+      .toggleAccount({ id: bot.id, enabled: !bot.enabled })
+      .then(() => (bot.enabled = !bot.enabled));
   }
 }
 

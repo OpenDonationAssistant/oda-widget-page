@@ -45,9 +45,17 @@ export const SaveButtons = observer(() => {
 export interface Changeable {
   changed: boolean;
   save: () => void;
+  reload: () => void;
 }
+
 export const SaveOrCancel = observer(
-  ({ changeable }: { changeable: Changeable }) => {
+  ({
+    changeable,
+    saveLabel,
+  }: {
+    saveLabel?: string;
+    changeable: { changed: boolean; save: () => void };
+  }) => {
     const parentModalState = useContext(ModalStateContext);
 
     return (
@@ -66,7 +74,7 @@ export const SaveOrCancel = observer(
             changeable.save();
           }}
         >
-          Сохранить
+          {saveLabel ?? "Сохранить"}
         </PrimaryButton>
       </Flex>
     );
