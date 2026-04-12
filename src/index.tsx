@@ -104,8 +104,7 @@ async function widgetSettingsLoader({
 }: {
   params: Params<"widgetId">;
 }): Promise<WidgetData> {
-  const recipientId = await auth();
-  log.debug(`loading settings for ${recipientId}`);
+  const session = await auth();
   let settings = {};
   if (params.widgetId) {
     settings = await axios
@@ -117,12 +116,14 @@ async function widgetSettingsLoader({
       });
   }
 
-  const conf = await config(recipientId);
+  const conf = await config(session.id);
   setLoglevel(conf.loglevel);
   log.debug({ configuration: conf });
   const widgetId = params.widgetId ?? "unknown";
+  const recipientId = session.id ?? "unknown";
+  const features = session.features ?? [];
 
-  return { recipientId, settings, conf, widgetId };
+  return { recipientId, settings, conf, widgetId, features };
 }
 
 const urlParams = new URLSearchParams(window.location.search);

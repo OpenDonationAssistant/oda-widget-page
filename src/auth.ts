@@ -1,20 +1,45 @@
 import axios from "axios";
 import { log } from "./logging";
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 
-async function loadSession() {
-  const accessToken = localStorage.getItem("access-token");
-  if (accessToken) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-  }
-  const sessionInfo = await axios
-    .get(`${process.env.REACT_APP_RECIPIENT_API_ENDPOINT}/session`)
-    .then((json) => {
-      return json.data;
-    });
-  return sessionInfo;
+interface Session {
+  logged: boolean;
+  id?: string;
+  features: {
+    name: string;
+    state: "ENABLED" | "DISABLED";
+  }[];
 }
 
-async function exchangeOtp(otp: string): Promise<string>{
+async function loadSession(): Promise<Session> {
+  const accessToken = localStorage.getItem("access-token");
+  if (!accessToken) {
+    return Promise.resolve({ logged: false, features: [] });
+  }
+  axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+  return RecipientService(
+    undefined,
+    process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+  )
+    .getSettings()
+    .then((response) => ({
+      logged: true,
+      id: response.data.recipientId,
+      features: response.data.features?.map(
+        (feature) =>
+          ({
+            name: feature.name,
+            state: feature.status,
+          }) ?? [],
+      ),
+    }))
+    .catch((error) => {
+      log.debug({ error: error }, `error: ${JSON.stringify(error)}`);
+      return Promise.resolve({ logged: false, features: [] });
+    });
+}
+
+async function exchangeOtp(otp: string): Promise<string> {
   const response = await axios.post(
     `${process.env.REACT_APP_AUTH_API_ENDPOINT}/otp/exchange`,
     {
@@ -26,7 +51,7 @@ async function exchangeOtp(otp: string): Promise<string>{
 
 // TODO: get access-token without redirecting to login page
 // TODO: get recipient id lazily
-export default async function auth() {
+export default async function auth(): Promise<Session> {
   let sessionInfo = await loadSession();
   if (window.location.href.endsWith("login")) {
   } else {
@@ -34,14 +59,15 @@ export default async function auth() {
       let refreshToken = new URLSearchParams(window.location.search).get(
         "refresh-token",
       );
-      const otp = new URLSearchParams(window.location.search).get(
-        "otp",
-      );
-      if (!refreshToken && otp){
+      const otp = new URLSearchParams(window.location.search).get("otp");
+      if (!refreshToken && otp) {
         refreshToken = await exchangeOtp(otp);
       }
       const page = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-      log.debug(`return to login page before page: ${page}`);
+      log.debug(
+        { session: sessionInfo, page: page },
+        `return to login page before page`,
+      );
       if (refreshToken) {
         window.location.replace(
           `/login?refresh-token=${refreshToken}&page=${page}`,
@@ -53,13 +79,12 @@ export default async function auth() {
   }
 
   let recipientId = "unknown";
-  if (sessionInfo.logged) {
+  if (sessionInfo.logged && sessionInfo.id) {
     log.debug(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
     recipientId = sessionInfo.id;
-    axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${localStorage.getItem("access-token")}`;
+    axios.defaults.headers.common["Authorization"] =
+      `Bearer ${localStorage.getItem("access-token")}`;
   }
 
-  return recipientId;
+  return sessionInfo;
 }

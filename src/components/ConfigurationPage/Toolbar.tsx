@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import classes from "./Toolbar.module.css";
 import style from "./Toolbar-theme-2.module.css";
@@ -7,10 +7,11 @@ import WidgetsIcon from "../../icons/WidgetsIcon";
 import HistoryIcon from "../../icons/HistoryIcon";
 import RubleIcon from "../../icons/RubleIcon";
 import AutomationIcon from "../../icons/AutomationIcon";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import WalletIcon from "../../icons/WalletIcon";
 import GuideIcon from "../../icons/GuideIcon";
 import IntegrationIcon from "../../icons/IntegrationIcon";
+import { WidgetData } from "../../types/WidgetData";
 
 enum Page {
   WIDGETS,
@@ -32,7 +33,7 @@ interface Section {
   label: string;
 }
 
-const buttons: Section[] = [
+const allButtons: Section[] = [
   {
     page: Page.WIDGETS,
     url: "/configuration/widgets",
@@ -115,6 +116,16 @@ const buttons: Section[] = [
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { features } = useLoaderData() as WidgetData;
+  const [buttons, setButtons] = useState<Section[]>([]);
+
+  useEffect(() => {
+    if (features.find((f) => f.name === "Bots")?.state === "ENABLED") {
+      setButtons(allButtons);
+    } else {
+      setButtons(allButtons.filter((b) => b.page !== Page.BOTS));
+    }
+  }, [features]);
 
   return (
     <div className={`${style.toolbar}`}>

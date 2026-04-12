@@ -14,7 +14,7 @@ interface Config {
   loglevel: string;
 }
 
-async function config(recipientId: string): Promise<Config> {
+async function config(recipientId?: string): Promise<Config> {
   if ("unknown" === recipientId || !recipientId) {
     return new Promise((resolve) => {
       resolve({

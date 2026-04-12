@@ -1,14 +1,14 @@
 import pino from "pino";
 
-function valueOf(level: string):number {
-  switch(level){
-    case 'error':
+function valueOf(level: string): number {
+  switch (level) {
+    case "error":
       return 0;
-    case 'warn':
+    case "warn":
       return 1;
-    case 'info':
+    case "info":
       return 2;
-    case 'debug':
+    case "debug":
       return 3;
     default:
       return 0;
@@ -35,7 +35,7 @@ const send = async function (level: string, logEvent: any) {
 
 let loglevel = "error";
 
-function setLoglevel(level: string){
+function setLoglevel(level: string) {
   loglevel = level;
 }
 
