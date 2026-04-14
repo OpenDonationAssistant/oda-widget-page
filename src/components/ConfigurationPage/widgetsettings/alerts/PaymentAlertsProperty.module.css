@@ -56,6 +56,7 @@
   .smallsegmented {
     color: var(--oda-secondary-text-color);
     &[class*="ant-segmented"] {
+      border-radius: 15px;
       & [class*="ant-segmented-group"] {
         & [class*="ant-segmented-item-label"] {
           min-height: unset;

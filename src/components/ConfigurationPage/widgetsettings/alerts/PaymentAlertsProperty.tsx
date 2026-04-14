@@ -156,7 +156,13 @@ interface ListFilter {
 }
 
 const ListComponent = observer(
-  ({ property }: { property: PaymentAlertsProperty }) => {
+  ({
+    property,
+    configuration,
+  }: {
+    property: PaymentAlertsProperty;
+    configuration: WizardConfigurationStore;
+  }) => {
     const selection = useContext(SelectedIndexContext);
     const [filter, setFilter] = useState<ListFilter>(() => {
       return { enabled: "all" };
@@ -230,6 +236,10 @@ const ListComponent = observer(
               open={selection.id === alert.id}
             />
           ))}
+          <AddListItemButton
+            label="button-add-alert"
+            onClick={() => configuration.next()}
+          />
         </List>
       </>
     );
@@ -295,10 +305,9 @@ const PaymentAlertsPropertyComponent = observer(
     return (
       <SelectedIndexContext.Provider value={selection}>
         <Wizard configurationStore={wizardConfiguration} />
-        <ListComponent property={property} />
-        <AddListItemButton
-          label="button-add-alert"
-          onClick={() => wizardConfiguration.next()}
+        <ListComponent
+          property={property}
+          configuration={wizardConfiguration}
         />
       </SelectedIndexContext.Provider>
     );
