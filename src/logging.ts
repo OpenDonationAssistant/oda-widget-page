@@ -19,7 +19,6 @@ const send = async function (level: string, logEvent: any) {
   if (!logEvent?.level?.label) {
     return;
   }
-  console.log({ logEvent });
   const module = logEvent.bindings.at(-1)?.module;
   const loglevel = module
     ? (loglevels.find((l) => l.name === module)?.level.toLowerCase() ?? "error")
