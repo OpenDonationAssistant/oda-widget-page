@@ -19,6 +19,8 @@ import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
+const integrationLog = log.child({ module: "donationIntegration" });
+
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
     ...state.totalBorder,
@@ -790,6 +792,7 @@ const PaymentAlerts = observer(
 
           socket.on("donation", function (msg) {
             const donation = JSON.parse(msg);
+            integrationLog.debug({ donation: msg }, "Received DA donation");
             if (
               donation.message &&
               donation.message.startsWith("Memealerts:")

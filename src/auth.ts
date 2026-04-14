@@ -2,6 +2,11 @@ import axios from "axios";
 import { log } from "./logging";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 
+interface LogLevel {
+  name: string;
+  level: "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE" | "DISABLED";
+}
+
 interface Session {
   logged: boolean;
   id?: string;
@@ -9,12 +14,13 @@ interface Session {
     name: string;
     state: "ENABLED" | "DISABLED";
   }[];
+  logLevels: LogLevel[];
 }
 
 async function loadSession(): Promise<Session> {
   const accessToken = localStorage.getItem("access-token");
   if (!accessToken) {
-    return Promise.resolve({ logged: false, features: [] });
+    return Promise.resolve({ logged: false, features: [], logLevels: [] });
   }
   axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
   return RecipientService(
@@ -32,10 +38,11 @@ async function loadSession(): Promise<Session> {
             state: feature.status,
           }) ?? [],
       ),
+      logLevels: response.data.logLevels,
     }))
     .catch((error) => {
       log.debug({ error: error }, `error: ${JSON.stringify(error)}`);
-      return Promise.resolve({ logged: false, features: [] });
+      return Promise.resolve({ logged: false, features: [], logLevels: [] });
     });
 }
 
@@ -84,6 +91,25 @@ export default async function auth(): Promise<Session> {
     recipientId = sessionInfo.id;
     axios.defaults.headers.common["Authorization"] =
       `Bearer ${localStorage.getItem("access-token")}`;
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: "USER_AUTHORIZED",
+        recipientId: recipientId,
+        features: sessionInfo.features,
+      });
+    } else if (navigator.serviceWorker) {
+      // ensure active SW and then notify
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.active &&
+          reg.active.postMessage({
+            type: "USER_AUTHORIZED",
+            payload: {
+              recipientId: recipientId,
+              features: sessionInfo.features,
+            },
+          });
+      });
+    }
   }
 
   return sessionInfo;

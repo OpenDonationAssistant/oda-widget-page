@@ -28,7 +28,7 @@ async function config(recipientId?: string): Promise<Config> {
           paymentWidgetCommands: "",
           mediaWidgetCommands: "",
         },
-        loglevel: "error"
+        loglevel: "error",
       });
     });
   }
