@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { Flex, Input, Select, Switch } from "antd";
+import { Flex, Input, Select } from "antd";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { uuidv7 } from "uuidv7";
 import { useTranslation } from "react-i18next";
@@ -60,6 +60,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       triggerAlert: showAlert,
       triggerReel: triggerReel,
       triggerDonaton: triggerDonaton,
+      system: "ODA",
       goals: goalId
         ? [
             {
