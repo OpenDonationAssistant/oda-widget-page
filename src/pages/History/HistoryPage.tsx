@@ -8,6 +8,7 @@ import {
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import {
+    CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
@@ -16,7 +17,6 @@ import {
   Title,
 } from "../../components/Overlay/Overlay";
 import { useContext, useEffect, useState } from "react";
-import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import {
   DefaultHistoryStore,
   HistoryStore,
@@ -35,6 +35,7 @@ import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
 import SecondaryButton from "../../components/Button/SecondaryButton";
 import { uuidv7 } from "uuidv7";
+import { useTranslation } from "react-i18next";
 
 const HistoryItemList = observer(({}: {}) => {
   const historyStore = useContext(HistoryStoreContext);
@@ -99,6 +100,25 @@ const NewsLineComponent = observer(({}) => {
   );
 });
 
+const SwitchComponent = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (update: any) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Flex justify="space-between" align="center" gap={21}>
+      <div className={`${classes.switchlabel}`}>{t(label)}</div>
+      <Switch value={value} onChange={onChange} />
+    </Flex>
+  );
+};
+
 export const HistoryComponent = observer(
   ({ showHeader }: { showHeader: boolean }) => {
     const parentModalState = useContext(ModalStateContext);
@@ -143,48 +163,84 @@ export const HistoryComponent = observer(
       <>
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
-            <Panel>
-              <Title>Настройки отображения</Title>
+            <Panel className={`${classes.filterpanel}`}>
+              <Flex>
+                <div className={`${classes.title}`}>Настройки отображения</div>
+                <CloseOverlayButton/>
+              </Flex>
               <Subtitle>
                 Выберите, какие события будут отображаться в истории
               </Subtitle>
-              <Flex vertical gap={9} className={`${classes.filters}`}>
-                <div className={`${classes.filtersection}`}>Донаты</div>
-                <div className={`${classes.filterlist}`}>
-                  <LabeledSwitchComponent
-                    value={historyStore.showODA}
-                    label="ODA"
-                    onChange={(update) => {
-                      historyStore.showODA = update;
-                    }}
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonationAlerts}
-                    label="DonationAlerts"
-                    onChange={(update) =>
-                      (historyStore.showDonationAlerts = update)
-                    }
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonatePay}
-                    label="DonatePay.ru"
-                    onChange={(update) => (historyStore.showDonatePay = update)}
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonatePayEu}
-                    label="DonatePay.eu"
-                    onChange={(update) =>
-                      (historyStore.showDonatePayEu = update)
-                    }
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonateX}
-                    label="DonateX"
-                    onChange={(update) =>
-                      (historyStore.showDonateX = update)
-                    }
-                  />
-                </div>
+              <Flex vertical gap={21} className={`${classes.filters}`}>
+                <Flex vertical>
+                  <div className={`${classes.filtersection}`}>Донаты</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showODA}
+                      label="ODA"
+                      onChange={(update) => {
+                        historyStore.showODA = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonationAlerts}
+                      label="DonationAlerts"
+                      onChange={(update) =>
+                        (historyStore.showDonationAlerts = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonatePay}
+                      label="DonatePay.ru"
+                      onChange={(update) =>
+                        (historyStore.showDonatePay = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonatePayEu}
+                      label="DonatePay.eu"
+                      onChange={(update) =>
+                        (historyStore.showDonatePayEu = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonateX}
+                      label="DonateX"
+                      onChange={(update) => (historyStore.showDonateX = update)}
+                    />
+                  </div>
+                </Flex>
+                <Flex vertical>
+                  <div className={`${classes.filtersection}`}>Boosty</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showODA}
+                      label="Подписки Boosty"
+                      onChange={(update) => {
+                        historyStore.showODA = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showODA}
+                      label="Отслеживания Boosty"
+                      onChange={(update) => {
+                        historyStore.showODA = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex vertical>
+                  <div className={`${classes.filtersection}`}>Meme Alerts</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showODA}
+                      label="Подписки Boosty"
+                      onChange={(update) => {
+                        historyStore.showODA = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
               </Flex>
             </Panel>
           </Overlay>

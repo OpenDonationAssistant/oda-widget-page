@@ -4,7 +4,8 @@ import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty
 import { createContext } from "react";
 
 export class PaymentPageConfig {
-  private _log = parent.child({ module: "PaymentPageConfig" });
+  private _log = parent.child({ module: "paymentPageConfig" });
+
   config: any = {};
   email: string = "";
   fio: string = "";
@@ -21,6 +22,7 @@ export class PaymentPageConfig {
   private _tooltip: string = "";
   private _url: string = "";
   private _displayName: string = "";
+  private _description: string = "";
   private _socials: Map<string, string>[] = [];
 
   constructor(recipientId: string) {
@@ -48,6 +50,7 @@ export class PaymentPageConfig {
         this._customCss = json.value["customCss"] ?? [];
         this._tooltip = json.value["tooltip"] ?? "";
         this._url = json["url"] ?? "";
+        this._description = json.value["streamer.description"] ?? "";
         if (json.value["url"] !== undefined) {
           const socials = json.value["url"] ?? [];
           socials.forEach((social) => {
@@ -55,8 +58,8 @@ export class PaymentPageConfig {
             Object.keys(social).forEach((key) => {
               link.set(key, social[key]);
               this._socials.push(link);
-            })
-          })
+            });
+          });
         }
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
@@ -101,6 +104,12 @@ export class PaymentPageConfig {
     this.sendEventPaymentPageUpdated();
   }
 
+  setDescription(description: string) {
+    this._description = description;
+    this.config.value["streamer.description"] = description;
+    this.sendEventPaymentPageUpdated();
+  }
+
   setEmail(email: string) {
     this.email = email;
     this.config.value["email"] = this.email;
@@ -142,6 +151,9 @@ export class PaymentPageConfig {
   public set goals(value: Goal[]) {
     this._goals = value;
   }
+  public get description(): string {
+    return this._description;
+  }
   public get minimalAmount(): number {
     return this._minimalAmount;
   }
@@ -173,7 +185,7 @@ export class PaymentPageConfig {
     this.sendEventPaymentPageUpdated();
   }
 
-  public changeSocial(oldKey: string, newKey: string){
+  public changeSocial(oldKey: string, newKey: string) {
     this._socials = this._socials.map((social) => {
       if (social.has(oldKey)) {
         social.set(newKey, social.get(oldKey));
@@ -206,7 +218,7 @@ export class PaymentPageConfig {
     this.sendEventPaymentPageUpdated();
   }
 
-  public deleteSocial(key: string){
+  public deleteSocial(key: string) {
     this._socials = this._socials.filter((social) => !social.has(key));
     const json = this._socials.map((social) => Object.fromEntries(social));
     this.config.value["url"] = json;
@@ -256,8 +268,8 @@ export class PaymentPageConfig {
         Object.keys(social).forEach((key) => {
           link.set(key, social[key]);
           this._socials.push(link);
-        })
-      })
+        });
+      });
     }
     this.sendMediaRequestsEnabledState();
     this.sendEventPaymentPageUpdated();

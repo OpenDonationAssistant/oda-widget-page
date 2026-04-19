@@ -93,10 +93,10 @@ export const FullscreenPanel = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Panel = ({ children }: { children: ReactNode }) => {
+export const Panel = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
     <Flex
-      className={`${classes.modal} ${classes.big}`}
+      className={`${classes.modal} ${classes.big} ${className ?? ""}`}
       justify="flex-start"
       vertical
     >

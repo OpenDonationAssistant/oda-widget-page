@@ -19,8 +19,6 @@ import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
-const integrationLog = log.child({ module: "donationIntegration" });
-
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
     ...state.totalBorder,
@@ -421,6 +419,7 @@ const PaymentAlerts = observer(
   }) => {
     const { recipientId } = useLoaderData() as WidgetData;
     const navigate = useNavigate();
+    const integrationLog = log.child({ module: "donationIntegration" });
 
     useEffect(() => {
       const tokens = tokenStore.tokens.filter((token) => token.enabled);

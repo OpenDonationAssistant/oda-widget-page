@@ -216,10 +216,10 @@ function ConfigurationPageTemplate() {
           Обратная связь
         </UtilityButton>
       </Flex>
+      <AntHeader>
+        <Header />
+      </AntHeader>
       <Flex vertical className="newstyle">
-        <AntHeader>
-          <Header />
-        </AntHeader>
         <Flex style={{ paddingTop: "18px" }}>
           <style
             dangerouslySetInnerHTML={{

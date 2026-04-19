@@ -104,6 +104,11 @@ button.ant-btn.ant-btn-default {
 }
 
 .newstyle {
+  textarea:focus {
+    outline-style: solid;
+    outline-color: var(--oda-primary-color);
+    outline-width: 2px;
+  }
   & .oda-btn-default {
     height: 48px;
     border-radius: 110px;

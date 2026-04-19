@@ -1,6 +1,6 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { AlertState } from "./AlertState";
-import { log } from "../../logging";
+import { log as parent } from "../../logging";
 import { publish, subscribe } from "../../socket";
 import { delay, getRndInteger, sleep } from "../../utils";
 import { VoiceController } from "../../logic/voice/VoiceController";
@@ -23,6 +23,8 @@ import { PremoderationProperty } from "../../components/ConfigurationPage/widget
 import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 
 export class AlertController {
+  private log = parent.child({ module: "alertController" });
+
   private settings: PaymentAlertsWidgetSettings;
   private conf: any;
   private _streamerName: string;
@@ -57,13 +59,13 @@ export class AlertController {
       .then(() => {
         subscribe(widgetId, this.conf.topic.alerts, (message) => {
           let json = JSON.parse(message.body);
-          log.info({ json }, `Received alert`);
+          this.log.info({ json }, `Received alert`);
           const alert = this.findAlert(json);
           if (alert) {
             // TODO: обрабатывать несколько в премодерации
             this.renderAlert(alert, json, () => message.ack());
           }
-          log.info("Alert is handled");
+          this.log.info("Alert is handled");
         });
       });
   }
@@ -114,17 +116,23 @@ export class AlertController {
   }
 
   private preloadImages() {
-    log.debug(`preload images`);
+    this.log.debug(`preload images`);
     this.sortedAlerts.forEach((alert) => {
       if (alert.image) {
         this.loadImage(alert.image).then((image) => {
-          log.debug({ origin: alert.image, current: image }, "image preloaded");
+          this.log.debug(
+            { origin: alert.image, current: image },
+            "image preloaded",
+          );
           alert.image = image;
         });
       }
       if (alert.video) {
         this.loadImage(alert.video).then((video) => {
-          log.debug({ origin: alert.video, current: video }, "image preloaded");
+          this.log.debug(
+            { origin: alert.video, current: video },
+            "Video preloaded",
+          );
           alert.video = video;
         });
       }
@@ -136,7 +144,7 @@ export class AlertController {
     if (!alerts) {
       return;
     }
-    log.debug({ alerts: alerts }, "alerts properties");
+    this.log.debug({ alerts: alerts }, "alerts properties");
     this._premoderation = (
       this.settings.get("premoderation") as PremoderationProperty
     ).value.enabled;
@@ -145,7 +153,7 @@ export class AlertController {
     ).value;
     this.sortedAlerts = alerts.sortedAlerts;
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
-    log.debug({ alert: this.sortedAlerts }, "sorted alerts");
+    this.log.debug({ alert: this.sortedAlerts }, "sorted alerts");
     this.preloadImages();
   }
 
@@ -153,7 +161,7 @@ export class AlertController {
     if (!alert.audio) {
       return Promise.resolve();
     }
-    log.debug(`load ${alert.audio}`);
+    this.log.debug(`load ${alert.audio}`);
     let url = alert.audio;
     if (!url.startsWith("http")) {
       url = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${alert.audio}`;
@@ -176,7 +184,7 @@ export class AlertController {
       index = this.sortedAlerts.findIndex((alert) => alert.id === json.alertId);
     } else {
       index = this.sortedAlerts.findIndex((alert) => alert.firedBy(json));
-      log.debug(`choosen alert index: ${index}`);
+      this.log.debug(`choosen alert index: ${index}`);
     }
     if (index === -1) {
       return null;
@@ -198,7 +206,7 @@ export class AlertController {
     });
     if (choosenAlertPool.length > 0) {
       const selected = getRndInteger(0, choosenAlertPool.length);
-      log.debug(
+      this.log.debug(
         { index: selected, pool: choosenAlertPool },
         "choosen alert pool",
       );
@@ -215,7 +223,7 @@ export class AlertController {
     // TODO: send after checking for showing?
     if (this.showing === true) {
       setTimeout(() => this.renderAlert(alert, data, ackFunction), 1000);
-      log.debug("another alert in play");
+      this.log.debug("another alert in play");
       return;
     }
 
@@ -238,7 +246,7 @@ export class AlertController {
     this.sendStartNotification(data.id);
     this.pausePlayer();
 
-    log.debug({ data: data }, "alerting data");
+    this.log.debug({ data: data }, "alerting data");
     if (this._premoderation === true && data.force !== true) {
       return this.voiceController
         ?.playSource(
@@ -248,12 +256,12 @@ export class AlertController {
             : "https://cdn.oda.digital/assets/bonk.mp3",
         )
         .then(() => {
-          log.debug("clearing alert");
+          this.log.debug("clearing alert");
           this.interrupt();
         });
     }
 
-    log.debug({ alert: alert }, "render image for alert");
+    this.log.debug({ alert: alert }, "render image for alert");
     this.state.layout = alert.property("layout");
 
     return Promise.all([
@@ -262,37 +270,37 @@ export class AlertController {
       this.renderTitle(alert, data),
       this.renderMessage(alert, data),
       this.playAudio(alert, data).then(() => {
-        log.debug("handled audio");
+        this.log.debug("handled audio");
       }),
       sleep(3000).then(() => {
-        log.debug("minimal time passed");
+        this.log.debug("minimal time passed");
       }),
       sleep(duration).then(() => {
-        log.debug("handled widget sleep");
+        this.log.debug("handled widget sleep");
       }),
       sleep(alert.property("messageDuration")?.time).then(() => {
-        log.debug("handled message sleep");
+        this.log.debug("handled message sleep");
       }),
       sleep(alert.property("headerDuration")?.time).then(() => {
-        log.debug("handled header sleep");
+        this.log.debug("handled header sleep");
       }),
       sleep(alert.property("imageDuration")?.time).then(() => {
-        log.debug("handled header sleep");
+        this.log.debug("handled header sleep");
       }),
     ])
       .then(() => {
-        log.debug("finish phase");
+        this.log.debug("finish phase");
         return Promise.all([
           this.finishImage(alert),
           this.finishTitle(alert),
           this.finishMessage(alert),
           this.finishWidget(alert),
         ]).then(() => {
-          log.debug("all promises finished");
+          this.log.debug("all promises finished");
         });
       })
       .then(() => {
-        log.debug("clearing alert");
+        this.log.debug("clearing alert");
         this.interrupt();
       });
   }
@@ -338,7 +346,7 @@ export class AlertController {
         const animation = alert.get("totalAppearance") as AnimationProperty;
         this.state.totalClassName = animation.classname();
         this.state.totalAnimationDuration = animation.calcCss();
-        log.debug(
+        this.log.debug(
           { classname: this.state.totalClassName },
           "changing total animation while appearing",
         );
@@ -347,20 +355,20 @@ export class AlertController {
       .then(() => {
         const animation = alert.get("totalAnimation") as AnimationProperty;
         this.state.totalClassName = animation.classname();
-        log.debug(
+        this.log.debug(
           { classname: this.state.totalClassName },
           "changing total animation while idle",
         );
         return sleep(animation.value.duration);
       })
       .then(() => {
-        log.debug("handled widget rendering");
+        this.log.debug("handled widget rendering");
       });
   }
 
   private async renderImage(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("imageAppearanceDelay") as number;
-    log.debug({ delay: delay }, "image delay");
+    this.log.debug({ delay: delay }, "image delay");
 
     const shadowProperty = alert.get("imageShadow") as BoxShadowProperty;
     this.state.imageVolume = alert.property("imageVolume");
@@ -390,17 +398,17 @@ export class AlertController {
       .then(() => {
         if (alert.property("imageDuration")?.limited ?? false) {
           const duration = alert.property("imageDuration")?.time;
-          log.debug({ duration: duration }, "set image clearing");
+          this.log.debug({ duration: duration }, "set image clearing");
           setTimeout(() => {
             this.finishImage(alert);
           }, duration);
         }
 
         if (alert.image) {
-          log.debug({ image: alert.image }, "rendering image");
+          this.log.debug({ image: alert.image }, "rendering image");
           this.state.image = `${alert.image}`;
         } else if (alert.video) {
-          log.debug({ video: alert.video }, "rendering video");
+          this.log.debug({ video: alert.video }, "rendering video");
           this.state.video = `${alert.video}`;
         }
 
@@ -428,13 +436,13 @@ export class AlertController {
         this.state.imageClassName = animation.classname();
       })
       .then(() => {
-        log.debug("handled image rendering");
+        this.log.debug("handled image rendering");
       });
   }
 
   private async renderTitle(alert: Alert, data: any): Promise<void> {
     const delay = alert.property("headerAppearanceDelay") as number;
-    log.debug({ delay: delay }, "header delay");
+    this.log.debug({ delay: delay }, "header delay");
 
     return sleep(delay)
       .then(() => {
@@ -450,7 +458,7 @@ export class AlertController {
         const title = nicknameTextTemplate
           .replace("<username>", data.nickname ? data.nickname : "Аноним")
           .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
-        log.debug("setting title");
+        this.log.debug("setting title");
         this.state.title = title;
         this.state.showTitle = (
           alert.get("showHeader") as BooleanProperty
@@ -499,7 +507,7 @@ export class AlertController {
         ).calcCss();
       })
       .then((css) => {
-        log.debug({ css: css }, "settings image style");
+        this.log.debug({ css: css }, "settings image style");
         this.state.titleImageStyle = {
           ...(alert.get("titleBackgroundColor") as ColorProperty).calcCss(),
           ...(alert.get("headerRounding") as RoundingProperty).calcCss(),
@@ -512,7 +520,7 @@ export class AlertController {
         const animation = alert.get("headerAppearance") as AnimationProperty;
         this.state.headerClassName = animation.classname();
         this.state.headerStyle = animation.calcCss();
-        log.debug(
+        this.log.debug(
           { duration: animation.value.duration },
           "rendering header appearance",
         );
@@ -522,13 +530,13 @@ export class AlertController {
         const animation = alert.get("headerAnimation") as AnimationProperty;
         this.state.headerClassName = animation.classname();
         this.state.headerStyle = animation.calcCss();
-        log.debug(
+        this.log.debug(
           { duration: animation.value.duration },
           "rendering header animation",
         );
       })
       .then(() => {
-        log.debug("handled title rendeing");
+        this.log.debug("handled title rendeing");
       });
   }
 
@@ -588,7 +596,7 @@ export class AlertController {
         return (alert.get("messageBackgroundImage") as BackgroundImageProperty)
           .calcCss()
           .then((css) => {
-            log.debug({ css: css }, "settings image style");
+            this.log.debug({ css: css }, "settings image style");
             this.state.messageImageStyle = {
               ...(
                 alert.get("messageBackgroundColor") as ColorProperty
@@ -600,7 +608,7 @@ export class AlertController {
           });
       })
       .then(() => {
-        log.debug("setting message");
+        this.log.debug("setting message");
         this.state.message = data.message;
         this.state.showMessage = (
           alert.get("showMessage") as BooleanProperty
@@ -617,16 +625,16 @@ export class AlertController {
         this.state.messageContainerClassName = animation.classname();
       })
       .then(() => {
-        log.debug("handled message rendeing");
+        this.log.debug("handled message rendering");
       });
   }
 
   private async finishWidget(alert: Alert): Promise<void> {
-    log.debug("starting finishing widget");
+    this.log.debug("starting finishing widget");
     const animation = alert.get("totalDisappearance") as AnimationProperty;
     this.state.totalClassName = animation.classname();
     this.state.totalAnimationDuration = animation.calcCss();
-    log.debug(
+    this.log.debug(
       {
         classname: this.state.totalClassName,
         duration: animation.value.duration,
@@ -637,7 +645,7 @@ export class AlertController {
   }
 
   private async finishImage(alert: Alert): Promise<void> {
-    log.debug("finishing image");
+    this.log.debug("finishing image");
     const animation = alert.get("imageDisappearance") as AnimationProperty;
     const waiting = (alert.get("totalDisappearance") as AnimationProperty).value
       .duration;

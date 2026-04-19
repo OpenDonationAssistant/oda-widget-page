@@ -30,6 +30,7 @@ export default function PaymentPageConfigPage() {
   const [arbitraryText, setArbitraryText] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState<boolean>(false);
   const [payButtonText, setPayButtonText] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>("");
 
   const [imageUrl, setImageUrl] = useState<string>(
     "https://api.oda.digital/public/commonlogo.png",
@@ -74,6 +75,7 @@ export default function PaymentPageConfigPage() {
     setInn(paymentPageConfig.current?.inn ?? "");
     setArbitraryText(paymentPageConfig.current?.arbitraryText ?? null);
     setPayButtonText(paymentPageConfig.current?.payButtonText ?? null);
+    setDescription(paymentPageConfig.current?.description ?? "");
     if (paymentPageConfig.current?.socials) {
       setSocials([...paymentPageConfig.current?.socials]);
     } else {
@@ -136,76 +138,122 @@ export default function PaymentPageConfigPage() {
     <>
       <h1>Страница доната</h1>
       <div className={classes.paymentpageconfig}>
-        <Flex className={`${classes.panel}`}>
-          <Flex vertical style={{ flexGrow: 1 }}>
-            <a
-              href={`https://${paymentPageConfig.current?.url}`}
-              className={classes.url}
-            >
-              {paymentPageConfig.current?.url}
-            </a>
-            <Flex
-              justify="space-between"
-              align="flex-end"
-              style={{ alignItems: "stretch" }}
-              gap={12}
-            >
-              <Flex vertical style={{ flexGrow: 1 }}>
-                <Flex vertical style={{ height: "100%" }}>
-                  <div
-                    className={`${classes.fieldname}`}
-                    style={{
-                      marginTop: "30px",
-                    }}
-                  >
-                    Текст на странице
-                  </div>
-                  <textarea
-                    value={arbitraryText ?? ""}
-                    className={classes.pagetext}
-                    style={{
-                      width: "100%",
-                      textAlign: "left",
-                      height: "108px",
-                    }}
-                    onChange={(e) => {
-                      paymentPageConfig.current?.setArbitraryText(
-                        e.target.value,
-                      );
-                      if (!hasChanges) {
-                        setHasChanges(true);
-                      }
-                    }}
-                  />
+        <Flex className={`${classes.panel}`} vertical gap={12}>
+          <Flex style={{ flexGrow: 1 }} align="center">
+            <Flex vertical style={{ flexGrow: 1 }}>
+              <a
+                href={`https://${paymentPageConfig.current?.url}`}
+                className={classes.url}
+              >
+                {paymentPageConfig.current?.url}
+              </a>
+              <Flex justify="flex-start" align="flex-start" gap={12}>
+                <Flex vertical style={{ justifyContent: "end" }}>
+                  <div className={`${classes.fieldname}`}>Аватарка</div>
+                  <label style={{ flexGrow: 1, display: "flex" }}>
+                    <input type="file" onChange={handleLogoUpload} />
+                    <img className={classes.logoimage} src={imageUrl} />
+                  </label>
                 </Flex>
-              </Flex>
-              <Flex vertical style={{ justifyContent: "end" }}>
-                <div className={`${classes.fieldname}`}>Аватарка</div>
-                <label>
-                  <input type="file" onChange={handleLogoUpload} />
-                  <img className={classes.logoimage} src={imageUrl} />
-                </label>
-              </Flex>
-              <Flex vertical style={{ justifyContent: "end" }}>
-                <div className={`${classes.fieldname}`}>
-                  Фоновое изображение
-                </div>
-                <label>
-                  <input type="file" onChange={handleBackUpload} />
-                  <img className={classes.backgroundimage} src={backUrl} />
-                </label>
+                <Flex vertical style={{ justifyContent: "end", flexGrow: 1 }}>
+                  <div className={`${classes.fieldname}`}>
+                    Фоновое изображение
+                  </div>
+                  <label>
+                    <input type="file" onChange={handleBackUpload} />
+                    <img className={classes.backgroundimage} src={backUrl} />
+                  </label>
+                </Flex>
+                {paymentPageConfig.current?.url && (
+                  <Flex vertical style={{ justifyContent: "end" }}>
+                    <div className={`${classes.fieldname}`}>QR код</div>
+                    <QRCode
+                      size={210}
+                      value={`https://${paymentPageConfig.current.url}`}
+                    />
+                  </Flex>
+                )}
               </Flex>
             </Flex>
           </Flex>
-          {paymentPageConfig.current?.url && (
-            <QRCode
-              size={200}
-              value={`https://${paymentPageConfig.current.url}`}
+          <Flex vertical style={{ flexGrow: 1 }}>
+            <Flex vertical style={{ height: "100%" }}>
+              <div className={`${classes.fieldname}`}>Текст на странице</div>
+              <textarea
+                value={arbitraryText ?? ""}
+                className={classes.pagetext}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  height: "108px",
+                }}
+                onChange={(e) => {
+                  paymentPageConfig.current?.setArbitraryText(e.target.value);
+                  if (!hasChanges) {
+                    setHasChanges(true);
+                  }
+                }}
+              />
+            </Flex>
+          </Flex>
+          <Flex vertical style={{ flexGrow: 1 }}>
+            <div className={classes.fieldname}>
+              Текст подписи внизу страницы
+            </div>
+            <textarea
+              value={description ?? ""}
+              className={classes.pagetext}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                height: "108px",
+              }}
+              onChange={(e) => {
+                if (paymentPageConfig?.current) {
+                  paymentPageConfig.current.setDescription(e.target.value);
+                  if (!hasChanges) {
+                    setHasChanges(true);
+                  }
+                }
+              }}
             />
-          )}
+          </Flex>
+          <Flex gap={12} className="full-width">
+            <Flex vertical style={{ flexGrow: 1 }}>
+              <div className={classes.fieldname}>Минимальная сумма доната</div>
+              <InputNumber
+                value={minimalAmount}
+                onChange={(value) => {
+                  if (paymentPageConfig.current) {
+                    paymentPageConfig.current.minimalAmount = value;
+                  }
+                  if (!hasChanges) {
+                    setHasChanges(true);
+                  }
+                }}
+              />
+            </Flex>
+            <Flex vertical style={{ flexGrow: 1 }}>
+              <div className={classes.fieldname}>Текст кнопки "Задонатить"</div>
+              <Input
+                style={{ height: "48px" }}
+                value={payButtonText ?? ""}
+                onChange={(e) => {
+                  if (paymentPageConfig?.current) {
+                    paymentPageConfig.current.payButtonText = e.target.value;
+                    if (!hasChanges) {
+                      setHasChanges(true);
+                    }
+                  }
+                }}
+              />
+            </Flex>
+          </Flex>
         </Flex>
         <Flex className={`${classes.panel}`} vertical>
-          <div style={{ marginBottom: "9px" }}>Для самозанятого или ИП</div>
+          <div style={{ marginBottom: "9px", fontSize: "21px" }}>
+            Для самозанятого или ИП
+          </div>
           <Flex gap={12} className="full-width">
             <Flex vertical style={{ flexGrow: 1 }}>
               <div className={classes.fieldname}>ФИО</div>
@@ -246,41 +294,9 @@ export default function PaymentPageConfigPage() {
           </Flex>
         </Flex>
         <Flex className={`${classes.panel}`} vertical>
-          <div style={{ marginBottom: "9px" }}>Поддержка</div>
-          <Flex gap={12} className="full-width">
-            <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>Минимальная сумма доната</div>
-              <InputNumber
-                value={minimalAmount}
-                onChange={(value) => {
-                  if (paymentPageConfig.current) {
-                    paymentPageConfig.current.minimalAmount = value;
-                  }
-                  if (!hasChanges) {
-                    setHasChanges(true);
-                  }
-                }}
-              />
-            </Flex>
-            <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>Текст кнопки "Задонатить"</div>
-              <Input
-                style={{ height: "48px" }}
-                value={payButtonText ?? ""}
-                onChange={(e) => {
-                  if (paymentPageConfig?.current) {
-                    paymentPageConfig.current.payButtonText = e.target.value;
-                    if (!hasChanges) {
-                      setHasChanges(true);
-                    }
-                  }
-                }}
-              />
-            </Flex>
-          </Flex>
-        </Flex>
-        <Flex className={`${classes.panel}`} vertical>
-          <div style={{ marginBottom: "9px" }}>Социальные ссылки</div>
+          <div style={{ marginBottom: "9px", fontSize: "21px" }}>
+            Социальные ссылки
+          </div>
           {socials.map((link) => (
             <Flex gap={12} className={`${classes.sociallink}`}>
               <Flex vertical>

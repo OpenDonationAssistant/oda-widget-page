@@ -23,6 +23,11 @@
     padding: 14px 18px 15px 18px;
     background-color: transparent;
     box-shadow: none;
+    &.ant-input-outlined:focus {
+      outline-style: solid;
+      outline-color: var(--oda-primary-color);
+      outline-width: 2px;
+    }
   }
 
   & .ant-input-number {
