@@ -54,6 +54,9 @@ export interface HistoryStore {
   showDonatePayEu: boolean;
   showDonateStream: boolean;
   showDonateX: boolean;
+  showBoostySubs: boolean;
+  showBoostyFollows: boolean;
+  showMemeAlertsCoins: boolean;
 }
 
 export class DefaultHistoryStore implements HistoryStore {
@@ -69,6 +72,9 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showDonatePayEu: boolean;
   private _showDonateStream: boolean;
   private _showDonateX: boolean;
+  private _showBoostySubs: boolean;
+  private _showBoostyFollows: boolean;
+  private _showMemeAlertsCoins: boolean;
   private _widgetId: string;
   private _active: string | null = null;
 
@@ -88,6 +94,9 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
     this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
+    this._showBoostySubs = this.readValue(`${widgetId}.showBoostySubs`);
+    this._showBoostyFollows = this.readValue(`${widgetId}.showBoostyFollows`);
+    this._showMemeAlertsCoins = this.readValue(`${widgetId}.showMemeAlertsCoins`);
     makeAutoObservable(this);
     this.load()
       .then(() => {
@@ -216,23 +225,17 @@ export class DefaultHistoryStore implements HistoryStore {
               message: item.message ?? "",
               attachments: item.attachments ?? [],
               actions: item.actions ?? [],
-              timestamp: item.timestamp
-                ? new Date(item.timestamp)
-                : new Date(),
+              timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
               date: dateTimeFormat.format(
-                item.timestamp
-                  ? new Date(item.timestamp)
-                  : new Date(),
+                item.timestamp ? new Date(item.timestamp) : new Date(),
               ),
               time: timeFormat.format(
-                item.timestamp
-                  ? new Date(item.timestamp)
-                  : new Date(),
+                item.timestamp ? new Date(item.timestamp) : new Date(),
               ),
               active: item.originId === this._active,
               system: item.system ?? "ODA",
               rouletteResults: item.reelResults ?? [],
-              media: null
+              media: null,
             };
           })
           .filter((item) => {
@@ -267,7 +270,8 @@ export class DefaultHistoryStore implements HistoryStore {
 
   public hasNext() {
     return (
-      this._amount !== -1 && (this._pageNumber + 1) * this._pageSize < this._amount
+      this._amount !== -1 &&
+      (this._pageNumber + 1) * this._pageSize < this._amount
     );
   }
 
@@ -367,6 +371,37 @@ export class DefaultHistoryStore implements HistoryStore {
     );
     this._showDonateX = value;
     this.reset();
+  }
+  public get showBoostySubs() {
+    return this._showBoostySubs;
+  }
+  public set showBoostySubs(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showBoostySubs`,
+      JSON.stringify(value),
+    );
+    this._showBoostySubs = value;
+    this.reset();
+  }
+  public get showBoostyFollows() {
+    return this._showBoostyFollows;
+  }
+  public set showBoostyFollows(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showBoostyFollows`,
+      JSON.stringify(value),
+    );
+    this._showBoostyFollows = value;
+  }
+  public get showMemeAlertsCoins() {
+    return this._showMemeAlertsCoins;
+  }
+  public set showMemeAlertsCoins(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showMemeAlertsCoins`,
+      JSON.stringify(value),
+    );
+    this._showMemeAlertsCoins = value;
   }
 }
 

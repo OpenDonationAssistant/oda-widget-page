@@ -8,7 +8,7 @@ import {
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import {
-    CloseOverlayButton,
+  CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
@@ -166,7 +166,7 @@ export const HistoryComponent = observer(
             <Panel className={`${classes.filterpanel}`}>
               <Flex>
                 <div className={`${classes.title}`}>Настройки отображения</div>
-                <CloseOverlayButton/>
+                <CloseOverlayButton />
               </Flex>
               <Subtitle>
                 Выберите, какие события будут отображаться в истории
@@ -214,17 +214,17 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filtersection}`}>Boosty</div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
-                      value={historyStore.showODA}
+                      value={historyStore.showBoostySubs}
                       label="Подписки Boosty"
                       onChange={(update) => {
-                        historyStore.showODA = update;
+                        historyStore.showBoostySubs = update;
                       }}
                     />
                     <SwitchComponent
-                      value={historyStore.showODA}
+                      value={historyStore.showBoostyFollows}
                       label="Отслеживания Boosty"
                       onChange={(update) => {
-                        historyStore.showODA = update;
+                        historyStore.showBoostyFollows = update;
                       }}
                     />
                   </div>
@@ -233,10 +233,10 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filtersection}`}>Meme Alerts</div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
-                      value={historyStore.showODA}
-                      label="Подписки Boosty"
+                      value={historyStore.showMemeAlertsCoins}
+                      label="Покупки Meme Alerts"
                       onChange={(update) => {
-                        historyStore.showODA = update;
+                        historyStore.showMemeAlertsCoins = update;
                       }}
                     />
                   </div>
