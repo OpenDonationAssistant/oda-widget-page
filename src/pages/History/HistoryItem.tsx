@@ -25,6 +25,8 @@ function repeatAlert(topic: string, data: HistoryItem) {
     nickname: data.nickname,
     message: data.message,
     amount: data.amount,
+    system: data.system,
+    event: data.event,
     force: true,
   });
 }
@@ -99,7 +101,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
             {!item.active && (
               <SubActionButton
                 onClick={() => {
-                  repeatAlert(conf.topic.alerts, item);
+                  repeatAlert(conf.topic.events, item);
                 }}
               >
                 Повторить
