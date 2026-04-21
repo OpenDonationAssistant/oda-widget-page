@@ -27,6 +27,9 @@ export interface HistoryItem {
   amount: Amount;
   nickname: string;
   system: string;
+  event: string;
+  count: number;
+  levelName: string;
   goals: HistoryItemDataTargetGoal[];
   rouletteResults: HistoryItemDataReelResult[];
   message: string;
@@ -80,7 +83,7 @@ export class DefaultHistoryStore implements HistoryStore {
 
   // todo type for conf
   constructor(recipientId: string, widgetId: string, conf: any) {
-    log.debug("new history store");
+    log.debug({ widgetId: widgetId }, "new history store");
     this._recipientId = recipientId;
     this._widgetId = widgetId;
     this._pageNumber = 0;
@@ -96,7 +99,9 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
     this._showBoostySubs = this.readValue(`${widgetId}.showBoostySubs`);
     this._showBoostyFollows = this.readValue(`${widgetId}.showBoostyFollows`);
-    this._showMemeAlertsCoins = this.readValue(`${widgetId}.showMemeAlertsCoins`);
+    this._showMemeAlertsCoins = this.readValue(
+      `${widgetId}.showMemeAlertsCoins`,
+    );
     makeAutoObservable(this);
     this.load()
       .then(() => {
@@ -189,27 +194,44 @@ export class DefaultHistoryStore implements HistoryStore {
     );
     this._refreshing = true;
     const systems = [];
+    const events = [];
     if (this._showODA) {
       systems.push("ODA");
+      events.push("payment");
     }
     if (this._showDonationAlerts) {
       systems.push("DonationAlerts");
+      events.push("payment");
     }
     if (this._showDonatePay) {
       systems.push("DonatePay");
+      events.push("payment");
     }
     if (this._showDonateStream) {
       systems.push("Donate.Stream");
+      events.push("payment");
     }
     if (this._showDonateX) {
       systems.push("DonateX");
+      events.push("payment");
+    }
+    if (this._showBoostySubs) {
+      systems.push("Boosty");
+      events.push("subscription");
+    }
+    if (this._showBoostyFollows) {
+      systems.push("Boosty");
+      events.push("follow");
+    }
+    if (this._showMemeAlertsCoins) {
+      systems.push("MemeAlerts");
+      events.push("payment");
     }
     return this.client()
       .getHistory(
-        {
-          systems: systems,
-        },
-        { params: { size: this._pageSize, page: this._pageNumber } },
+        { size: this._pageSize, number: this._pageNumber },
+        systems,
+        events,
       )
       .then((response) => {
         this._amount = response.data.totalSize ?? 0;
@@ -234,6 +256,9 @@ export class DefaultHistoryStore implements HistoryStore {
               ),
               active: item.originId === this._active,
               system: item.system ?? "ODA",
+              event: item.type ?? "payment",
+              count: item.count ?? 0,
+              levelName: item.levelName ?? "",
               rouletteResults: item.reelResults ?? [],
               media: null,
             };

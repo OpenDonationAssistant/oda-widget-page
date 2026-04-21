@@ -22,6 +22,17 @@ import { BooleanProperty } from "../../components/ConfigurationPage/widgetproper
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 
+interface Variable {
+  id: string;
+  name: string;
+  value: any;
+  type: string;
+}
+
+function get(variables: Variable[], name: string) {
+  return variables.find((it) => it.name === name)?.value;
+}
+
 export class AlertController {
   private log = parent.child({ module: "alertController" });
 
@@ -57,13 +68,46 @@ export class AlertController {
         this.voiceController = new VoiceController(this._streamerName);
       })
       .then(() => {
-        subscribe(widgetId, this.conf.topic.alerts, (message) => {
+        subscribe(widgetId, this.conf.topic.events, (message) => {
           let json = JSON.parse(message.body);
-          this.log.info({ json }, `Received alert`);
-          const alert = this.findAlert(json);
+          if (json.type !== "Alert") {
+            return;
+          }
+          const variables = json.variables as Variable[];
+          const alertmedia = get(variables, "alertmedia");
+          const amount = get(variables, "amount");
+          const system = get(variables, "system");
+          const event = get(variables, "event");
+          const nickname = get(variables, "nickname");
+          const levelName = get(variables, "levelName");
+          let msg = get(variables, "message");
+          if (system === "Boosty" && event === "subscription") {
+            msg = `${nickname} оформил подписку ${levelName}`;
+          }
+          if (system === "Boosty" && event === "follow") {
+            msg = `${nickname} отслеживает на Бусти`;
+          }
+          const data = {
+            nickname: nickname,
+            message: msg,
+            amount: amount
+              ? { major: Number(amount), minor: 0, currency: "RUB" }
+              : 0,
+            media: alertmedia
+              ? {
+                  url: alertmedia,
+                }
+              : null,
+            levelName: levelName,
+            count: get(variables, "count"),
+            system: system,
+            event: event
+          };
+          this.log.info({ data }, `Received alert`);
+          const alert = this.findAlert(data);
           if (alert) {
             // TODO: обрабатывать несколько в премодерации
-            this.renderAlert(alert, json, () => message.ack());
+            this.renderAlert(alert, data, () => message.ack());
           }
           this.log.info("Alert is handled");
         });
@@ -145,12 +189,15 @@ export class AlertController {
       return;
     }
     this.log.debug({ alerts: alerts }, "alerts properties");
+
     this._premoderation = (
       this.settings.get("premoderation") as PremoderationProperty
     ).value.enabled;
+
     this._pauseRequests = (
       this.settings.get("pause-media") as BooleanProperty
     ).value;
+
     this.sortedAlerts = alerts.sortedAlerts;
     await Promise.all(this.sortedAlerts.map((alert) => this.loadAudio(alert)));
     this.log.debug({ alert: this.sortedAlerts }, "sorted alerts");
@@ -179,6 +226,10 @@ export class AlertController {
   }
 
   private findAlert(json: any) {
+    return this.findPaymentAlert(json);
+  }
+
+  private findPaymentAlert(json: any) {
     let index = -1;
     if (json.alertId) {
       index = this.sortedAlerts.findIndex((alert) => alert.id === json.alertId);

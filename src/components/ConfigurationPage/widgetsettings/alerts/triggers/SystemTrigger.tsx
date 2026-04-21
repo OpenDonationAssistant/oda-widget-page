@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { Select } from "antd";
 
 export const SYSTEM_TRIGGER = {
-  description: "донат сделан через",
+  description: "Донат сделан через",
   type: "system",
 };
 
@@ -21,7 +21,7 @@ export class SystemTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return event.system === this.system;
+    return event.event === "payment" && event.system === this.system;
   }
 
   public compare(other: Trigger): number {

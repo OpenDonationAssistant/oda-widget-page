@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 
 export const FIXED_DONATION_AMOUNT_TRIGGER = {
   type: "fixed-donation-amount",
-  description: "сумма равна",
+  description: "Сумма равна",
 };
 
 export class FixedDonationAmountTrigger implements Trigger {
@@ -21,7 +21,7 @@ export class FixedDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return event.amount.major === this.amount;
+    return event.event === "payment" && event.system !== "MemeAlerts" && event.amount.major === this.amount;
   }
 
   public compare(other: Trigger): number {

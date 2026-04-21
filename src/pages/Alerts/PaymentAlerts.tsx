@@ -19,6 +19,8 @@ import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
+const memeAlertsRegexp = /купил (\d+)/;
+
 const Alert = observer(({ state }: { state: AlertState }) => {
   const rootStyle = {
     ...state.totalBorder,
@@ -493,10 +495,9 @@ const PaymentAlerts = observer(
                         goals: [],
                         addToTop: token.settings.countInTop,
                         addToGoal: token.settings.addToGoal,
-                        id: uuidv7(),
                         paymentId: payment.id,
                         system: "DonationAlerts",
-                        externalId: payment.id,
+                        event: "payment"
                       },
                       {},
                     );
@@ -637,10 +638,9 @@ const PaymentAlerts = observer(
                           goals: [],
                           addToTop: token.settings.countInTop,
                           addToGoal: token.settings.addToGoal,
-                          id: uuidv7(),
                           paymentId: payment.id ?? uuidv7(),
                           system: "DonatePay",
-                          externalId: payment.id,
+                          event: "payment"
                         },
                         {},
                       );
@@ -746,10 +746,9 @@ const PaymentAlerts = observer(
                           goals: [],
                           addToTop: token.settings.countInTop,
                           addToGoal: token.settings.addToGoal,
-                          id: uuidv7(),
                           paymentId: payment.id ?? uuidv7(),
                           system: "DonatePay.eu",
-                          externalId: payment.id,
+                          event: "payment"
                         },
                         {},
                       );
@@ -762,7 +761,6 @@ const PaymentAlerts = observer(
         .filter((token) => token.system === "UnofficialDonationAlerts")
         .forEach((token) => {
           const socket = connect("wss://socket.donationalerts.com/", {
-            // const socket = connect("wss://widgets.oda.digital", {
             reconnection: true,
             reconnectionDelayMax: 5000,
             reconnectionDelay: 1000,
@@ -776,63 +774,152 @@ const PaymentAlerts = observer(
             });
           });
 
-          socket.on("connect_error", function (msg) {
+          socket.on("connect_error", function (msg: string) {
             console.log({ msg: msg }, "WS: connection_error");
-            // navigate(0);
           });
 
-          socket.on("connect_timeout", function (msg) {
+          socket.on("connect_timeout", function (msg: string) {
             console.log("WS: connection_timeout");
           });
 
-          socket.on("reconnect", function (msg) {
+          socket.on("reconnect", function (msg: string) {
             console.log("WS: reconnected");
           });
 
-          socket.on("donation", function (msg) {
+          socket.on("donation", function (msg: string) {
             const donation = JSON.parse(msg);
             integrationLog.debug({ donation: msg }, "Received DA donation");
-            if (
-              donation.message &&
-              donation.message.startsWith("Memealerts:")
-            ) {
-              return;
+            switch (donation.alert_type) {
+              case 27:
+                HistoryService(
+                  undefined,
+                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                ).addHistoryItem(
+                  {
+                    recipientId: recipientId,
+                    amount: {
+                      minor: 0,
+                      major: 0,
+                      currency: "RUB",
+                    },
+                    nickname: donation.username,
+                    message: donation.message,
+                    triggerAlert: true,
+                    triggerReel: false,
+                    triggerDonaton: false,
+                    goals: [],
+                    addToTop: false,
+                    addToGoal: false,
+                    paymentId: donation.id,
+                    system: "Boosty",
+                    event: "follow",
+                    alertMedia: null,
+                  },
+                  {},
+                );
+                break;
+              case 28:
+                HistoryService(
+                  undefined,
+                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                ).addHistoryItem(
+                  {
+                    recipientId: recipientId,
+                    amount: {
+                      minor: 0,
+                      major: donation.amount_main,
+                      currency: "RUB",
+                    },
+                    nickname: donation.username,
+                    message: donation.message,
+                    triggerAlert: true,
+                    triggerReel: false,
+                    triggerDonaton: false,
+                    goals: [],
+                    addToTop: false,
+                    addToGoal: false,
+                    paymentId: donation.id,
+                    system: "Boosty",
+                    event: "subscription",
+                    levelName: donation.level_name,
+                    alertMedia: null,
+                  },
+                  {},
+                );
+                break;
+              case 32:
+                const match = memeAlertsRegexp.exec(donation.message ?? "");
+                HistoryService(
+                  undefined,
+                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                ).addHistoryItem(
+                  {
+                    recipientId: recipientId,
+                    amount: {
+                      minor: 0,
+                      major: donation.amount_main,
+                      currency: "RUB",
+                    },
+                    nickname: donation.username,
+                    message: donation.message,
+                    triggerAlert: true,
+                    triggerReel: false,
+                    triggerDonaton: false,
+                    goals: [],
+                    addToTop: false,
+                    addToGoal: false,
+                    paymentId: donation.id,
+                    system: "MemeAlerts",
+                    event: "payment",
+                    count: Number(match?.[1]),
+                    externalId: donation.id,
+                    alertMedia: donation.tts_url
+                      ? {
+                          url: donation.tts_url.replace(
+                            "files.donationalerts.com",
+                            "widgets.oda.digital",
+                          ),
+                        }
+                      : null,
+                  },
+                  {},
+                );
+                break;
+              default:
+                HistoryService(
+                  undefined,
+                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
+                ).addHistoryItem(
+                  {
+                    recipientId: recipientId,
+                    amount: {
+                      minor: 0,
+                      major: donation.amount_main,
+                      currency: "RUB",
+                    },
+                    nickname: donation.username,
+                    message: donation.message,
+                    triggerAlert: true,
+                    triggerReel: false,
+                    triggerDonaton: false,
+                    goals: [],
+                    addToTop: false,
+                    addToGoal: false,
+                    paymentId: donation.id,
+                    system: "DonationAlerts",
+                    event: "payment",
+                    alertMedia: donation.tts_url
+                      ? {
+                          url: donation.tts_url.replace(
+                            "files.donationalerts.com",
+                            "widgets.oda.digital",
+                          ),
+                        }
+                      : null,
+                  },
+                  {},
+                );
             }
-            console.log({ donation: donation }, "New donation");
-            HistoryService(
-              undefined,
-              process.env.REACT_APP_HISTORY_API_ENDPOINT,
-            ).addHistoryItem(
-              {
-                recipientId: recipientId,
-                amount: {
-                  minor: 0,
-                  major: donation.amount_main,
-                  currency: "RUB",
-                },
-                nickname: donation.username,
-                message: donation.message,
-                triggerAlert: true,
-                triggerReel: false,
-                triggerDonaton: false,
-                goals: [],
-                addToTop: false,
-                addToGoal: false,
-                id: uuidv7(),
-                paymentId: donation.id,
-                system: "DonationAlerts",
-                externalId: donation.id,
-                alertMedia: donation.tts_url
-                  ? {
-                      url: donation.tts_url.replace(
-                        "files.donationalerts.com",
-                        "widgets.oda.digital",
-                      ),
-                    }
-                  : null,
-              },
-              {},
-            );
           });
         });
       tokens
@@ -866,10 +953,9 @@ const PaymentAlerts = observer(
                 goals: [],
                 addToTop: token.settings.countInTop,
                 addToGoal: token.settings.addToGoal,
-                id: uuidv7(),
                 paymentId: donation.id,
                 system: "DonateX",
-                externalId: donation.id,
+                event: "payment"
               },
               {},
             );

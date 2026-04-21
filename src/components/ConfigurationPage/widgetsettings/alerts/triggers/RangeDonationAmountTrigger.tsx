@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import InputNumber from "../../../components/InputNumber";
 
 export const RANDE_DONATION_AMOUNT_TRIGGER = {
-  description: "сумма больше или равна",
+  description: "Сумма больше или равна",
   type: "at-least-donation-amount",
 };
 
@@ -21,7 +21,7 @@ export class RangeDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return event.amount.major >= this.min;
+    return event.event === "payment" && event.system !== "MemeAlerts" && event.amount.major >= this.min;
   }
 
   public compare(other: Trigger): number {

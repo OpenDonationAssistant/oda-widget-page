@@ -14,7 +14,6 @@ import {
   Overlay,
   Panel,
   Subtitle,
-  Title,
 } from "../../components/Overlay/Overlay";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -317,7 +316,7 @@ export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
     () =>
-      new DefaultHistoryStore(recipientId, `history-page-${uuidv7()}`, conf),
+      new DefaultHistoryStore(recipientId, `history-page`, conf),
   );
 
   return (

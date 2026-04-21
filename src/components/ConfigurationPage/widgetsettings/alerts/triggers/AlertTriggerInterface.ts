@@ -9,6 +9,7 @@ export interface DonationEvent {
   id: string;
   amount: Amount;
   system: string;
+  event: string;
 }
 
 export interface TriggerType {

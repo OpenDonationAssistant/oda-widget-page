@@ -15,6 +15,14 @@ import { SYSTEM_TRIGGER, SystemTrigger } from "./SystemTrigger";
 import { UNKNOWN_TRIGGER, UnknownTrigger } from "./UnknownTrigger";
 import { Trigger, TriggerType } from "./AlertTriggerInterface";
 import { makeAutoObservable } from "mobx";
+import {
+  BOOSTY_SUBSCRIPTION_TRIGGER,
+  BoostySubscriptionTrigger,
+} from "./BoostySubscriptionTrigger";
+import {
+  BOOSTY_FOLLOW_TRIGGER,
+  BoostyFollowTrigger,
+} from "./BoostyFollowTrigger";
 
 export class TriggersStore {
   private _types: TriggerType[] = [
@@ -22,6 +30,8 @@ export class TriggersStore {
     RANDE_DONATION_AMOUNT_TRIGGER,
     LESS_THAN_DONATION_AMOUNT_TRIGGER,
     SYSTEM_TRIGGER,
+    BOOSTY_SUBSCRIPTION_TRIGGER,
+    BOOSTY_FOLLOW_TRIGGER,
     UNKNOWN_TRIGGER,
   ];
   private _added: Trigger[] = [];
@@ -37,6 +47,12 @@ export class TriggersStore {
   public get available(): TriggerType[] {
     const additionalFilters: ((t: TriggerType) => boolean)[] = [];
     this._added.forEach((t) => {
+      if (t.type === BOOSTY_SUBSCRIPTION_TRIGGER.type) {
+        additionalFilters.push((t: TriggerType) => false);
+      }
+      if (t.type === BOOSTY_FOLLOW_TRIGGER.type) {
+        additionalFilters.push((t: TriggerType) => false);
+      }
       if (t.type === FIXED_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== RANDE_DONATION_AMOUNT_TRIGGER.type,
@@ -44,15 +60,33 @@ export class TriggersStore {
         additionalFilters.push(
           (t: TriggerType) => t.type !== LESS_THAN_DONATION_AMOUNT_TRIGGER.type,
         );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
+        );
       }
       if (t.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
+        );
       }
       if (t.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
         );
       }
     });
@@ -79,6 +113,10 @@ export class TriggersStore {
         return new LessThanDonationAmountTrigger();
       case "system":
         return new SystemTrigger();
+      case BOOSTY_SUBSCRIPTION_TRIGGER.type:
+        return new BoostySubscriptionTrigger();
+      case BOOSTY_FOLLOW_TRIGGER.type:
+        return new BoostyFollowTrigger();
       default:
         return new UnknownTrigger();
     }
@@ -100,6 +138,10 @@ export class TriggersStore {
         );
       case "system":
         return new SystemTrigger((trigger as SystemTrigger).system);
+      case BOOSTY_SUBSCRIPTION_TRIGGER.type:
+        return new BoostySubscriptionTrigger();
+      case BOOSTY_FOLLOW_TRIGGER.type:
+        return new BoostyFollowTrigger();
       default:
         return new UnknownTrigger();
     }

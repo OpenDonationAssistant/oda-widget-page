@@ -3,7 +3,7 @@ import { DonationEvent, Trigger } from "./AlertTriggerInterface";
 import InputNumber from "../../../components/InputNumber";
 
 export const LESS_THAN_DONATION_AMOUNT_TRIGGER = {
-  description: "сумма меньше",
+  description: "Сумма меньше",
   type: "less-than-donation-amount",
 };
 
@@ -20,7 +20,7 @@ export class LessThanDonationAmountTrigger implements Trigger {
   }
 
   isTriggered(event: DonationEvent): boolean {
-    return event.amount.major < this.amount;
+    return event.event === "payment" && event.system !== "MemeAlerts" && event.amount.major < this.amount;
   }
 
   public compare(other: Trigger): number {

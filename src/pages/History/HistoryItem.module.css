@@ -16,6 +16,12 @@
   color: var(--oda-color-500);
 }
 
+.memecount {
+  margin-left: 3px;
+  margin-right: 3px;
+  color: var(--oda-primary-color);
+}
+
 .little {
   font-size: 16px;
   color: rgb(120, 133, 189);
@@ -38,7 +44,18 @@
 .amount {
   color: var(--oda-primary-color);
   font-size: 18px;
+  font-weight: 600;
   margin-right: 5px;
+}
+
+.icon {
+   color: var(--oda-color-1000);
+   margin-right: 6px;
+}
+
+.levelname {
+  margin-left: 3px;
+  color: var(--oda-primary-color);
 }
 
 .title {
