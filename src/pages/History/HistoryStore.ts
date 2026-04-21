@@ -229,7 +229,12 @@ export class DefaultHistoryStore implements HistoryStore {
     }
     return this.client()
       .getHistory(
-        { size: this._pageSize, number: this._pageNumber },
+        { size: this._pageSize, number: this._pageNumber, orderBy: [        {
+            property: "timestamp",
+            direction: "DESC",
+            ignoreCase: true,
+          },
+        ] },
         systems,
         events,
       )
