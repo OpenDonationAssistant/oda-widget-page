@@ -79,6 +79,12 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
         if (type.name === "twitch-alerts") {
           return "tabularussia" === recipientId || "testuser" === recipientId;
         }
+        if (type.name === "stream-credits") {
+          return "tabularussia" === recipientId || "testuser" === recipientId;
+        }
+        if (type.name === "action-queue") {
+          return "tabularussia" === recipientId || "testuser" === recipientId;
+        }
         return true;
       })
         .filter((type) => type.category === category)

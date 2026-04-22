@@ -194,6 +194,16 @@ export const WIDGET_TYPES = [
       "Позволяет задать и управлять действиями, которые донатер может 'заказать' на стриме",
     create: () => new RouletteWidgetSettings(),
   },
+  {
+    name: "stream-credits",
+    title: "Титры",
+    icon: <span className="material-symbols-sharp">pending_actions</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Позволяет задать и управлять действиями, которые донатер может 'заказать' на стриме",
+    create: () => new RouletteWidgetSettings(),
+  },
 ];
 
 interface SavedProperty {
