@@ -39,16 +39,39 @@ import { deepEqual } from "../../../../utils";
 import { TriggersStore } from "./triggers/TriggersStore";
 
 function testAlert(topic: string, alert: Alert) {
-  publish(topic, {
-    id: uuidv7(), // TODO: сделать опциональным
-    alertId: alert.id,
-    nickname: "Тестовый алерт",
-    message: "Тестовое сообщение",
-    amount: {
-      major: 100,
-      minor: 0,
-      currency: "RUB",
+  const variables = [
+    {
+      name: "amount",
+      value: "100",
     },
+    {
+      name: "alertId",
+      value: alert.id,
+    },
+    {
+      name: "nickname",
+      value: "Тестовый алерт",
+    },
+    {
+      name: "message",
+      value: "Тестовое сообщение",
+    },
+    {
+      name: "event",
+      value: "payment",
+    },
+    {
+      name: "system",
+      value: "ODA",
+    },
+    {
+      name: "force",
+      value: true,
+    },
+  ];
+  publish(topic, {
+    type: "Alert",
+    variables: variables,
   });
 }
 
@@ -85,7 +108,7 @@ const AlertItemComponent = observer(
           second={
             <Flex className={`${classes.alertbuttons}`} gap={9}>
               <SubActionButton
-                onClick={() => testAlert(conf.topic.alerts, alert)}
+                onClick={() => testAlert(conf.topic.events, alert)}
               >
                 <div>Тест</div>
               </SubActionButton>
