@@ -27,6 +27,10 @@ interface Variable {
 function repeatAlert(topic: string, data: HistoryItem) {
   const variables: Variable[] = [
     {
+      name: "originId",
+      value: data.originId
+    },
+    {
       name: "amount",
       value: String(data.amount.major),
     },

@@ -71,19 +71,26 @@ const WidgetPreviewComponent = observer(
 
 const NewWidgetSection = observer(({ category }: { category: string }) => {
   const wizardStore = useContext(AddWidgetWizardStoreContext);
-  const { recipientId } = useLoaderData() as WidgetData;
+  const { features } = useLoaderData() as WidgetData;
 
   return (
     <CardList>
       {WIDGET_TYPES.filter((type) => {
         if (type.name === "twitch-alerts") {
-          return "tabularussia" === recipientId || "testuser" === recipientId;
+          return (
+            features.find((f) => f.name === "TwitchAlerts")?.state === "ENABLED"
+          );
         }
         if (type.name === "stream-credits") {
-          return "tabularussia" === recipientId || "testuser" === recipientId;
+          return (
+            features.find((f) => f.name === "StreamCredits")?.state ===
+            "ENABLED"
+          );
         }
         if (type.name === "action-queue") {
-          return "tabularussia" === recipientId || "testuser" === recipientId;
+          return (
+            features.find((f) => f.name === "ActionQueue")?.state === "ENABLED"
+          );
         }
         return true;
       })

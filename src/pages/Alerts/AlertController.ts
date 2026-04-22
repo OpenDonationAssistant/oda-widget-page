@@ -80,6 +80,7 @@ export class AlertController {
           const event = get(variables, "event");
           const nickname = get(variables, "nickname");
           const levelName = get(variables, "levelName");
+          const originId = get(variables, "originId");
           let msg = get(variables, "message");
           if (system === "Boosty" && event === "subscription") {
             msg = `${nickname} оформил подписку ${levelName}`;
@@ -88,6 +89,7 @@ export class AlertController {
             msg = `${nickname} отслеживает на Бусти`;
           }
           const data = {
+            id: originId,
             nickname: nickname,
             message: msg,
             amount: amount
@@ -101,7 +103,7 @@ export class AlertController {
             levelName: levelName,
             count: get(variables, "count"),
             system: system,
-            event: event
+            event: event,
           };
           this.log.info({ data }, `Received alert`);
           const alert = this.findAlert(data);

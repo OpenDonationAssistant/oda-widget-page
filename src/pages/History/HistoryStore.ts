@@ -150,7 +150,7 @@ export class DefaultHistoryStore implements HistoryStore {
       }
       if (json.status === "finished") {
         this._active = null;
-        const item = this._list.find((item) => item.originId === json.id);
+        const item = this._list.find((item) => item.active);
         log.debug({ item: item }, "try to search");
         if (item) {
           log.debug({ item: item }, "history item disactivated");
