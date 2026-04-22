@@ -81,6 +81,7 @@ export class AlertController {
           const nickname = get(variables, "nickname");
           const levelName = get(variables, "levelName");
           const originId = get(variables, "originId");
+          const force = get(variables, "force");
           let msg = get(variables, "message");
           if (system === "Boosty" && event === "subscription") {
             msg = `${nickname} оформил подписку ${levelName}`;
@@ -103,6 +104,7 @@ export class AlertController {
             levelName: levelName,
             count: get(variables, "count"),
             system: system,
+            force: force,
             event: event,
           };
           this.log.info({ data }, `Received alert`);
