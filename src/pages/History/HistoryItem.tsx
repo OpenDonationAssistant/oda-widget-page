@@ -19,15 +19,45 @@ function interruptAlert(conf: any) {
   });
 }
 
+interface Variable {
+  name: string;
+  value: any;
+}
+
 function repeatAlert(topic: string, data: HistoryItem) {
+  const variables: Variable[] = [
+    {
+      name: "amount",
+      value: String(data.amount.major),
+    },
+    {
+      name: "nickname",
+      value: String(data.nickname),
+    },
+    {
+      name: "message",
+      value: String(data.message),
+    },
+    {
+      name: "event",
+      value: String(data.event),
+    },
+    {
+      name: "system",
+      value: String(data.system),
+    },
+    {
+      name: "levelName",
+      value: String(data.levelName),
+    },
+    {
+      name: "force",
+      value: true,
+    }
+  ];
   publish(topic, {
-    id: data.originId,
-    nickname: data.nickname,
-    message: data.message,
-    amount: data.amount,
-    system: data.system,
-    event: data.event,
-    force: true,
+    type: "Alert",
+    variables: variables,
   });
 }
 

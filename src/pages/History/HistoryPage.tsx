@@ -33,7 +33,6 @@ import ODALogo from "../../components/ODALogo/ODALogo";
 import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
 import SecondaryButton from "../../components/Button/SecondaryButton";
-import { uuidv7 } from "uuidv7";
 import { useTranslation } from "react-i18next";
 
 const HistoryItemList = observer(({}: {}) => {
