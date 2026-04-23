@@ -74,7 +74,7 @@ export const StreamingIntegrationsWizard = observer(() => {
                 log.debug("opening twitch");
                 localStorage.setItem(state, "twitch");
                 window.open(
-                  "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=2f9aljaudj3678kp4gc9bj99tb7bev&redirect_uri=https://widgets.oda.digital&scope=channel%3Aread%3Aredemptions+user%3Aread%3Aemail+moderator%3Aread%3Ashoutouts+moderator%3Aread%3Afollowers+channel%3Aread%3apredictions+channel%3Aread%3Ahype_train+channel%3Aread%3Agoals+bits%3Aread+channel%3Aread%3Apolls&state=" +
+                  "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=2f9aljaudj3678kp4gc9bj99tb7bev&redirect_uri=https://widgets.oda.digital&scope=channel:read:redemptions+user:read:email+moderator:read:shoutouts+moderator:read:followers+channel:read:predictions+channel:read:hype_train+channel:read:goals+bits:read+channel:read:polls+user:read:chat+user:bot&state=" +
                     state,
                 );
                 return Promise.resolve(true);
