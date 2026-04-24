@@ -841,7 +841,7 @@ const PaymentAlerts = observer(
                     paymentId: donation.id,
                     system: "Boosty",
                     event: "subscription",
-                    levelName: donation.level_name,
+                    levelName: donation.additional_data.event_data.level_name,
                     alertMedia: null,
                   },
                   {},
