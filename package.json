@@ -73,6 +73,8 @@
     "videojs-playlist": "^5.1.0",
     "videojs-youtube": "^3.0.1",
     "web-vitals": "^2.1.4",
+    "workbox-precaching": "^7.4.0",
+    "workbox-webpack-plugin": "^7.4.0",
     "ws": "^8.13.0"
   },
   "scripts": {
