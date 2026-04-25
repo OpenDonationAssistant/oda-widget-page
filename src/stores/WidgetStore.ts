@@ -38,11 +38,11 @@ export class DefaultWidgetStore implements WidgetStore {
   }
 
   private async load(): Promise<void> {
-    log.debug({store: this},"loading widgets");
+    log.debug({ store: this }, "loading widgets");
     return this.client()
       .list()
       .then((response) => {
-        log.debug({response: response},"handling widgets response");
+        log.debug({ response: response }, "handling widgets response");
         this._list = response.data
           .sort((a, b) => {
             if (a.sortOrder === undefined && b.sortOrder === undefined) {
@@ -58,10 +58,10 @@ export class DefaultWidgetStore implements WidgetStore {
           })
           .flatMap((widget) => {
             const created = Widget.fromJson(widget, this);
-            log.debug({created: created}, "parsed widget");
+            log.debug({ created: created }, "parsed widget");
             return created ? [created] : [];
           });
-        log.debug({list: this._list},"loaded widgets");
+        log.debug({ list: this._list }, "loaded widgets");
       });
   }
 
@@ -98,7 +98,7 @@ export class DefaultWidgetStore implements WidgetStore {
     return this.client()
       .toggleWidget({ id: id })
       .then((response) => response.data)
-      .then(data => Widget.fromJson(data, this))
+      .then((data) => Widget.fromJson(data, this));
   }
 }
 

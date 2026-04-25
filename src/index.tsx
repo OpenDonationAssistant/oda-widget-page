@@ -68,6 +68,7 @@ import {
   initGlobalErrorStore,
 } from "./stores/ErrorStore";
 import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
+import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -424,6 +425,11 @@ const router = createBrowserRouter([
   {
     path: "/donationgoal/:widgetId",
     element: <DonationGoalPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/stream-credits/:widgetId",
+    element: <StreamCreditsWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {

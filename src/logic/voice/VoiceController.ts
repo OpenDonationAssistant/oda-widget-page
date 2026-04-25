@@ -126,7 +126,7 @@ export class VoiceController {
         if (data.message === "Тестовое сообщение") {
           return this.loadAudio("https://api.oda.digital/public/message.mp3");
         }
-        if (data.media?.url){
+        if (data.media?.url) {
           return this.loadAudio(data.media.url);
         }
         return this.voiceByMCS(data.message);

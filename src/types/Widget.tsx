@@ -32,6 +32,7 @@ import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
+import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -200,9 +201,8 @@ export const WIDGET_TYPES = [
     icon: <span className="material-symbols-sharp">pending_actions</span>,
     category: "onscreen",
     preview: "",
-    description:
-      "Позволяет задать и управлять действиями, которые донатер может 'заказать' на стриме",
-    create: () => new RouletteWidgetSettings(),
+    description: "Виджет со статистикой для показа в конце стрима как титры",
+    create: () => new StreamCreditsWidgetSettings(),
   },
 ];
 

@@ -21,6 +21,17 @@ const timeFormat = new Intl.DateTimeFormat("ru-RU", {
   minute: "numeric",
 });
 
+interface Variable {
+  id: string;
+  name: string;
+  value: any;
+  type: string;
+}
+
+function get(variables: Variable[], name: string) {
+  return variables.find((it) => it.name === name)?.value;
+}
+
 export interface HistoryItem {
   id: string;
   originId: string;
@@ -62,6 +73,36 @@ export interface HistoryStore {
   showMemeAlertsCoins: boolean;
 }
 
+export interface HistoryListener {
+  onHistoryItemAdded(item: HistoryItem): void;
+}
+
+function convert(message: any): HistoryItem {
+  return {
+    id: message.id,
+    originId: get(message.variables, "originId"),
+    amount: {
+      major: Number(get(message.variables, "amount") ?? "0"),
+      minor: 0,
+      currency: "RUB",
+    },
+    nickname: get(message.variables, "nickname"),
+    system: get(message.variables, "system"),
+    event: get(message.variables, "event"),
+    count: get(message.variables, "count"),
+    levelName: get(message.variables, "levelName"),
+    goals: [],
+    rouletteResults: [],
+    message: get(message.variables, "message"),
+    attachments: [],
+    actions: [],
+    timestamp: new Date(),
+    date: "",
+    time: "",
+    active: false,
+  };
+}
+
 export class DefaultHistoryStore implements HistoryStore {
   private _recipientId: string;
   private _pageSize: number;
@@ -80,6 +121,8 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showMemeAlertsCoins: boolean;
   private _widgetId: string;
   private _active: string | null = null;
+
+  private _listeners: HistoryListener[] = [];
 
   // todo type for conf
   constructor(recipientId: string, widgetId: string, conf: any) {
@@ -112,6 +155,10 @@ export class DefaultHistoryStore implements HistoryStore {
       });
   }
 
+  public addListener(listener: HistoryListener) {
+    this._listeners.push(listener);
+  }
+
   private readValue(key: string) {
     const value = localStorage.getItem(key);
     if (value === undefined || value === null) {
@@ -124,7 +171,7 @@ export class DefaultHistoryStore implements HistoryStore {
     log.debug("listening for history events");
     subscribe(
       this._widgetId,
-      conf.topic.alerts,
+      conf.topic.events,
       (message) => {
         log.debug(`events widgets received: ${message.body}`);
         setTimeout(() => {
@@ -132,6 +179,9 @@ export class DefaultHistoryStore implements HistoryStore {
           this._pageNumber = 0;
           this.load();
         }, 1500);
+        this._listeners.forEach((listener) => {
+          // listener.onHistoryItemAdded(JSON.parse(message.body));
+        });
         message.ack();
       },
       { autoDelete: "true", durable: "false" },
@@ -229,12 +279,17 @@ export class DefaultHistoryStore implements HistoryStore {
     }
     return this.client()
       .getHistory(
-        { size: this._pageSize, number: this._pageNumber, orderBy: [        {
-            property: "timestamp",
-            direction: "DESC",
-            ignoreCase: true,
-          },
-        ] },
+        {
+          size: this._pageSize,
+          number: this._pageNumber,
+          orderBy: [
+            {
+              property: "timestamp",
+              direction: "DESC",
+              ignoreCase: true,
+            },
+          ],
+        },
         systems,
         events,
       )
