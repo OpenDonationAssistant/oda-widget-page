@@ -1,16 +1,14 @@
 import { observer } from "mobx-react-lite";
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { StreamCreditsWidgetSettings } from "./StreamCreditsWidgetSettings";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { StreamCreditsStore } from "./StreamCreditsStore";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
 let websocketSessionID: string;
-let token: string;
 
-async function registerEventSubListeners() {
+async function registerEventSubListeners(token: string) {
   // Register channel.chat.message
-  console.log(token);
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
     {
@@ -48,13 +46,13 @@ async function registerEventSubListeners() {
   }
 }
 
-function handleWebSocketMessage(data: any) {
+function handleWebSocketMessage(token: string, data: any) {
   switch (data.metadata.message_type) {
     case "session_welcome": // First message you get from the WebSocket server when connecting
       websocketSessionID = data.payload.session.id; // Register the Session ID it gives us
 
       // Listen to EventSub, which joins the chatroom from your bot's account
-      registerEventSubListeners();
+      registerEventSubListeners(token);
       break;
     case "notification": // An EventSub notification has occurred, such as channel.chat.message
       switch (data.metadata.subscription_type) {
@@ -76,7 +74,8 @@ function handleWebSocketMessage(data: any) {
   }
 }
 
-function startWebSocketClient() {
+function startWebSocketClient(token: string) {
+  console.log({ token }, "Starting WebSocket connection");
   let websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
 
   websocketClient.addEventListener("error", console.error);
@@ -86,23 +85,46 @@ function startWebSocketClient() {
   });
 
   websocketClient.addEventListener("message", (data) => {
-    handleWebSocketMessage(JSON.parse(data.data));
+    handleWebSocketMessage(token, JSON.parse(data.data));
   });
 
   return websocketClient;
 }
 
 export const StreamCreditsWidget = observer(
-  ({ settings }: { settings: StreamCreditsWidgetSettings }) => {
+  ({
+    settings,
+    creditsStore,
+  }: {
+    settings: StreamCreditsWidgetSettings;
+    creditsStore: StreamCreditsStore;
+  }) => {
     const [twitchToken, setTwitchToken] = useState<string | null>(null);
 
-    RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-      .getTwitchAccessToken()
-      .then((response) => {
-        token = response.data.token;
-        startWebSocketClient();
-      });
+    useEffect(() => {
+      if (twitchToken !== null) {
+        return;
+      }
+      // RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+      //   .getTwitchAccessToken()
+      //   .then((response) => {
+      //     setTwitchToken(response.data.token);
+      //   });
+    }, [settings]);
 
-    return <></>;
+    useEffect(() => {
+      if (twitchToken === null) {
+        return;
+      }
+      // startWebSocketClient(twitchToken);
+    }, [twitchToken]);
+
+    return (
+      <>
+        {creditsStore.donaters.map((donater) => (
+          <div>{donater}</div>
+        ))}
+      </>
+    );
   },
 );
