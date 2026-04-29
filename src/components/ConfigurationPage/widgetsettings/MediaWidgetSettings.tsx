@@ -6,9 +6,34 @@ import { BooleanProperty } from "../widgetproperties/BooleanProperty";
 import { TextProperty } from "../widgetproperties/TextProperty";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
+import { MaxLen } from "./media/MaxLen";
+import { Tarification } from "./media/Tarification";
+import { reaction } from "mobx";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
   constructor() {
+    const vkRequests = new BooleanProperty({
+      name: "vkvideoEnabled",
+      value: true,
+      displayName: "Реквесты с VKVideo",
+    });
+    const tarification = new Tarification();
+    reaction(
+      () => tarification.value.method,
+      () => {
+        if (tarification.value.method === "perMinute") {
+          vkRequests.value = false;
+        }
+      },
+    );
+    reaction(
+      () => vkRequests.value,
+      () => {
+        if (vkRequests.value) {
+          tarification.value.method = "perLink";
+        }
+      },
+    );
     super({
       sections: [
         {
@@ -25,17 +50,8 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: true,
               displayName: "Реквесты с YouTube",
             }),
-            new BooleanProperty({
-              name: "vkvideoEnabled",
-              value: true,
-              displayName: "Реквесты с VKVideo",
-            }),
-            new NumberProperty({
-              name: "songRequestCost",
-              value: 100,
-              addon: "руб",
-              displayName: "Стоимость одного видео",
-            }),
+            vkRequests,
+            tarification,
             new NumberProperty({
               name: "songMaxAmount",
               value: 12,
@@ -46,6 +62,7 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: 100,
               displayName: "Минимальное кол-во просмотров",
             }),
+            new MaxLen(),
             new TextProperty({
               name: "requestTooltip",
               value: "",
