@@ -152,47 +152,72 @@ export const StreamCreditsWidget = observer(
         {settings.titleFontProperty.createFontImport()}
         {settings.creditsFontProperty.createFontImport()}
         {show && (
-          <Flex vertical align="center" justify="center">
+          <Flex vertical style={{ transform: "rotate(90deg)" }}>
             <Marquee
               delay={3}
               loop={0}
+              speed={settings.speedProperty.value}
               onFinish={() => setShow(false)}
-              direction="up"
+              direction="left"
               style={{ height: "100vw", width: "100vh" }}
             >
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Танцующие на столе</div>
+              <Flex
+                vertical
+                align="center"
+                style={{ transform: "rotate(-90deg)" }}
+              >
+                <div style={titleFontStyle}>
+                  Танцующие на столе (участники квиза)
+                </div>
                 {creditsStore.voters.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Пришли в своей компании</div>
-                {creditsStore.raiders.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
-                ))}
-              </Flex>
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Новые посетители таверны</div>
+              <Flex
+                vertical
+                align="center"
+                style={{ transform: "rotate(-90deg)" }}
+              >
+                <div style={titleFontStyle}>
+                  Новые посетители таверны (фоллоу)
+                </div>
                 {creditsStore.newFollowers.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Угостили лисят в баре</div>
+              <Flex
+                vertical
+                align="center"
+                style={{ transform: "rotate(-90deg)" }}
+              >
+                <div style={titleFontStyle}>
+                  Пришли в своей компании (рейдеры)
+                </div>
+                {creditsStore.raiders.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex
+                vertical
+                align="center"
+                style={{ transform: "rotate(-90deg)" }}
+              >
+                <div style={titleFontStyle}>
+                  Угостили лисят в баре (подарочные подписки)
+                </div>
                 {creditsStore.gifters.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Подкинули бармену на отпуск</div>
+              <Flex
+                vertical
+                align="center"
+                style={{ transform: "rotate(-90deg)" }}
+              >
+                <div style={titleFontStyle}>
+                  Подкинули бармену на отпуск (донатеры)
+                </div>
                 {creditsStore.donaters.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
-                ))}
-              </Flex>
-              <Flex vertical align="center">
-                <div style={titleFontStyle}>Вышвырнули из таверны</div>
-                {creditsStore.banned.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>

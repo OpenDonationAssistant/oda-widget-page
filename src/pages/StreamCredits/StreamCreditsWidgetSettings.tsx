@@ -15,6 +15,7 @@ import { RoundingProperty } from "../../components/ConfigurationPage/widgetprope
 import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
+import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
 
 export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -29,6 +30,12 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
             }),
             new AnimatedFontProperty({
               name: "creditsFont",
+            }),
+            new NumberProperty({
+              displayName: "Скорость прокрутки",
+              name: "speed",
+              addon: "px/sec",
+              value: 10,
             }),
             new AlignmentProperty({
               name: "textAlign",
@@ -116,6 +123,18 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
       (this.get("creditsFont") as AnimatedFontProperty) ||
       new AnimatedFontProperty({
         name: "creditsFont",
+      })
+    );
+  }
+
+  public get speedProperty(): NumberProperty {
+    return (
+      (this.get("speed") as NumberProperty) ||
+      new NumberProperty({
+        displayName: "Скорость прокрутки",
+        name: "speed",
+        addon: "px/sec",
+        value: 10,
       })
     );
   }
