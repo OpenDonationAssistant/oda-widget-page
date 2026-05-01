@@ -31,10 +31,13 @@ export const IntegrationsPage = observer(() => {
         <CardSection>
           <DonationPlatformsSection />
           {recipientId &&
-            (recipientId === "tabularussia" || recipientId === "testuser") && (
-              <StreamingPlatformsSection />
+            (recipientId === "tabularussia" ||
+              recipientId === "testuser" ||
+              recipientId === "eirenarin") && <StreamingPlatformsSection />}
+          {recipientId &&
+            (recipientId === "testuser" || recipientId === "eirenarin") && (
+              <GamesSection />
             )}
-          {recipientId && recipientId === "testuser" && <GamesSection />}
         </CardSection>
       </GamesStoreContext.Provider>
     </TokenStoreContext.Provider>
