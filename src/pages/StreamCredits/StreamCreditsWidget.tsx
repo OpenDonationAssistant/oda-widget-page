@@ -155,7 +155,7 @@ export const StreamCreditsWidget = observer(
           <Flex vertical style={{ transform: "rotate(90deg)" }}>
             <Marquee
               delay={3}
-              loop={0}
+              loop={1}
               speed={settings.speedProperty.value}
               onFinish={() => setShow(false)}
               direction="left"
