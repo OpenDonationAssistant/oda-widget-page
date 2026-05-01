@@ -7,9 +7,10 @@ export class StreamCreditsStore {
   private _raiders: string[] = [];
   private _gifters: string[] = [];
   private _banned: string[] = [];
+  private _voters: string[] = [];
 
-  constructor(bus: EventBus) {
-    let data = localStorage.getItem("streamCredits");
+  constructor(widgetId: string, bus: EventBus) {
+    let data = localStorage.getItem("streamCredits-" + widgetId);
     if (data) {
       let parsed = JSON.parse(data);
       this._donaters = parsed.donaters ?? [];
@@ -17,18 +18,20 @@ export class StreamCreditsStore {
       this._raiders = parsed.raiders ?? [];
       this._gifters = parsed.gifters ?? [];
       this._banned = parsed.banned ?? [];
+      this._voters = parsed.voters ?? [];
     }
     makeAutoObservable(this);
     bus.addListener((event) => this.listen(event));
     setInterval(() => {
       localStorage.setItem(
-        "streamCredits",
+        "streamCredits-" + widgetId,
         JSON.stringify({
           donaters: this._donaters,
           newFollowers: this._newFollowers,
           raiders: this._raiders,
           gifters: this._gifters,
           banned: this._banned,
+          voters: this._voters,
         }),
       );
     }, 5000);
@@ -85,5 +88,16 @@ export class StreamCreditsStore {
 
   public get banned() {
     return this._banned;
+  }
+
+  public get voters() {
+    return this._voters;
+  }
+
+  public addVoter(nickname: string) {
+    if (this._voters.includes(nickname)) {
+      return;
+    }
+    this._voters.push(nickname);
   }
 }

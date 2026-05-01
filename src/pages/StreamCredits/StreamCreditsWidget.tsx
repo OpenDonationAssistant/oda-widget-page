@@ -1,14 +1,33 @@
 import { observer } from "mobx-react-lite";
 import { StreamCreditsWidgetSettings } from "./StreamCreditsWidgetSettings";
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { useEffect, useState } from "react";
 import { StreamCreditsStore } from "./StreamCreditsStore";
+import Marquee from "react-fast-marquee";
+import { Flex } from "antd";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
 let websocketSessionID: string;
 
+function isDigitsOnly(s: string) {
+  return /^\d+$/.test(s);
+}
+
+async function getTwitchUserId(token: string) {
+  const response = await fetch("https://id.twitch.tv/oauth2/validate", {
+    method: "GET",
+    headers: {
+      Authorization: "OAuth " + token,
+    },
+  });
+  const json = await response.json();
+  return json.user_id;
+}
+
 async function registerEventSubListeners(token: string) {
   // Register channel.chat.message
+  let userId = await getTwitchUserId(token);
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
     {
@@ -22,8 +41,8 @@ async function registerEventSubListeners(token: string) {
         type: "channel.chat.message",
         version: "1",
         condition: {
-          broadcaster_user_id: String(175064269),
-          user_id: String(175064269),
+          broadcaster_user_id: userId,
+          user_id: userId,
         },
         transport: {
           method: "websocket",
@@ -46,7 +65,11 @@ async function registerEventSubListeners(token: string) {
   }
 }
 
-function handleWebSocketMessage(token: string, data: any) {
+function handleWebSocketMessage(
+  token: string,
+  data: any,
+  store: StreamCreditsStore,
+) {
   switch (data.metadata.message_type) {
     case "session_welcome": // First message you get from the WebSocket server when connecting
       websocketSessionID = data.payload.session.id; // Register the Session ID it gives us
@@ -58,14 +81,12 @@ function handleWebSocketMessage(token: string, data: any) {
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
           // First, print the message to the program's console.
-          console.log(
-            `MSG #${data.payload.event.broadcaster_user_login} <${data.payload.event.chatter_user_login}> ${data.payload.event.message.text}`,
-          );
+          // console.log(
+          //   `MSG #${data.payload.event.broadcaster_user_login} <${data.payload.event.chatter_user_login}> ${data.payload.event.message.text}`,
+          // );
 
-          // Then check to see if that message was "HeyGuys"
-          if (data.payload.event.message.text.trim() == "HeyGuys") {
-            // If so, send back "VoHiYo" to the chatroom
-            // sendChatMessage("VoHiYo")
+          if (isDigitsOnly(data.payload.event.message.text.trim())) {
+            store.addVoter(data.payload.event.chatter_user_login);
           }
 
           break;
@@ -74,7 +95,7 @@ function handleWebSocketMessage(token: string, data: any) {
   }
 }
 
-function startWebSocketClient(token: string) {
+function startWebSocketClient(token: string, store: StreamCreditsStore) {
   console.log({ token }, "Starting WebSocket connection");
   let websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
 
@@ -85,7 +106,7 @@ function startWebSocketClient(token: string) {
   });
 
   websocketClient.addEventListener("message", (data) => {
-    handleWebSocketMessage(token, JSON.parse(data.data));
+    handleWebSocketMessage(token, JSON.parse(data.data), store);
   });
 
   return websocketClient;
@@ -100,30 +121,84 @@ export const StreamCreditsWidget = observer(
     creditsStore: StreamCreditsStore;
   }) => {
     const [twitchToken, setTwitchToken] = useState<string | null>(null);
+    const [show, setShow] = useState<boolean>(true);
 
     useEffect(() => {
       if (twitchToken !== null) {
         return;
       }
-      // RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-      //   .getTwitchAccessToken()
-      //   .then((response) => {
-      //     setTwitchToken(response.data.token);
-      //   });
+      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+        .getTwitchAccessToken()
+        .then((response) => {
+          setTwitchToken(response.data.token);
+        });
     }, [settings]);
 
     useEffect(() => {
       if (twitchToken === null) {
         return;
       }
-      // startWebSocketClient(twitchToken);
-    }, [twitchToken]);
+      if (creditsStore === null) {
+        return;
+      }
+      startWebSocketClient(twitchToken, creditsStore);
+    }, [twitchToken, creditsStore]);
+
+    const creditFontStyle = settings.creditsFontProperty.calcStyle();
+    const titleFontStyle = settings.titleFontProperty.calcStyle();
 
     return (
       <>
-        {creditsStore.donaters.map((donater) => (
-          <div>{donater}</div>
-        ))}
+        {settings.titleFontProperty.createFontImport()}
+        {settings.creditsFontProperty.createFontImport()}
+        {show && (
+          <Flex vertical align="center" justify="center">
+            <Marquee
+              delay={3}
+              loop={0}
+              onFinish={() => setShow(false)}
+              direction="up"
+              style={{ height: "100vw", width: "100vh" }}
+            >
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Танцующие на столе</div>
+                {creditsStore.voters.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Пришли в своей компании</div>
+                {creditsStore.raiders.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Новые посетители таверны</div>
+                {creditsStore.newFollowers.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Угостили лисят в баре</div>
+                {creditsStore.gifters.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Подкинули бармену на отпуск</div>
+                {creditsStore.donaters.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>Вышвырнули из таверны</div>
+                {creditsStore.banned.map((name) => (
+                  <div style={creditFontStyle}>{name}</div>
+                ))}
+              </Flex>
+            </Marquee>
+          </Flex>
+        )}
       </>
     );
   },

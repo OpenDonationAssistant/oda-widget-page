@@ -13,6 +13,8 @@ import { BorderProperty } from "../../components/ConfigurationPage/widgetpropert
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 
 export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -22,8 +24,18 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
           key: "general",
           title: "Общие",
           properties: [
+            new AnimatedFontProperty({
+              name: "titleFont",
+            }),
+            new AnimatedFontProperty({
+              name: "creditsFont",
+            }),
+            new AlignmentProperty({
+              name: "textAlign",
+              displayName: "text-alignment",
+            }),
             new ColorProperty({
-              name: "widgetBackgroundColor",
+              name: "backgroundColor",
               displayName: "background-color",
               value: {
                 gradient: false,
@@ -88,5 +100,107 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
 
   public demo(): ReactNode {
     return <></>;
+  }
+
+  public get titleFontProperty(): AnimatedFontProperty {
+    return (
+      (this.get("titleFont") as AnimatedFontProperty) ||
+      new AnimatedFontProperty({
+        name: "titleFont",
+      })
+    );
+  }
+
+  public get creditsFontProperty(): AnimatedFontProperty {
+    return (
+      (this.get("creditsFont") as AnimatedFontProperty) ||
+      new AnimatedFontProperty({
+        name: "creditsFont",
+      })
+    );
+  }
+
+  public get textAlignProperty(): AlignmentProperty {
+    return (
+      (this.get("textAlign") as AlignmentProperty) ||
+      new AlignmentProperty({
+        name: "textAlign",
+        displayName: "text-alignment",
+      })
+    );
+  }
+
+  public get backgroundColorProperty(): ColorProperty {
+    return (
+      (this.get("backgroundColor") as ColorProperty) ||
+      new ColorProperty({
+        name: "backgroundColor",
+        displayName: "background-color",
+        target: ColorPropertyTarget.BACKGROUND,
+      })
+    );
+  }
+
+  public get backgroundImageProperty(): BackgroundImageProperty {
+    return (
+      (this.get("backgroundImage") as BackgroundImageProperty) ||
+      new BackgroundImageProperty({
+        name: "backgroundImage",
+      })
+    );
+  }
+
+  public get widthProperty(): WidthProperty {
+    return (
+      (this.get("width") as WidthProperty) ||
+      new WidthProperty({
+        name: "width",
+      })
+    );
+  }
+
+  public get heightProperty(): HeightProperty {
+    return (
+      (this.get("height") as HeightProperty) ||
+      new HeightProperty({
+        name: "height",
+      })
+    );
+  }
+
+  public get borderProperty(): BorderProperty {
+    return (
+      (this.get("border") as BorderProperty) ||
+      new BorderProperty({
+        name: "border",
+      })
+    );
+  }
+
+  public get paddingProperty(): PaddingProperty {
+    return (
+      (this.get("padding") as PaddingProperty) ||
+      new PaddingProperty({
+        name: "padding",
+      })
+    );
+  }
+
+  public get roundingProperty(): RoundingProperty {
+    return (
+      (this.get("rounding") as RoundingProperty) ||
+      new RoundingProperty({
+        name: "rounding",
+      })
+    );
+  }
+
+  public get boxShadowProperty(): BoxShadowProperty {
+    return (
+      (this.get("boxShadow") as BoxShadowProperty) ||
+      new BoxShadowProperty({
+        name: "boxShadow",
+      })
+    );
   }
 }

@@ -13,7 +13,7 @@ export default function StreamCreditsWidgetPage({}) {
 
   const eventBus = new DefaultEventBus(widgetId, conf.topic.events);
 
-  const creditsStore = new StreamCreditsStore(eventBus);
+  const creditsStore = new StreamCreditsStore(widgetId, eventBus);
 
   const widgetSettings = Widget.configFromJson(
     settings,
