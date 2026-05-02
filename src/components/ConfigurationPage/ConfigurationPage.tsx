@@ -277,6 +277,15 @@ export default function ConfigurationPage() {
             state.show = true;
           });
       }
+      if (platform === "discord" && code) {
+        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+          .linkDiscord({
+            authorizationCode: code,
+          })
+          .then(() => {
+            state.show = true;
+          });
+      }
     } else {
       RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
         .getDonationAlertsToken({
