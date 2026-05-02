@@ -150,10 +150,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get("code");
 if (code) {
   localStorage.setItem("code", code);
+  console.log({ code },"code");
 }
 const state = urlParams.get("state");
 if (state) {
   localStorage.setItem("state", state);
+  console.log({ state },"state");
 }
 
 function detectPage(path: string): Page {

@@ -236,6 +236,7 @@ export default function ConfigurationPage() {
   const code = localStorage.getItem("code");
   const authState = localStorage.getItem("state");
   if (code) {
+    console.log({ code, authState },"code and state");
     localStorage.removeItem("code");
     if (authState) {
       localStorage.removeItem("state");
