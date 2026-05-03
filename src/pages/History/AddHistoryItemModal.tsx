@@ -74,8 +74,8 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
         : [],
       addToTop: countInTop,
       addToGoal: false,
-      id: uuidv7(),
       paymentId: uuidv7(),
+      event: "payment"
     });
   }
 
