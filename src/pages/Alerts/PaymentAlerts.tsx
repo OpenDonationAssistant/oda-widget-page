@@ -586,7 +586,7 @@ const PaymentAlerts = observer(
                   socket.addEventListener("message", (event) => {
                     const channel = `$public:${id}`;
                     const data = JSON.parse(event.data);
-                    console.log({ data: data }, "Message from DonatePay");
+                    integrationLog.debug({ data: data }, "Message from DonatePay");
                     if (data.id === 1) {
                       log.debug("getting centrifugo token");
                       const clientId = data.result.client;
@@ -933,7 +933,7 @@ const PaymentAlerts = observer(
             .configureLogging(LogLevel.Information)
             .build();
           connection.on("DonationCreated", (donation) => {
-            console.log({ donation: donation }, "New donation");
+            integrationLog.debug({ donation: donation }, "New donation");
             HistoryService(
               undefined,
               process.env.REACT_APP_HISTORY_API_ENDPOINT,
@@ -955,7 +955,8 @@ const PaymentAlerts = observer(
                 addToGoal: token.settings.addToGoal,
                 paymentId: donation.id,
                 system: "DonateX",
-                event: "payment"
+                event: "payment",
+                alertMedia: donation.voiceFilePath
               },
               {},
             );
