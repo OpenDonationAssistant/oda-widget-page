@@ -14,9 +14,7 @@ import {
   Title,
 } from "../../components/Overlay/Overlay";
 import PrimaryButton from "../../components/Button/PrimaryButton";
-import {
-  BorderedIconButton,
-} from "../../components/IconButton/IconButton";
+import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import SubActionButton from "../../components/Button/SubActionButton";
 import AddIcon from "../../icons/AddIcon";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
@@ -75,7 +73,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       addToTop: countInTop,
       addToGoal: false,
       paymentId: uuidv7(),
-      event: "payment"
+      event: "payment",
     });
   }
 
@@ -83,6 +81,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
     <>
       {!compact && (
         <SubActionButton onClick={() => (showModal.show = true)}>
+          <AddIcon color="var(--oda-color-1000)" />
           {t("button-add-historyitem")}
         </SubActionButton>
       )}

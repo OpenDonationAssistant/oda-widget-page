@@ -12,6 +12,10 @@ import ReelIcon from "../../icons/ReelIcon";
 import RunIcon from "../../icons/RunIcon";
 import BoostyIcon from "../../icons/BoostyIcon";
 import MemeAlertsIcon from "../../icons/MemeAlertsIcon";
+import DonatePayIcon from "../../icons/DonatePayIcon";
+import ODAIcon from "../../icons/ODAIcon";
+import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
+import DonateXIcon from "../../icons/DonateXIcon";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -28,7 +32,7 @@ function repeatAlert(topic: string, data: HistoryItem) {
   const variables: Variable[] = [
     {
       name: "originId",
-      value: data.originId
+      value: data.originId,
     },
     {
       name: "amount",
@@ -57,7 +61,7 @@ function repeatAlert(topic: string, data: HistoryItem) {
     {
       name: "force",
       value: true,
-    }
+    },
   ];
   publish(topic, {
     type: "Alert",
@@ -182,9 +186,36 @@ export const HistoryItemComponent = observer(
         } else {
           header = (
             <Flex align="center" gap={3}>
-              <span className={`material-symbols-sharp ${classes.icon}`}>
-                payments
-              </span>
+              {item.system === "DonatePay" && (
+                <DonatePayIcon
+                  color="var(--oda-primary-color)"
+                  className={`${classes.icon}`}
+                />
+              )}
+              {item.system === "DonatePay.eu" && (
+                <DonatePayIcon
+                  color="var(--oda-primary-color)"
+                  className={`${classes.icon}`}
+                />
+              )}
+              {item.system === "DonateX" && (
+                <DonateXIcon
+                  color="var(--oda-primary-color)"
+                  className={`${classes.icon}`}
+                />
+              )}
+              {item.system === "DonationAlerts" && (
+                <DonationAlertsIcon
+                  color="var(--oda-primary-color)"
+                  className={`${classes.icon}`}
+                />
+              )}
+              {item.system === "ODA" && (
+                <ODAIcon
+                  color="var(--oda-primary-color)"
+                  className={`${classes.icon}`}
+                />
+              )}
               <span className={classes.title}>
                 <span className={`${classes.amount}`}>
                   {item.amount?.major}

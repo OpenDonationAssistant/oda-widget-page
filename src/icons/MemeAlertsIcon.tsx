@@ -6,7 +6,7 @@ export default function MemeAlertsIcon({ color, className }:{ color?: string; cl
         width="14.000000pt"
         height="14.000000pt"
         className={className}
-        viewBox="0 0 96.000000 96.000000"
+        viewBox="-20 -10 110 110"
         preserveAspectRatio="xMidYMid meet"
       >
         <g

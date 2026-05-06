@@ -10,6 +10,7 @@ import {
 import { log } from "../../logging";
 import { createContext } from "react";
 import { subscribe } from "../../socket";
+import { sleep } from "../../utils";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -55,6 +56,7 @@ export interface HistoryItem {
 export interface HistoryStore {
   today: string;
   load(): Promise<void>;
+  export(): Promise<void>;
   loadUntil(count: number): Promise<void>;
   hasNext(): boolean;
   next(): Promise<void>;
@@ -71,6 +73,8 @@ export interface HistoryStore {
   showBoostySubs: boolean;
   showBoostyFollows: boolean;
   showMemeAlertsCoins: boolean;
+  after: Date | null;
+  before: Date | null;
 }
 
 export interface HistoryListener {
@@ -119,6 +123,8 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showBoostySubs: boolean;
   private _showBoostyFollows: boolean;
   private _showMemeAlertsCoins: boolean;
+  private _after: Date | null;
+  private _before: Date | null;
   private _widgetId: string;
   private _active: string | null = null;
 
@@ -145,6 +151,8 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showMemeAlertsCoins = this.readValue(
       `${widgetId}.showMemeAlertsCoins`,
     );
+    this._after = null;
+    this._before = null;
     makeAutoObservable(this);
     this.load()
       .then(() => {
@@ -153,6 +161,56 @@ export class DefaultHistoryStore implements HistoryStore {
       .catch((error) => {
         log.error(error);
       });
+  }
+
+  public export() {
+    return this.client()
+      .printCsv({
+        after: this._after?.toISOString(),
+        before: this._before?.toISOString(),
+        events: this.events,
+        systems: this.systems,
+      })
+      .then(async (response) => {
+        let ready = false;
+        while (!ready) {
+          await sleep(1000);
+          ready = (await this.client().getCsvStatus(response.data.printId)).data
+            .ready;
+        }
+        this.client()
+          .downloadCsv(response.data.printId)
+          .then((response) => {
+            const blob = new Blob([response.data], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "history.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          });
+      });
+  }
+
+  public get after() {
+    return this._after;
+  }
+
+  public get before() {
+    return this._before;
+  }
+
+  public set after(after: Date | null) {
+    this._after = after;
+    this._list = [];
+    this.load();
+  }
+
+  public set before(before: Date | null) {
+    this._before = before;
+    this._list = [];
+    this.load();
   }
 
   public addListener(listener: HistoryListener) {
@@ -232,6 +290,53 @@ export class DefaultHistoryStore implements HistoryStore {
     this.load();
   }
 
+  private get systems() {
+    const systems = [];
+    if (this._showODA) {
+      systems.push("ODA");
+    }
+    if (this._showDonationAlerts) {
+      systems.push("DonationAlerts");
+    }
+    if (this._showDonatePay) {
+      systems.push("DonatePay");
+    }
+    if (this._showDonateStream) {
+      systems.push("Donate.Stream");
+    }
+    if (this._showDonateX) {
+      systems.push("DonateX");
+    }
+    if (this._showBoostySubs || this._showBoostyFollows) {
+      systems.push("Boosty");
+    }
+    if (this._showMemeAlertsCoins) {
+      systems.push("MemeAlerts");
+    }
+    return systems;
+  }
+
+  private get events() {
+    const events = [];
+    if (
+      this._showODA ||
+      this._showDonationAlerts ||
+      this._showDonatePay ||
+      this._showDonateStream ||
+      this._showDonateX ||
+      this._showMemeAlertsCoins
+    ) {
+      events.push("payment");
+    }
+    if (this._showBoostySubs) {
+      events.push("subscription");
+    }
+    if (this._showBoostyFollows) {
+      events.push("follow");
+    }
+    return events;
+  }
+
   public load() {
     log.debug(
       {
@@ -243,55 +348,15 @@ export class DefaultHistoryStore implements HistoryStore {
       "loading history page",
     );
     this._refreshing = true;
-    const systems = [];
-    const events = [];
-    if (this._showODA) {
-      systems.push("ODA");
-      events.push("payment");
-    }
-    if (this._showDonationAlerts) {
-      systems.push("DonationAlerts");
-      events.push("payment");
-    }
-    if (this._showDonatePay) {
-      systems.push("DonatePay");
-      events.push("payment");
-    }
-    if (this._showDonateStream) {
-      systems.push("Donate.Stream");
-      events.push("payment");
-    }
-    if (this._showDonateX) {
-      systems.push("DonateX");
-      events.push("payment");
-    }
-    if (this._showBoostySubs) {
-      systems.push("Boosty");
-      events.push("subscription");
-    }
-    if (this._showBoostyFollows) {
-      systems.push("Boosty");
-      events.push("follow");
-    }
-    if (this._showMemeAlertsCoins) {
-      systems.push("MemeAlerts");
-      events.push("payment");
-    }
     return this.client()
       .getHistory(
-        {
-          size: this._pageSize,
-          number: this._pageNumber,
-          orderBy: [
-            {
-              property: "timestamp",
-              direction: "DESC",
-              ignoreCase: true,
-            },
-          ],
-        },
-        systems,
-        events,
+        this._pageNumber,
+        this.pageSize,
+        "timestamp,desc",
+        this.systems,
+        this.events,
+        this._after?.toISOString(),
+        this._before?.toISOString(),
       )
       .then((response) => {
         this._amount = response.data.totalSize ?? 0;

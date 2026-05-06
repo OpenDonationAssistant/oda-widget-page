@@ -1,7 +1,8 @@
-import { Flex, Spin, Switch } from "antd";
+import { DatePicker, Flex, Input, Spin, Switch } from "antd";
 import classes from "./HistoryPage.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import dayjs from "dayjs";
 import AddHistoryItemModal from "./AddHistoryItemModal";
 import {
   BorderedIconButton,
@@ -34,6 +35,10 @@ import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
 import SecondaryButton from "../../components/Button/SecondaryButton";
 import { useTranslation } from "react-i18next";
+import SubActionButton from "../../components/Button/SubActionButton";
+import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
+
+const dateFormat = "DD/MM/YYYY HH:mm";
 
 const HistoryItemList = observer(({}: {}) => {
   const historyStore = useContext(HistoryStoreContext);
@@ -123,10 +128,12 @@ export const HistoryComponent = observer(
     const [dialogState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+    const { t } = useTranslation();
 
     const historyStore = useContext(HistoryStoreContext);
     const widgetStore = useContext(WidgetStoreContext);
     const [premoderation, setPremoderation] = useState<boolean>(() => false);
+    const [showFilters, setShowFilters] = useState<boolean>(false);
 
     useEffect(() => {
       const alerts = widgetStore.search({ type: "payment-alerts" });
@@ -242,51 +249,60 @@ export const HistoryComponent = observer(
               </Flex>
             </Panel>
           </Overlay>
-          <Flex
-            justify="space-between"
-            align="center"
-            style={
-              showHeader ? { marginBottom: "36px" } : { marginBottom: "12px" }
-            }
-          >
+          <Flex justify="space-between" align="center">
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
             {!showHeader && <ODALogo />}
             <Flex gap={9}>
-              {widgetStore.list.filter(
-                (widget) => widget.type === "payment-alerts",
-              ).length > 0 && (
-                <Flex
-                  align="center"
-                  justify="center"
-                  gap={6}
-                  className={`${classes.premoderationbutton}`}
-                >
-                  <div>Премодерация</div>
-                  <Switch
-                    value={premoderation}
-                    onChange={(update) => {
-                      widgetStore
-                        .search({ type: "payment-alerts" })
-                        .forEach((widget) => {
-                          const property = widget.config.get(
-                            "premoderation",
-                          ) as PremoderationProperty | undefined;
-                          if (!property) {
-                            return;
-                          }
-                          property.value = produce(
-                            toJS(property.value),
-                            (draft) => {
-                              draft.enabled = update;
-                            },
-                          );
-                          widget.save().then(() => setPremoderation(update));
-                        });
-                    }}
-                  />
-                </Flex>
+              {!showHeader &&
+                widgetStore.list.filter(
+                  (widget) => widget.type === "payment-alerts",
+                ).length > 0 && (
+                  <Flex
+                    align="center"
+                    justify="center"
+                    gap={6}
+                    className={`${classes.premoderationbutton}`}
+                  >
+                    <div>Премодерация</div>
+                    <Switch
+                      value={premoderation}
+                      onChange={(update) => {
+                        widgetStore
+                          .search({ type: "payment-alerts" })
+                          .forEach((widget) => {
+                            const property = widget.config.get(
+                              "premoderation",
+                            ) as PremoderationProperty | undefined;
+                            if (!property) {
+                              return;
+                            }
+                            property.value = produce(
+                              toJS(property.value),
+                              (draft) => {
+                                draft.enabled = update;
+                              },
+                            );
+                            widget.save().then(() => setPremoderation(update));
+                          });
+                      }}
+                    />
+                  </Flex>
+                )}
+              {showHeader && (
+                <SubActionButton onClick={() => setShowFilters((old) => !old)}>
+                  <span className="material-symbols-sharp">search</span>
+                  {t("button-find")}
+                </SubActionButton>
               )}
               <AddHistoryItemModal compact={!showHeader} />
+              {showHeader && (
+                <SubActionButton onClick={() => {
+                  historyStore.export();
+                }}>
+                  <span className="material-symbols-sharp">download</span>
+                  {t("button-export")}
+                </SubActionButton>
+              )}
               <BorderedIconButton
                 onClick={() => {
                   dialogState.show = true;
@@ -301,6 +317,41 @@ export const HistoryComponent = observer(
               </BorderedIconButton>
             </Flex>
           </Flex>
+          {showFilters && (
+            <Flex vertical gap={9} className={`${classes.searchfilters}`}>
+              <LabeledContainer displayName="Дата">
+                <Flex
+                  gap={18}
+                  align="center"
+                  className={`${classes.searchline}`}
+                >
+                  <DatePicker
+                    value={
+                      historyStore.after ? dayjs(historyStore.after) : null
+                    }
+                    className="full-width"
+                    showTime
+                    format={dateFormat}
+                    onChange={(value) => {
+                      historyStore.after = value?.toDate();
+                    }}
+                  />
+                  <div> - </div>
+                  <DatePicker
+                    value={
+                      historyStore.before ? dayjs(historyStore.before) : null
+                    }
+                    className="full-width"
+                    showTime
+                    format={dateFormat}
+                    onChange={(value) => {
+                      historyStore.before = value?.toDate();
+                    }}
+                  />
+                </Flex>
+              </LabeledContainer>
+            </Flex>
+          )}
           {!showHeader && <NewsLineComponent />}
           <HistoryItemList />
         </ModalStateContext.Provider>
@@ -314,8 +365,7 @@ export const HistoryComponent = observer(
 export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
   const [store] = useState<HistoryStore>(
-    () =>
-      new DefaultHistoryStore(recipientId, `history-page`, conf),
+    () => new DefaultHistoryStore(recipientId, `history-page`, conf),
   );
 
   return (

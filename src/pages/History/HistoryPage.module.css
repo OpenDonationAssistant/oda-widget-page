@@ -2,10 +2,26 @@
   color: var(--oda-color-1000);
 }
 
+.dateselect {
+  margin-bottom: 9px;
+}
+
+.searchfilters {
+  margin-bottom: 18px;
+  margin-top: 18px;
+}
+
+.searchline{
+  padding-left: 9px;
+  padding-right: 9px;
+  width: 100%;
+}
+
 .newscontainer {
   background-color: var(--oda-color-150);
   padding: 6px 9px;
   border-radius: 9px;
+  margin-top: 12px;
   margin-bottom: 6px;
 }
 
