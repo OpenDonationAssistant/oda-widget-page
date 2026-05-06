@@ -91,6 +91,7 @@ export class AlertController {
           }
           const data = {
             id: originId,
+            alertId: get(variables, "alertId"),
             nickname: nickname,
             message: msg,
             amount: amount
