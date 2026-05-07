@@ -52,6 +52,14 @@ export const ChooseStreamingPlatformComponent = observer(() => {
   );
 });
 
+function randomBase64Url(bytes = 32) {
+  const arr = crypto.getRandomValues(new Uint8Array(bytes));
+  // convert bytes to base64
+  let b64 = btoa(String.fromCharCode(...arr));
+  // make URL-safe and remove padding
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 async function sha256(str) {
   const buffer = new TextEncoder().encode(str);
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
@@ -89,9 +97,10 @@ function openSSO(platform: string) {
       );
       return Promise.resolve(true);
     case "kick":
-      return sha256(state)
+      const code_verifier = randomBase64Url();
+      return sha256(code_verifier)
         .then((code_challenge) => {
-          localStorage.setItem("code_challenge", code_challenge);
+          localStorage.setItem("code_challenge", code_verifier);
           window.open(
             `https://id.kick.com/oauth/authorize?response_type=code&code_challenge=${code_challenge}&code_challenge_method=S256&client_id=01KGJ3VGHMWQ3DATBFVNJYMG41&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=user:read+channel:read+channel:rewards:read+channel:rewards:write+events:subscribe+kicks:read&state=${state}`,
           );
