@@ -236,26 +236,32 @@ export default function ConfigurationPage() {
   const code = localStorage.getItem("code");
   const authState = localStorage.getItem("state");
   if (code) {
-    console.log({ code, authState },"code and state");
+    console.log({ code, authState }, "code and state");
     localStorage.removeItem("code");
     if (authState) {
       localStorage.removeItem("state");
       const platform = localStorage.getItem(authState);
       localStorage.removeItem(authState);
       if (platform === "twitch" && code) {
-        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-          .getTwitchToken({
+        RecipientService(
+          undefined,
+          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+        )
+          .linkTwitch({
             authorizationCode: code,
           })
           .then((response) => {
             RecipientService(
               undefined,
-              process.env.REACT_APP_HISTORY_API_ENDPOINT,
+              process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
             )
               .listTokens()
               .then((response) => {
                 response.data
-                  .filter((token) => token.system === "Twitch")
+                  .filter(
+                    (token) =>
+                      token.system === "Twitch" && token.type === "accessToken",
+                  )
                   .forEach((token) => {
                     TwitchService(
                       undefined,
@@ -270,7 +276,7 @@ export default function ConfigurationPage() {
       }
       if (platform === "vklive" && code) {
         RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-          .getVKLiveToken({
+          .linkVKlive({
             authorizationCode: code,
           })
           .then(() => {
@@ -278,7 +284,10 @@ export default function ConfigurationPage() {
           });
       }
       if (platform === "discord" && code) {
-        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
+        RecipientService(
+          undefined,
+          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+        )
           .linkDiscord({
             authorizationCode: code,
           })
@@ -286,9 +295,25 @@ export default function ConfigurationPage() {
             state.show = true;
           });
       }
+      if (platform === "kick" && code) {
+        const code_challenge = localStorage.getItem("code_challenge");
+        if (code_challenge) {
+          RecipientService(
+            undefined,
+            process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+          )
+            .linkKick({
+              authorizationCode: code,
+              codeVerifier: code_challenge,
+            })
+            .then(() => {
+              state.show = true;
+            });
+        }
+      }
     } else {
       RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .getDonationAlertsToken({
+        .linkDonationAlerts({
           authorizationCode: code,
         })
         .then((response) => {
