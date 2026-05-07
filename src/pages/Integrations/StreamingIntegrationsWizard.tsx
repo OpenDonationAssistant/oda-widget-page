@@ -48,6 +48,15 @@ export const ChooseStreamingPlatformComponent = observer(() => {
       >
         <CardTitle>Kick</CardTitle>
       </Card>
+      <Card
+        selected={selection.id === "discord"}
+        onClick={() => {
+          selection.id = "discord";
+          continuation.canContinue = true;
+        }}
+      >
+        <CardTitle>Discord</CardTitle>
+      </Card>
     </CardList>
   );
 });
@@ -57,7 +66,7 @@ function randomBase64Url(bytes = 32) {
   // convert bytes to base64
   let b64 = btoa(String.fromCharCode(...arr));
   // make URL-safe and remove padding
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 async function sha256(str) {
