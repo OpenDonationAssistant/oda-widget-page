@@ -61,24 +61,22 @@ export const ChooseStreamingPlatformComponent = observer(() => {
   );
 });
 
-function base64urlEncode(buffer) {
-  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+function base64urlEncode(buffer: Uint8Array) {
+  return btoa(String.fromCharCode(...buffer))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
 
-function randomBase64Url(bytes = 32) {
+function randomBase64Url(bytes = 64) {
   const arr = crypto.getRandomValues(new Uint8Array(bytes));
-  // convert bytes to base64
-  // make URL-safe and remove padding
   return base64urlEncode(arr);
 }
 
-async function sha256(str) {
+async function sha256(str: string) {
   const buffer = new TextEncoder().encode(str);
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-  return base64urlEncode(hashBuffer);
+  return base64urlEncode(new Uint8Array(hashBuffer));
 }
 
 export interface sso {
