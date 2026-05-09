@@ -49,6 +49,8 @@ export const StreamingPlatformsSection = observer(() => {
             (token) =>
               token.system === "Twitch" ||
               token.system === "YouTube" ||
+              token.system === "Discord" ||
+              token.system === "Kick" ||
               token.system === "VKLive",
           )
           .map((token) => (
