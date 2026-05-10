@@ -48,15 +48,6 @@ export const ChooseStreamingPlatformComponent = observer(() => {
       >
         <CardTitle>Kick</CardTitle>
       </Card>
-      <Card
-        selected={selection.id === "discord"}
-        onClick={() => {
-          selection.id = "discord";
-          continuation.canContinue = true;
-        }}
-      >
-        <CardTitle>Discord</CardTitle>
-      </Card>
     </CardList>
   );
 });
@@ -98,6 +89,11 @@ function openSSO(platform: string) {
     case "vklive":
       window.open(
         `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&state=${state}`,
+      );
+      return Promise.resolve(true);
+    case "youtube":
+      window.open(
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=260836533562-3cu1bfnpi16vgi6r8u6nqk4a9rn1ur8p.apps.googleusercontent.com&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=https://www.googleapis.com/auth/youtube.readonly&state=${state}`,
       );
       return Promise.resolve(true);
     case "twitch":
