@@ -790,7 +790,6 @@ const PaymentAlerts = observer(
             const donation = JSON.parse(msg);
             integrationLog.debug({ donation: msg }, "Received DA donation");
             switch (donation.alert_type) {
-              case 20:
               case 27:
                 HistoryService(
                   undefined,
@@ -819,6 +818,7 @@ const PaymentAlerts = observer(
                   {},
                 );
                 break;
+              case 20:
               case 28:
                 HistoryService(
                   undefined,
