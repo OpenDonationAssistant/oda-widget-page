@@ -25,6 +25,16 @@ import PrimaryButton from "../../components/Button/PrimaryButton";
 import classes from "./DonationPlatformsSection.module.css";
 import { toJS } from "mobx";
 import { deepEqual } from "../../utils";
+import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
+import DonateXIcon from "../../icons/DonateXIcon";
+import DonatePayIcon from "../../icons/DonatePayIcon";
+
+const icons = new Map<string, JSX.Element>();
+icons.set("DonationAlerts", <DonationAlertsIcon color="var(--oda-primary-color)" />);
+icons.set("UnofficialDonationAlerts", <DonationAlertsIcon color="var(--oda-primary-color)" />);
+icons.set("DonateX", <DonateXIcon color="var(--oda-primary-color)" />);
+icons.set("DonatePay", <DonatePayIcon color="var(--oda-primary-color)" />);
+icons.set("DonatePay.eu", <DonatePayIcon color="var(--oda-primary-color)" />);
 
 export const DonationPlatformsSection = observer(({}) => {
   const [selection, setSelection] = useState<string>("");
@@ -165,6 +175,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 align="center"
               >
                 <Flex gap={9} align="center" style={{ height: "fit-content" }}>
+                  {icons.get(token.system)}
                   <CardTitle>{token.system}</CardTitle>
                   <Switch
                     value={token.enabled}
