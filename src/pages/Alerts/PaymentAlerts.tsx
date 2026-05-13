@@ -497,7 +497,7 @@ const PaymentAlerts = observer(
                         addToGoal: token.settings.addToGoal,
                         paymentId: payment.id,
                         system: "DonationAlerts",
-                        event: "payment"
+                        event: "payment",
                       },
                       {},
                     );
@@ -586,7 +586,10 @@ const PaymentAlerts = observer(
                   socket.addEventListener("message", (event) => {
                     const channel = `$public:${id}`;
                     const data = JSON.parse(event.data);
-                    integrationLog.debug({ data: data }, "Message from DonatePay");
+                    integrationLog.debug(
+                      { data: data },
+                      "Message from DonatePay",
+                    );
                     if (data.id === 1) {
                       log.debug("getting centrifugo token");
                       const clientId = data.result.client;
@@ -640,7 +643,7 @@ const PaymentAlerts = observer(
                           addToGoal: token.settings.addToGoal,
                           paymentId: payment.id ?? uuidv7(),
                           system: "DonatePay",
-                          event: "payment"
+                          event: "payment",
                         },
                         {},
                       );
@@ -748,7 +751,7 @@ const PaymentAlerts = observer(
                           addToGoal: token.settings.addToGoal,
                           paymentId: payment.id ?? uuidv7(),
                           system: "DonatePay.eu",
-                          event: "payment"
+                          event: "payment",
                         },
                         {},
                       );
@@ -957,7 +960,9 @@ const PaymentAlerts = observer(
                 paymentId: donation.id,
                 system: "DonateX",
                 event: "payment",
-                alertMedia: donation.voiceFilePath
+                alertMedia: {
+                  url: donation.voiceFilePath,
+                }
               },
               {},
             );
