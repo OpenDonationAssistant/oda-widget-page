@@ -246,33 +246,9 @@ export default function ConfigurationPage() {
         RecipientService(
           undefined,
           process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-        )
-          .linkTwitch({
-            authorizationCode: code,
-          })
-          .then((response) => {
-            RecipientService(
-              undefined,
-              process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-            )
-              .listTokens()
-              .then((response) => {
-                response.data
-                  .filter(
-                    (token) =>
-                      token.system === "Twitch" && token.type === "accessToken",
-                  )
-                  .forEach((token) => {
-                    TwitchService(
-                      undefined,
-                      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                    ).subscribeTwitchEvents({
-                      userAccessToken: token.token,
-                    });
-                  });
-              });
-            state.show = true;
-          });
+        ).linkTwitch({
+          authorizationCode: code,
+        });
       }
       if (platform === "vklive" && code) {
         RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
