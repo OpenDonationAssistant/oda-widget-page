@@ -322,6 +322,10 @@ export default function PaymentPageConfigPage() {
                       label: "Trovo",
                     },
                     {
+                      value: "tiktok",
+                      label: "TikTok",
+                    },
+                    {
                       value: "boosty",
                       label: "Boosty",
                     },

@@ -962,7 +962,7 @@ const PaymentAlerts = observer(
                 event: "payment",
                 alertMedia: {
                   url: donation.voiceFilePath,
-                }
+                },
               },
               {},
             );
