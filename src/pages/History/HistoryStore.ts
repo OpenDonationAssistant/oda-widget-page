@@ -56,6 +56,7 @@ export interface HistoryItem {
 export interface HistoryStore {
   today: string;
   load(): Promise<void>;
+  alert(item: HistoryItem): Promise<void>;
   export(): Promise<void>;
   loadUntil(count: number): Promise<void>;
   hasNext(): boolean;
@@ -161,6 +162,12 @@ export class DefaultHistoryStore implements HistoryStore {
       .catch((error) => {
         log.error(error);
       });
+  }
+
+  public alert(item: HistoryItem) {
+    return this.client()
+      .repeatAlert({ historyItemId: item.id })
+      .then((response) => {});
   }
 
   public export() {

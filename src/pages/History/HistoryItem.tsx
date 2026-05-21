@@ -7,7 +7,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
 import SongIcon from "../../icons/SongIcon";
-import { HistoryItem } from "./HistoryStore";
+import { HistoryItem, HistoryStoreContext } from "./HistoryStore";
 import ReelIcon from "../../icons/ReelIcon";
 import RunIcon from "../../icons/RunIcon";
 import BoostyIcon from "../../icons/BoostyIcon";
@@ -16,6 +16,7 @@ import DonatePayIcon from "../../icons/DonatePayIcon";
 import ODAIcon from "../../icons/ODAIcon";
 import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
+import { useContext } from "react";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -71,6 +72,7 @@ function repeatAlert(topic: string, data: HistoryItem) {
 
 const Description = observer(({ item }: { item: HistoryItem }) => {
   const { conf } = useLoaderData() as WidgetData;
+  const historyStore = useContext(HistoryStoreContext);
 
   let message;
   switch (item.event) {
@@ -139,7 +141,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
             {!item.active && (
               <SubActionButton
                 onClick={() => {
-                  repeatAlert(conf.topic.events, item);
+                  historyStore?.alert(item);
                 }}
               >
                 Повторить
