@@ -104,7 +104,7 @@ export const GamesSection = observer(({}) => {
       <CardSectionTitle>Игры</CardSectionTitle>
       <CardList>
         {gamesStore.added.map((game) => (
-          <Card key={game.id} onClick={() => {}}>
+          <Card key={game.id}>
             <CardTitle>
               <Flex className="full-width" justify="space-between">
                 <Flex gap={9} align="center">

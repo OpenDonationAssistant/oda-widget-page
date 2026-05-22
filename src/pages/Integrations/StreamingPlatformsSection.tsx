@@ -64,7 +64,7 @@ export const StreamingPlatformsSection = observer(() => {
               token.system === "VKLive",
           )
           .map((token) => (
-            <Card key={token.id} onClick={() => {}}>
+            <Card key={token.id}>
               <Flex
                 style={{ height: "fit-content" }}
                 justify="space-between"

@@ -35,6 +35,9 @@
   background-color: var(--oda-color-150);
   min-height: 200px;
   padding: 18px 15px 15px 15px;
+}
+
+.clickable {
   &:hover {
     cursor: pointer;
     background-color: var(--oda-color-200);

@@ -12,7 +12,7 @@ export function Card({
 }: {
   children: ReactNode;
   selected?: boolean;
-  onClick: MouseEventHandler<Element>;
+  onClick?: MouseEventHandler<Element>;
   className?: string;
 }) {
   const clickHandler: MouseEventHandler = (e) => {
@@ -32,16 +32,27 @@ export function Card({
     }
   };
 
+  const baseClassNames: Array<string> = [
+    classes.card,
+    selected ? classes.selected : classes.notselected,
+  ];
+  if (className) {
+    baseClassNames.push(className);
+  }
+  if (onClick) {
+    baseClassNames.push(classes.clickable);
+  }
+
   return (
     <Flex
-      className={`${classes.card} ${selected ? classes.selected : classes.notselected} ${className ? className : ""}`}
+      className={baseClassNames.join(" ")}
       onClick={clickHandler}
       vertical
       justify="space-between"
     >
       {children}
       {selected && (
-        <div className={`${classes.checkicon}`}>
+        <div className={classes.checkicon}>
           <SelectedIcon />
         </div>
       )}
