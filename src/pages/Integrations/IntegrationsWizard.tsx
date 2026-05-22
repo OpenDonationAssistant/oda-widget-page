@@ -16,10 +16,13 @@ import {
 import { log } from "../../logging";
 import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
+import { useLoaderData } from "react-router";
+import { WidgetData } from "../../types/WidgetData";
 
 export class IntegrationWizardStore {
   private _system:
     | "donationalerts"
+    | "unofficialdonationalerts"
     | "donatepay.ru"
     | "donatepay.eu"
     | "donate.stream"
@@ -34,6 +37,7 @@ export class IntegrationWizardStore {
   public set system(
     system:
       | "donationalerts"
+      | "unofficialdonationalerts"
       | "donatepay.ru"
       | "donatepay.eu"
       | "donate.stream"
@@ -62,6 +66,11 @@ export const IntegrationWizardStoreContext = createContext(
 
 export const ChooseDonationPlatformComponent = observer(() => {
   const context = useContext(IntegrationWizardStoreContext);
+  const { features } = useLoaderData() as WidgetData;
+
+  const hasUnofficialDA =
+    features.find((f) => f.name === "UnofficialDonationAlerts")?.state ===
+    "ENABLED";
 
   return (
     <CardList>
@@ -70,24 +79,64 @@ export const ChooseDonationPlatformComponent = observer(() => {
         onClick={() => (context.system = "donationalerts")}
       >
         <CardTitle>DonationAlerts</CardTitle>
+        <div className={`${classes.description}`}>
+          Позволяет учитывать донаты с сайта DonationAlerts в таких виджетах как
+          "Топ донатеры", "Таймер до конца трансляции", "Цель сбора".
+        </div>
+        <div className={`${classes.description}`}>
+          Если включить оповещения для DA, то озвучка будет от ODA. Заказы
+          музыки не переносятся.
+        </div>
+      </Card>
+      {hasUnofficialDA && (
+        <Card
+          selected={context.system === "unofficialdonationalerts"}
+          onClick={() => (context.system = "unofficialdonationalerts")}
+        >
+          <CardTitle>Unofficial DonationAlerts</CardTitle>
+          <div className={`${classes.description}`}>
+            Делает полноценную интеграцию - учитывает донаты с сайта
+            DonationAlerts в таких виджетах как "Топ донатеры", "Таймер до конца
+            трансляции", "Цель сбора" И подхватывает озвучку с DA, как и заказы
+            музыки.
+          </div>
+          <div className={`${classes.description}`}>
+            Может работать нестабильно.
+          </div>
+        </Card>
+      )}
+      <Card
+        selected={context.system === "donatex"}
+        onClick={() => (context.system = "donatex")}
+      >
+        <CardTitle>DonateX</CardTitle>
+        <div className={`${classes.description}`}>
+          Делает полноценную интеграцию - учитывает донаты с DonateX в таких
+          виджетах как "Топ донатеры", "Таймер до конца трансляции", "Цель
+          сбора" И подхватывает озвучку, как и заказы музыки.
+        </div>
       </Card>
       <Card
         selected={context.system === "donatepay.ru"}
         onClick={() => (context.system = "donatepay.ru")}
       >
         <CardTitle>DonatePay.ru</CardTitle>
+        <div className={`${classes.description}`}>
+          Позволяет учитывать донаты с DonatePay в таких виджетах как "Топ
+          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
+          отображать оповещения, но с озвучкой ODA.
+        </div>
       </Card>
       <Card
         selected={context.system === "donatepay.eu"}
         onClick={() => (context.system = "donatepay.eu")}
       >
         <CardTitle>DonatePay.eu</CardTitle>
-      </Card>
-      <Card
-        selected={context.system === "donatex"}
-        onClick={() => (context.system = "donatex")}
-      >
-        <CardTitle>DonateX</CardTitle>
+        <div className={`${classes.description}`}>
+          Позволяет учитывать донаты с DonatePay.EU в таких виджетах как "Топ
+          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
+          отображать оповещения, но с озвучкой ODA.
+        </div>
       </Card>
     </CardList>
   );
@@ -103,6 +152,22 @@ export const AddDonatePayTokenComponent = observer(() => {
           <div className={`${classes.instruction}`}>
             1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
             <a href="https://donatepay.eu/page/api">API DonatePay.eu</a>
+          </div>
+          <Input
+            value={context.accessToken}
+            onChange={(value) => {
+              context.accessToken = value.target.value;
+            }}
+          />
+        </Flex>
+      )}
+      {context.system === "unofficialdonationalerts" && (
+        <Flex className="full-width" gap={12} vertical>
+          <div className={`${classes.instruction}`}>
+            1. Укажите Секретный токен. Скопировать его можно на странице{" "}
+            <a href="https://www.donationalerts.com/dashboard/general-settings/account">
+              Настройки аккаунта
+            </a>
           </div>
           <Input
             value={context.accessToken}
@@ -179,7 +244,8 @@ export const DonationPlatformWizard = observer(
                 selection.system === "donatepay.ru" ||
                   selection.system === "donatepay.eu" ||
                   selection.system === "donate.stream" ||
-                  selection.system === "donatex"
+                  selection.system === "donatex" ||
+                  selection.system === "unofficialdonationalerts",
               );
             },
             handler: () => {
@@ -198,6 +264,13 @@ export const DonationPlatformWizard = observer(
               }
               if (selection.system === "donatex") {
                 tokenStore.addToken("DonateX", selection.accessToken);
+                return Promise.resolve(true);
+              }
+              if (selection.system === "unofficialdonationalerts") {
+                tokenStore.addToken(
+                  "UnofficialDonationAlerts",
+                  selection.accessToken,
+                );
                 return Promise.resolve(true);
               }
               if (selection.system === "donationalerts") {
