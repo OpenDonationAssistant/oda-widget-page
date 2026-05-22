@@ -101,6 +101,9 @@ export const ChooseDonationPlatformComponent = observer(() => {
             музыки.
           </div>
           <div className={`${classes.description}`}>
+            Также позволяет отображать оповещения о покупках монет в MemeAlerts и о подписках на Boosty.
+          </div>
+          <div className={`${classes.description}`}>
             Может работать нестабильно.
           </div>
         </Card>
