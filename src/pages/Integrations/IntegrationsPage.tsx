@@ -22,7 +22,7 @@ export const IntegrationsPage = observer(() => {
   const [gamesStore] = useState<GamesStore>(
     () => new DefaultGamesStore(tokenStore),
   );
-  const { recipientId } = useLoaderData() as WidgetData;
+  const { features } = useLoaderData() as WidgetData;
 
   return (
     <TokenStoreContext.Provider value={tokenStore}>
@@ -30,14 +30,10 @@ export const IntegrationsPage = observer(() => {
         <h1>Интеграции</h1>
         <CardSection>
           <DonationPlatformsSection />
-          {recipientId &&
-            (recipientId === "tabularussia" ||
-              recipientId === "testuser" ||
-              recipientId === "eirenarin") && <StreamingPlatformsSection />}
-          {recipientId &&
-            (recipientId === "testuser" || recipientId === "eirenarin") && (
-              <GamesSection />
-            )}
+          {features.find((f) => f.name === "TwitchIntegration")?.state ===
+            "ENABLED" && <StreamingPlatformsSection />}
+          {features.find((f) => f.name === "GamesIntegration")?.state ===
+            "ENABLED" && <GamesSection />}
         </CardSection>
       </GamesStoreContext.Provider>
     </TokenStoreContext.Provider>
