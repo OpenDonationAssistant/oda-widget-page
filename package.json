@@ -22,7 +22,7 @@
     "@opendonationassistant/oda-payment-service-client": "^0.1.5",
     "@opendonationassistant/oda-recipient-service-client": "^0.9.0",
     "@opendonationassistant/oda-twitch-service-client": "^0.0.1",
-    "@opendonationassistant/oda-widget-service-client": "^0.9.0",
+    "@opendonationassistant/oda-widget-service-client": "^0.10.0",
     "@splidejs/react-splide": "^0.7.12",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.17.0",
