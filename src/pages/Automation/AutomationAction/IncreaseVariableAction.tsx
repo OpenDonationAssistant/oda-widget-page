@@ -74,7 +74,7 @@ export class IncreaseVariableAction implements AutomationAction, Renderable {
     this._value.id = id;
   }
 
-  public set value(value: IncreaseVariableActionValue){
+  public set value(value: IncreaseVariableActionValue) {
     this._value = value;
   }
 

@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import { useTranslation } from "react-i18next";
 import ArrowUp from "../../icons/ArrowUp";
 import ArrowDown from "../../icons/ArrowDown";
+import CollapseLikeButton from "../Button/CollapseLikeButton";
 
 export const CollapsibleListItem = ({
   title,
@@ -81,18 +82,16 @@ export const AddListItemButton = ({
   const { t } = useTranslation();
 
   return (
-    <button className={`${classes.adddalertbutton}`} onClick={onClick}>
-      <Flex justify="center" align="center" gap={3}>
-        <span className="material-symbols-sharp">add</span>
-        <div>{t(label)}</div>
-      </Flex>
-    </button>
+    <CollapseLikeButton onClick={onClick}>
+      <span className="material-symbols-sharp">add</span>
+      <div>{t(label)}</div>
+    </CollapseLikeButton>
   );
 };
 
 export const List = ({ children }: { children: ReactNode }) => {
   return (
-    <Flex gap={3} vertical>
+    <Flex gap={3} vertical className={`${classes.list}`}>
       {children}
     </Flex>
   );

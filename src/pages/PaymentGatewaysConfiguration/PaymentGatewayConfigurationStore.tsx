@@ -316,6 +316,65 @@ export class PaymentGatewayConfigurationStore {
       ]),
     },
     {
+      name: "Rahmat",
+      id: "rahmat",
+      type: "fiat",
+      goodpoints: ["Узбекистан. Требуется самозанятость"],
+      badpoints: ["При оплате сумма отображается в сумах."],
+      fields: [
+        {
+          id: "storeId",
+          name: "Введите store Id",
+          comment: "",
+          value: "",
+        },
+        {
+          id: "appId",
+          name: "Введите application Id",
+          comment: "",
+          value: "",
+        },
+        {
+          id: "appSecret",
+          name: "Введите application secret",
+          comment: "",
+          value: "",
+        },
+        {
+          id: "mxik",
+          name: "Введите ИКПУ из справочника tasnif.soliq.uz",
+          comment: "",
+          value: "",
+        },
+        {
+          id: "packageCode",
+          name: "Введите Код упаковки из справочника tasnif.soliq.uz",
+          comment: "",
+          value: "",
+        },
+      ],
+      instructions: new Map([
+        [
+          2,
+          [
+            {
+              statement: "1. Оформите статус самозанятого",
+              comment: "",
+            },
+          ],
+        ],
+        [
+          3,
+          [
+            {
+              statement: "Ничего не требуется",
+              comment: "",
+            },
+          ],
+        ],
+      ]),
+    },
+    {
       name: "CryptoCloud",
       id: "cryptocloud",
       type: "crypto",
@@ -325,7 +384,8 @@ export class PaymentGatewayConfigurationStore {
         {
           id: "shopId",
           name: "Введите Shop ID",
-          comment: "Shop ID можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
+          comment:
+            "Shop ID можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
           value: "",
         },
         {
@@ -390,10 +450,17 @@ export class PaymentGatewayConfigurationStore {
                   </div>
                   <div>Ваш сайт - https://oda.digital</div>
                   <div>Настройки CMS - Other CMS</div>
-                  <div>Успешный URL - {"<ваша страница доната>"}/payment/cryptocloud/result</div>
-                  <div>Неудачный URL - {"<ваша страница доната>"}/payment/cryptocloud/result</div>
                   <div>
-                    URL для уведомлений - https://api.oda.digital/notification/cryptocloud
+                    Успешный URL - {"<ваша страница доната>"}
+                    /payment/cryptocloud/result
+                  </div>
+                  <div>
+                    Неудачный URL - {"<ваша страница доната>"}
+                    /payment/cryptocloud/result
+                  </div>
+                  <div>
+                    URL для уведомлений -
+                    https://api.oda.digital/notification/cryptocloud
                   </div>
                 </>
               ),
@@ -461,10 +528,36 @@ export class PaymentGatewayConfigurationStore {
         secret:
           this._gateway.fields.find((field) => field.id === "secret")?.value ??
           "",
+        settings: this.getSettings(),
         type: this._gateway.type,
         enabled: true,
       })
       .then(() => this.load());
+  }
+
+  private getSettings(): { [key: string]: string } {
+    if (!this._gateway) {
+      return {};
+    }
+    switch (this._gateway.id) {
+      case "rahmat":
+        return {
+          appSecret:
+            this._gateway.fields.find((field) => field.id === "appSecret")
+              ?.value ?? "",
+          appId:
+            this._gateway.fields.find((field) => field.id === "appId")?.value ??
+            "",
+          mxik:
+            this._gateway.fields.find((field) => field.id === "mxik")?.value ??
+            "",
+          packageCode:
+            this._gateway.fields.find((field) => field.id === "packageCode")
+              ?.value ?? "",
+        };
+      default:
+        return {};
+    }
   }
 
   public set configurations(configurations: GatewayConfiguration[]) {

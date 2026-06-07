@@ -1,4 +1,9 @@
+.list {
+  width: 100%;
+}
+
 .listitem {
+  min-height: 60px;
   padding: 12px 15px;
   color: var(--oda-color-950);
   background-color: var(--oda-color-150);

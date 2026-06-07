@@ -93,6 +93,69 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
             }),
           ],
         },
+        {
+          key: "twitch-requests",
+          title: "Twitch",
+          properties: [
+            new BooleanProperty({
+              name: "twitchPointsRequestsEnabled",
+              value: false,
+              displayName: "Заказ за баллы",
+            }),
+            new TextProperty({
+              name: "music-twitch-request-title",
+              value: "Заказ музыки",
+              displayName: "Название награды",
+            }),
+            new NumberProperty({
+              name: "music-twitch-request-cost",
+              value: 100,
+              displayName: "Стоимость в баллах",
+            }),
+          ],
+        },
+        {
+          key: "vklive-requests",
+          title: "VKLive",
+          properties: [
+            new BooleanProperty({
+              name: "vklivePointsRequestsEnabled",
+              value: false,
+              displayName: "Заказ за баллы",
+            }),
+            new TextProperty({
+              name: "music-vklive-request-title",
+              value: "Заказ музыки",
+              displayName: "Название награды",
+            }),
+            new NumberProperty({
+              name: "music-vklive-request-cost",
+              value: 100,
+              displayName: "Стоимость в баллах",
+            }),
+          ],
+        },
+        {
+          key: "kick-requests",
+          title: "Kick",
+          properties: [
+            new BooleanProperty({
+              name: "kickPointsRequestsEnabled",
+              value: false,
+              displayName: "Заказ за баллы",
+            }),
+            new TextProperty({
+              name: "music-kick-request-title",
+              value: "Заказ музыки",
+              displayName: "Название награды",
+            }),
+            new NumberProperty({
+              name: "music-kick-request-cost",
+              value: 100,
+              displayName: "Стоимость в баллах",
+            }),
+          ],
+        },
       ],
     });
   }

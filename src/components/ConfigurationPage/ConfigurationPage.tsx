@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { DefaultApiFactory as TwitchService } from "@opendonationassistant/oda-twitch-service-client";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
 import { WidgetStoreContext } from "../../stores/WidgetStore";
@@ -26,7 +25,7 @@ import {
   Title,
 } from "../Overlay/Overlay";
 import PrimaryButton from "../Button/PrimaryButton";
-import { List } from "../List/List";
+import { AddListItemButton, List } from "../List/List";
 import {
   DefaultPresetStore,
   PresetStore,
@@ -155,14 +154,12 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               )}
             </Draggable>
           ))}
-          <CollapseLikeButton
+          <AddListItemButton
             onClick={() => {
               wizardConfiguration.next();
             }}
-          >
-            <AddIcon color="var(--oda-primary-color)" />
-            <div>Добавить виджет</div>
-          </CollapseLikeButton>
+            label="Добавить виджет"
+          />
         </List>
       )}
       {asCards && (
