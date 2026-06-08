@@ -323,7 +323,7 @@ export class PaymentGatewayConfigurationStore {
       badpoints: ["При оплате сумма отображается в сумах."],
       fields: [
         {
-          id: "storeId",
+          id: "shopId",
           name: "Введите store Id",
           comment: "",
           value: "",
