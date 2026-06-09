@@ -13,6 +13,9 @@
 
 # misc
 .DS_Store
+
+# generated service worker (compiled from src/sw/logger-worker.ts)
+/public/logger-worker.js
 .env.local
 .env.development.local
 .env.test.local

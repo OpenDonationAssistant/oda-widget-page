@@ -77,6 +77,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "build-worker": "node scripts/build-worker.mjs",
+    "prebuild": "node scripts/build-worker.mjs",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -111,6 +113,7 @@
     "@types/react-toggle": "^4.0.5",
     "@types/socket.io-client": "^1.4.36",
     "@types/uuid": "^9.0.7",
-    "@types/video.js": "^7.3.56"
+    "@types/video.js": "^7.3.56",
+    "esbuild": "^0.20.2"
   }
 }
