@@ -88,7 +88,7 @@ function openSSO(platform: string) {
       return Promise.resolve(true);
     case "vklive":
       window.open(
-        `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=channel:points:rewards,channel:points&state=${state}`,
+        `https://auth.live.vkvideo.ru/app/oauth2/authorize?client_id=5hdd7dm7bb4w1i9z&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=channel:points:rewards,channel:points,channel:points:rewards:demands&state=${state}`,
       );
       return Promise.resolve(true);
     case "youtube":
