@@ -9,6 +9,7 @@ COPY .env .env
 COPY .env.production .env.production
 COPY .npmrc .npmrc
 COPY public/ public
+COPY scripts/ scripts
 COPY src/ src
 
 RUN echo "//npm.pkg.github.com/:_authToken=${gpr_token}" > ~/.npmrc
