@@ -32,6 +32,7 @@ import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 import DonatonPage from "./pages/Donaton/DonatonPage";
+import CanvasPage from "./pages/Canvas/CanvasPage";
 import PaymentPageConfigPage from "./pages/PaymentPageConfig/PaymentPageConfigPage";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
@@ -398,6 +399,11 @@ const router = createBrowserRouter([
   {
     path: "/donaton/:widgetId",
     element: <DonatonPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/canvas/:widgetId",
+    element: <CanvasPage />,
     loader: widgetSettingsLoader,
   },
   {

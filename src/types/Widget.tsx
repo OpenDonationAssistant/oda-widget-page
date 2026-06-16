@@ -34,6 +34,7 @@ import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
 import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
 import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
+import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -214,6 +215,15 @@ export const WIDGET_TYPES = [
     description:
       "Виджет позволяет разыгрывать что-то, крутя колесо. Слоты автоматически добавляются из донатов.",
     create: () => new AuctionWidgetSettings(),
+  },
+  {
+    name: "canvas",
+    title: "Холст",
+    icon: <span className="material-symbols-sharp">dashboard</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Виджет для группировки других виджетов внутри себя.",
+    create: () => new CanvasWidgetSettings(),
   },
 ];
 

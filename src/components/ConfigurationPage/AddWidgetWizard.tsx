@@ -86,6 +86,9 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
             features.find((f) => f.name === "TwitchAlerts")?.state === "ENABLED"
           );
         }
+        if (type.name === "canvas") {
+          return features.find((f) => f.name === "Canvas")?.state === "ENABLED";
+        }
         if (type.name === "stream-credits") {
           return (
             features.find((f) => f.name === "StreamCredits")?.state ===
