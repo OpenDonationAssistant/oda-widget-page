@@ -76,6 +76,11 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
   return (
     <CardList>
       {WIDGET_TYPES.filter((type) => {
+        if (type.name === "auction") {
+          return (
+            features.find((f) => f.name === "Auction")?.state === "ENABLED"
+          );
+        }
         if (type.name === "twitch-alerts") {
           return (
             features.find((f) => f.name === "TwitchAlerts")?.state === "ENABLED"

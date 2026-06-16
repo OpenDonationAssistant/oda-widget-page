@@ -33,6 +33,7 @@ import RouletteIcon from "../icons/widgets/RouletteIcon";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
 import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
 import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
+import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -203,6 +204,16 @@ export const WIDGET_TYPES = [
     preview: "",
     description: "Виджет со статистикой для показа в конце стрима как титры",
     create: () => new StreamCreditsWidgetSettings(),
+  },
+  {
+    name: "auction",
+    title: "Аукцион",
+    icon: <span className="material-symbols-sharp">gavel</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет позволяет разыгрывать что-то, крутя колесо. Слоты автоматически добавляются из донатов.",
+    create: () => new AuctionWidgetSettings(),
   },
 ];
 

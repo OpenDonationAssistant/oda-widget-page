@@ -69,6 +69,7 @@ import {
 } from "./stores/ErrorStore";
 import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
 import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPage";
+import AuctionWidgetPage from "./pages/AuctionWidget/AuctionWidgetPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -358,6 +359,11 @@ const router = createBrowserRouter([
   {
     path: "/twitch-alerts/:widgetId",
     element: <TwitchAlertsPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/auction/:widgetId",
+    element: <AuctionWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {
