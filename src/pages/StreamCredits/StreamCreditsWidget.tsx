@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { StreamCreditsWidgetSettings } from "./StreamCreditsWidgetSettings";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StreamCreditsStore } from "./StreamCreditsStore";
 import Marquee from "react-fast-marquee";
 import { Flex } from "antd";
+import classes from "./StreamCreditsWidget.module.css";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
@@ -122,6 +123,34 @@ export const StreamCreditsWidget = observer(
   }) => {
     const [twitchToken, setTwitchToken] = useState<string | null>(null);
     const [show, setShow] = useState<boolean>(true);
+    const [height, setHeight] = useState(0);
+    const [duration, setDuration] = useState<number>(10000);
+    const container = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      if (!container.current) return;
+      // initial measurement
+      setHeight(container.current.getBoundingClientRect().height);
+
+      // optional: update on resize or content changes
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const h = entry.contentRect.height;
+          console.log({ h });
+          setHeight(h);
+        }
+      });
+      ro.observe(container.current);
+      return () => ro.disconnect();
+    }, [container]);
+
+    useEffect(() => {
+      if (height === 0) return;
+      if (settings.speedProperty.value === 0) return;
+      const duration = height / settings.speedProperty.value;
+      console.log({ duration });
+      setDuration(duration);
+    },[height]);
 
     useEffect(() => {
       if (twitchToken !== null) {
@@ -152,20 +181,16 @@ export const StreamCreditsWidget = observer(
         {settings.titleFontProperty.createFontImport()}
         {settings.creditsFontProperty.createFontImport()}
         {show && (
-          <Flex vertical style={{ transform: "rotate(90deg)" }}>
-            <Marquee
-              delay={3}
-              loop={1}
-              speed={settings.speedProperty.value}
-              onFinish={() => setShow(false)}
-              direction="left"
-              style={{ height: "100vw", width: "100vh" }}
+          <Flex vertical className={`${classes.marquee}`}>
+            <Flex
+              ref={container}
+              vertical
+              className={`${classes.marqueeinner}`}
+              style={{
+                animationDuration: `${duration}s`,
+              }}
             >
-              <Flex
-                vertical
-                align="center"
-                style={{ transform: "rotate(-90deg)" }}
-              >
+              <Flex vertical align="center">
                 <div style={titleFontStyle}>
                   Танцующие на столе (участники квиза)
                 </div>
@@ -173,11 +198,7 @@ export const StreamCreditsWidget = observer(
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex
-                vertical
-                align="center"
-                style={{ transform: "rotate(-90deg)" }}
-              >
+              <Flex vertical align="center">
                 <div style={titleFontStyle}>
                   Новые посетители таверны (фоллоу)
                 </div>
@@ -185,11 +206,7 @@ export const StreamCreditsWidget = observer(
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex
-                vertical
-                align="center"
-                style={{ transform: "rotate(-90deg)" }}
-              >
+              <Flex vertical align="center">
                 <div style={titleFontStyle}>
                   Пришли в своей компании (рейдеры)
                 </div>
@@ -197,11 +214,7 @@ export const StreamCreditsWidget = observer(
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex
-                vertical
-                align="center"
-                style={{ transform: "rotate(-90deg)" }}
-              >
+              <Flex vertical align="center">
                 <div style={titleFontStyle}>
                   Угостили лисят в баре (подарочные подписки)
                 </div>
@@ -209,11 +222,7 @@ export const StreamCreditsWidget = observer(
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-              <Flex
-                vertical
-                align="center"
-                style={{ transform: "rotate(-90deg)" }}
-              >
+              <Flex vertical align="center">
                 <div style={titleFontStyle}>
                   Подкинули бармену на отпуск (донатеры)
                 </div>
@@ -221,7 +230,7 @@ export const StreamCreditsWidget = observer(
                   <div style={creditFontStyle}>{name}</div>
                 ))}
               </Flex>
-            </Marquee>
+            </Flex>
           </Flex>
         )}
       </>

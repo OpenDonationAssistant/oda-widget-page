@@ -1,0 +1,19 @@
+.marquee {
+  height: 100%;              /* container width */
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+}
+
+.marqueeinner {
+  display: inline-block;
+  padding-top: 100vh;       /* start off-screen */
+  animation: marquee 100000s linear 1 forwards;
+}
+
+@keyframes marquee {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
