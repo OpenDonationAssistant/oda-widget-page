@@ -194,6 +194,9 @@ export const StreamCreditsWidget = observer(
                 <div style={titleFontStyle}>
                   Танцующие на столе (участники квиза)
                 </div>
+                {creditsStore.voters.length === 0 && (
+                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                )}
                 {creditsStore.voters.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
@@ -202,6 +205,9 @@ export const StreamCreditsWidget = observer(
                 <div style={titleFontStyle}>
                   Новые посетители таверны (фоллоу)
                 </div>
+                {creditsStore.newFollowers.length === 0 && (
+                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                )}
                 {creditsStore.newFollowers.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
@@ -210,6 +216,9 @@ export const StreamCreditsWidget = observer(
                 <div style={titleFontStyle}>
                   Пришли в своей компании (рейдеры)
                 </div>
+                {creditsStore.raiders.length === 0 && (
+                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                )}
                 {creditsStore.raiders.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
@@ -218,6 +227,9 @@ export const StreamCreditsWidget = observer(
                 <div style={titleFontStyle}>
                   Угостили лисят в баре (подарочные подписки)
                 </div>
+                {creditsStore.gifters.length === 0 && (
+                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                )}
                 {creditsStore.gifters.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
@@ -226,9 +238,17 @@ export const StreamCreditsWidget = observer(
                 <div style={titleFontStyle}>
                   Подкинули бармену на отпуск (донатеры)
                 </div>
+                {creditsStore.donaters.length === 0 && (
+                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                )}
                 {creditsStore.donaters.map((name) => (
                   <div style={creditFontStyle}>{name}</div>
                 ))}
+              </Flex>
+              <Flex vertical align="center">
+                <div style={titleFontStyle}>
+                  Спасибо за внимание!
+                </div>
               </Flex>
             </Flex>
           </Flex>
