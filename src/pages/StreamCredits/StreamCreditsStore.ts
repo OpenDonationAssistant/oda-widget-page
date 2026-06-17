@@ -2,24 +2,24 @@ import { makeAutoObservable } from "mobx";
 import { Event, EventBus } from "../../bus/EventBus";
 
 export class StreamCreditsStore {
-  private _donaters: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8"];
-  private _newFollowers: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7"];
-  private _raiders: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7"];
-  private _gifters: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7"];
-  private _banned: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7"];
-  private _voters: string[] = ["test1", "test2", "test3", "test4", "test5", "test6", "test7"];
+  private _donaters: string[] = [];
+  private _newFollowers: string[] = [];
+  private _raiders: string[] = [];
+  private _gifters: string[] = [];
+  private _banned: string[] = [];
+  private _voters: string[] = [];
 
   constructor(widgetId: string, bus: EventBus) {
     let data = localStorage.getItem("streamCredits-" + widgetId);
-    // if (data) {
-    //   let parsed = JSON.parse(data);
-    //   this._donaters = parsed.donaters ?? [];
-    //   this._newFollowers = parsed.newFollowers ?? [];
-    //   this._raiders = parsed.raiders ?? [];
-    //   this._gifters = parsed.gifters ?? [];
-    //   this._banned = parsed.banned ?? [];
-    //   this._voters = parsed.voters ?? [];
-    // }
+    if (data) {
+      let parsed = JSON.parse(data);
+      this._donaters = parsed.donaters ?? [];
+      this._newFollowers = parsed.newFollowers ?? [];
+      this._raiders = parsed.raiders ?? [];
+      this._gifters = parsed.gifters ?? [];
+      this._banned = parsed.banned ?? [];
+      this._voters = parsed.voters ?? [];
+    }
     makeAutoObservable(this);
     bus.addListener((event) => this.listen(event));
     setInterval(() => {
