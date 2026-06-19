@@ -10,7 +10,7 @@ export class StreamCreditsStore {
   private _voters: string[] = [];
 
   constructor(widgetId: string, bus: EventBus) {
-    let data = localStorage.getItem("streamCredits-" + widgetId);
+    let data = localStorage.getItem("1-streamCredits-" + widgetId);
     if (data) {
       let parsed = JSON.parse(data);
       this._donaters = parsed.donaters ?? [];
