@@ -71,6 +71,7 @@ import {
 import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
 import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPage";
 import AuctionWidgetPage from "./pages/AuctionWidget/AuctionWidgetPage";
+import AuctionPage from "./pages/AuctionWidget/AuctionPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -363,8 +364,13 @@ const router = createBrowserRouter([
     loader: widgetSettingsLoader,
   },
   {
-    path: "/auction/:widgetId",
+    path: "/auction-widget/:widgetId",
     element: <AuctionWidgetPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/auction/:widgetId",
+    element: <AuctionPage />,
     loader: widgetSettingsLoader,
   },
   {

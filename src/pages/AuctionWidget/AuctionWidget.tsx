@@ -10,8 +10,17 @@ type Game = {
   amount: number;
 };
 
-export function AuctionWidget({ settings, store }: { settings: AuctionWidgetSettings; store: AuctionWidgetStore }) {
-  const games = useMemo(() => aggregateGames(store.donations), [store.donations]);
+export function AuctionWidget({
+  settings,
+  store,
+}: {
+  settings: AuctionWidgetSettings;
+  store: AuctionWidgetStore;
+}) {
+  const games = useMemo(
+    () => aggregateGames(store.donations),
+    [store.donations],
+  );
 
   return (
     <div className={classes.auction}>
@@ -24,10 +33,12 @@ export function AuctionWidget({ settings, store }: { settings: AuctionWidgetSett
           <div
             key={game.key}
             className={classes.segment}
-            style={{
-              "--segment-color": COLORS[index % COLORS.length],
-              "--segment-grow": String(1 / Math.max(1, game.amount)),
-            } as CSSProperties}
+            style={
+              {
+                "--segment-color": COLORS[index % COLORS.length],
+                "--segment-grow": String(1 / Math.max(1, game.amount)),
+              } as CSSProperties
+            }
           >
             <span>{game.title}</span>
             <b>{Math.round(game.amount).toLocaleString("ru-RU")} ₽</b>
@@ -38,7 +49,14 @@ export function AuctionWidget({ settings, store }: { settings: AuctionWidgetSett
   );
 }
 
-const COLORS = ["#ef3e5c", "#2ec4b6", "#f7c948", "#4d96ff", "#9b5de5", "#f15bb5"];
+const COLORS = [
+  "#ef3e5c",
+  "#2ec4b6",
+  "#f7c948",
+  "#4d96ff",
+  "#9b5de5",
+  "#f15bb5",
+];
 
 function aggregateGames(rows: AuctionWidgetStore["donations"]): Game[] {
   const games = new Map<string, Game>();
