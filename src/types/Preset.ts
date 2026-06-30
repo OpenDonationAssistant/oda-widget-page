@@ -30,7 +30,7 @@ export class Preset {
     this._owner = owner;
   }
 
-  public applyTo(
+  public async applyTo(
     settings:
       | { set: (name: string, value: any, asInitialValue: boolean) => void }
       | Alert,
@@ -38,29 +38,33 @@ export class Preset {
   ) {
     Widget.createDefault(type)
       ?.prepareConfig()
-      .forEach((prop) => {
-        settings.set(prop.name, prop.value, false);
+      .then((props) => {
+        props.forEach((prop) => {
+          settings.set(prop.name, prop.value, false);
+        });
+      })
+      .then(() => {
+        this._properties.forEach((prop) => {
+          if (settings instanceof Alert) {
+            if (prop.name === "image") {
+              (settings as Alert).image = prop.value;
+              log.debug({ image: prop.value }, "setting alert image");
+              return;
+            }
+            if (prop.name === "audio") {
+              (settings as Alert).audio = prop.value;
+              log.debug({ audio: prop.value }, "setting alert audio");
+              return;
+            }
+            if (prop.name === "video") {
+              (settings as Alert).video = prop.value;
+              log.debug({ video: prop.value }, "setting alert video");
+              return;
+            }
+          }
+          settings.set(prop.name, prop.value, false);
+        });
       });
-    this._properties.forEach((prop) => {
-      if (settings instanceof Alert) {
-        if (prop.name === "image") {
-          (settings as Alert).image = prop.value;
-          log.debug({ image: prop.value }, "setting alert image");
-          return;
-        }
-        if (prop.name === "audio") {
-          (settings as Alert).audio = prop.value;
-          log.debug({ audio: prop.value }, "setting alert audio");
-          return;
-        }
-        if (prop.name === "video") {
-          (settings as Alert).video = prop.value;
-          log.debug({ video: prop.value }, "setting alert video");
-          return;
-        }
-      }
-      settings.set(prop.name, prop.value, false);
-    });
   }
 
   public get name(): string {

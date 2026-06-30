@@ -104,6 +104,9 @@ button.ant-btn.ant-btn-default {
 }
 
 .newstyle {
+  /* .monaco-editor { */
+  /*   width: unset!important; */
+  /* } */
   textarea:focus {
     outline-style: solid;
     outline-color: var(--oda-primary-color);

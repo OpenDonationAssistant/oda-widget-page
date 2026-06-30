@@ -65,7 +65,7 @@ export class AbstractWidgetSettings {
     );
   }
 
-  public prepareConfig(): { name: string; value: any }[] {
+  public async prepareConfig(): Promise<{ name: string; value: any }[]> {
     const prepared = this._sections
       .flatMap((section) => section.properties)
       .map((prop) => {
@@ -107,16 +107,6 @@ export class AbstractWidgetSettings {
         items={this._sections.map(this.tabPaneGenerator)}
       />
     );
-    // }
-    // return (
-    //   <Flex vertical className="full-width">
-    //     {this._sections.at(0)?.properties.map((prop) => (
-    //       <div key={prop.name} className="settings-item">
-    //         {prop.markup()}
-    //       </div>
-    //     ))}
-    //   </Flex>
-    // );
   }
 
   public help(): ReactNode {

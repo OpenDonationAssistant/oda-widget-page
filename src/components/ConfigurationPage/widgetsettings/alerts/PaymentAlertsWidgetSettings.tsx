@@ -81,7 +81,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     return <TestAlertPopup />;
   }
 
-  public prepareConfig(): { name: string; value: any }[] {
+  public async prepareConfig(): Promise<{ name: string; value: any }[]> {
     if (this._alerts === undefined) {
       return [];
     }

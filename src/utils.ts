@@ -37,6 +37,22 @@ export const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   });
 };
 
+export const downloadFile = async (url: string | null): Promise<Blob> => {
+  if (!url) {
+    return Promise.resolve(new Blob());
+  }
+  let urlToFetch = url;
+  if (!url.startsWith("http")) {
+    urlToFetch = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${url}`;
+  }
+  // TODO: вынести в общий модуль
+  return fetch(urlToFetch, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+  }).then((res) => res.blob());
+};
+
 export const fullUri = async (url: string | null): Promise<string> => {
   if (!url) {
     return Promise.resolve("");

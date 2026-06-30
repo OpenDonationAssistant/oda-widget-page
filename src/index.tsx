@@ -19,7 +19,7 @@ import "@fontsource/material-symbols-sharp";
 import "@fontsource/play";
 import { config } from "./config";
 import { log, setLoglevel } from "./logging";
-import auth from "./auth";
+import auth, { separateWidgetAuth } from "./auth";
 import axios from "axios";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
@@ -72,6 +72,7 @@ import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
 import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPage";
 import AuctionWidgetPage from "./pages/AuctionWidget/AuctionWidgetPage";
 import AuctionPage from "./pages/AuctionWidget/AuctionPage";
+import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -127,7 +128,14 @@ async function widgetSettingsLoader({
 }: {
   params: Params<"widgetId">;
 }): Promise<WidgetData> {
-  const session = await auth();
+  const separateSession = new URLSearchParams(window.location.search).get(
+    "separateSession",
+  );
+  console.log({ separateSession }, "separateSession");
+  const session =
+    separateSession && params.widgetId
+      ? await separateWidgetAuth(params.widgetId)
+      : await auth();
   let settings = {};
   if (params.widgetId) {
     settings = await axios
@@ -153,12 +161,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get("code");
 if (code) {
   localStorage.setItem("code", code);
-  console.log({ code },"code");
+  console.log({ code }, "code");
 }
 const state = urlParams.get("state");
 if (state) {
   localStorage.setItem("state", state);
-  console.log({ state },"state");
+  console.log({ state }, "state");
 }
 
 function detectPage(path: string): Page {
@@ -430,6 +438,11 @@ const router = createBrowserRouter([
   {
     path: "/reel/:widgetId",
     element: <ReelWidgetPage />,
+    loader: widgetSettingsLoader,
+  },
+  {
+    path: "/custom/:widgetId",
+    element: <CustomWidgetPage />,
     loader: widgetSettingsLoader,
   },
   {
