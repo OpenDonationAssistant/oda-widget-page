@@ -10,7 +10,8 @@ export class StreamCreditsStore {
   private _voters: string[] = [];
 
   constructor(widgetId: string, bus: EventBus) {
-    let data = localStorage.getItem("1-streamCredits-" + widgetId);
+    const storageKey = "1-streamCredits-" + widgetId;
+    let data = localStorage.getItem(storageKey);
     if (data) {
       let parsed = JSON.parse(data);
       this._donaters = parsed.donaters ?? [];
@@ -24,7 +25,7 @@ export class StreamCreditsStore {
     bus.addListener((event) => this.listen(event));
     setInterval(() => {
       localStorage.setItem(
-        "streamCredits-" + widgetId,
+        storageKey,
         JSON.stringify({
           donaters: this._donaters,
           newFollowers: this._newFollowers,

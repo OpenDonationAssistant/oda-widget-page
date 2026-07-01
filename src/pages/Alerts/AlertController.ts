@@ -21,6 +21,7 @@ import { HeightProperty } from "../../components/ConfigurationPage/widgetpropert
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
+import { uuidv7 } from "uuidv7";
 
 interface Variable {
   id: string;
@@ -70,51 +71,75 @@ export class AlertController {
       .then(() => {
         subscribe(widgetId, this.conf.topic.events, (message) => {
           let json = JSON.parse(message.body);
-          if (json.type !== "Alert") {
-            return;
+          if (json.type === "TwitchChannelRaidEvent") {
+            const variables = json.variables as Variable[];
+            const channel = get(variables, "channel");
+            const viewerCount = get(variables, "viewerCount");
+            const data = {
+              id: uuidv7(),
+              alertId: uuidv7(),
+              nickname: channel,
+              message: `Рейд`,
+              amount: { major: viewerCount, minor: 0, currency: "" },
+              media: null,
+              levelName: null,
+              count: viewerCount,
+              system: "Twitch",
+              force: false,
+              event: "raid",
+            };
+            this.log.info({ data }, `Received alert`);
+            const alert = this.findAlert(data);
+            if (alert) {
+              // TODO: обрабатывать несколько в премодерации
+              this.renderAlert(alert, data, () => message.ack());
+            }
+            this.log.info("Alert is handled");
           }
-          const variables = json.variables as Variable[];
-          const alertmedia = get(variables, "alertmedia");
-          const amount = get(variables, "amount");
-          const system = get(variables, "system");
-          const event = get(variables, "event");
-          const nickname = get(variables, "nickname");
-          const levelName = get(variables, "levelName");
-          const originId = get(variables, "originId");
-          const force = get(variables, "force");
-          let msg = get(variables, "message");
-          if (system === "Boosty" && event === "subscription") {
-            msg = `${nickname} оформил подписку ${levelName}`;
+          if (json.type === "Alert") {
+            const variables = json.variables as Variable[];
+            const alertmedia = get(variables, "alertmedia");
+            const amount = get(variables, "amount");
+            const system = get(variables, "system");
+            const event = get(variables, "event");
+            const nickname = get(variables, "nickname");
+            const levelName = get(variables, "levelName");
+            const originId = get(variables, "originId");
+            const force = get(variables, "force");
+            let msg = get(variables, "message");
+            if (system === "Boosty" && event === "subscription") {
+              msg = `${nickname} оформил подписку ${levelName}`;
+            }
+            if (system === "Boosty" && event === "follow") {
+              msg = `${nickname} отслеживает на Бусти`;
+            }
+            const data = {
+              id: originId,
+              alertId: get(variables, "alertId"),
+              nickname: nickname,
+              message: msg,
+              amount: amount
+                ? { major: Number(amount), minor: 0, currency: "RUB" }
+                : 0,
+              media: alertmedia
+                ? {
+                    url: alertmedia,
+                  }
+                : null,
+              levelName: levelName,
+              count: get(variables, "count"),
+              system: system,
+              force: force,
+              event: event,
+            };
+            this.log.info({ data }, `Received alert`);
+            const alert = this.findAlert(data);
+            if (alert) {
+              // TODO: обрабатывать несколько в премодерации
+              this.renderAlert(alert, data, () => message.ack());
+            }
+            this.log.info("Alert is handled");
           }
-          if (system === "Boosty" && event === "follow") {
-            msg = `${nickname} отслеживает на Бусти`;
-          }
-          const data = {
-            id: originId,
-            alertId: get(variables, "alertId"),
-            nickname: nickname,
-            message: msg,
-            amount: amount
-              ? { major: Number(amount), minor: 0, currency: "RUB" }
-              : 0,
-            media: alertmedia
-              ? {
-                  url: alertmedia,
-                }
-              : null,
-            levelName: levelName,
-            count: get(variables, "count"),
-            system: system,
-            force: force,
-            event: event,
-          };
-          this.log.info({ data }, `Received alert`);
-          const alert = this.findAlert(data);
-          if (alert) {
-            // TODO: обрабатывать несколько в премодерации
-            this.renderAlert(alert, data, () => message.ack());
-          }
-          this.log.info("Alert is handled");
         });
       });
   }
