@@ -77,7 +77,7 @@ export class AlertController {
             const viewerCount = get(variables, "viewerCount");
             const data = {
               id: uuidv7(),
-              alertId: uuidv7(),
+              alertId: null,
               nickname: channel,
               message: `Рейд`,
               amount: { major: viewerCount, minor: 0, currency: "" },
@@ -88,7 +88,7 @@ export class AlertController {
               force: false,
               event: "raid",
             };
-            this.log.info({ data }, `Received alert`);
+            this.log.info({ data }, `Received TwitchChannelRaidEvent event`);
             const alert = this.findAlert(data);
             if (alert) {
               // TODO: обрабатывать несколько в премодерации
@@ -268,6 +268,7 @@ export class AlertController {
       this.log.debug(`choosen alert index: ${index}`);
     }
     if (index === -1) {
+      this.log.debug("alert not found");
       return null;
     }
     const choosenAlert = this.sortedAlerts[index];
