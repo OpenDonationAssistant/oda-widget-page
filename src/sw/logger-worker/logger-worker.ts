@@ -33,7 +33,7 @@ async function flushQueue(): Promise<void> {
     await fetch(OTEL_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildOtelPayload(batch)),
+      body: JSON.stringify(buildOtelPayload(recipientId, batch)),
       keepalive: true,
     });
   } catch {
