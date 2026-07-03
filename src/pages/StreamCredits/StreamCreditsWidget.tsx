@@ -150,7 +150,7 @@ export const StreamCreditsWidget = observer(
       const duration = height / settings.speedProperty.value;
       console.log({ duration });
       setDuration(duration);
-    },[height]);
+    }, [height]);
 
     useEffect(() => {
       if (twitchToken !== null) {
@@ -246,9 +246,7 @@ export const StreamCreditsWidget = observer(
                 ))}
               </Flex>
               <Flex vertical align="center">
-                <div style={titleFontStyle}>
-                  Спасибо за внимание!
-                </div>
+                <div style={titleFontStyle}>Спасибо за внимание!</div>
               </Flex>
             </Flex>
           </Flex>
