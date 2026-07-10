@@ -105,11 +105,12 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
     const canvas = await snapdom(preview.current);
     const blob = await canvas.toBlob({ type: "webp" });
     const url = (await uploadBlob(blob, `${name}.webp`)).url;
+    const properties = await widget.config.prepareConfig();
     const preset = new Preset({
       name: name,
       owner: widget.ownerId,
       showcase: url ?? "",
-      properties: widget.config.prepareConfig(),
+      properties: properties,
     });
     return presetStore.save(preset, widget.type);
   }

@@ -166,12 +166,12 @@ export const PresetsComponent = observer(
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={() => {
-                    if (target instanceof Widget) {
-                      selected?.applyTo(target.config, target.type);
-                    } else if (target instanceof Alert) {
-                      selected?.applyTo(target, "alert");
-                    }
                     modalState.show = false;
+                    if (target instanceof Widget) {
+                      return selected?.applyTo(target.config, target.type);
+                    } else if (target instanceof Alert) {
+                      return selected?.applyTo(target, "alert");
+                    }
                   }}
                 >
                   Применить

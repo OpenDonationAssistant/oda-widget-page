@@ -95,10 +95,12 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               { preset: wizardStore.preset, type: widget.type },
               "applying preset to created widget",
             );
-            wizardStore.preset?.applyTo(widget.config, widget.type);
-            return widget.save().then(() => {
-              setSelection(widget.id);
-            });
+            wizardStore.preset
+              ?.applyTo(widget.config, widget.type)
+              .then(() => widget.save())
+              .then(() => {
+                setSelection(widget.id);
+              });
           });
         },
       }),

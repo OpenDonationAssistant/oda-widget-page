@@ -1,0 +1,25 @@
+.container {
+  width: 100%;
+  background-color: var(--oda-color-150);
+  border-radius: 3px;
+}
+
+.collapselikebutton {
+  font-size: 24px;
+  font-weight: 900;
+  text-align: left;
+  width: 100%;
+  background-color: var(--oda-color-150);
+  padding-left: 12px;
+  padding-right: 15px;
+  border: none;
+  border-radius: 3px;
+  color: var(--oda-color-950);
+  height: 60px;
+
+  &:hover {
+    background-color: var(--oda-color-250);
+    cursor: pointer;
+  }
+
+}

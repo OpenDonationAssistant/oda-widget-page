@@ -305,8 +305,12 @@ const PaymentAlertsPropertyComponent = observer(
               "finish adding alert",
             );
             if (added) {
-              wizardStore.preset?.applyTo(added, "alert");
-              selection.id = added.id;
+              return (
+                wizardStore.preset
+                  ?.applyTo(added, "alert")
+                  .then(() => (selection.id = added.id))
+                  .then(() => wizardStore.reset()) ?? Promise.resolve()
+              );
             }
             wizardStore.reset();
             return Promise.resolve();

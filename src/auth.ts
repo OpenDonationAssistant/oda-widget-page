@@ -1,6 +1,7 @@
 import axios from "axios";
 import { log } from "./logging";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { tokenRequest } from "./pages/Login/Login";
 
 interface LogLevel {
   name: string;
@@ -17,8 +18,10 @@ interface Session {
   logLevels: LogLevel[];
 }
 
-async function loadSession(): Promise<Session> {
-  const accessToken = localStorage.getItem("access-token");
+async function loadSession(widgetId?: string): Promise<Session> {
+  const accessToken = localStorage.getItem(
+    widgetId ? `${widgetId}-access-token` : "access-token",
+  );
   if (!accessToken) {
     return Promise.resolve({ logged: false, features: [], logLevels: [] });
   }
@@ -54,6 +57,24 @@ async function exchangeOtp(otp: string): Promise<string> {
     },
   );
   return response.data.refreshToken;
+}
+
+// TODO Temporary
+export async function separateWidgetAuth(widgetId: string): Promise<Session> {
+  let sessionInfo = await loadSession(widgetId);
+  if (!sessionInfo.logged) {
+    const otp = new URLSearchParams(window.location.search).get("otp");
+    if (otp) {
+      const refreshToken = await exchangeOtp(otp);
+      const tokens = await tokenRequest({ refreshToken: refreshToken });
+      localStorage.setItem(`${widgetId}-access-token`, tokens.idToken);
+      localStorage.setItem(`${widgetId}-refresh-token`, tokens.refreshToken);
+      axios.defaults.headers.common["Authorization"] =
+        `Bearer ${tokens.idToken}`;
+      return await loadSession(widgetId);
+    }
+  }
+  return sessionInfo;
 }
 
 // TODO: get access-token without redirecting to login page

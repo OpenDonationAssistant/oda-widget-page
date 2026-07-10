@@ -35,11 +35,12 @@ import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWi
 import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
 import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
+import { CustomWidgetSettings } from "../pages/CustomWidget/CustomWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
     name: "payment-alerts",
-    title: "Оповещения о донатах",
+    title: "Оповещения/Алерты",
     icon: <AlertsIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/alert.png",
@@ -225,6 +226,16 @@ export const WIDGET_TYPES = [
     description: "Виджет для группировки других виджетов внутри себя.",
     create: () => new CanvasWidgetSettings(),
   },
+  {
+    name: "custom",
+    title: "Custom/Импорт из StreamElements",
+    icon: <span className="material-symbols-sharp">tools_power_drill</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет, поддерживающий кастомные виджеты в формате StreamElements",
+    create: () => new CustomWidgetSettings(),
+  },
 ];
 
 interface SavedProperty {
@@ -367,10 +378,11 @@ export class Widget {
   }
 
   public async save(): Promise<void> {
+    const properties = await this._config.prepareConfig();
     const request = {
       name: this._name,
       config: {
-        properties: this._config.prepareConfig(),
+        properties: properties,
       },
     };
     await axios
