@@ -2,6 +2,7 @@ import { DefaultApiFactory } from "@opendonationassistant/oda-streamelements-ser
 import { makeAutoObservable } from "mobx";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
+import { CustomWidgetSettings } from "./CustomWidgetSettings";
 
 export interface CustomWidgetStore {
   session: any;
@@ -335,6 +336,7 @@ export class DemoCustomWidgetStore implements CustomWidgetStore {
 
 export class DefaultCustomWidgetStore implements CustomWidgetStore {
   private _reloadFn: Function;
+  private _settings: CustomWidgetSettings;
   private _session: any = {
     session: {
       data: {
@@ -666,15 +668,32 @@ export class DefaultCustomWidgetStore implements CustomWidgetStore {
     );
   }
 
-  constructor({ widgetId, recipientId, reloadFn }: { widgetId: string; recipientId: string; reloadFn: Function }) {
+  constructor({
+    settings,
+    widgetId,
+    recipientId,
+    reloadFn,
+  }: {
+    settings: CustomWidgetSettings;
+    widgetId: string;
+    recipientId: string;
+    reloadFn: Function;
+  }) {
     this._reloadFn = reloadFn;
-    makeAutoObservable(this);
-    this.client()
-      .getSession()
+    this._settings = settings;
+    settings
+      .configContent()
+      .then((content) => {
+        this._session.fieldData = content;
+      })
+      .then(() => {
+        return this.client().getSession();
+      })
       .then((session) => {
         this._session.session = session.data.session;
         this._session.channel = session.data.channel;
       });
+    makeAutoObservable(this);
     this.listen(widgetId, `/topic/${recipientId}.streamelements`);
   }
 

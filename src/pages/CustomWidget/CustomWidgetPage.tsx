@@ -8,8 +8,18 @@ import { DefaultCustomWidgetStore } from "./CustomWidgetStore";
 
 export default function CustomWidgetPage() {
   const navigate = useNavigate();
-  const { recipientId, settings, conf, widgetId } = useLoaderData() as WidgetData;
-  const store = new DefaultCustomWidgetStore({ widgetId, recipientId, reloadFn: () => navigate(0) });
+  const { recipientId, settings, conf, widgetId } =
+    useLoaderData() as WidgetData;
+
+  const widgetSettings = Widget.configFromJson(
+    settings,
+  ) as CustomWidgetSettings;
+  const store = new DefaultCustomWidgetStore({
+    settings: widgetSettings,
+    widgetId,
+    recipientId,
+    reloadFn: () => navigate(0),
+  });
 
   return (
     <WidgetWrapper>
