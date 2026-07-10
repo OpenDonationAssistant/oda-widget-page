@@ -2,7 +2,6 @@ import { observer } from "mobx-react-lite";
 import { CustomWidgetSettings } from "./CustomWidgetSettings";
 import { useEffect, useState } from "react";
 import { CustomWidgetStore } from "./CustomWidgetStore";
-import { toJS } from "mobx";
 
 function resolvePlaceholders(str: string, data: any) {
   return str.replace(/\{\{\s*([^{}]+?)\s*\}\}/g, (_, expr) => {
@@ -17,65 +16,60 @@ function resolvePlaceholders(str: string, data: any) {
 }
 
 export const CustomWidget = observer(
-  ({ settings, store }: { settings: CustomWidgetSettings; store: CustomWidgetStore }) => {
-    const [htmlContent, setHtmlContent] = useState<string>("");
-    const [cssUrl, setCssUrl] = useState<string>("");
-    const [jsUrl, setJsUrl] = useState<string | null>(null);
+  ({
+    settings,
+    store,
+  }: {
+    settings: CustomWidgetSettings;
+    store: CustomWidgetStore;
+  }) => {
+    const [html, setHtml] = useState<string>("");
+    const [css, setCss] = useState<string>("");
+    const [js, setJs] = useState<string>("");
     const [doc, setDoc] = useState<string>("");
-    const [src, setSrc] = useState<string | null>(null);
-    const [config, setConfig] = useState<any>({});
 
     useEffect(() => {
       settings.configContent().then((config) => {
-        setConfig(config);
         settings
           .htmlContent()
           .then((blob) => blob.text())
           .then((text) => resolvePlaceholders(text, config))
           .then((content) => {
-            setHtmlContent(content);
+            setHtml(content);
           });
         settings
           .jsContent()
           .then((blob) => blob.text())
           .then((text) => resolvePlaceholders(text, config))
           .then((text) => {
-            const url = URL.createObjectURL(
-              new Blob([text], { type: "application/javascript" }),
-            );
-            setJsUrl(url);
+            setJs(text);
           });
         settings
           .cssContent()
           .then((blob) => blob.text())
           .then((text) => resolvePlaceholders(text, config))
           .then((text) => {
-            const url = URL.createObjectURL(
-              new Blob([text], { type: "text/css" }),
-            );
-            setCssUrl(url);
+            setCss(text);
           });
       });
     }, [settings]);
 
     useEffect(() => {
-      console.log({ session: toJS(store.session) },"session");
-      const url = URL.createObjectURL(
-        new Blob(
-          [
-            `<!DOCTYPE html>
+      setDoc(
+        `<!DOCTYPE html>
       <html>
         <head>
           <meta charset="UTF-8">
-          <link rel="stylesheet" href="${cssUrl}">
           <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-          <script src="${jsUrl}"></script>
           <style>
             html, body { background: none transparent!important; }
           </style>
+          <style>
+            ${css}
+          </style>
         </head>
         <body>
-          ${htmlContent}
+          ${html}
           <script>
             window.addEventListener("load", function (event) {
               const e = new CustomEvent("onWidgetLoad", {
@@ -85,24 +79,23 @@ export const CustomWidget = observer(
               window.dispatchEvent(e);
             });
           </script>
+          <script>
+            ${js}
+          </script>
         </body>
       </html>`,
-          ],
-          { type: "text/html" },
-        ),
       );
-      setSrc(url);
-    }, [htmlContent, cssUrl, jsUrl, store.session]);
+    }, [html, css, js, store.session]);
 
     return (
       <>
-        {src && (
+        {doc && (
           <iframe
             width="570px"
             height="570px"
             sandbox="allow-scripts"
             scrolling="no"
-            src={src}
+            srcDoc={doc}
             style={{ border: "none", background: "transparent" }}
           />
         )}
