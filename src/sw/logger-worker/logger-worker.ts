@@ -3,27 +3,15 @@
 import { buildOtelPayload } from "./otel-payload";
 import type { LogRecord, WorkerIncomingMessage } from "./types";
 
-/** Service worker scope — cast from the generic `self`. */
 const swScope = self as unknown as ServiceWorkerGlobalScope;
 
-// ── Configuration ───────────────────────────────────────────────────
-
-/** OTEL endpoint for log ingestion. */
 const OTEL_ENDPOINT = "https://api.oda.digital/logs";
-
-/** How often (ms) to flush the log queue. */
 const BATCH_INTERVAL_MS = 2000;
-
-/** Max number of log records sent in a single request. */
 const MAX_BATCH_SIZE = 10;
-
-// ── State ──────────────────────────────────────────────────────────
 
 let logQueue: LogRecord[] = [];
 let recipientId = "unknown";
 let features: { name: string; state: string }[] = [];
-
-// ── Log flusher ─────────────────────────────────────────────────────
 
 async function flushQueue(): Promise<void> {
   if (logQueue.length === 0) return;
@@ -36,10 +24,7 @@ async function flushQueue(): Promise<void> {
       body: JSON.stringify(buildOtelPayload(recipientId, batch)),
       keepalive: true,
     });
-  } catch {
-    // Silently drop — retrying would require re-queueing which can
-    // lead to loops. The next interval will pick up new entries.
-  }
+  } catch {}
 }
 
 setInterval(flushQueue, BATCH_INTERVAL_MS);
@@ -53,8 +38,6 @@ swScope.addEventListener("install", () => {
 swScope.addEventListener("activate", (event: ExtendableEvent) => {
   event.waitUntil(swScope.clients.claim());
 });
-
-// ── Message handling ────────────────────────────────────────────────
 
 /**
  * Normalize an incoming message to a typed shape.
