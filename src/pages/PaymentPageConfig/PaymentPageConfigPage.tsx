@@ -333,6 +333,10 @@ export default function PaymentPageConfigPage() {
                       value: "kick",
                       label: "Kick",
                     },
+                    {
+                      value: "goodgame",
+                      label: "GoodGame",
+                    },
                   ]}
                   onChange={(newKey) => {
                     if (paymentPageConfig?.current) {
