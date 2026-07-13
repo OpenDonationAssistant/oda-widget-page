@@ -889,7 +889,7 @@ const PaymentAlerts = observer(
                   {},
                 );
                 break;
-              default:
+              case 1:
                 HistoryService(
                   undefined,
                   process.env.REACT_APP_HISTORY_API_ENDPOINT,
@@ -923,6 +923,9 @@ const PaymentAlerts = observer(
                   },
                   {},
                 );
+                break;
+              default:
+                break;
             }
           });
         });
