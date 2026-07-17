@@ -1,104 +1,104 @@
 import { makeAutoObservable } from "mobx";
 import { Event, EventBus } from "../../bus/EventBus";
+import { onEvent } from "../../utils";
+
+interface CreditsState {
+  donaters: string[];
+  newFollowers: string[];
+  raiders: string[];
+  gifters: string[];
+  banned: string[];
+  voters: string[];
+  timestamp: number;
+}
 
 export class StreamCreditsStore {
-  private _donaters: string[] = [];
-  private _newFollowers: string[] = [];
-  private _raiders: string[] = [];
-  private _gifters: string[] = [];
-  private _banned: string[] = [];
-  private _voters: string[] = [];
+  private _state: CreditsState = {
+    donaters: [],
+    newFollowers: [],
+    raiders: [],
+    gifters: [],
+    banned: [],
+    voters: [],
+    timestamp: -1,
+  };
 
-  constructor(widgetId: string, bus: EventBus) {
-    const storageKey = "2-streamCredits-" + widgetId;
-    let data = localStorage.getItem(storageKey);
+  constructor(widgetId: string) {
+    const stateKey = `stream-credits-state-${widgetId}`;
+    let data = localStorage.getItem(stateKey);
     if (data) {
-      let parsed = JSON.parse(data);
-      this._donaters = parsed.donaters ?? [];
-      this._newFollowers = parsed.newFollowers ?? [];
-      this._raiders = parsed.raiders ?? [];
-      this._gifters = parsed.gifters ?? [];
-      this._banned = parsed.banned ?? [];
-      this._voters = parsed.voters ?? [];
+      this._state = JSON.parse(data) as CreditsState;
     }
     makeAutoObservable(this);
-    bus.addListener((event) => this.listen(event));
+    onEvent(this.listen);
     setInterval(() => {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          donaters: this._donaters,
-          newFollowers: this._newFollowers,
-          raiders: this._raiders,
-          gifters: this._gifters,
-          banned: this._banned,
-          voters: this._voters,
-        }),
-      );
-    }, 5000);
+      localStorage.setItem(stateKey, JSON.stringify(this._state));
+    }, 10000);
   }
 
   private listen(event: Event) {
+    const state = this._state;
     if (event.type === "Alert") {
       const nickname = String(event.get("nickname")) ?? "";
-      if (!this._donaters.includes(nickname)) {
-        this._donaters.push(nickname);
+      if (!state.donaters.includes(nickname)) {
+        state.donaters.push(nickname);
       }
     }
     if (event.type === "TwitchChannelFollowEvent") {
       const nickname = String(event.get("nickname")) ?? "";
-      if (!this._newFollowers.includes(nickname)) {
-        this._newFollowers.push(nickname);
+      if (!state.newFollowers.includes(nickname)) {
+        state.newFollowers.push(nickname);
       }
     }
     if (event.type === "TwitchChannelRaidEvent") {
       const nickname = String(event.get("channel")) ?? "";
-      if (!this._raiders.includes(nickname)) {
-        this._raiders.push(nickname);
+      if (!state.raiders.includes(nickname)) {
+        state.raiders.push(nickname);
       }
     }
     if (event.type === "TwitchChannelSubscriptionGiftEvent") {
       const nickname = String(event.get("nickname")) ?? "";
-      if (!this._gifters.includes(nickname)) {
-        this._gifters.push(nickname);
+      if (!state.gifters.includes(nickname)) {
+        state.gifters.push(nickname);
       }
     }
     if (event.type === "TwitchUserBannedEvent") {
       const nickname = String(event.get("nickname")) ?? "";
-      if (!this._banned.includes(nickname)) {
-        this._banned.push(nickname);
+      if (!state.banned.includes(nickname)) {
+        state.banned.push(nickname);
       }
     }
+    state.timestamp = event.timestamp;
   }
 
   public get donaters() {
-    return this._donaters;
+    return this._state.donaters;
   }
 
   public get newFollowers() {
-    return this._newFollowers;
+    return this._state.newFollowers;
   }
 
   public get raiders() {
-    return this._raiders;
+    return this._state.raiders;
   }
 
   public get gifters() {
-    return this._gifters;
+    return this._state.gifters;
   }
 
   public get banned() {
-    return this._banned;
+    return this._state.banned;
   }
 
   public get voters() {
-    return this._voters;
+    return this._state.voters;
   }
 
   public addVoter(nickname: string) {
-    if (this._voters.includes(nickname)) {
+    if (this._state.voters.includes(nickname)) {
       return;
     }
-    this._voters.push(nickname);
+    this._state.voters.push(nickname);
   }
 }

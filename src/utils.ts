@@ -1,10 +1,17 @@
 import axios from "axios";
 import { ChangeEvent, ReactNode } from "react";
 import { uuidv7 } from "uuidv7";
+import { Event } from "./bus/EventBus";
 
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
+
+export function onEvent(fn: (event: Event) => void) {
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    fn(event.data as Event);
+  });
+}
 
 export async function uploadBlob(
   data: Blob | File,

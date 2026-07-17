@@ -117,6 +117,7 @@ export default async function auth(): Promise<Session> {
         type: "USER_AUTHORIZED",
         recipientId: recipientId,
         features: sessionInfo.features,
+        token: localStorage.getItem("access-token"),
       });
     } else if (navigator.serviceWorker) {
       // ensure active SW and then notify
@@ -124,10 +125,9 @@ export default async function auth(): Promise<Session> {
         reg.active &&
           reg.active.postMessage({
             type: "USER_AUTHORIZED",
-            payload: {
-              recipientId: recipientId,
-              features: sessionInfo.features,
-            },
+            recipientId: recipientId,
+            features: sessionInfo.features,
+            token: localStorage.getItem("access-token"),
           });
       });
     }

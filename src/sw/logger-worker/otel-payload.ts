@@ -2,8 +2,6 @@ import type { LogRecord, OtelResourceLogs } from "./types";
 
 /**
  * Build an OTLP-compliant payload from a batch of log records.
- * This function is shared between the service worker and potentially
- * other parts of the project.
  */
 export function buildOtelPayload(
   recipientId: string,
@@ -12,7 +10,7 @@ export function buildOtelPayload(
   const resourceLogs = {
     resource: {
       attributes: [
-        { key: "service.name", value: { stringValue: "my-web-app" } }
+        { key: "service.name", value: { stringValue: "my-web-app" } },
       ],
     },
     scopeLogs: [
@@ -25,7 +23,7 @@ export function buildOtelPayload(
           return {
             timeUnixNano,
             severityText: rec.level || "INFO",
-            body: { stringValue: rec.messages || "", recipientId: recipientId },
+            body: { stringValue: rec.messages || "", recipientId },
             attributes: [],
           };
         }),

@@ -64,6 +64,6 @@ const log = pino({
     },
   },
 });
-log.level = process.env.REACT_APP_PINO_LOG_LEVEL || "debug";
+log.level = "debug";
 
 export { log, setLoglevel };

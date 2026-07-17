@@ -33,6 +33,33 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("registering service worker");
+    if ("serviceWorker" in navigator) {
+      const swUrl = `http://localhost:3001/logger-worker.js`;
+      try {
+        navigator.serviceWorker
+          .register(swUrl, {
+            scope: "/",
+          })
+          .then((reg) => {
+            console.log("SW registered:", reg);
+            // optional: listen for updates
+            reg.addEventListener("updatefound", () => {
+              const nw = reg.installing;
+              nw?.addEventListener("statechange", () =>
+                console.log("SW state:", nw.state),
+              );
+            });
+          });
+      } catch (err) {
+        console.error("SW registration failed:", err);
+      }
+    } else {
+      console.log("Service workers are not supported in this browser.");
+    }
+  }, [widgetId]);
+
+  useEffect(() => {
     if (!settings.enabled) {
       return;
     }

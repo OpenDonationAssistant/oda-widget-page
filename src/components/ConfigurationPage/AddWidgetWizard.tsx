@@ -89,12 +89,12 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
         if (type.name === "canvas") {
           return features.find((f) => f.name === "Canvas")?.state === "ENABLED";
         }
-        if (type.name === "stream-credits") {
-          return (
-            features.find((f) => f.name === "StreamCredits")?.state ===
-            "ENABLED"
-          );
-        }
+        // if (type.name === "stream-credits") {
+        //   return (
+        //     features.find((f) => f.name === "StreamCredits")?.state ===
+        //     "ENABLED"
+        //   );
+        // }
         if (type.name === "action-queue") {
           return (
             features.find((f) => f.name === "ActionQueue")?.state === "ENABLED"

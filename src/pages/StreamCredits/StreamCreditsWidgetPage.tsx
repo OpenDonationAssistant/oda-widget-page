@@ -5,15 +5,12 @@ import { Widget } from "../../types/Widget";
 import { StreamCreditsWidgetSettings } from "./StreamCreditsWidgetSettings";
 import { StreamCreditsWidget } from "./StreamCreditsWidget";
 import { StreamCreditsStore } from "./StreamCreditsStore";
-import { DefaultEventBus } from "../../bus/EventBus";
 
 export default function StreamCreditsWidgetPage({}) {
   const { recipientId, widgetId, conf } = useLoaderData() as WidgetData;
   const { settings } = useLoaderData() as WidgetData;
 
-  const eventBus = new DefaultEventBus(widgetId, conf.topic.events);
-
-  const creditsStore = new StreamCreditsStore(widgetId, eventBus);
+  const creditsStore = new StreamCreditsStore(widgetId);
 
   const widgetSettings = Widget.configFromJson(
     settings,

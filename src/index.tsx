@@ -77,25 +77,6 @@ import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
 
-if ("serviceWorker" in navigator) {
-  const swUrl = `${process.env.PUBLIC_URL || ""}/logger-worker.js`;
-  window.addEventListener("load", async () => {
-    try {
-      const reg = await navigator.serviceWorker.register(swUrl, { scope: "/" });
-      console.log("SW registered:", reg);
-      // optional: listen for updates
-      reg.addEventListener("updatefound", () => {
-        const nw = reg.installing;
-        nw?.addEventListener("statechange", () =>
-          console.log("SW state:", nw.state),
-        );
-      });
-    } catch (err) {
-      console.error("SW registration failed:", err);
-    }
-  });
-}
-
 // window.onerror = (message, source, lineno, colno, error) => {
 //   console.log("Handling window onerror");
 //   errorStore.setError(
