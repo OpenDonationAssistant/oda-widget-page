@@ -25,7 +25,6 @@
     "@opendonationassistant/oda-streamelements-service-client": "^0.0.2",
     "@opendonationassistant/oda-twitch-service-client": "^0.0.1",
     "@opendonationassistant/oda-widget-service-client": "^0.11.0",
-    "@retconned/kick-js": "^0.5.4",
     "@splidejs/react-splide": "^0.7.12",
     "@stomp/stompjs": "^7.0.0",
     "@testing-library/jest-dom": "^5.17.0",
