@@ -10,7 +10,6 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
-import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, reaction, toJS } from "mobx";
 import SubActionButton from "../../../Button/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";

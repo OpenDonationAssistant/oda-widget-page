@@ -36,6 +36,7 @@ export class Preset {
       | Alert,
     type: string,
   ) {
+    log.debug({ settings, type }, "applying preset");
     Widget.createDefault(type)
       ?.prepareConfig()
       .then((props) => {

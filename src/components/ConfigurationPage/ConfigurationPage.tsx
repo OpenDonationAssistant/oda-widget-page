@@ -62,10 +62,9 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             title: "Выберите шаблон",
             subtitle: "",
             content: <SelectPresetComponent />,
-            condition: () => {
-              return presetStore.for(wizardStore.type).then((presets) => {
-                return presets.length > 0;
-              });
+            condition: async () => {
+              const presets = await presetStore.for(wizardStore.type);
+              return presets.length > 0;
             },
             handler: () => {
               if (!wizardStore.preset || !wizardStore.type) {
