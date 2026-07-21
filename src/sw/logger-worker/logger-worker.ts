@@ -4,6 +4,7 @@ import { register as registerKickChatHandler } from "./handlers/kick-chat";
 import { register as registerLogHandler } from "./handlers/log";
 import { register as registerStreamElementsHandler } from "./handlers/streamelements-shim";
 import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
+import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { DefaultEventBus } from "../../bus/EventBus";
 
 /** Service worker scope — cast from the generic `self`. */
@@ -39,4 +40,5 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   registerLogHandler(swScope);
   registerStreamElementsHandler(info.token, eventbus, swScope);
   registerTwitchChatHandler(info.token, eventbus, swScope);
+  registerWidgetsHandler(info.token, swScope);
 });
