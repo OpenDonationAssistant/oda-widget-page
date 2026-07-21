@@ -37,7 +37,6 @@ import {
   SelectPresetComponent,
   SelectWidgetComponent,
 } from "./AddWidgetWizard";
-import CollapseLikeButton from "../Button/CollapseLikeButton";
 import { reaction } from "mobx";
 import { log } from "../../logging";
 
@@ -94,7 +93,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               { preset: wizardStore.preset, type: widget.type },
               "applying preset to created widget",
             );
-            wizardStore.preset
+            return wizardStore.preset
               ?.applyTo(widget.config, widget.type)
               .then(() => widget.save())
               .then(() => {

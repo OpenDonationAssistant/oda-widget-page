@@ -1,5 +1,4 @@
 import { Alert } from "../components/ConfigurationPage/widgetsettings/alerts/Alerts";
-import { log } from "../logging";
 import { Widget } from "../types/Widget";
 
 interface PresetProperty {
@@ -36,36 +35,36 @@ export class Preset {
       | Alert,
     type: string,
   ) {
-    log.debug({ settings, type }, "applying preset");
-    Widget.createDefault(type)
-      ?.prepareConfig()
-      .then((props) => {
-        props.forEach((prop) => {
-          settings.set(prop.name, prop.value, false);
-        });
-      })
-      .then(() => {
-        this._properties.forEach((prop) => {
-          if (settings instanceof Alert) {
-            if (prop.name === "image") {
-              (settings as Alert).image = prop.value;
-              log.debug({ image: prop.value }, "setting alert image");
-              return;
-            }
-            if (prop.name === "audio") {
-              (settings as Alert).audio = prop.value;
-              log.debug({ audio: prop.value }, "setting alert audio");
-              return;
-            }
-            if (prop.name === "video") {
-              (settings as Alert).video = prop.value;
-              log.debug({ video: prop.value }, "setting alert video");
-              return;
-            }
-          }
-          settings.set(prop.name, prop.value, false);
-        });
+    if (settings instanceof Alert) {
+      this._properties.forEach((prop) => {
+        if (prop.name === "image") {
+          (settings as Alert).image = prop.value;
+          return;
+        }
+        if (prop.name === "audio") {
+          (settings as Alert).audio = prop.value;
+          return;
+        }
+        if (prop.name === "video") {
+          (settings as Alert).video = prop.value;
+          return;
+        }
+        settings.set(prop.name, prop.value, false);
       });
+    } else {
+      await Widget.createDefault(type)
+        ?.prepareConfig()
+        .then((props) => {
+          props.forEach((prop) => {
+            settings.set(prop.name, prop.value, false);
+          });
+        })
+        .then(() => {
+          this._properties.forEach((prop) => {
+            settings.set(prop.name, prop.value, false);
+          });
+        });
+    }
   }
 
   public get name(): string {

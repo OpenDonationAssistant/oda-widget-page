@@ -74,7 +74,7 @@ export class AbstractWidgetSettings {
           value: toJS(prop.value),
         };
       });
-    log.debug({ preparedConfig: prepared });
+    log.debug({ preparedConfig: prepared }, "config prepared");
     return prepared;
   }
 
