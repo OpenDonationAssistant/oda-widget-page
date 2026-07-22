@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { Event, EventBus } from "../../bus/EventBus";
+import { Event } from "../../bus/EventBus";
 import { onEvent } from "../../utils";
 
 interface CreditsState {

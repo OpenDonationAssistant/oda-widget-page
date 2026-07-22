@@ -37,7 +37,6 @@ import {
   SelectPresetComponent,
   SelectWidgetComponent,
 } from "./AddWidgetWizard";
-import CollapseLikeButton from "../Button/CollapseLikeButton";
 import { reaction } from "mobx";
 import { log } from "../../logging";
 
@@ -62,10 +61,9 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             title: "Выберите шаблон",
             subtitle: "",
             content: <SelectPresetComponent />,
-            condition: () => {
-              return presetStore.for(wizardStore.type).then((presets) => {
-                return presets.length > 0;
-              });
+            condition: async () => {
+              const presets = await presetStore.for(wizardStore.type);
+              return presets.length > 0;
             },
             handler: () => {
               if (!wizardStore.preset || !wizardStore.type) {
@@ -95,7 +93,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               { preset: wizardStore.preset, type: widget.type },
               "applying preset to created widget",
             );
-            wizardStore.preset
+            return wizardStore.preset
               ?.applyTo(widget.config, widget.type)
               .then(() => widget.save())
               .then(() => {

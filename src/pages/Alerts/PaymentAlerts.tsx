@@ -18,6 +18,7 @@ import { uuidv7 } from "uuidv7";
 import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { hashString } from "../../utils";
 
 const memeAlertsRegexp = /купил (\d+)/;
 
@@ -641,7 +642,7 @@ const PaymentAlerts = observer(
                           goals: [],
                           addToTop: token.settings.countInTop,
                           addToGoal: token.settings.addToGoal,
-                          paymentId: payment.id ?? uuidv7(),
+                          paymentId: payment.id ?? hashString(`${payment.vars.name}:${payment.vars.comment}`).toString(),
                           system: "DonatePay",
                           event: "payment",
                         },
@@ -749,7 +750,7 @@ const PaymentAlerts = observer(
                           goals: [],
                           addToTop: token.settings.countInTop,
                           addToGoal: token.settings.addToGoal,
-                          paymentId: payment.id ?? uuidv7(),
+                          paymentId: payment.id ?? hashString(`${payment.vars.name}:${payment.vars.comment}`).toString(),
                           system: "DonatePay.eu",
                           event: "payment",
                         },
