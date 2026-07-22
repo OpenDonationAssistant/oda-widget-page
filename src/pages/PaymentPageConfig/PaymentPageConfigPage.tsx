@@ -233,21 +233,6 @@ export default function PaymentPageConfigPage() {
                 }}
               />
             </Flex>
-            <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>Текст кнопки "Задонатить"</div>
-              <Input
-                style={{ height: "48px" }}
-                value={payButtonText ?? ""}
-                onChange={(e) => {
-                  if (paymentPageConfig?.current) {
-                    paymentPageConfig.current.payButtonText = e.target.value;
-                    if (!hasChanges) {
-                      setHasChanges(true);
-                    }
-                  }
-                }}
-              />
-            </Flex>
           </Flex>
         </Flex>
         <Flex className={`${classes.panel}`} vertical>
