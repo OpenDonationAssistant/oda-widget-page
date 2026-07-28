@@ -21,7 +21,7 @@
     "@opendonationassistant/oda-media-service-client": "^0.9.0",
     "@opendonationassistant/oda-news-service-client": "^0.2.0",
     "@opendonationassistant/oda-payment-service-client": "^0.4.0",
-    "@opendonationassistant/oda-recipient-service-client": "^0.9.0",
+    "@opendonationassistant/oda-recipient-service-client": "^0.12.0",
     "@opendonationassistant/oda-streamelements-service-client": "^0.0.2",
     "@opendonationassistant/oda-twitch-service-client": "^0.0.1",
     "@opendonationassistant/oda-widget-service-client": "^0.13.0",
@@ -83,7 +83,9 @@
     "prebuild": "node scripts/build-worker.mjs",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "eslintConfig": {
     "extends": [
@@ -105,6 +107,12 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
+    "@playwright/test": "^1.62.0",
+    "@storybook/addon-a11y": "^10.5.4",
+    "@storybook/addon-docs": "^10.5.4",
+    "@storybook/addon-onboarding": "^10.5.4",
+    "@storybook/preset-create-react-app": "^10.5.4",
+    "@storybook/react-webpack5": "^10.5.4",
     "@types/glidejs__glide": "^3.6.5",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.8.4",
@@ -116,6 +124,10 @@
     "@types/socket.io-client": "^1.4.36",
     "@types/uuid": "^9.0.7",
     "@types/video.js": "^7.3.56",
-    "esbuild": "^0.20.2"
+    "esbuild": "^0.20.2",
+    "eslint-plugin-storybook": "^10.5.4",
+    "prop-types": "^15.8.1",
+    "storybook": "^10.5.4",
+    "webpack": "^5.109.0"
   }
 }
