@@ -157,9 +157,22 @@ export const StreamCreditsWidget = observer(
         return;
       }
       RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .getTwitchAccessToken()
+        .listTokens()
         .then((response) => {
-          setTwitchToken(response.data.token);
+          response.data
+            .filter((token) => {
+              token.system === "Twitch";
+            })
+            .forEach((token) =>
+              RecipientService(
+                undefined,
+                process.env.REACT_APP_HISTORY_API_ENDPOINT,
+              )
+                .getAccessToken({ tokenId: token.id })
+                .then((response) => {
+                  setTwitchToken(response.data.token);
+                }),
+            );
         });
     }, [settings]);
 
