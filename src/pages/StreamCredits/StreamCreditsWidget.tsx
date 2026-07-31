@@ -160,9 +160,7 @@ export const StreamCreditsWidget = observer(
         .listTokens()
         .then((response) => {
           response.data
-            .filter((token) => {
-              token.system === "Twitch";
-            })
+            .filter((token) => token.system === "Twitch")
             .forEach((token) =>
               RecipientService(
                 undefined,
