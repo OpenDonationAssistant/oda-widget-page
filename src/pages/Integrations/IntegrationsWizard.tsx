@@ -18,6 +18,10 @@ import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import {
+  Experimental,
+  NewFeature,
+} from "../../components/Experimental/Experimental";
 
 export class IntegrationWizardStore {
   private _system:
@@ -27,6 +31,7 @@ export class IntegrationWizardStore {
     | "donatepay.eu"
     | "donate.stream"
     | "donatex"
+    | "tribute"
     | null = null;
   private _accessToken: string = "";
 
@@ -42,6 +47,7 @@ export class IntegrationWizardStore {
       | "donatepay.eu"
       | "donate.stream"
       | "donatex"
+      | "tribute"
       | null,
   ) {
     this._system = system;
@@ -101,7 +107,8 @@ export const ChooseDonationPlatformComponent = observer(() => {
             музыки.
           </div>
           <div className={`${classes.description}`}>
-            Также позволяет отображать оповещения о покупках монет в MemeAlerts и о подписках на Boosty.
+            Также позволяет отображать оповещения о покупках монет в MemeAlerts
+            и о подписках на Boosty.
           </div>
           <div className={`${classes.description}`}>
             Может работать нестабильно.
@@ -141,12 +148,28 @@ export const ChooseDonationPlatformComponent = observer(() => {
           отображать оповещения, но с озвучкой ODA.
         </div>
       </Card>
+      <Card
+        selected={context.system === "tribute"}
+        onClick={() => (context.system = "tribute")}
+      >
+        <CardTitle>
+          <NewFeature show={true}>
+            <span>Tribute</span>
+          </NewFeature>
+        </CardTitle>
+        <div className={`${classes.description}`}>
+          Позволяет учитывать донаты с Tribute в таких виджетах как "Топ
+          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
+          отображать оповещения, но с озвучкой ODA.
+        </div>
+      </Card>
     </CardList>
   );
 });
 
 export const AddDonatePayTokenComponent = observer(() => {
   const context = useContext(IntegrationWizardStoreContext);
+  const { recipientId } = useLoaderData() as WidgetData;
 
   return (
     <Flex vertical className={`${classes.content}`}>
@@ -208,6 +231,26 @@ export const AddDonatePayTokenComponent = observer(() => {
           />
         </Flex>
       )}
+      {context.system === "tribute" && (
+        <Flex className="full-width" gap={12} vertical>
+          <div className={`${classes.instruction}`}>
+            1. Укажите API ключ. Чтобы его скопировать, откройте приложение
+            "Tribute" в телеграмме, нажмите на троеточие в правом верхнем углу,
+            затем выберите "Настройки", в открывшемся окне настроек - "API
+            Keys", далее - "Generate API Key"/"Сгенерировать ключ API"
+          </div>
+          <Input
+            value={context.accessToken}
+            onChange={(value) => {
+              context.accessToken = value.target.value;
+            }}
+          />
+          <div className={`${classes.instruction}`}>
+            2. В том же окне, добавьте Webhook:
+            https://api.oda.digital/tribute/webhook/{recipientId}
+          </div>
+        </Flex>
+      )}
     </Flex>
   );
 });
@@ -248,6 +291,7 @@ export const DonationPlatformWizard = observer(
                   selection.system === "donatepay.eu" ||
                   selection.system === "donate.stream" ||
                   selection.system === "donatex" ||
+                  selection.system === "tribute" ||
                   selection.system === "unofficialdonationalerts",
               );
             },

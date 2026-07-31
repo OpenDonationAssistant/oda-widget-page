@@ -1,3 +1,20 @@
+.wrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.newfeature {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oda-primary-color);
+}
+
 .toolbar {
   height: 100%;
   padding-top: 10px;
