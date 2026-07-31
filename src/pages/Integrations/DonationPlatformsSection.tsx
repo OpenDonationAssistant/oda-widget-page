@@ -28,10 +28,17 @@ import { deepEqual } from "../../utils";
 import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import DonatePayIcon from "../../icons/DonatePayIcon";
+import { NewFeature } from "../../components/Experimental/Experimental";
 
 const icons = new Map<string, JSX.Element>();
-icons.set("DonationAlerts", <DonationAlertsIcon color="var(--oda-primary-color)" />);
-icons.set("UnofficialDonationAlerts", <DonationAlertsIcon color="var(--oda-primary-color)" />);
+icons.set(
+  "DonationAlerts",
+  <DonationAlertsIcon color="var(--oda-primary-color)" />,
+);
+icons.set(
+  "UnofficialDonationAlerts",
+  <DonationAlertsIcon color="var(--oda-primary-color)" />,
+);
 icons.set("DonateX", <DonateXIcon color="var(--oda-primary-color)" />);
 icons.set("DonatePay", <DonatePayIcon color="var(--oda-primary-color)" />);
 icons.set("DonatePay.eu", <DonatePayIcon color="var(--oda-primary-color)" />);
@@ -145,7 +152,11 @@ export const DonationPlatformsSection = observer(({}) => {
           </Panel>
         </Overlay>
       </ModalStateContext.Provider>
-      <CardSectionTitle>Донатные платформы</CardSectionTitle>
+      <CardSectionTitle>
+        <NewFeature show={true}>
+          <span>Донатные платформы</span>
+        </NewFeature>
+      </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens
           .filter(

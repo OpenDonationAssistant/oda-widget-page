@@ -329,7 +329,11 @@ export class AlertController {
     this.pausePlayer();
 
     this.log.debug({ data: data }, "alerting data");
-    if (this._premoderation === true && data.force !== true) {
+    if (
+      data.event === "payment" &&
+      this._premoderation === true &&
+      data.force !== true
+    ) {
       return this.voiceController
         ?.playSource(
           //`${process.env.REACT_APP_FILE_API_ENDPOINT}/assets/premoderation-sound.wav`,
@@ -770,6 +774,9 @@ export class AlertController {
       return Promise.resolve();
     }
     return this.voiceController?.playAudio(alert).then(() => {
+      if (data.event !== "payment") {
+        return Promise.resolve();
+      }
       return this.voiceController?.pronounceTitle(alert, data).then(() => {
         const voiceForMessage = alert.property("enableVoiceForMessage");
         if (!voiceForMessage) {

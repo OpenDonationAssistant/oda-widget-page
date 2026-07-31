@@ -113,6 +113,24 @@ const allButtons: Section[] = [
   },
 ];
 
+function NewFeature({
+  children,
+  className,
+  show,
+}: {
+  children: ReactNode;
+  className?: string;
+  show?: boolean;
+}) {
+  return (
+    <div className={`${classes.wrapper} ${className ?? ""}`}>
+      {show && <span className={`${classes.newfeature}`}>new</span>}
+      {children}
+    </div>
+  );
+}
+
+
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -130,18 +148,20 @@ export default function Toolbar({ page }: { page: Page }) {
   return (
     <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
-        <button
-          key={button.label}
-          className={`${style.button} ${
-            page === button.page ? "selected" : "inactive"
-          }`}
-          onClick={() => navigate(button.url)}
-        >
-          {page === button.page ? button.active : button.nonactive}
-          <span className={`${classes.toolbarbuttontitle}`}>
-            {t(button.label)}
-          </span>
-        </button>
+        <NewFeature show={button.page === Page.INTEGRATIONS}>
+          <button
+            key={button.label}
+            className={`${style.button} ${
+              page === button.page ? "selected" : "inactive"
+            }`}
+            onClick={() => navigate(button.url)}
+          >
+            {page === button.page ? button.active : button.nonactive}
+            <span className={`${classes.toolbarbuttontitle}`}>
+              {t(button.label)}
+            </span>
+          </button>
+        </NewFeature>
       ))}
       <NewsComponent />
     </div>
