@@ -124,12 +124,14 @@ export const BoxShadowPropertyComponent = observer(
                         value.shadows.splice(i, 0, toCopy);
                       }
                     }}
+                    icon={<CopyIcon />}
                   >
-                    <CopyIcon />
                     <div>Копировать</div>
                   </SubActionButton>
-                  <SubActionButton onClick={() => value.shadows.splice(i, 1)}>
-                    <CloseIcon color="#FF8888" />
+                  <SubActionButton
+                    onClick={() => value.shadows.splice(i, 1)}
+                    icon={<CloseIcon color="#FF8888" />}
+                  >
                     <div style={{ color: "#FF8888" }}>Удалить</div>
                   </SubActionButton>
                 </Flex>

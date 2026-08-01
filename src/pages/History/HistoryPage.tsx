@@ -252,7 +252,7 @@ export const HistoryComponent = observer(
           <Flex justify="space-between" align="center" gap={12}>
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
             {!showHeader && <ODALogo />}
-            <Flex gap={9}>
+            <Flex gap={9} className={`${classes.headerbuttons}`}>
               {!showHeader &&
                 widgetStore.list.filter(
                   (widget) => widget.type === "payment-alerts",
@@ -267,7 +267,9 @@ export const HistoryComponent = observer(
                       <span className={`material-symbols-sharp`}>
                         local_police
                       </span>
-                      <div className={`${classes.moderationlabel}`}>Премодерация</div>
+                      <div className={`${classes.moderationlabel}`}>
+                        Премодерация
+                      </div>
                     </Flex>
                     <Switch
                       value={premoderation}
@@ -294,8 +296,10 @@ export const HistoryComponent = observer(
                   </Flex>
                 )}
               {showHeader && (
-                <SubActionButton onClick={() => setShowFilters((old) => !old)}>
-                  <span className="material-symbols-sharp">search</span>
+                <SubActionButton
+                  onClick={() => setShowFilters((old) => !old)}
+                  icon={<span className="material-symbols-sharp">search</span>}
+                >
                   {t("button-find")}
                 </SubActionButton>
               )}
@@ -305,8 +309,10 @@ export const HistoryComponent = observer(
                   onClick={() => {
                     historyStore.export();
                   }}
+                  icon={
+                    <span className="material-symbols-sharp">download</span>
+                  }
                 >
-                  <span className="material-symbols-sharp">download</span>
                   {t("button-export")}
                 </SubActionButton>
               )}

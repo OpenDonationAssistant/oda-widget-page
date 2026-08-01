@@ -155,8 +155,8 @@ const RuleList = observer(() => {
                 </ModalStateContext.Provider>
                 <SubActionButton
                   onClick={() => (deleteRuleDialogState.show = true)}
+                  icon={<CloseIcon color="#FF8888" />}
                 >
-                  <CloseIcon color="#FF8888" />
                   <span style={{ color: "#FF8888" }}>Удалить</span>
                 </SubActionButton>
               </>

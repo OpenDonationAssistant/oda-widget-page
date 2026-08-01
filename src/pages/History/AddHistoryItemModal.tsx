@@ -80,8 +80,10 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   return (
     <>
       {!compact && (
-        <SubActionButton onClick={() => (showModal.show = true)}>
-          <AddIcon color="var(--oda-color-1000)" />
+        <SubActionButton
+          onClick={() => (showModal.show = true)}
+          icon={<AddIcon color="var(--oda-color-1000)" />}
+        >
           {t("button-add-historyitem")}
         </SubActionButton>
       )}

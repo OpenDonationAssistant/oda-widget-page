@@ -25,7 +25,17 @@ export default function HistoryWidgetPage() {
     <WidgetWrapper>
       <style
         dangerouslySetInnerHTML={{
-          __html: `#root {overflow: auto; background-color: var(--oda-color-100); padding: 12px 15px;}`,
+          __html: `#root {overflow: auto; background-color: var(--oda-color-100);}`,
+        }}
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media(min-width: 450px){#root {padding: 12px 15px;}`,
+        }}
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media(max-width: 450px){#root {padding: 6px 3px;}`,
         }}
       />
       <WidgetStoreContext.Provider value={widgetStore}>

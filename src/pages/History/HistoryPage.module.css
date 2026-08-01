@@ -6,6 +6,9 @@
   .moderationlabel {
     display: none;
   }
+  .headerbuttons {
+    justify-content: flex-end;
+  }
 }
 .dateselect {
   margin-bottom: 9px;

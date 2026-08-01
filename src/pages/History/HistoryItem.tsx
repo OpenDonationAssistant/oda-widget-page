@@ -77,10 +77,12 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
         ))}
       </Flex>
       <Flex align="center" justify="space-between" className="full-width" wrap>
-        <Flex align="center" gap={6}>
-          <div className={classes.timestamp}>{item.time}</div>
-          <div className={`${classes.system}`}>{item.system ?? "ODA"}</div>
-        </Flex>
+        {!item.active && (
+          <Flex align="center" gap={6}>
+            <div className={classes.timestamp}>{item.time}</div>
+            <div className={`${classes.system}`}>{item.system ?? "ODA"}</div>
+          </Flex>
+        )}
         <Flex align="center" justify="flex-end">
           <Flex align="center" justify="flex-end" gap={9}>
             {item.active && (
@@ -98,8 +100,9 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
                 onClick={() => {
                   historyStore?.alert(item);
                 }}
+                icon={<span className="material-symbols-sharp">replay</span>}
               >
-                Повторить
+                <div>Повторить</div>
               </SubActionButton>
             )}
           </Flex>
@@ -142,7 +145,7 @@ export const HistoryItemComponent = observer(
           );
         } else {
           header = (
-            <Flex align="center" gap={3}>
+            <span className={classes.title}>
               {item.system === "DonatePay" && (
                 <DonatePayIcon
                   color="var(--oda-primary-color)"
@@ -173,14 +176,15 @@ export const HistoryItemComponent = observer(
                   className={`${classes.icon}`}
                 />
               )}
-              <span className={classes.title}>
-                <span className={`${classes.amount}`}>
-                  {item.amount?.major}
-                  {`\u20BD`}
-                </span>
-                <span> от {item.nickname ?? "Аноним"}</span>
+              <span className={`${classes.amount}`}>
+                {item.amount?.major}
+                {`\u20BD`}
               </span>
-            </Flex>
+              <span className={`${classes.from}`}>от</span>
+              <span className={`${classes.nickname}`}>
+                {item.nickname ?? "Аноним"}
+              </span>
+            </span>
           );
         }
         break;
