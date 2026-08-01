@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 
-import { register as registerKickChatHandler } from "./handlers/kick-chat";
 import { register as registerLogHandler } from "./handlers/log";
 import { register as registerStreamElementsHandler } from "./handlers/streamelements-shim";
 import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
@@ -36,7 +35,6 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   const info = (data.payload ?? data) as Record<string, unknown>;
   const recipientId = String(info.recipientId ?? "");
   const eventbus = new DefaultEventBus(recipientId, swScope);
-  registerKickChatHandler(info.token, eventbus, swScope);
   registerLogHandler(swScope);
   registerStreamElementsHandler(info.token, eventbus, swScope);
   registerTwitchChatHandler(info.token, eventbus, swScope);

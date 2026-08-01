@@ -135,7 +135,7 @@ export function register(
   eventbus: EventBus,
   sw: ServiceWorkerGlobalScope,
 ): void {
-  console.log({ connected: connectedTokens },"add twitch-listener");
+  console.log({ connected: connectedTokens }, "add twitch-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   recipientService.listTokens(auth).then((tokens) => {
     tokens.data
@@ -145,7 +145,7 @@ export function register(
         console.log(`add handler for ${token.id}`);
         connectedTokens.push(token.id);
         recipientService
-          .getAccessToken({ refreshTokenId: token.id }, auth)
+          .getAccessToken({ tokenId: token.id }, auth)
           .then((response) =>
             startWebSocketClient(response.data.token, eventbus),
           );
