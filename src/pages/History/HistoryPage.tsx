@@ -249,7 +249,7 @@ export const HistoryComponent = observer(
               </Flex>
             </Panel>
           </Overlay>
-          <Flex justify="space-between" align="center">
+          <Flex justify="space-between" align="center" gap={12}>
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
             {!showHeader && <ODALogo />}
             <Flex gap={9}>
@@ -263,7 +263,12 @@ export const HistoryComponent = observer(
                     gap={6}
                     className={`${classes.premoderationbutton}`}
                   >
-                    <div>Премодерация</div>
+                    <Flex align="center">
+                      <span className={`material-symbols-sharp`}>
+                        local_police
+                      </span>
+                      <div className={`${classes.moderationlabel}`}>Премодерация</div>
+                    </Flex>
                     <Switch
                       value={premoderation}
                       onChange={(update) => {
@@ -296,9 +301,11 @@ export const HistoryComponent = observer(
               )}
               <AddHistoryItemModal compact={!showHeader} />
               {showHeader && (
-                <SubActionButton onClick={() => {
-                  historyStore.export();
-                }}>
+                <SubActionButton
+                  onClick={() => {
+                    historyStore.export();
+                  }}
+                >
                   <span className="material-symbols-sharp">download</span>
                   {t("button-export")}
                 </SubActionButton>

@@ -2,6 +2,11 @@
   color: var(--oda-color-1000);
 }
 
+@media (max-width: 450px) {
+  .moderationlabel {
+    display: none;
+  }
+}
 .dateselect {
   margin-bottom: 9px;
 }
@@ -76,7 +81,6 @@
 }
 
 .premoderationbutton {
-  min-width: 200px;
   color: var(--oda-color-500);
 }
 

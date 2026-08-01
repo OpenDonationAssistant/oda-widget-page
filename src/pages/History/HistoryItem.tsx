@@ -11,6 +11,7 @@ import { HistoryItem, HistoryStoreContext } from "./HistoryStore";
 import ReelIcon from "../../icons/ReelIcon";
 import RunIcon from "../../icons/RunIcon";
 import BoostyIcon from "../../icons/BoostyIcon";
+import TwitchIcon from "../../icons/TwitchIcon";
 import MemeAlertsIcon from "../../icons/MemeAlertsIcon";
 import DonatePayIcon from "../../icons/DonatePayIcon";
 import ODAIcon from "../../icons/ODAIcon";
@@ -21,52 +22,6 @@ import { useContext } from "react";
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
     command: "interrupt",
-  });
-}
-
-interface Variable {
-  name: string;
-  value: any;
-}
-
-function repeatAlert(topic: string, data: HistoryItem) {
-  const variables: Variable[] = [
-    {
-      name: "originId",
-      value: data.originId,
-    },
-    {
-      name: "amount",
-      value: String(data.amount.major),
-    },
-    {
-      name: "nickname",
-      value: String(data.nickname),
-    },
-    {
-      name: "message",
-      value: String(data.message),
-    },
-    {
-      name: "event",
-      value: String(data.event),
-    },
-    {
-      name: "system",
-      value: String(data.system),
-    },
-    {
-      name: "levelName",
-      value: String(data.levelName),
-    },
-    {
-      name: "force",
-      value: true,
-    },
-  ];
-  publish(topic, {
-    type: "Alert",
-    variables: variables,
   });
 }
 
@@ -232,7 +187,14 @@ export const HistoryItemComponent = observer(
       case "follow":
         header = (
           <Flex align="center" gap={3}>
-            <BoostyIcon className={classes.icon} />
+            {item.system === "twitch" ? (
+              <TwitchIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            ) : (
+              <BoostyIcon className={classes.icon} />
+            )}
             <span className={classes.title}>
               <span>{item.nickname ?? "Аноним"} зафолловился</span>
             </span>
@@ -248,7 +210,7 @@ export const HistoryItemComponent = observer(
         className={`${classes.item} ${item.active ? classes.active : ""}`}
         justify="space-between"
       >
-        <Flex justify="space-between">
+        <Flex wrap justify="space-between">
           {header}
           <Flex gap={6}>
             {item.rouletteResults && item.rouletteResults.length > 0 && (
