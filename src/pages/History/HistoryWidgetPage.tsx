@@ -13,9 +13,17 @@ import {
   WidgetStore,
   WidgetStoreContext,
 } from "../../stores/WidgetStore";
+import { Widget } from "../../types/Widget";
+import { HistoryWidgetSettings, HistoryWidgetSettingsContenxt } from "./HistoryWidgetSettings";
 
 export default function HistoryWidgetPage() {
-  const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
+  const { recipientId, conf, widgetId, settings } =
+    useLoaderData() as WidgetData;
+
+  const widgetSettings = Widget.configFromJson(
+    settings,
+  ) as HistoryWidgetSettings;
+
   const [store] = useState<HistoryStore>(
     () => new DefaultHistoryStore(recipientId, widgetId, conf),
   );
@@ -40,7 +48,9 @@ export default function HistoryWidgetPage() {
       />
       <WidgetStoreContext.Provider value={widgetStore}>
         <HistoryStoreContext.Provider value={store}>
-          <HistoryComponent showHeader={false} />
+          <HistoryWidgetSettingsContenxt.Provider value={widgetSettings}>
+            <HistoryComponent showHeader={false} />
+          </HistoryWidgetSettingsContenxt.Provider>
         </HistoryStoreContext.Provider>
       </WidgetStoreContext.Provider>
     </WidgetWrapper>

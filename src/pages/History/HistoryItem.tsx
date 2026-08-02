@@ -18,6 +18,7 @@ import ODAIcon from "../../icons/ODAIcon";
 import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import { useContext } from "react";
+import { HistoryWidgetSettingsContenxt } from "./HistoryWidgetSettings";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -28,6 +29,7 @@ function interruptAlert(conf: any) {
 const Description = observer(({ item }: { item: HistoryItem }) => {
   const { conf } = useLoaderData() as WidgetData;
   const historyStore = useContext(HistoryStoreContext);
+  const settings = useContext(HistoryWidgetSettingsContenxt);
 
   let message;
   switch (item.event) {
@@ -47,7 +49,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
     <Flex vertical className="full-width" gap={9}>
       {message}
       <Flex className="full-width" wrap gap={9}>
-        {item.attachments?.map((attach) => (
+        {settings.showRequests.value && item.attachments?.map((attach) => (
           <Flex
             key={attach.id}
             className={`${classes.attachment}`}
@@ -57,7 +59,9 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
             }}
           >
             <SongIcon />
-            <div>{attach.title}</div>
+            <div style={{ fontSize: `${settings.musicFontSize.value}px` }}>
+              {attach.title}
+            </div>
           </Flex>
         ))}
       </Flex>
@@ -70,7 +74,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
             gap={3}
           >
             <RunIcon />
-            <div>
+            <div style={{ fontSize: `${settings.actionsFontSize.value}px` }}>
               {action.amount}x {action.name}
             </div>
           </Flex>
@@ -116,12 +120,17 @@ export const HistoryItemComponent = observer(
   ({ item }: { item: HistoryItem }) => {
     let header;
     console.log("item", item);
+    const settings = useContext(HistoryWidgetSettingsContenxt);
+
     switch (item.event) {
       case "subscription":
         header = (
           <Flex align="center" gap={3}>
             <BoostyIcon className={classes.icon} />
-            <span className={classes.title}>
+            <span
+              className={classes.title}
+              style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+            >
               <span>{item.nickname ?? "Аноним"} купил подписку </span>
               <span className={`${classes.levelname}`}>{item.levelName}</span>
             </span>
@@ -136,7 +145,10 @@ export const HistoryItemComponent = observer(
                 color="var(--oda-primary-color)"
                 className={`${classes.icon}`}
               />
-              <span className={classes.title}>
+              <span
+                className={classes.title}
+                style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+              >
                 <span> {item.nickname ?? "Аноним"} купил </span>
                 <span className={`${classes.memecount}`}>{item.count}</span>
                 <span> мемкоинов</span>
@@ -145,7 +157,10 @@ export const HistoryItemComponent = observer(
           );
         } else {
           header = (
-            <span className={classes.title}>
+            <span
+              className={classes.title}
+              style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+            >
               {item.system === "DonatePay" && (
                 <DonatePayIcon
                   color="var(--oda-primary-color)"
@@ -199,7 +214,10 @@ export const HistoryItemComponent = observer(
             ) : (
               <BoostyIcon className={classes.icon} />
             )}
-            <span className={classes.title}>
+            <span
+              className={classes.title}
+              style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+            >
               <span>{item.nickname ?? "Аноним"} зафолловился</span>
             </span>
           </Flex>
@@ -208,6 +226,7 @@ export const HistoryItemComponent = observer(
       default:
         break;
     }
+
     return (
       <Flex
         vertical
@@ -220,17 +239,24 @@ export const HistoryItemComponent = observer(
             {item.rouletteResults && item.rouletteResults.length > 0 && (
               <Flex align="center" className={`${classes.goals}`} gap={6}>
                 <ReelIcon />
-                <div className={`${classes.rouletteresult}`}>
+                <div
+                  className={`${classes.rouletteresult}`}
+                  style={{ fontSize: `${settings.reelFontSize.value}px` }}
+                >
                   {item.rouletteResults?.map((result) => result.title)}
                 </div>
               </Flex>
             )}
-            {item.goals && item.goals.length > 0 && (
-              <Flex align="center" className={`${classes.goals}`} gap={6}>
-                <DonationGoalIcon />
-                <div>{item.goals?.map((goal) => goal.goalTitle)}</div>
-              </Flex>
-            )}
+            {settings.showGoalsProperty.value &&
+              item.goals &&
+              item.goals.length > 0 && (
+                <Flex align="center" className={`${classes.goals}`} gap={6}>
+                  <DonationGoalIcon />
+                  <div style={{ fontSize: `${settings.goalFontSize.value}px` }}>
+                    {item.goals?.map((goal) => goal.goalTitle)}
+                  </div>
+                </Flex>
+              )}
           </Flex>
         </Flex>
         <Description item={item} />
