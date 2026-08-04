@@ -19,6 +19,8 @@ import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import { useContext } from "react";
 import { HistoryWidgetSettingsContenxt } from "./HistoryWidgetSettings";
+import KickIcon from "../../icons/KickIcon";
+import VKLiveIcon from "../../icons/VKLiveIcon";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -49,21 +51,22 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
     <Flex vertical className="full-width" gap={9}>
       {message}
       <Flex className="full-width" wrap gap={9}>
-        {settings.showRequests.value && item.attachments?.map((attach) => (
-          <Flex
-            key={attach.id}
-            className={`${classes.attachment}`}
-            gap={3}
-            onClick={() => {
-              window.open(attach.url);
-            }}
-          >
-            <SongIcon />
-            <div style={{ fontSize: `${settings.musicFontSize.value}px` }}>
-              {attach.title}
-            </div>
-          </Flex>
-        ))}
+        {settings.showRequests.value &&
+          item.attachments?.map((attach) => (
+            <Flex
+              key={attach.id}
+              className={`${classes.attachment}`}
+              gap={3}
+              onClick={() => {
+                window.open(attach.url);
+              }}
+            >
+              <SongIcon />
+              <div style={{ fontSize: `${settings.musicFontSize.value}px` }}>
+                {attach.title}
+              </div>
+            </Flex>
+          ))}
       </Flex>
       <Flex className="full-width" wrap gap={9}>
         {item.actions?.map((action) => (
@@ -126,7 +129,27 @@ export const HistoryItemComponent = observer(
       case "subscription":
         header = (
           <Flex align="center" gap={3}>
-            <BoostyIcon className={classes.icon} />
+            {item.system === "Twitch" && (
+              <TwitchIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Kick" && (
+              <KickIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "VKLive" && (
+              <VKLiveIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Boosty" && (
+              <BoostyIcon className={classes.icon} />
+            )}
             <span
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
@@ -206,12 +229,25 @@ export const HistoryItemComponent = observer(
       case "follow":
         header = (
           <Flex align="center" gap={3}>
-            {item.system === "twitch" ? (
+            {item.system === "Twitch" && (
               <TwitchIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
-            ) : (
+            )}
+            {item.system === "Kick" && (
+              <KickIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "VKLive" && (
+              <VKLiveIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
             )}
             <span
@@ -219,6 +255,41 @@ export const HistoryItemComponent = observer(
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
               <span>{item.nickname ?? "Аноним"} зафолловился</span>
+            </span>
+          </Flex>
+        );
+        break;
+      case "raid":
+        header = (
+          <Flex align="center" gap={3}>
+            {item.system === "Twitch" && (
+              <TwitchIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Kick" && (
+              <KickIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "VKLive" && (
+              <VKLiveIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            <span
+              className={classes.title}
+              style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+            >
+              <span>
+                Рейд от{" "}
+                <span style={{ color: "var(--oda-primary-color)" }}>
+                  {item.nickname ?? "Аноним"}
+                </span>
+              </span>
             </span>
           </Flex>
         );

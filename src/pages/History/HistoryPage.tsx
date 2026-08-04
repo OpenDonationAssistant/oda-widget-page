@@ -168,16 +168,16 @@ export const HistoryComponent = observer(
       <>
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
-            <Panel className={`${classes.filterpanel}`}>
-              <Flex>
+            <Panel>
+              <Flex justify="space-between" className="full-width">
                 <div className={`${classes.title}`}>Настройки отображения</div>
                 <CloseOverlayButton />
               </Flex>
               <Subtitle>
                 Выберите, какие события будут отображаться в истории
               </Subtitle>
-              <Flex vertical gap={21} className={`${classes.filters}`}>
-                <Flex vertical>
+              <div className={`${classes.filters}`}>
+                <Flex className={`${classes.filterpanel}`} vertical>
                   <div className={`${classes.filtersection}`}>Донаты</div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
@@ -215,7 +215,7 @@ export const HistoryComponent = observer(
                     />
                   </div>
                 </Flex>
-                <Flex vertical>
+                <Flex className={`${classes.filterpanel}`} vertical>
                   <div className={`${classes.filtersection}`}>Boosty</div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
@@ -234,7 +234,7 @@ export const HistoryComponent = observer(
                     />
                   </div>
                 </Flex>
-                <Flex vertical>
+                <Flex className={`${classes.filterpanel}`} vertical>
                   <div className={`${classes.filtersection}`}>Meme Alerts</div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
@@ -246,7 +246,99 @@ export const HistoryComponent = observer(
                     />
                   </div>
                 </Flex>
-              </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Twitch</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showTwitchFollows}
+                      label="Подписки (фолловы) Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchRaids}
+                      label="Рейды Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchRaids = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchCheers}
+                      label="Чиры Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchCheers = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchSubs}
+                      label="Подписки Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchSubs = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchSubGifts}
+                      label="Подаренные подписки Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchSubGifts = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Kick</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showKickFollows}
+                      label="Подписки (фолловы) Kick"
+                      onChange={(update) => {
+                        historyStore.showKickFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickGifts}
+                      label="Подарки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickGifts = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickSubs}
+                      label="Подписки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickSubs = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickSubGifts}
+                      label="Подаренные подписки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickSubGifts = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>VK Live</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showVKLiveFollows}
+                      label="Подписки (фолловы) VK Live"
+                      onChange={(update) => {
+                        historyStore.showVKLiveFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showVKLiveSubs}
+                      label="Подписки VK Live"
+                      onChange={(update) => {
+                        historyStore.showVKLiveSubs = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+              </div>
             </Panel>
           </Overlay>
           <Flex justify="space-between" align="center" gap={12}>

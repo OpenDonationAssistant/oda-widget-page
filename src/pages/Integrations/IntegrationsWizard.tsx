@@ -18,10 +18,7 @@ import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import {
-  Experimental,
-  NewFeature,
-} from "../../components/Experimental/Experimental";
+import { NewFeature } from "../../components/Experimental/Experimental";
 
 export class IntegrationWizardStore {
   private _system:
@@ -32,6 +29,7 @@ export class IntegrationWizardStore {
     | "donate.stream"
     | "donatex"
     | "tribute"
+    | "paywall"
     | null = null;
   private _accessToken: string = "";
 
@@ -48,6 +46,7 @@ export class IntegrationWizardStore {
       | "donate.stream"
       | "donatex"
       | "tribute"
+      | "paywall"
       | null,
   ) {
     this._system = system;
@@ -160,7 +159,21 @@ export const ChooseDonationPlatformComponent = observer(() => {
         <div className={`${classes.description}`}>
           Позволяет учитывать донаты с Tribute в таких виджетах как "Топ
           донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
-          отображать оповещения, но с озвучкой ODA.
+          отображать оповещения с озвучкой ODA.
+        </div>
+      </Card>
+      <Card
+        selected={context.system === "paywall"}
+        onClick={() => (context.system = "paywall")}
+      >
+        <CardTitle>
+          <NewFeature show={true}>
+            <span>Paywall</span>
+          </NewFeature>
+        </CardTitle>
+        <div className={`${classes.description}`}>
+          Позволяет отслеживать подписки с Paywall в Истории. Также позволяет
+          отображать оповещения с озвучкой ODA.
         </div>
       </Card>
     </CardList>
