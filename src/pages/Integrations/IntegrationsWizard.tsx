@@ -71,11 +71,6 @@ export const IntegrationWizardStoreContext = createContext(
 
 export const ChooseDonationPlatformComponent = observer(() => {
   const context = useContext(IntegrationWizardStoreContext);
-  const { features } = useLoaderData() as WidgetData;
-
-  const hasUnofficialDA =
-    features.find((f) => f.name === "UnofficialDonationAlerts")?.state ===
-    "ENABLED";
 
   return (
     <CardList>
@@ -83,22 +78,27 @@ export const ChooseDonationPlatformComponent = observer(() => {
         selected={context.system === "donationalerts"}
         onClick={() => (context.system = "donationalerts")}
       >
-        <CardTitle>DonationAlerts</CardTitle>
-        <div className={`${classes.description}`}>
-          Позволяет учитывать донаты с сайта DonationAlerts в таких виджетах как
-          "Топ донатеры", "Таймер до конца трансляции", "Цель сбора".
-        </div>
-        <div className={`${classes.description}`}>
-          Если включить оповещения для DA, то озвучка будет от ODA. Заказы
-          музыки не переносятся.
-        </div>
+        <Flex className="full-width" vertical justify="flex-start">
+          <CardTitle>DonationAlerts</CardTitle>
+          <div className={`${classes.description}`}>
+            Позволяет учитывать донаты с сайта DonationAlerts в таких виджетах
+            как "Топ донатеры", "Таймер до конца трансляции", "Цель сбора".
+            <br />
+            Если включить оповещения для DA, то озвучка будет от ODA. Заказы
+            музыки не переносятся.
+          </div>
+        </Flex>
       </Card>
-      {hasUnofficialDA && (
-        <Card
-          selected={context.system === "unofficialdonationalerts"}
-          onClick={() => (context.system = "unofficialdonationalerts")}
-        >
-          <CardTitle>Unofficial DonationAlerts</CardTitle>
+      <Card
+        selected={context.system === "unofficialdonationalerts"}
+        onClick={() => (context.system = "unofficialdonationalerts")}
+      >
+        <Flex className="full-width" vertical justify="flex-start">
+          <NewFeature show={true}>
+            <CardTitle>
+              Boosty и DonationAlerts через неофициальный api
+            </CardTitle>
+          </NewFeature>
           <div className={`${classes.description}`}>
             Делает полноценную интеграцию - учитывает донаты с сайта
             DonationAlerts в таких виджетах как "Топ донатеры", "Таймер до конца
@@ -112,69 +112,63 @@ export const ChooseDonationPlatformComponent = observer(() => {
           <div className={`${classes.description}`}>
             Может работать нестабильно.
           </div>
-        </Card>
-      )}
+        </Flex>
+      </Card>
       <Card
         selected={context.system === "donatex"}
         onClick={() => (context.system = "donatex")}
       >
-        <CardTitle>DonateX</CardTitle>
-        <div className={`${classes.description}`}>
-          Делает полноценную интеграцию - учитывает донаты с DonateX в таких
-          виджетах как "Топ донатеры", "Таймер до конца трансляции", "Цель
-          сбора" И подхватывает озвучку, как и заказы музыки.
-        </div>
+        <Flex className="full-width" vertical justify="flex-start">
+          <CardTitle>DonateX</CardTitle>
+          <div className={`${classes.description}`}>
+            Делает полноценную интеграцию - учитывает донаты с DonateX в таких
+            виджетах как "Топ донатеры", "Таймер до конца трансляции", "Цель
+            сбора" И подхватывает озвучку, как и заказы музыки.
+          </div>
+        </Flex>
       </Card>
       <Card
         selected={context.system === "donatepay.ru"}
         onClick={() => (context.system = "donatepay.ru")}
       >
-        <CardTitle>DonatePay.ru</CardTitle>
-        <div className={`${classes.description}`}>
-          Позволяет учитывать донаты с DonatePay в таких виджетах как "Топ
-          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
-          отображать оповещения, но с озвучкой ODA.
-        </div>
+        <Flex className="full-width" vertical justify="flex-start">
+          <CardTitle>DonatePay.ru</CardTitle>
+          <div className={`${classes.description}`}>
+            Позволяет учитывать донаты с DonatePay в таких виджетах как "Топ
+            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
+            позволяет отображать оповещения, но с озвучкой ODA.
+          </div>
+        </Flex>
       </Card>
       <Card
         selected={context.system === "donatepay.eu"}
         onClick={() => (context.system = "donatepay.eu")}
       >
-        <CardTitle>DonatePay.eu</CardTitle>
-        <div className={`${classes.description}`}>
-          Позволяет учитывать донаты с DonatePay.EU в таких виджетах как "Топ
-          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
-          отображать оповещения, но с озвучкой ODA.
-        </div>
+        <Flex className="full-width" vertical justify="flex-start">
+          <CardTitle>DonatePay.eu</CardTitle>
+          <div className={`${classes.description}`}>
+            Позволяет учитывать донаты с DonatePay.EU в таких виджетах как "Топ
+            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
+            позволяет отображать оповещения, но с озвучкой ODA.
+          </div>
+        </Flex>
       </Card>
       <Card
         selected={context.system === "tribute"}
         onClick={() => (context.system = "tribute")}
       >
-        <CardTitle>
-          <NewFeature show={true}>
-            <span>Tribute</span>
-          </NewFeature>
-        </CardTitle>
-        <div className={`${classes.description}`}>
-          Позволяет учитывать донаты с Tribute в таких виджетах как "Топ
-          донатеры", "Таймер до конца трансляции", "Цель сбора". Также позволяет
-          отображать оповещения с озвучкой ODA.
-        </div>
-      </Card>
-      <Card
-        selected={context.system === "paywall"}
-        onClick={() => (context.system = "paywall")}
-      >
-        <CardTitle>
-          <NewFeature show={true}>
-            <span>Paywall</span>
-          </NewFeature>
-        </CardTitle>
-        <div className={`${classes.description}`}>
-          Позволяет отслеживать подписки с Paywall в Истории. Также позволяет
-          отображать оповещения с озвучкой ODA.
-        </div>
+        <Flex className="full-width" vertical justify="flex-start">
+          <CardTitle>
+            <NewFeature show={true}>
+              <span>Tribute</span>
+            </NewFeature>
+          </CardTitle>
+          <div className={`${classes.description}`}>
+            Позволяет учитывать донаты с Tribute в таких виджетах как "Топ
+            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
+            позволяет отображать оповещения с озвучкой ODA.
+          </div>
+        </Flex>
       </Card>
     </CardList>
   );
@@ -250,7 +244,7 @@ export const AddDonatePayTokenComponent = observer(() => {
             1. Укажите API ключ. Чтобы его скопировать, откройте приложение
             "Tribute" в телеграмме, нажмите на троеточие в правом верхнем углу,
             затем выберите "Настройки", в открывшемся окне настроек - "API
-            Keys", далее - "Generate API Key"/"Сгенерировать ключ API"
+            Keys", далее - "Generate API Key"("Сгенерировать ключ API")
           </div>
           <Input
             value={context.accessToken}
@@ -258,7 +252,10 @@ export const AddDonatePayTokenComponent = observer(() => {
               context.accessToken = value.target.value;
             }}
           />
-          <div className={`${classes.instruction}`}>
+          <div
+            className={`${classes.instruction}`}
+            style={{ userSelect: "text" }}
+          >
             2. В том же окне, добавьте Webhook:
             https://api.oda.digital/tribute/webhook/{recipientId}
           </div>
@@ -334,6 +331,26 @@ export const DonationPlatformWizard = observer(
                 return Promise.resolve(true);
               }
               if (selection.system === "donationalerts") {
+                return Promise.resolve(true);
+              }
+              if (selection.system === "tribute") {
+                tokenStore.addToken("Tribute", selection.accessToken);
+                return Promise.resolve(true);
+              }
+              return Promise.resolve(false);
+            },
+          },
+          {
+            title: "Добавить донатную платформу",
+            subtitle: "Введите информацию для подключения",
+            content: <AddDonatePayTokenComponent />,
+            condition: () => {
+              return Promise.resolve(selection.system === "paywall");
+            },
+            handler: () => {
+              log.debug({ system: selection.system }, "handling adding token");
+              if (selection.system === "tribute") {
+                tokenStore.addToken("Tribute", selection.accessToken);
                 return Promise.resolve(true);
               }
               return Promise.resolve(false);

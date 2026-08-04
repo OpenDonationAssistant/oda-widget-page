@@ -30,8 +30,7 @@ export const IntegrationsPage = observer(() => {
         <h1>Интеграции</h1>
         <CardSection>
           <DonationPlatformsSection />
-          {features.find((f) => f.name === "TwitchIntegration")?.state ===
-            "ENABLED" && <StreamingPlatformsSection />}
+          <StreamingPlatformsSection />
           {features.find((f) => f.name === "GamesIntegration")?.state ===
             "ENABLED" && <GamesSection />}
         </CardSection>
