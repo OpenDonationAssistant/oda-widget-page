@@ -125,6 +125,106 @@ export const DonationPlatformsSection = observer(({}) => {
                   }
                 }}
               />
+              {token?.system === "Tribute" && (
+                <>
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Показывать оповещения"
+                    value={
+                      token?.settings["subscriptionsTriggerAlerts"] ?? true
+                    }
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerAlerts"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в сборе средств"
+                    value={token?.settings["subscriptionsAddToGoal"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsAddToGoal"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в таймере"
+                    value={
+                      token?.settings["subscriptionsTriggerDonaton"] ?? true
+                    }
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerDonaton"] =
+                          newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Запускать рулетку"
+                    value={token?.settings["subscriptionsTriggerReel"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerReel"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в топе"
+                    value={token?.settings["subscriptionsCountInTop"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsCountInTop"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Показывать оповещения"
+                    value={token?.settings["purchasesTriggerAlerts"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerAlerts"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в сборе средств"
+                    value={token?.settings["purchasesAddToGoal"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesAddToGoal"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в таймере"
+                    value={token?.settings["purchasesTriggerDonaton"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerDonaton"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Запускать рулетку"
+                    value={token?.settings["purchasesTriggerReel"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerReel"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в топе"
+                    value={token?.settings["purchasesCountInTop"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesCountInTop"] = newValue;
+                      }
+                    }}
+                  />
+                </>
+              )}
+
               <Flex
                 align="center"
                 justify="flex-end"
@@ -165,7 +265,9 @@ export const DonationPlatformsSection = observer(({}) => {
               token.system === "DonatePay.eu" ||
               token.system === "DonationAlerts" ||
               token.system === "UnofficialDonationAlerts" ||
-              token.system === "DonateX",
+              token.system === "DonateX" ||
+              token.system === "Tribute" ||
+              token.system === "Paywall",
           )
           .map((token) => (
             <Card

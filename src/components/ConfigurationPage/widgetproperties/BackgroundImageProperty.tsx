@@ -104,8 +104,8 @@ export const ImagePropertyComponent = observer(
                       value.opacity = 1;
                       onChange?.(value);
                     }}
+                    icon={<CloseIcon color="#FF8888" />}
                   >
-                    <CloseIcon color="#FF8888" />
                     <div>Удалить</div>
                   </SubActionButton>
                 </Flex>

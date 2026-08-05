@@ -71,9 +71,21 @@ export interface HistoryStore {
   showDonatePayEu: boolean;
   showDonateStream: boolean;
   showDonateX: boolean;
+  showTribute: boolean;
   showBoostySubs: boolean;
   showBoostyFollows: boolean;
   showMemeAlertsCoins: boolean;
+  showTwitchFollows: boolean;
+  showTwitchRaids: boolean;
+  showTwitchCheers: boolean;
+  showTwitchSubs: boolean;
+  showTwitchSubGifts: boolean;
+  showKickFollows: boolean;
+  showKickGifts: boolean;
+  showKickSubs: boolean;
+  showKickSubGifts: boolean;
+  showVKLiveFollows: boolean;
+  showVKLiveSubs: boolean;
   after: Date | null;
   before: Date | null;
 }
@@ -121,9 +133,21 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showDonatePayEu: boolean;
   private _showDonateStream: boolean;
   private _showDonateX: boolean;
+  private _showTribute: boolean;
   private _showBoostySubs: boolean;
   private _showBoostyFollows: boolean;
   private _showMemeAlertsCoins: boolean;
+  private _showTwitchFollows: boolean;
+  private _showTwitchRaids: boolean;
+  private _showTwitchCheers: boolean;
+  private _showTwitchSubs: boolean;
+  private _showTwitchSubGifts: boolean;
+  private _showKickFollows: boolean;
+  private _showKickGifts: boolean;
+  private _showKickSubs: boolean;
+  private _showKickSubGifts: boolean;
+  private _showVKLiveFollows: boolean;
+  private _showVKLiveSubs: boolean;
   private _after: Date | null;
   private _before: Date | null;
   private _widgetId: string;
@@ -147,11 +171,25 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
     this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
+    this._showTribute = this.readValue(`${widgetId}.showTribute`);
     this._showBoostySubs = this.readValue(`${widgetId}.showBoostySubs`);
     this._showBoostyFollows = this.readValue(`${widgetId}.showBoostyFollows`);
     this._showMemeAlertsCoins = this.readValue(
       `${widgetId}.showMemeAlertsCoins`,
     );
+    this._showTwitchFollows = this.readValue(`${widgetId}.showTwitchFollows`);
+    this._showTwitchRaids = this.readValue(`${widgetId}.showTwitchRaids`);
+    this._showTwitchCheers = this.readValue(`${widgetId}.showTwitchCheers`);
+    this._showTwitchSubs = this.readValue(`${widgetId}.showTwitchSubs`);
+    this._showTwitchSubGifts = this.readValue(
+      `${widgetId}.showTwitchSubGifts`,
+    );
+    this._showKickFollows = this.readValue(`${widgetId}.showKickFollows`);
+    this._showKickGifts = this.readValue(`${widgetId}.showKickGifts`);
+    this._showKickSubs = this.readValue(`${widgetId}.showKickSubs`);
+    this._showKickSubGifts = this.readValue(`${widgetId}.showKickSubGifts`);
+    this._showVKLiveFollows = this.readValue(`${widgetId}.showVKLiveFollows`);
+    this._showVKLiveSubs = this.readValue(`${widgetId}.showVKLiveSubs`);
     this._after = null;
     this._before = null;
     makeAutoObservable(this);
@@ -314,11 +352,34 @@ export class DefaultHistoryStore implements HistoryStore {
     if (this._showDonateX) {
       systems.push("DonateX");
     }
+    if (this._showTribute) {
+      systems.push("Tribute");
+    }
     if (this._showBoostySubs || this._showBoostyFollows) {
       systems.push("Boosty");
     }
     if (this._showMemeAlertsCoins) {
       systems.push("MemeAlerts");
+    }
+    if (
+      this._showTwitchFollows ||
+      this._showTwitchRaids ||
+      this._showTwitchCheers ||
+      this._showTwitchSubs ||
+      this._showTwitchSubGifts
+    ) {
+      systems.push("Twitch");
+    }
+    if (
+      this._showKickFollows ||
+      this._showKickGifts ||
+      this._showKickSubs ||
+      this._showKickSubGifts
+    ) {
+      systems.push("Kick");
+    }
+    if (this._showVKLiveFollows || this._showVKLiveSubs) {
+      systems.push("VKLive");
     }
     return systems;
   }
@@ -331,6 +392,7 @@ export class DefaultHistoryStore implements HistoryStore {
       this._showDonatePay ||
       this._showDonateStream ||
       this._showDonateX ||
+      this._showTribute ||
       this._showMemeAlertsCoins
     ) {
       events.push("payment");
@@ -340,6 +402,39 @@ export class DefaultHistoryStore implements HistoryStore {
     }
     if (this._showBoostyFollows) {
       events.push("follow");
+    }
+    if (this._showTwitchFollows) {
+      events.push("follow");
+    }
+    if (this._showTwitchRaids) {
+      events.push("raid");
+    }
+    if (this._showTwitchCheers) {
+      events.push("cheer");
+    }
+    if (this._showTwitchSubs) {
+      events.push("subscription");
+    }
+    if (this._showTwitchSubGifts) {
+      events.push("subscription-gift");
+    }
+    if (this._showKickFollows) {
+      events.push("follow");
+    }
+    if (this._showKickGifts) {
+      events.push("kick-gift");
+    }
+    if (this._showKickSubs) {
+      events.push("subscription");
+    }
+    if (this._showKickSubGifts) {
+      events.push("subscription-gift");
+    }
+    if (this._showVKLiveFollows) {
+      events.push("follow");
+    }
+    if (this._showVKLiveSubs) {
+      events.push("subscription");
     }
     return events;
   }
@@ -529,6 +624,17 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonateX = value;
     this.reset();
   }
+  public get showTribute() {
+    return this._showTribute;
+  }
+  public set showTribute(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTribute`,
+      JSON.stringify(value),
+    );
+    this._showTribute = value;
+    this.reset();
+  }
   public get showBoostySubs() {
     return this._showBoostySubs;
   }
@@ -559,6 +665,127 @@ export class DefaultHistoryStore implements HistoryStore {
       JSON.stringify(value),
     );
     this._showMemeAlertsCoins = value;
+  }
+  public get showTwitchFollows() {
+    return this._showTwitchFollows;
+  }
+  public set showTwitchFollows(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTwitchFollows`,
+      JSON.stringify(value),
+    );
+    this._showTwitchFollows = value;
+    this.reset();
+  }
+  public get showTwitchRaids() {
+    return this._showTwitchRaids;
+  }
+  public set showTwitchRaids(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTwitchRaids`,
+      JSON.stringify(value),
+    );
+    this._showTwitchRaids = value;
+    this.reset();
+  }
+  public get showTwitchCheers() {
+    return this._showTwitchCheers;
+  }
+  public set showTwitchCheers(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTwitchCheers`,
+      JSON.stringify(value),
+    );
+    this._showTwitchCheers = value;
+    this.reset();
+  }
+  public get showTwitchSubs() {
+    return this._showTwitchSubs;
+  }
+  public set showTwitchSubs(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTwitchSubs`,
+      JSON.stringify(value),
+    );
+    this._showTwitchSubs = value;
+    this.reset();
+  }
+  public get showTwitchSubGifts() {
+    return this._showTwitchSubGifts;
+  }
+  public set showTwitchSubGifts(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTwitchSubGifts`,
+      JSON.stringify(value),
+    );
+    this._showTwitchSubGifts = value;
+    this.reset();
+  }
+  public get showKickFollows() {
+    return this._showKickFollows;
+  }
+  public set showKickFollows(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showKickFollows`,
+      JSON.stringify(value),
+    );
+    this._showKickFollows = value;
+    this.reset();
+  }
+  public get showKickGifts() {
+    return this._showKickGifts;
+  }
+  public set showKickGifts(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showKickGifts`,
+      JSON.stringify(value),
+    );
+    this._showKickGifts = value;
+    this.reset();
+  }
+  public get showKickSubs() {
+    return this._showKickSubs;
+  }
+  public set showKickSubs(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showKickSubs`,
+      JSON.stringify(value),
+    );
+    this._showKickSubs = value;
+    this.reset();
+  }
+  public get showKickSubGifts() {
+    return this._showKickSubGifts;
+  }
+  public set showKickSubGifts(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showKickSubGifts`,
+      JSON.stringify(value),
+    );
+    this._showKickSubGifts = value;
+    this.reset();
+  }
+  public get showVKLiveFollows() {
+    return this._showVKLiveFollows;
+  }
+  public set showVKLiveFollows(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showVKLiveFollows`,
+      JSON.stringify(value),
+    );
+    this._showVKLiveFollows = value;
+    this.reset();
+  }
+  public get showVKLiveSubs() {
+    return this._showVKLiveSubs;
+  }
+  public set showVKLiveSubs(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showVKLiveSubs`,
+      JSON.stringify(value),
+    );
+    this._showVKLiveSubs = value;
+    this.reset();
   }
 }
 

@@ -3,9 +3,6 @@
   background-color: var(--oda-color-150);
   border-radius: 16px;
   padding: 12px 15px;
-  & [class*="material-symbols-sharp"] {
-    padding-top: 4px;
-  }
 }
 
 .active {
@@ -60,7 +57,7 @@
 
 .title {
   display: flex;
-  align-items: baseline;
+  flex-wrap: wrap;
   font-size: 18px;
   color: rgba(255,255,255,1);
   & * {
@@ -94,4 +91,14 @@
   &:hover {
     cursor: pointer;
   }
+}
+
+@media (max-width: 450px) {
+  .from {
+      display: none;
+  }
+}
+
+.nickname {
+  margin-left: 3px;
 }

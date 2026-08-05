@@ -21,6 +21,7 @@ import TwitchIcon from "../../icons/TwitchIcon";
 import YouTubeIcon from "../../icons/YouTubeIcon";
 import KickIcon from "../../icons/KickIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
+import { NewFeature } from "../../components/Experimental/Experimental";
 
 const icons = new Map<string, JSX.Element>();
 icons.set("Twitch", <TwitchIcon />);
@@ -52,7 +53,11 @@ export const StreamingPlatformsSection = observer(() => {
           </Warning>
         </Overlay>
       </ModalStateContext.Provider>
-      <CardSectionTitle>Стриминговые платформы</CardSectionTitle>
+      <CardSectionTitle>
+        <NewFeature show={true}>
+          <span>Стриминговые платформы</span>
+        </NewFeature>
+      </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens
           .filter(

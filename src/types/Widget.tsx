@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
-import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
+import { HistoryWidgetSettings } from "../pages/History/HistoryWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
 import { WidgetStore } from "../stores/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
@@ -97,7 +97,7 @@ export const WIDGET_TYPES = [
     preview: "https://api.oda.digital/assets/payments.png",
     description:
       "Показывает список донатов, обновляется в реальном времени. Также есть кнопки для прерывания/повтора алерта на стриме.",
-    create: () => new PaymentsWidgetSettings(),
+    create: () => new HistoryWidgetSettings(),
   },
   {
     name: "donation-timer",

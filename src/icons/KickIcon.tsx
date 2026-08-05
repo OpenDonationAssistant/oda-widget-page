@@ -1,7 +1,14 @@
-export default function KickIcon({}) {
+export default function KickIcon({
+  color,
+  className,
+}: {
+  color?: string;
+  className?: string;
+}) {
   return (
     <svg
-      fill="#B2D4FB"
+      fill={color ? color : "#B2D4FB"}
+      className={className}
       height="19px"
       width="19px"
       version="1.1"
@@ -13,4 +20,3 @@ export default function KickIcon({}) {
     </svg>
   );
 }
-

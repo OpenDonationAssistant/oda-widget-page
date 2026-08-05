@@ -2,6 +2,14 @@
   color: var(--oda-color-1000);
 }
 
+@media (max-width: 450px) {
+  .moderationlabel {
+    display: none;
+  }
+  .headerbuttons {
+    justify-content: flex-end;
+  }
+}
 .dateselect {
   margin-bottom: 9px;
 }
@@ -48,13 +56,30 @@
 
 .filters {
   color: var(--oda-color-1000);
-  margin-bottom: 30px;
+  margin-top: 18px;
   border-radius: 12px;
-  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  width: 100%;
+}
+
+@media (max-width: 450px) {
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+}
+@media (min-width: 450px) {
+  .filters {
+    gap: 12px;
+  }
 }
 
 .filterpanel {
   max-width: 450px;
+  background-color: var(--oda-color-150);
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .filtersection {
@@ -66,9 +91,10 @@
 
 .filterlist {
   width: 100%;
-  gap: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .switchlabel {
@@ -76,7 +102,6 @@
 }
 
 .premoderationbutton {
-  min-width: 200px;
   color: var(--oda-color-500);
 }
 

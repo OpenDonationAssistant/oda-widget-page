@@ -65,8 +65,7 @@ const DonationListenerInstruction = observer(({}) => {
       </div>
       <Flex gap={3} className="full-width" vertical align="flex-end">
         <Input className={`${classes.token}`} value={data} />
-        <SubActionButton onClick={() => navigator.clipboard.writeText(data)}>
-          <CopyIcon />
+        <SubActionButton onClick={() => navigator.clipboard.writeText(data)} icon={<CopyIcon />}>
           <span>Скопировать</span>
         </SubActionButton>
       </Flex>
