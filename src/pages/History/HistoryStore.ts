@@ -71,6 +71,7 @@ export interface HistoryStore {
   showDonatePayEu: boolean;
   showDonateStream: boolean;
   showDonateX: boolean;
+  showTribute: boolean;
   showBoostySubs: boolean;
   showBoostyFollows: boolean;
   showMemeAlertsCoins: boolean;
@@ -132,6 +133,7 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showDonatePayEu: boolean;
   private _showDonateStream: boolean;
   private _showDonateX: boolean;
+  private _showTribute: boolean;
   private _showBoostySubs: boolean;
   private _showBoostyFollows: boolean;
   private _showMemeAlertsCoins: boolean;
@@ -169,6 +171,7 @@ export class DefaultHistoryStore implements HistoryStore {
     this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
     this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
     this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
+    this._showTribute = this.readValue(`${widgetId}.showTribute`);
     this._showBoostySubs = this.readValue(`${widgetId}.showBoostySubs`);
     this._showBoostyFollows = this.readValue(`${widgetId}.showBoostyFollows`);
     this._showMemeAlertsCoins = this.readValue(
@@ -349,6 +352,9 @@ export class DefaultHistoryStore implements HistoryStore {
     if (this._showDonateX) {
       systems.push("DonateX");
     }
+    if (this._showTribute) {
+      systems.push("Tribute");
+    }
     if (this._showBoostySubs || this._showBoostyFollows) {
       systems.push("Boosty");
     }
@@ -386,6 +392,7 @@ export class DefaultHistoryStore implements HistoryStore {
       this._showDonatePay ||
       this._showDonateStream ||
       this._showDonateX ||
+      this._showTribute ||
       this._showMemeAlertsCoins
     ) {
       events.push("payment");
@@ -615,6 +622,17 @@ export class DefaultHistoryStore implements HistoryStore {
       JSON.stringify(value),
     );
     this._showDonateX = value;
+    this.reset();
+  }
+  public get showTribute() {
+    return this._showTribute;
+  }
+  public set showTribute(value: boolean) {
+    localStorage.setItem(
+      `${this._widgetId}.showTribute`,
+      JSON.stringify(value),
+    );
+    this._showTribute = value;
     this.reset();
   }
   public get showBoostySubs() {

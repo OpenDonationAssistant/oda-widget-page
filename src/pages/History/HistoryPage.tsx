@@ -213,6 +213,11 @@ export const HistoryComponent = observer(
                       label="DonateX"
                       onChange={(update) => (historyStore.showDonateX = update)}
                     />
+                    <SwitchComponent
+                      value={historyStore.showTribute}
+                      label="Tribute"
+                      onChange={(update) => (historyStore.showTribute = update)}
+                    />
                   </div>
                 </Flex>
                 <Flex className={`${classes.filterpanel}`} vertical>

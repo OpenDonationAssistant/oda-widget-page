@@ -317,6 +317,7 @@ export function createMockHistoryStore(
     showDonatePayEu: true,
     showDonateStream: true,
     showDonateX: true,
+    showTribute: true,
     showBoostySubs: false,
     showBoostyFollows: false,
     showMemeAlertsCoins: false,
