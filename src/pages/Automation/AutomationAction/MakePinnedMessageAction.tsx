@@ -9,13 +9,13 @@ import { TokenStoreContext } from "../../../stores/TokenStore";
 import { Select } from "antd";
 
 interface MakePinnedMessageActionValue {
-  text: string;
+  senderRefreshTokenId: string;
+  recipientTwitchId: string;
+  message: string;
 }
 
 const MakePinnedMessageActionComponent = observer(
   ({ action }: { action: MakePinnedMessageAction }) => {
-    const [sender, setSender] = useState<string | null>(null);
-    const [receiver, setReceiver] = useState<string | null>(null);
     const tokenStore = useContext(TokenStoreContext);
     if (!tokenStore) {
       return null;
@@ -25,13 +25,17 @@ const MakePinnedMessageActionComponent = observer(
       .filter((token) => token.system === "Twitch");
 
     return (
-      <LabeledContainer displayName="Текст сообщения">
-        <Textarea
-          value={action.value.text}
-          onChange={(value) => (action.value.text = value)}
-        />
+      <>
+        <LabeledContainer displayName="Текст сообщения">
+          <Textarea
+            value={action.value.message}
+            onChange={(value) => (action.value.message = value)}
+          />
+        </LabeledContainer>
         <LabeledContainer displayName="Аккаунт, кто пишет">
           <Select
+            className="full-width"
+            value={action.value.senderRefreshTokenId}
             options={tokens.map((token) => {
               return {
                 label: token.settings["name"],
@@ -39,33 +43,39 @@ const MakePinnedMessageActionComponent = observer(
               };
             })}
             onChange={(value) => {
-              setSender(value);
+              action.value.senderRefreshTokenId = value;
             }}
           />
         </LabeledContainer>
         <LabeledContainer displayName="В каком чате">
           <Select
+            className="full-width"
+            value={action.value.recipientTwitchId}
             options={tokens.map((token) => {
               return {
                 label: token.settings["name"],
-                value: token.id,
+                value: token.settings["id"],
               };
             })}
             onChange={(value) => {
-              setReceiver(value);
+              action.value.recipientTwitchId = value;
             }}
           />
         </LabeledContainer>
-      </LabeledContainer>
+      </>
     );
   },
 );
 
 export class MakePinnedMessageAction implements AutomationAction, Renderable {
-  id = "make-pinned-message";
+  id = "pin-twitch-message";
   name = "Отправить и закрепить сообщение в Twitch чате";
   markup: ReactNode = (<MakePinnedMessageActionComponent action={this} />);
-  value: MakePinnedMessageActionValue = { text: "" };
+  value: MakePinnedMessageActionValue = {
+    message: "",
+    senderRefreshTokenId: "",
+    recipientTwitchId: "",
+  };
 
   constructor() {
     makeAutoObservable(this);
