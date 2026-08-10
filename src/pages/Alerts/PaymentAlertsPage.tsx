@@ -24,7 +24,7 @@ export default function PaymentAlertsPage() {
     recipientId,
     pageConfig.displayName,
   );
-  alertController.listen(widgetId, conf);
+  alertController.listen(conf);
 
   const tokenStore = new DefaultTokenStore();
 

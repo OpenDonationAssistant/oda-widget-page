@@ -74,6 +74,18 @@ export const CustomWidget = observer(
           <style>
             ${css}
           </style>
+          <style>
+            .message-author {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              width: 100%;
+              gap: 3px;
+              & img {
+                position: initial;
+              }
+            }
+          </style>
         </head>
         <body>
           ${html}
@@ -95,12 +107,12 @@ export const CustomWidget = observer(
               navigator.serviceWorker.addEventListener("message", (message) => {
                 const event = message.data;
                 console.log({event:event}, "Received message");
-                if (event._type === "TWITCH_CHAT_MESSAGE") {
+                if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE") {
                   const e = new CustomEvent("onEventReceived", {
                     detail: {
                       listener: "message",
                       event: {
-                        renderedText: getValue(event._variables, "message_text"),
+                        renderedText: "<span>test</span>",
                         data: {
                           "time": Date.now(),
                           "tags": {
@@ -125,7 +137,7 @@ export const CustomWidget = observer(
                             {
                               "type": "broadcaster",
                               "version": "1",
-                              "url": "https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/3",
+                              "url":"https://dev.live.vkvideo.ru/static/favicon.png",
                               "description": "Broadcaster"
                             }
                           ],
@@ -148,7 +160,7 @@ export const CustomWidget = observer(
                           ],
                           "msgId": "885d1f33-8387-4206-a668-e9b1409a99Xb",
                           displayName: getValue(event._variables, "chatter_user_login"),
-                          text: getValue(event._variables, "message_text"),
+                          text: "<span>test</span>"
                         }
                       }
                     }
