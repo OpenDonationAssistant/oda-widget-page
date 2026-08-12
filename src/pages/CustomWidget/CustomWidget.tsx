@@ -112,7 +112,7 @@ export const CustomWidget = observer(
                     detail: {
                       listener: "message",
                       event: {
-                        renderedText: "<span>test</span>",
+                        renderedText: getValue(event._variables, "message_text"),
                         data: {
                           "time": Date.now(),
                           "tags": {
@@ -160,7 +160,7 @@ export const CustomWidget = observer(
                           ],
                           "msgId": "885d1f33-8387-4206-a668-e9b1409a99Xb",
                           displayName: getValue(event._variables, "chatter_user_login"),
-                          text: "<span>test</span>"
+                          text: getValue(event._variables, "message_text"),
                         }
                       }
                     }

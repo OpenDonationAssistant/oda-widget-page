@@ -15,17 +15,6 @@ const VK_CHANNEL_URL = "stcarolas";
 
 const EVENT_NAME = "VKLIVE_CHAT_MESSAGE";
 
-async function sendMessage(msg: any) {
-  const clients = await swScope.clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  for (const client of clients) {
-    client.postMessage(msg);
-  }
-}
-
 async function getJson(url: string, token: string): Promise<any> {
   const response = await fetch(url, {
     method: "GET",
@@ -108,9 +97,6 @@ function handleChatData(data: any, eventbus: EventBus): void {
   console.log({ message }, "VK Live chat message");
   if (!message) return;
   handleChatMessage(message, eventbus);
-  // const messages = Array.isArray(data) ? data : (data?.chat_messages as any[]);
-  // if (!messages) return;
-  // messages.forEach((message) => handleChatMessage(message, eventbus));
 }
 
 function handleFrame(
