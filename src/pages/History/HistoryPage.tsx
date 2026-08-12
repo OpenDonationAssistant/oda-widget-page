@@ -37,38 +37,53 @@ import SecondaryButton from "../../components/Button/SecondaryButton";
 import { useTranslation } from "react-i18next";
 import SubActionButton from "../../components/Button/SubActionButton";
 import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
+import {
+  HistoryWidgetSettings,
+  HistoryWidgetSettingsContenxt,
+} from "./HistoryWidgetSettings";
 
 const dateFormat = "DD/MM/YYYY HH:mm";
 
 const HistoryItemList = observer(({}: {}) => {
   const historyStore = useContext(HistoryStoreContext);
+  const settings = new HistoryWidgetSettings();
+  settings.set("showRequests", true);
+  settings.set("showGoals", true);
 
   return (
-    <Flex vertical gap={3}>
-      {historyStore?.items.map((item, index) => (
-        <>
-          {index === 0 && item.date === historyStore?.today && (
-            <div className={`${classes.historyday}`}>Сегодня ({item.date})</div>
-          )}
-          {index === 0 && item.date !== historyStore?.today && (
-            <div className={`${classes.historyday}`}>{item.date}</div>
-          )}
-          {index !== 0 &&
-            item.date !== historyStore?.items.at(index - 1)?.date && (
+    <HistoryWidgetSettingsContenxt.Provider value={settings}>
+      <Flex vertical gap={3}>
+        {historyStore?.items.map((item, index) => (
+          <>
+            {index === 0 && item.date === historyStore?.today && (
+              <div className={`${classes.historyday}`}>
+                Сегодня ({item.date})
+              </div>
+            )}
+            {index === 0 && item.date !== historyStore?.today && (
               <div className={`${classes.historyday}`}>{item.date}</div>
             )}
-          <HistoryItemComponent key={index} item={item} />
-        </>
-      ))}
-      {historyStore?.isRefreshing && <Spin />}
-      {!historyStore?.isRefreshing && historyStore?.hasNext() && (
-        <Flex className={`${classes.loadmore}`} justify="center" align="center">
-          <SecondaryButton onClick={() => historyStore?.next()}>
-            Показать еще
-          </SecondaryButton>
-        </Flex>
-      )}
-    </Flex>
+            {index !== 0 &&
+              item.date !== historyStore?.items.at(index - 1)?.date && (
+                <div className={`${classes.historyday}`}>{item.date}</div>
+              )}
+            <HistoryItemComponent key={index} item={item} />
+          </>
+        ))}
+        {historyStore?.isRefreshing && <Spin />}
+        {!historyStore?.isRefreshing && historyStore?.hasNext() && (
+          <Flex
+            className={`${classes.loadmore}`}
+            justify="center"
+            align="center"
+          >
+            <SecondaryButton onClick={() => historyStore?.next()}>
+              Показать еще
+            </SecondaryButton>
+          </Flex>
+        )}
+      </Flex>
+    </HistoryWidgetSettingsContenxt.Provider>
   );
 });
 
