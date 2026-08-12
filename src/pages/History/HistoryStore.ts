@@ -120,6 +120,30 @@ function convert(message: any): HistoryItem {
   };
 }
 
+export interface HistoryConfiguration {
+  showODA: boolean;
+  showDonationAlerts: boolean;
+  showDonatePay: boolean;
+  showDonatePayEu: boolean;
+  showDonateStream: boolean;
+  showDonateX: boolean;
+  showTribute: boolean;
+  showBoostySubs: boolean;
+  showBoostyFollows: boolean;
+  showMemeAlertsCoins: boolean;
+  showTwitchFollows: boolean;
+  showTwitchRaids: boolean;
+  showTwitchCheers: boolean;
+  showTwitchSubs: boolean;
+  showTwitchSubGifts: boolean;
+  showKickFollows: boolean;
+  showKickGifts: boolean;
+  showKickSubs: boolean;
+  showKickSubGifts: boolean;
+  showVKLiveFollows: boolean;
+  showVKLiveSubs: boolean;
+}
+
 export class DefaultHistoryStore implements HistoryStore {
   private _recipientId: string;
   private _pageSize: number;
@@ -156,7 +180,7 @@ export class DefaultHistoryStore implements HistoryStore {
   private _listeners: HistoryListener[] = [];
 
   // todo type for conf
-  constructor(recipientId: string, widgetId: string, conf: any) {
+  constructor(recipientId: string, widgetId: string, conf: any, storeSettings?: HistoryConfiguration) {
     log.debug({ widgetId: widgetId }, "new history store");
     this._recipientId = recipientId;
     this._widgetId = widgetId;
@@ -165,31 +189,31 @@ export class DefaultHistoryStore implements HistoryStore {
     this._amount = -1;
     this._refreshing = false;
     this._list = [];
-    this._showODA = this.readValue(`${widgetId}.showODA`);
-    this._showDonationAlerts = this.readValue(`${widgetId}.showDonationAlerts`);
-    this._showDonatePay = this.readValue(`${widgetId}.showDonatePay`);
-    this._showDonatePayEu = this.readValue(`${widgetId}.showDonatePayEu`);
-    this._showDonateStream = this.readValue(`${widgetId}.showDonateStream`);
-    this._showDonateX = this.readValue(`${widgetId}.showDonateX`);
-    this._showTribute = this.readValue(`${widgetId}.showTribute`);
-    this._showBoostySubs = this.readValue(`${widgetId}.showBoostySubs`);
-    this._showBoostyFollows = this.readValue(`${widgetId}.showBoostyFollows`);
-    this._showMemeAlertsCoins = this.readValue(
+    this._showODA = storeSettings?.showODA ?? this.readValue(`${widgetId}.showODA`);
+    this._showDonationAlerts = storeSettings?.showDonationAlerts ?? this.readValue(`${widgetId}.showDonationAlerts`);
+    this._showDonatePay = storeSettings?.showDonatePay ?? this.readValue(`${widgetId}.showDonatePay`);
+    this._showDonatePayEu = storeSettings?.showDonatePayEu ?? this.readValue(`${widgetId}.showDonatePayEu`);
+    this._showDonateStream = storeSettings?.showDonateStream ?? this.readValue(`${widgetId}.showDonateStream`);
+    this._showDonateX = storeSettings?.showDonateX ?? this.readValue(`${widgetId}.showDonateX`);
+    this._showTribute = storeSettings?.showTribute ?? this.readValue(`${widgetId}.showTribute`);
+    this._showBoostySubs = storeSettings?.showBoostySubs ?? this.readValue(`${widgetId}.showBoostySubs`);
+    this._showBoostyFollows = storeSettings?.showBoostyFollows ?? this.readValue(`${widgetId}.showBoostyFollows`);
+    this._showMemeAlertsCoins = storeSettings?.showMemeAlertsCoins ?? this.readValue(
       `${widgetId}.showMemeAlertsCoins`,
     );
-    this._showTwitchFollows = this.readValue(`${widgetId}.showTwitchFollows`);
-    this._showTwitchRaids = this.readValue(`${widgetId}.showTwitchRaids`);
-    this._showTwitchCheers = this.readValue(`${widgetId}.showTwitchCheers`);
-    this._showTwitchSubs = this.readValue(`${widgetId}.showTwitchSubs`);
-    this._showTwitchSubGifts = this.readValue(
+    this._showTwitchFollows = storeSettings?.showTwitchFollows ?? this.readValue(`${widgetId}.showTwitchFollows`);
+    this._showTwitchRaids = storeSettings?.showTwitchRaids ?? this.readValue(`${widgetId}.showTwitchRaids`);
+    this._showTwitchCheers = storeSettings?.showTwitchCheers ?? this.readValue(`${widgetId}.showTwitchCheers`);
+    this._showTwitchSubs = storeSettings?.showTwitchSubs ?? this.readValue(`${widgetId}.showTwitchSubs`);
+    this._showTwitchSubGifts = storeSettings?.showTwitchSubGifts ?? this.readValue(
       `${widgetId}.showTwitchSubGifts`,
     );
-    this._showKickFollows = this.readValue(`${widgetId}.showKickFollows`);
-    this._showKickGifts = this.readValue(`${widgetId}.showKickGifts`);
-    this._showKickSubs = this.readValue(`${widgetId}.showKickSubs`);
-    this._showKickSubGifts = this.readValue(`${widgetId}.showKickSubGifts`);
-    this._showVKLiveFollows = this.readValue(`${widgetId}.showVKLiveFollows`);
-    this._showVKLiveSubs = this.readValue(`${widgetId}.showVKLiveSubs`);
+    this._showKickFollows = storeSettings?.showKickFollows ?? this.readValue(`${widgetId}.showKickFollows`);
+    this._showKickGifts = storeSettings?.showKickGifts ?? this.readValue(`${widgetId}.showKickGifts`);
+    this._showKickSubs = storeSettings?.showKickSubs ?? this.readValue(`${widgetId}.showKickSubs`);
+    this._showKickSubGifts = storeSettings?.showKickSubGifts ?? this.readValue(`${widgetId}.showKickSubGifts`);
+    this._showVKLiveFollows = storeSettings?.showVKLiveFollows ?? this.readValue(`${widgetId}.showVKLiveFollows`);
+    this._showVKLiveSubs = storeSettings?.showVKLiveSubs ?? this.readValue(`${widgetId}.showVKLiveSubs`);
     this._after = null;
     this._before = null;
     makeAutoObservable(this);
