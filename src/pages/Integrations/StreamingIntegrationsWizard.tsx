@@ -98,7 +98,7 @@ function openSSO(platform: string) {
       return Promise.resolve(true);
     case "twitch":
       window.open(
-        `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=2f9aljaudj3678kp4gc9bj99tb7bev&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=channel:moderate+channel:manage:vips+channel:manage:redemptions+user:read:email+moderator:manage:shoutouts+moderator:read:followers+channel:manage:predictions+channel:read:hype_train+channel:read:subscriptions+channel:manage:raids+channel:read:goals+bits:read+channel:manage:polls+user:read:chat+user:write:chat+user:bot&state=${state}`,
+        `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=2f9aljaudj3678kp4gc9bj99tb7bev&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}&scope=channel:moderate+channel:manage:vips+channel:manage:redemptions+user:read:email+moderator:manage:shoutouts+moderator:read:followers+channel:manage:predictions+channel:read:hype_train+channel:read:subscriptions+channel:manage:raids+channel:read:goals+bits:read+channel:manage:polls+user:read:chat+user:write:chat+moderator:manage:chat_messages+user:bot&state=${state}`,
       );
       return Promise.resolve(true);
     case "kick":
