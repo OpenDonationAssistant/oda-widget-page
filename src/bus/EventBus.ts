@@ -66,6 +66,16 @@ async function trimKeepLastN(db: IDBDatabase) {
   });
 }
 
+export interface Emotes {
+  type: string;
+  name: string;
+  id: string;
+  gif: false;
+  urls: any;
+  start: 0;
+  end: 0;
+}
+
 export interface Variable {
   id: string;
   name: string;
@@ -184,9 +194,7 @@ export class DefaultEventBus implements EventBus {
 
     const db = await this._db;
     console.log({ msg: msg }, "Storing message");
-    db.transaction(STORE, "readwrite")
-      .objectStore(STORE)
-      .put(msg);
+    db.transaction(STORE, "readwrite").objectStore(STORE).put(msg);
 
     for (const client of clients) {
       client.postMessage(msg);

@@ -7,6 +7,7 @@ import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
 import { register as registerVKLiveChatHandler } from "./handlers/vklive-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { DefaultEventBus } from "../../bus/EventBus";
+import { DefaultEmotesStore } from "../../stores/EmotesStore";
 
 /** Service worker scope — cast from the generic `self`. */
 const swScope = self as unknown as ServiceWorkerGlobalScope;
@@ -34,13 +35,15 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
 
   console.log("main worker received USER_AUTHORIZED");
 
+  const emotesStore = new DefaultEmotesStore();
+
   const info = (data.payload ?? data) as Record<string, unknown>;
   const recipientId = String(info.recipientId ?? "");
   const eventbus = new DefaultEventBus(recipientId, swScope);
   registerLogHandler(swScope);
   registerEventsListenerHandler(info.token, eventbus, swScope);
   registerStreamElementsHandler(info.token, eventbus, swScope);
-  registerTwitchChatHandler(info.token, eventbus, swScope);
-  registerVKLiveChatHandler(info.token, eventbus, swScope);
+  registerTwitchChatHandler(info.token, eventbus, swScope, emotesStore);
+  registerVKLiveChatHandler(info.token, eventbus, swScope, emotesStore);
   registerWidgetsHandler(info.token, swScope);
 });

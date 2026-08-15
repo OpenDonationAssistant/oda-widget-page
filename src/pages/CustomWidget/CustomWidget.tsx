@@ -143,21 +143,7 @@ export const CustomWidget = observer(
                           ],
                           "channel": "channelname",
                           "isAction": false,
-                          "emotes": [
-                            {
-                              "type": "twitch",
-                              "name": "Kappa",
-                              "id": "25",
-                              "gif": false,
-                              "urls": {
-                                "1": "https://static-cdn.jtvnw.net/emoticons/v1/25/1.0",
-                                "2": "https://static-cdn.jtvnw.net/emoticons/v1/25/2.0",
-                                "4": "https://static-cdn.jtvnw.net/emoticons/v1/25/4.0"
-                              },
-                              "start": 5,
-                              "end": 9
-                            }
-                          ],
+                          emotes: getValue(event._variables, "emotes"),
                           "msgId": "885d1f33-8387-4206-a668-e9b1409a99Xb",
                           displayName: getValue(event._variables, "chatter_user_login"),
                           text: getValue(event._variables, "message_text"),
@@ -180,8 +166,8 @@ export const CustomWidget = observer(
       <>
         {doc && (
           <iframe
-            width="570px"
-            height="570px"
+            width="100%"
+            height="100%"
             sandbox="allow-scripts allow-same-origin"
             scrolling="no"
             srcDoc={doc}

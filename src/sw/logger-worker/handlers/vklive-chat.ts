@@ -1,8 +1,9 @@
 /// <reference lib="webworker" />
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { Event, EventBus, Variable } from "../../../bus/EventBus";
+import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
+import { EmoteItem, EmotesStore } from "../../../stores/EmotesStore";
 
 const swScope = self as unknown as ServiceWorkerGlobalScope;
 
@@ -67,7 +68,28 @@ function messageText(message: any): string {
     .join("");
 }
 
-function handleChatMessage(message: any, eventbus: EventBus): void {
+function handleChatMessage(
+  message: any,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): void {
+  console.debug({ message }, "VK Live chat message");
+  const words = message.split(/[^\p{L}]+/u);
+  const emotes = words
+    .map((word: string) => emotesStore.getEmote(word))
+    .filter(Boolean)
+    .map(
+      (emote: EmoteItem) =>
+        ({
+          type: emote.type,
+          name: emote.code,
+          id: emote.id,
+          gif: false,
+          urls: { "1": emote.link, "2": emote.link, "4": emote.link },
+          start: 0,
+          end: 0,
+        }) as Emotes,
+    );
   const variables: Variable[] = [
     {
       id: uuidv7(),
@@ -87,16 +109,26 @@ function handleChatMessage(message: any, eventbus: EventBus): void {
       value: String(message.id ?? ""),
       type: "string",
     },
+    {
+      id: uuidv7(),
+      name: "emotes",
+      value: emotes,
+      type: "object",
+    },
   ];
   eventbus.push(new Event(EVENT_NAME, variables));
 }
 
-function handleChatData(data: any, eventbus: EventBus): void {
+function handleChatData(
+  data: any,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): void {
   console.log({ data }, "VKLive chat data");
   const message = data?.data?.chat_message;
   console.log({ message }, "VK Live chat message");
   if (!message) return;
-  handleChatMessage(message, eventbus);
+  handleChatMessage(message, eventbus, emotesStore);
 }
 
 function handleFrame(
@@ -105,6 +137,7 @@ function handleFrame(
   subscriptionToken: string,
   websocketClient: WebSocket,
   eventbus: EventBus,
+  emotesStore: EmotesStore,
 ): void {
   console.log({ frame }, "VK Live WebSocket frame");
   if (frame.id === 1 && frame.connect) {
@@ -117,7 +150,7 @@ function handleFrame(
   } else if (frame.id === 2 && frame.subscribe) {
     console.log(`Subscribed to VK Live channel [${channel}]`);
   } else if (frame.push) {
-    handleChatData(frame.push.pub?.data, eventbus);
+    handleChatData(frame.push.pub?.data, eventbus, emotesStore);
   } else if (Object.keys(frame).length === 0) {
     websocketClient.send("{}"); // pong
   }
@@ -128,6 +161,7 @@ function startWebSocketClient(
   connectionToken: string,
   subscriptionToken: string,
   eventbus: EventBus,
+  emotesStore: EmotesStore,
 ): WebSocket {
   console.log({ channel }, "Starting VK Live WebSocket connection");
   const websocketClient = new WebSocket(VKLIVE_WEBSOCKET_URL);
@@ -152,6 +186,7 @@ function startWebSocketClient(
         subscriptionToken,
         websocketClient,
         eventbus,
+        emotesStore,
       ),
     );
   });
@@ -159,14 +194,24 @@ function startWebSocketClient(
   return websocketClient;
 }
 
-async function startVKLiveClient(token: string, eventbus: EventBus) {
+async function startVKLiveClient(
+  token: string,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+) {
   try {
     const channel = await getChatChannelName(token);
     const [connectionToken, subscriptionToken] = await Promise.all([
       getConnectionToken(token),
       getSubscriptionToken(token, channel),
     ]);
-    startWebSocketClient(channel, connectionToken, subscriptionToken, eventbus);
+    startWebSocketClient(
+      channel,
+      connectionToken,
+      subscriptionToken,
+      eventbus,
+      emotesStore,
+    );
   } catch (error) {
     console.error("Failed to start VK Live chat client", error);
   }
@@ -180,6 +225,7 @@ export function register(
   token: string,
   eventbus: EventBus,
   sw: ServiceWorkerGlobalScope,
+  emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add vklive-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
@@ -192,7 +238,9 @@ export function register(
         connectedTokens.push(token.id);
         recipientService
           .getAccessToken({ tokenId: token.id }, auth)
-          .then((response) => startVKLiveClient(response.data.token, eventbus));
+          .then((response) =>
+            startVKLiveClient(response.data.token, eventbus, emotesStore),
+          );
       });
   });
 }

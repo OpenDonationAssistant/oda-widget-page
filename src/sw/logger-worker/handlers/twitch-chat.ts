@@ -1,22 +1,11 @@
 /// <reference lib="webworker" />
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { Event, EventBus, Variable } from "../../../bus/EventBus";
+import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
+import { EmotesStore } from "../../../stores/EmotesStore";
 
-const swScope = self as unknown as ServiceWorkerGlobalScope;
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
-
-async function sendMessage(msg: any) {
-  const clients = await swScope.clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  for (const client of clients) {
-    client.postMessage(msg);
-  }
-}
 
 async function getTwitchUserId(token: string) {
   const response = await fetch("https://id.twitch.tv/oauth2/validate", {
@@ -81,6 +70,21 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
           console.log("data.payload.event", data.payload.event);
+          const emotes = data.payload.event.message?.fragments
+            ?.filter((fragment: any) => fragment.type === "emote")
+            .map((fragment: any) => {
+              const id = fragment.emote.id;
+              const url = `https://static-cdn.jtvnw.net/emoticons/v2/${id}/static/light/1.0`;
+              return {
+                type: "twitch",
+                name: fragment.text,
+                id: fragment.emote.id,
+                gif: false,
+                urls: { "1": url },
+                start: 0,
+                end: 0,
+              } as Emotes;
+            });
           const variables: Variable[] = [];
           variables.push(
             {
@@ -88,6 +92,18 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
               name: "broadcaster_user_login",
               value: data.payload.event.broadcaster_user_login,
               type: "string",
+            },
+            {
+              id: uuidv7(),
+              name: "chatter_user_login",
+              value: data.payload.event.chatter_user_login,
+              type: "string",
+            },
+            {
+              id: uuidv7(),
+              name: "emotes",
+              value: emotes,
+              type: "object",
             },
             {
               id: uuidv7(),
@@ -134,6 +150,7 @@ export function register(
   token: string,
   eventbus: EventBus,
   sw: ServiceWorkerGlobalScope,
+  emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add twitch-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
