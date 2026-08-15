@@ -126,6 +126,42 @@ export const HistoryItemComponent = observer(
     const settings = useContext(HistoryWidgetSettingsContenxt);
 
     switch (item.event) {
+      case "subscription-gift":
+        header = (
+          <Flex align="center" gap={3}>
+            {item.system === "Twitch" && (
+              <TwitchIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Kick" && (
+              <KickIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "VKLive" && (
+              <VKLiveIcon
+                color="var(--oda-primary-color)"
+                className={classes.icon}
+              />
+            )}
+            {item.system === "Boosty" && (
+              <BoostyIcon className={classes.icon} />
+            )}
+            <span
+              className={classes.title}
+              style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+            >
+              <span>
+                {item.nickname ?? "Аноним"} получил подарочную подписку{" "}
+              </span>
+              <span className={`${classes.levelname}`}>{item.levelName}</span>
+            </span>
+          </Flex>
+        );
+        break;
       case "subscription":
         header = (
           <Flex align="center" gap={3}>
