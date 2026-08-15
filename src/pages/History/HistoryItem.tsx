@@ -155,7 +155,7 @@ export const HistoryItemComponent = observer(
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
               <span>
-                {item.nickname ?? "Аноним"} получил подарочную подписку{" "}
+                {item.nickname ?? "Аноним"} подарил подписку{" "}
               </span>
               <span className={`${classes.levelname}`}>{item.levelName}</span>
             </span>
