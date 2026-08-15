@@ -253,10 +253,11 @@ export const DonationPlatformsSection = observer(({}) => {
         </Overlay>
       </ModalStateContext.Provider>
       <CardSectionTitle>
-        <NewFeature show={true}>
-          <span>Донатные платформы</span>
-        </NewFeature>
-        <span className={`${classes.comment}`}>* Для корректной работы интеграций нужно чтобы виджет 'Оповещения/Алерты' был включен в ОБС.</span>
+        <div>Донатные платформы</div>
+        <span className={`${classes.comment}`}>
+          * Для корректной работы интеграций нужно чтобы виджет
+          'Оповещения/Алерты' был включен в ОБС.
+        </span>
       </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens

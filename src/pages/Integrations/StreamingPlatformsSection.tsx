@@ -54,9 +54,7 @@ export const StreamingPlatformsSection = observer(() => {
         </Overlay>
       </ModalStateContext.Provider>
       <CardSectionTitle>
-        <NewFeature show={true}>
-          <span>Стриминговые платформы</span>
-        </NewFeature>
+        <span>Стриминговые платформы</span>
       </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens
