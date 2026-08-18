@@ -15,8 +15,14 @@ export default function DonationTimerPage() {
     settings,
   ) as DonationTimerWidgetSettings;
 
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    // TODO: redirect to login
+    throw new Error("No token");
+  }
+
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, widgetId, conf),
+    () => new DefaultHistoryStore(token, recipientId, widgetId, conf),
   );
 
   return (

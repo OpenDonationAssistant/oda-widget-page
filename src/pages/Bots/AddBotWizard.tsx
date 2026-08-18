@@ -16,7 +16,6 @@ import { Bot, BotStoreContext, Chat } from "../../stores/BotStore";
 import { Flex, QRCode, Select } from "antd";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import classes from "./AddBotWizard.module.css";
-import UtilityButton from "../../components/Button/UtilityButton";
 
 const ChoosePlatformComponent = observer(
   ({ selection }: { selection: AddBotOperationStore }) => {

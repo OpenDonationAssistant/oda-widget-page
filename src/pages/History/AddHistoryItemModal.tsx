@@ -1,5 +1,4 @@
 import { useContext, useRef, useState } from "react";
-import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Flex, Input, Select } from "antd";
@@ -21,6 +20,7 @@ import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSw
 import classes from "./AddHistoryItemModal.module.css";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import SecondaryButton from "../../components/Button/SecondaryButton";
+import { addHistoryItem } from "@opendonationassistant/history-service";
 
 export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -37,43 +37,46 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const [triggerDonaton, setTriggerDonaton] = useState<boolean>(false);
   const [goalId, setGoalId] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
+  const token = localStorage.getItem("access-token");
 
   const paymentPageConfig = useRef<PaymentPageConfig | null>(
     new PaymentPageConfig(recipientId),
   );
 
   async function addItem() {
-    await HistoryService(
-      undefined,
-      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-    ).addHistoryItem({
-      recipientId: recipientId,
-      amount: {
-        minor: 0,
-        major: amount,
-        currency: "RUB",
+    addHistoryItem({
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      message: message,
-      nickname: nickname,
-      triggerAlert: showAlert,
-      triggerReel: triggerReel,
-      triggerDonaton: triggerDonaton,
-      system: "ODA",
-      goals: goalId
-        ? [
-            {
-              goalId: goalId,
-              goalTitle:
-                paymentPageConfig.current?.goals.find(
-                  (goal) => goal.id === goalId,
-                )?.briefDescription ?? "",
-            },
-          ]
-        : [],
-      addToTop: countInTop,
-      addToGoal: false,
-      paymentId: uuidv7(),
-      event: "payment",
+      body: {
+        recipientId: recipientId,
+        amount: {
+          minor: 0,
+          major: amount,
+          currency: "RUB",
+        },
+        message: message,
+        nickname: nickname,
+        triggerAlert: showAlert,
+        triggerReel: triggerReel,
+        triggerDonaton: triggerDonaton,
+        system: "ODA",
+        goals: goalId
+          ? [
+              {
+                goalId: goalId,
+                goalTitle:
+                  paymentPageConfig.current?.goals.find(
+                    (goal) => goal.id === goalId,
+                  )?.briefDescription ?? "",
+              },
+            ]
+          : [],
+        addToTop: countInTop,
+        addToGoal: false,
+        paymentId: uuidv7(),
+        event: "payment",
+      },
     });
   }
 

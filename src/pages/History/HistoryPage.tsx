@@ -489,8 +489,12 @@ export const HistoryComponent = observer(
 
 export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    throw new Error("No token");
+  }
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, `history-page`, conf),
+    () => new DefaultHistoryStore(token, recipientId, `history-page`, conf),
   );
 
   return (

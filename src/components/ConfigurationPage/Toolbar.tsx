@@ -22,6 +22,7 @@ enum Page {
   GUIDES,
   INTEGRATIONS,
   BOTS,
+  API,
   ACCOUNT,
 }
 
@@ -105,12 +106,20 @@ const allButtons: Section[] = [
     label: "menu-guides",
   },
   {
+    page: Page.API,
+    url: "/configuration/api",
+    active: <span className="material-symbols-sharp">extension </span>,
+    nonactive: <span className="material-symbols-sharp">extension </span>,
+    label: "menu-api",
+  },
+  {
     page: Page.ACCOUNT,
     url: "/configuration/account",
     active: <span className="material-symbols-sharp">manage_accounts</span>,
     nonactive: <span className="material-symbols-sharp">manage_accounts</span>,
     label: "menu-account",
   },
+  
 ];
 
 function NewFeature({

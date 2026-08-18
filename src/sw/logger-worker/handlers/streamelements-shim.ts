@@ -1,20 +1,17 @@
 /// <reference lib="webworker" />
 
-import {
-  DefaultApiFactory as HistoryService,
-  type AddHistoryItemApiAddHistoryItemCommand,
-} from "@opendonationassistant/oda-history-service-client";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { getRecipientId } from "./user-authorized";
+import {
+  AddHistoryItemApiAddHistoryItemCommand,
+  addHistoryItem,
+} from "@opendonationassistant/history-service";
 
-const swScope = self as unknown as ServiceWorkerGlobalScope;
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const historyService = HistoryService(undefined, "https://api.oda.digital");
-
 const connectedTokens: string[] = [];
 
 // ── StreamElements WebSocket message types ──────────────────────────
@@ -67,19 +64,6 @@ type StreamElementsMessage =
   | StreamElementsTipEvent
   | { type: "reconnect"; data: { reconnect_token: string } };
 
-// ── Helpers ─────────────────────────────────────────────────────────
-
-async function sendMessage(msg: unknown) {
-  const clients = await swScope.clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  for (const client of clients) {
-    client.postMessage(msg);
-  }
-}
-
 /**
  * Exchange the StreamElements JWT for channel info to obtain the channel ID.
  */
@@ -95,9 +79,7 @@ async function getChannelId(jwtToken: string): Promise<string> {
     },
   );
   if (!response.ok) {
-    throw new Error(
-      `Failed to get StreamElements channel: ${response.status}`,
-    );
+    throw new Error(`Failed to get StreamElements channel: ${response.status}`);
   }
   const json = await response.json();
   return json._id as string;
@@ -119,7 +101,8 @@ function toOdaAmount(
 // ── WebSocket message handling ──────────────────────────────────────
 
 function handleWebSocketMessage(
-  jwtToken: string,
+  odaToken: string,
+  seToken: string,
   raw: string,
   eventbus: EventBus,
 ): void {
@@ -132,12 +115,10 @@ function handleWebSocketMessage(
       );
 
       // Fetch channel ID and subscribe to tips
-      getChannelId(jwtToken)
+      getChannelId(seToken)
         .then((channelId) => {
-          console.log(
-            `Subscribing to channel.tips for room ${channelId}`,
-          );
-          const ws = getActiveWebSocket(jwtToken);
+          console.log(`Subscribing to channel.tips for room ${channelId}`);
+          const ws = getActiveWebSocket(seToken);
           if (!ws) return;
           ws.send(
             JSON.stringify({
@@ -146,7 +127,7 @@ function handleWebSocketMessage(
               data: {
                 topic: "channel.tips",
                 room: channelId,
-                token: jwtToken,
+                token: seToken,
                 token_type: "jwt",
               },
             }),
@@ -173,7 +154,7 @@ function handleWebSocketMessage(
 
     case "message": {
       if (message.topic === "channel.tips") {
-        handleTipEvent(jwtToken, message, eventbus);
+        handleTipEvent(odaToken, message, eventbus);
       }
       break;
     }
@@ -186,7 +167,7 @@ function handleWebSocketMessage(
 }
 
 function handleTipEvent(
-  _jwtToken: string,
+  odaToken: string,
   event: StreamElementsTipEvent,
   eventbus: EventBus,
 ): void {
@@ -208,14 +189,16 @@ function handleTipEvent(
     authorizationTimestamp: new Date().toISOString(),
   };
 
-  historyService
-    .addHistoryItem(command, {
-      headers: {
-        Authorization: `Bearer ${_jwtToken}`,
-      },
-    })
+  addHistoryItem({
+    body: command,
+    headers: {
+      Authorization: `Bearer ${odaToken}`,
+    },
+  })
     .then(() =>
-      console.log(`StreamElements tip persisted to history [${tip.amount} ${tip.currency}]`),
+      console.log(
+        `StreamElements tip persisted to history [${tip.amount} ${tip.currency}]`,
+      ),
     )
     .catch((err) =>
       console.error("Failed to persist StreamElements tip to history:", err),
@@ -257,7 +240,8 @@ function getActiveWebSocket(jwtToken: string): WebSocket | undefined {
 }
 
 function startWebSocketClient(
-  jwtToken: string,
+  odaToken: string,
+  seToken: string,
   eventbus: EventBus,
 ): WebSocket {
   console.log("Starting StreamElements Astro WebSocket connection");
@@ -272,25 +256,21 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("message", (event) => {
-    handleWebSocketMessage(jwtToken, event.data as string, eventbus);
+    handleWebSocketMessage(odaToken, seToken, event.data as string, eventbus);
   });
 
   websocketClient.addEventListener("close", () => {
     console.log("StreamElements Astro WebSocket closed");
-    activeSockets.delete(jwtToken);
+    activeSockets.delete(seToken);
   });
 
-  activeSockets.set(jwtToken, websocketClient);
+  activeSockets.set(seToken, websocketClient);
   return websocketClient;
 }
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(
-  token: string,
-  eventbus: EventBus,
-  sw: ServiceWorkerGlobalScope,
-): void {
+export function register(token: string, eventbus: EventBus): void {
   console.log({ connected: connectedTokens }, "add streamelements-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   recipientService.listTokens(auth).then((tokens) => {
@@ -301,9 +281,7 @@ export function register(
         console.log(`add streamelements handler for ${t.id}`);
         connectedTokens.push(t.id);
 
-        // The token field holds the StreamElements JWT
-        const jwtToken = t.token;
-        startWebSocketClient(jwtToken, eventbus);
+        startWebSocketClient(token, t.token, eventbus);
       });
   });
 }

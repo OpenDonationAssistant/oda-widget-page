@@ -1,16 +1,20 @@
 import { makeAutoObservable } from "mobx";
-import {
-  Amount,
-  HistoryItemDataTargetGoal,
-  HistoryItemDataAttachment,
-  HistoryItemDataReelResult,
-  HistoryItemDataActionRequest,
-  DefaultApiFactory as HistoryService,
-} from "@opendonationassistant/oda-history-service-client";
 import { log } from "../../logging";
 import { createContext } from "react";
 import { subscribe } from "../../socket";
 import { sleep } from "../../utils";
+import {
+  Amount,
+  HistoryItemDataActionRequest,
+  HistoryItemDataAttachment,
+  HistoryItemDataReelResult,
+  HistoryItemDataTargetGoal,
+  downloadCsv,
+  getCsvStatus,
+  getHistory,
+  printCsv,
+  repeatAlert,
+} from "@opendonationassistant/history-service";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -178,10 +182,18 @@ export class DefaultHistoryStore implements HistoryStore {
   private _active: string | null = null;
 
   private _listeners: HistoryListener[] = [];
+  private _token: string;
 
   // todo type for conf
-  constructor(recipientId: string, widgetId: string, conf: any, storeSettings?: HistoryConfiguration) {
+  constructor(
+    token: string,
+    recipientId: string,
+    widgetId: string,
+    conf: any,
+    storeSettings?: HistoryConfiguration,
+  ) {
     log.debug({ widgetId: widgetId }, "new history store");
+    this._token = token;
     this._recipientId = recipientId;
     this._widgetId = widgetId;
     this._pageNumber = 0;
@@ -189,31 +201,65 @@ export class DefaultHistoryStore implements HistoryStore {
     this._amount = -1;
     this._refreshing = false;
     this._list = [];
-    this._showODA = storeSettings?.showODA ?? this.readValue(`${widgetId}.showODA`);
-    this._showDonationAlerts = storeSettings?.showDonationAlerts ?? this.readValue(`${widgetId}.showDonationAlerts`);
-    this._showDonatePay = storeSettings?.showDonatePay ?? this.readValue(`${widgetId}.showDonatePay`);
-    this._showDonatePayEu = storeSettings?.showDonatePayEu ?? this.readValue(`${widgetId}.showDonatePayEu`);
-    this._showDonateStream = storeSettings?.showDonateStream ?? this.readValue(`${widgetId}.showDonateStream`);
-    this._showDonateX = storeSettings?.showDonateX ?? this.readValue(`${widgetId}.showDonateX`);
-    this._showTribute = storeSettings?.showTribute ?? this.readValue(`${widgetId}.showTribute`);
-    this._showBoostySubs = storeSettings?.showBoostySubs ?? this.readValue(`${widgetId}.showBoostySubs`);
-    this._showBoostyFollows = storeSettings?.showBoostyFollows ?? this.readValue(`${widgetId}.showBoostyFollows`);
-    this._showMemeAlertsCoins = storeSettings?.showMemeAlertsCoins ?? this.readValue(
-      `${widgetId}.showMemeAlertsCoins`,
-    );
-    this._showTwitchFollows = storeSettings?.showTwitchFollows ?? this.readValue(`${widgetId}.showTwitchFollows`);
-    this._showTwitchRaids = storeSettings?.showTwitchRaids ?? this.readValue(`${widgetId}.showTwitchRaids`);
-    this._showTwitchCheers = storeSettings?.showTwitchCheers ?? this.readValue(`${widgetId}.showTwitchCheers`);
-    this._showTwitchSubs = storeSettings?.showTwitchSubs ?? this.readValue(`${widgetId}.showTwitchSubs`);
-    this._showTwitchSubGifts = storeSettings?.showTwitchSubGifts ?? this.readValue(
-      `${widgetId}.showTwitchSubGifts`,
-    );
-    this._showKickFollows = storeSettings?.showKickFollows ?? this.readValue(`${widgetId}.showKickFollows`);
-    this._showKickGifts = storeSettings?.showKickGifts ?? this.readValue(`${widgetId}.showKickGifts`);
-    this._showKickSubs = storeSettings?.showKickSubs ?? this.readValue(`${widgetId}.showKickSubs`);
-    this._showKickSubGifts = storeSettings?.showKickSubGifts ?? this.readValue(`${widgetId}.showKickSubGifts`);
-    this._showVKLiveFollows = storeSettings?.showVKLiveFollows ?? this.readValue(`${widgetId}.showVKLiveFollows`);
-    this._showVKLiveSubs = storeSettings?.showVKLiveSubs ?? this.readValue(`${widgetId}.showVKLiveSubs`);
+    this._showODA =
+      storeSettings?.showODA ?? this.readValue(`${widgetId}.showODA`);
+    this._showDonationAlerts =
+      storeSettings?.showDonationAlerts ??
+      this.readValue(`${widgetId}.showDonationAlerts`);
+    this._showDonatePay =
+      storeSettings?.showDonatePay ??
+      this.readValue(`${widgetId}.showDonatePay`);
+    this._showDonatePayEu =
+      storeSettings?.showDonatePayEu ??
+      this.readValue(`${widgetId}.showDonatePayEu`);
+    this._showDonateStream =
+      storeSettings?.showDonateStream ??
+      this.readValue(`${widgetId}.showDonateStream`);
+    this._showDonateX =
+      storeSettings?.showDonateX ?? this.readValue(`${widgetId}.showDonateX`);
+    this._showTribute =
+      storeSettings?.showTribute ?? this.readValue(`${widgetId}.showTribute`);
+    this._showBoostySubs =
+      storeSettings?.showBoostySubs ??
+      this.readValue(`${widgetId}.showBoostySubs`);
+    this._showBoostyFollows =
+      storeSettings?.showBoostyFollows ??
+      this.readValue(`${widgetId}.showBoostyFollows`);
+    this._showMemeAlertsCoins =
+      storeSettings?.showMemeAlertsCoins ??
+      this.readValue(`${widgetId}.showMemeAlertsCoins`);
+    this._showTwitchFollows =
+      storeSettings?.showTwitchFollows ??
+      this.readValue(`${widgetId}.showTwitchFollows`);
+    this._showTwitchRaids =
+      storeSettings?.showTwitchRaids ??
+      this.readValue(`${widgetId}.showTwitchRaids`);
+    this._showTwitchCheers =
+      storeSettings?.showTwitchCheers ??
+      this.readValue(`${widgetId}.showTwitchCheers`);
+    this._showTwitchSubs =
+      storeSettings?.showTwitchSubs ??
+      this.readValue(`${widgetId}.showTwitchSubs`);
+    this._showTwitchSubGifts =
+      storeSettings?.showTwitchSubGifts ??
+      this.readValue(`${widgetId}.showTwitchSubGifts`);
+    this._showKickFollows =
+      storeSettings?.showKickFollows ??
+      this.readValue(`${widgetId}.showKickFollows`);
+    this._showKickGifts =
+      storeSettings?.showKickGifts ??
+      this.readValue(`${widgetId}.showKickGifts`);
+    this._showKickSubs =
+      storeSettings?.showKickSubs ?? this.readValue(`${widgetId}.showKickSubs`);
+    this._showKickSubGifts =
+      storeSettings?.showKickSubGifts ??
+      this.readValue(`${widgetId}.showKickSubGifts`);
+    this._showVKLiveFollows =
+      storeSettings?.showVKLiveFollows ??
+      this.readValue(`${widgetId}.showVKLiveFollows`);
+    this._showVKLiveSubs =
+      storeSettings?.showVKLiveSubs ??
+      this.readValue(`${widgetId}.showVKLiveSubs`);
     this._after = null;
     this._before = null;
     makeAutoObservable(this);
@@ -227,39 +273,53 @@ export class DefaultHistoryStore implements HistoryStore {
   }
 
   public alert(item: HistoryItem) {
-    return this.client()
-      .repeatAlert({ historyItemId: item.id })
-      .then((response) => {});
+    return repeatAlert({
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+      body: { historyItemId: item.id },
+    }).then((response) => {});
   }
 
   public export() {
-    return this.client()
-      .printCsv({
+    return printCsv({
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+      body: {
         after: this._after?.toISOString(),
         before: this._before?.toISOString(),
         events: this.events,
         systems: this.systems,
-      })
-      .then(async (response) => {
-        let ready = false;
-        while (!ready) {
-          await sleep(1000);
-          ready = (await this.client().getCsvStatus(response.data.printId)).data
-            .ready;
-        }
-        this.client()
-          .downloadCsv(response.data.printId)
-          .then((response) => {
-            const blob = new Blob([response.data], { type: "text/csv" });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "history.csv";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          });
+      },
+    }).then(async (response) => {
+      let ready = false;
+      while (!ready) {
+        await sleep(1000);
+        ready =
+          (
+            await getCsvStatus({
+              headers: { Authorization: `Bearer ${this._token}` },
+              path: {
+                id: response?.data?.printId ?? "",
+              },
+            })
+          )?.data?.ready ?? false;
+      }
+      downloadCsv({
+        headers: { Authorization: `Bearer ${this._token}` },
+        path: { id: response?.data?.printId ?? "" },
+      }).then((response) => {
+        const blob = new Blob([response?.data ?? ""], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "history.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       });
+    });
   }
 
   public get after() {
@@ -340,13 +400,6 @@ export class DefaultHistoryStore implements HistoryStore {
       );
       message.ack();
     });
-  }
-
-  private client() {
-    return HistoryService(
-      undefined,
-      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-    );
   }
 
   public get today() {
@@ -474,20 +527,24 @@ export class DefaultHistoryStore implements HistoryStore {
       "loading history page",
     );
     this._refreshing = true;
-    return this.client()
-      .getHistory(
-        this._pageNumber,
-        this.pageSize,
-        "timestamp,desc",
-        this.systems,
-        this.events,
-        this._after?.toISOString(),
-        this._before?.toISOString(),
-      )
+    return getHistory({
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+      query: {
+        page: this._pageNumber,
+        size: this.pageSize,
+        systems: this.systems,
+        events: this.events,
+        after: this._after?.toISOString(),
+        before: this._before?.toISOString(),
+        sort: "timestamp,desc",
+      },
+    })
       .then((response) => {
-        this._amount = response.data.totalSize ?? 0;
+        this._amount = response?.data?.totalSize ?? 0;
         log.debug({ amount: this._amount }, "history total size");
-        const newData = response.data.content
+        const newData = response?.data?.content
           .map((item) => {
             return {
               id: item.id ?? "",
@@ -517,7 +574,7 @@ export class DefaultHistoryStore implements HistoryStore {
           .filter((item) => {
             return this._list.findIndex((i) => i.id === item.id) === -1;
           });
-        this._list = [...this._list, ...newData];
+        this._list = [...this._list, ...(newData ?? [])];
         this._refreshing = false;
       })
       .catch((error) => {

@@ -11,13 +11,13 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { log } from "../../logging";
 import axios from "axios";
-import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
 import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData, useNavigate } from "react-router";
 import { TokenStore } from "../../stores/TokenStore";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { hashString } from "../../utils";
+import { addHistoryItem } from "@opendonationassistant/history-service";
 
 const memeAlertsRegexp = /купил (\d+)/;
 
@@ -422,6 +422,7 @@ const PaymentAlerts = observer(
     const { recipientId } = useLoaderData() as WidgetData;
     const navigate = useNavigate();
     const integrationLog = log.child({ module: "donationIntegration" });
+    const odaToken = localStorage.getItem("access-token");
 
     useEffect(() => {
       const tokens = tokenStore.tokens.filter((token) => token.enabled);
@@ -476,11 +477,11 @@ const PaymentAlerts = observer(
                     data.result?.data?.data
                   ) {
                     const payment = data.result.data.data;
-                    HistoryService(
-                      undefined,
-                      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                    ).addHistoryItem(
-                      {
+                    addHistoryItem({
+                      headers: {
+                        Authorization: `Bearer ${odaToken}`,
+                      },
+                      body: {
                         recipientId: recipientId,
                         amount: {
                           minor: 0,
@@ -499,8 +500,7 @@ const PaymentAlerts = observer(
                         system: "DonationAlerts",
                         event: "payment",
                       },
-                      {},
-                    );
+                    });
                   }
                   if (data.id === 1) {
                     log.debug("getting centrifugo token");
@@ -541,7 +541,7 @@ const PaymentAlerts = observer(
       tokens
         .filter((token) => token.system === "DonatePay")
         .forEach((token) => {
-          const id = token.settings.id
+          const id = token.settings.id;
           axios
             .post("https://donatepay.ru/api/v2/socket/token", {
               access_token: token.token,
@@ -580,10 +580,7 @@ const PaymentAlerts = observer(
               socket.addEventListener("message", (event) => {
                 const channel = `$public:${id}`;
                 const data = JSON.parse(event.data);
-                integrationLog.debug(
-                  { data: data },
-                  "Message from DonatePay",
-                );
+                integrationLog.debug({ data: data }, "Message from DonatePay");
                 if (data.id === 1) {
                   log.debug("getting centrifugo token");
                   const clientId = data.result.client;
@@ -616,11 +613,11 @@ const PaymentAlerts = observer(
                   data.result?.data?.data?.notification
                 ) {
                   const payment = data.result.data.data.notification;
-                  HistoryService(
-                    undefined,
-                    process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                  ).addHistoryItem(
-                    {
+                  addHistoryItem({
+                    headers: {
+                      Authorization: `Bearer ${odaToken}`,
+                    },
+                    body: {
                       recipientId: recipientId,
                       amount: {
                         minor: 0,
@@ -635,12 +632,15 @@ const PaymentAlerts = observer(
                       goals: [],
                       addToTop: token.settings.countInTop,
                       addToGoal: token.settings.addToGoal,
-                      paymentId: payment.id ?? hashString(`${payment.vars.name}:${payment.vars.comment}`).toString(),
+                      paymentId:
+                        payment.id ??
+                        hashString(
+                          `${payment.vars.name}:${payment.vars.comment}`,
+                        ).toString(),
                       system: "DonatePay",
                       event: "payment",
                     },
-                    {},
-                  );
+                  });
                 }
               });
             });
@@ -723,11 +723,11 @@ const PaymentAlerts = observer(
                       data.result?.data?.data?.notification
                     ) {
                       const payment = data.result.data.data.notification;
-                      HistoryService(
-                        undefined,
-                        process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                      ).addHistoryItem(
-                        {
+                      addHistoryItem({
+                        headers: {
+                          Authorization: `Bearer ${odaToken}`,
+                        },
+                        body: {
                           recipientId: recipientId,
                           amount: {
                             minor: 0,
@@ -742,12 +742,15 @@ const PaymentAlerts = observer(
                           goals: [],
                           addToTop: token.settings.countInTop,
                           addToGoal: token.settings.addToGoal,
-                          paymentId: payment.id ?? hashString(`${payment.vars.name}:${payment.vars.comment}`).toString(),
+                          paymentId:
+                            payment.id ??
+                            hashString(
+                              `${payment.vars.name}:${payment.vars.comment}`,
+                            ).toString(),
                           system: "DonatePay.eu",
                           event: "payment",
                         },
-                        {},
-                      );
+                      });
                     }
                   });
                 });
@@ -787,11 +790,11 @@ const PaymentAlerts = observer(
             integrationLog.debug({ donation: msg }, "Received DA donation");
             switch (donation.alert_type) {
               case 27:
-                HistoryService(
-                  undefined,
-                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                ).addHistoryItem(
-                  {
+                addHistoryItem({
+                  headers: {
+                    Authorization: `Bearer ${odaToken}`,
+                  },
+                  body: {
                     recipientId: recipientId,
                     amount: {
                       minor: 0,
@@ -811,16 +814,15 @@ const PaymentAlerts = observer(
                     event: "follow",
                     alertMedia: null,
                   },
-                  {},
-                );
+                });
                 break;
               case 20:
               case 28:
-                HistoryService(
-                  undefined,
-                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                ).addHistoryItem(
-                  {
+                addHistoryItem({
+                  headers: {
+                    Authorization: `Bearer ${odaToken}`,
+                  },
+                  body: {
                     recipientId: recipientId,
                     amount: {
                       minor: 0,
@@ -841,16 +843,15 @@ const PaymentAlerts = observer(
                     levelName: donation.additional_data.event_data.level_name,
                     alertMedia: null,
                   },
-                  {},
-                );
+                });
                 break;
               case 32:
                 const match = memeAlertsRegexp.exec(donation.message ?? "");
-                HistoryService(
-                  undefined,
-                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                ).addHistoryItem(
-                  {
+                addHistoryItem({
+                  headers: {
+                    Authorization: `Bearer ${odaToken}`,
+                  },
+                  body: {
                     recipientId: recipientId,
                     amount: {
                       minor: 0,
@@ -879,15 +880,14 @@ const PaymentAlerts = observer(
                         }
                       : null,
                   },
-                  {},
-                );
+                });
                 break;
               case 1:
-                HistoryService(
-                  undefined,
-                  process.env.REACT_APP_HISTORY_API_ENDPOINT,
-                ).addHistoryItem(
-                  {
+                addHistoryItem({
+                  headers: {
+                    Authorization: `Bearer ${odaToken}`,
+                  },
+                  body: {
                     recipientId: recipientId,
                     amount: {
                       minor: 0,
@@ -914,8 +914,7 @@ const PaymentAlerts = observer(
                         }
                       : null,
                   },
-                  {},
-                );
+                });
                 break;
               default:
                 break;
@@ -934,11 +933,11 @@ const PaymentAlerts = observer(
             .build();
           connection.on("DonationCreated", (donation) => {
             integrationLog.debug({ donation: donation }, "New donation");
-            HistoryService(
-              undefined,
-              process.env.REACT_APP_HISTORY_API_ENDPOINT,
-            ).addHistoryItem(
-              {
+            addHistoryItem({
+              headers: {
+                Authorization: `Bearer ${odaToken}`,
+              },
+              body: {
                 recipientId: recipientId,
                 amount: {
                   minor: 0,
@@ -960,8 +959,7 @@ const PaymentAlerts = observer(
                   url: donation.voiceFilePath,
                 },
               },
-              {},
-            );
+            });
           });
           connection.start();
         });

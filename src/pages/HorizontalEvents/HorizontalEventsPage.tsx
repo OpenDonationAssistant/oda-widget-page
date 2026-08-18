@@ -11,8 +11,13 @@ export default function HorizontalEventsPage() {
   const { recipientId, widgetId, settings, conf } =
     useLoaderData() as WidgetData;
 
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    throw new Error("Token not found");
+  }
+
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, widgetId, conf),
+    () => new DefaultHistoryStore(token, recipientId, widgetId, conf),
   );
 
   return (

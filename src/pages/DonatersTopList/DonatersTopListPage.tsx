@@ -23,29 +23,41 @@ export default function DonatersTopListPage() {
     conf.topic.donaterstoplist,
   );
 
-  const historyStore = new DefaultHistoryStore(recipientId, widgetId, conf, {
-    showODA: true,
-    showDonationAlerts: true,
-    showDonatePay: true,
-    showDonatePayEu: true,
-    showDonateStream: true,
-    showDonateX: true,
-    showTribute: true,
-    showBoostySubs: false,
-    showBoostyFollows: false,
-    showMemeAlertsCoins: false,
-    showTwitchFollows: false,
-    showTwitchRaids: false,
-    showTwitchCheers: false,
-    showTwitchSubs: false,
-    showTwitchSubGifts: false,
-    showKickFollows: false,
-    showKickGifts: false,
-    showKickSubs: false,
-    showKickSubGifts: false,
-    showVKLiveFollows: false,
-    showVKLiveSubs: false,
-  });
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    // TODO relogin
+    throw new Error("Access token not found");
+  }
+
+  const historyStore = new DefaultHistoryStore(
+    token,
+    recipientId,
+    widgetId,
+    conf,
+    {
+      showODA: true,
+      showDonationAlerts: true,
+      showDonatePay: true,
+      showDonatePayEu: true,
+      showDonateStream: true,
+      showDonateX: true,
+      showTribute: true,
+      showBoostySubs: false,
+      showBoostyFollows: false,
+      showMemeAlertsCoins: false,
+      showTwitchFollows: false,
+      showTwitchRaids: false,
+      showTwitchCheers: false,
+      showTwitchSubs: false,
+      showTwitchSubGifts: false,
+      showKickFollows: false,
+      showKickGifts: false,
+      showKickSubs: false,
+      showKickSubGifts: false,
+      showVKLiveFollows: false,
+      showVKLiveSubs: false,
+    },
+  );
 
   return (
     <WidgetWrapper>

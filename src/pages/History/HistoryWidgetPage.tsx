@@ -24,8 +24,13 @@ export default function HistoryWidgetPage() {
     settings,
   ) as HistoryWidgetSettings;
 
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    throw new Error("No token");
+  }
+
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, widgetId, conf),
+    () => new DefaultHistoryStore(token, recipientId, widgetId, conf),
   );
   const [widgetStore] = useState<WidgetStore>(() => new DefaultWidgetStore());
 

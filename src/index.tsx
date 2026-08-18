@@ -73,6 +73,7 @@ import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPa
 import AuctionWidgetPage from "./pages/AuctionWidget/AuctionWidgetPage";
 import AuctionPage from "./pages/AuctionWidget/AuctionPage";
 import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
+import { ApiPage } from "./pages/Api/ApiPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -168,6 +169,9 @@ function detectPage(path: string): Page {
   }
   if (path.indexOf("bots") > 0) {
     return Page.BOTS;
+  }
+  if (path.indexOf("api") > 0) {
+    return Page.API;
   }
   if (path.endsWith("account")) {
     return Page.ACCOUNT;
@@ -325,6 +329,11 @@ const router = createBrowserRouter([
       {
         path: "bots",
         element: <BotsPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "api",
+        element: <ApiPage />,
         loader: widgetSettingsLoader,
       },
       {

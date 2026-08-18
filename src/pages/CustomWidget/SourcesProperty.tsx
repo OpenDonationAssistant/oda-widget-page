@@ -115,7 +115,15 @@ export class SourcesProperty extends DefaultWidgetProperty<Sources> {
     const doc = parser.parseFromString(this._htmlContent, "text/html");
     const htmlBlob = new Blob([doc.body.outerHTML], { type: "text/plain" });
     const cssBlob = new Blob([this._cssContent], { type: "text/css" });
-    const jsBlob = new Blob([this._jsContent], { type: "text/javascript" });
+    const jsBlob = new Blob(
+      [
+        this._jsContent.replaceAll(
+          "api.streamelements.com/kappa/v2",
+          "api.oda.digital/streamelements",
+        ),
+      ],
+      { type: "text/javascript" },
+    );
     const specBlob = new Blob([this._specContent], {
       type: "application/json",
     });

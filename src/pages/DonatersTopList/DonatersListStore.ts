@@ -2,7 +2,6 @@ import axios from "axios";
 import { makeAutoObservable } from "mobx";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
-import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
 
 const lastDonations = async (recipientId: string) => {
   const data = await HistoryService(
@@ -45,7 +44,7 @@ export interface AbstractDonatersListStore {
   list: DonaterRecord[];
 }
 
-export interface DonaterRecord{
+export interface DonaterRecord {
   nickname: string;
   amount: number;
 }
@@ -91,7 +90,7 @@ export class DonatersListStore implements AbstractDonatersListStore {
             nickname: donation.nickname ?? "",
             amount: donation.amount?.major ?? 0,
           };
-        })
+        });
       });
       return;
     }
@@ -106,13 +105,12 @@ export class DonatersListStore implements AbstractDonatersListStore {
       const sortedMap = new Map(
         [...map.entries()].sort((a, b) => b[1].major - a[1].major),
       );
-      this._list = Array.from(sortedMap.keys())
-        .map((key) => {
-          return {
-            nickname: key,
-            amount: sortedMap.get(key)?.major ?? 0,
-          };
-        })
+      this._list = Array.from(sortedMap.keys()).map((key) => {
+        return {
+          nickname: key,
+          amount: sortedMap.get(key)?.major ?? 0,
+        };
+      });
     });
   }
 
