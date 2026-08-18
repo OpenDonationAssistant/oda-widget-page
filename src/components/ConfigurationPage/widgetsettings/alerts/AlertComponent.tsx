@@ -22,7 +22,6 @@ import SecondaryButton from "../../../Button/SecondaryButton";
 import PrimaryButton from "../../../Button/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
-import { DemoTokenStore } from "../../../../stores/TokenStore";
 import { useContext, useRef, useState } from "react";
 import { WidgetContext } from "../../../../types/Widget";
 import { reaction } from "mobx";
@@ -197,10 +196,7 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
                 minConstraints={[400, 100]}
               >
                 <div style={{ margin: "auto" }}>
-                  <PaymentAlerts
-                    alertController={alertController}
-                    tokenStore={new DemoTokenStore()}
-                  />
+                  <PaymentAlerts alertController={alertController} />
                 </div>
               </ResizableBox>
             </Flex>
