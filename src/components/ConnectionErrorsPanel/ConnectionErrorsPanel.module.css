@@ -1,0 +1,18 @@
+.container {
+  background-color: var(--oda-color-150);
+  padding: 6px 9px;
+  border-radius: 9px;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.prefix {
+  color: var(--oda-primary-color);
+  padding-right: 6px;
+  margin-left: 6px;
+  padding-bottom: 2px;
+}
+
+.line {
+  color: var(--oda-color-950);
+}

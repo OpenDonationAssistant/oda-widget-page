@@ -1,4 +1,4 @@
-import { DatePicker, Flex, Input, Spin, Switch } from "antd";
+import { DatePicker, Flex, Spin, Switch } from "antd";
 import classes from "./HistoryPage.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
@@ -30,7 +30,8 @@ import { log } from "../../logging";
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 import { produce } from "immer";
 import { toJS } from "mobx";
-import ODALogo from "../../components/ODALogo/ODALogo";
+import ConnectedServices from "../../components/ConnectedServices/ConnectedServices";
+import ConnectionErrorsPanel from "../../components/ConnectionErrorsPanel/ConnectionErrorsPanel";
 import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
 import SecondaryButton from "../../components/Button/SecondaryButton";
@@ -363,7 +364,7 @@ export const HistoryComponent = observer(
           </Overlay>
           <Flex justify="space-between" align="center" gap={12}>
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
-            {!showHeader && <ODALogo />}
+            {!showHeader && <ConnectedServices />}
             <Flex gap={9} className={`${classes.headerbuttons}`}>
               {!showHeader &&
                 widgetStore.list.filter(
@@ -477,6 +478,7 @@ export const HistoryComponent = observer(
               </LabeledContainer>
             </Flex>
           )}
+          {!showHeader && <ConnectionErrorsPanel />}
           {!showHeader && <NewsLineComponent />}
           <HistoryItemList />
         </ModalStateContext.Provider>

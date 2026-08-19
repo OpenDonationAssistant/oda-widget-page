@@ -1,0 +1,17 @@
+.container {
+  background-color: var(--oda-color-150);
+  padding: 6px 9px;
+  border-radius: 9px;
+  color: var(--oda-color-950);
+}
+
+.cableicon {
+  font-size: 20px;
+  color: var(--oda-color-900);
+}
+
+.services {
+  gap: 6px;
+  display: inline-flex;
+  align-items: center;
+}
