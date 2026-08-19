@@ -6,6 +6,7 @@ import {
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import { getRecipientId } from "./user-authorized";
+import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 
 const DONATEPAY_EU_WEBSOCKET_URL =
@@ -225,6 +226,7 @@ function startDonatePayEuClient(
 
       websocketClient.addEventListener("open", () => {
         console.log("DonatePay.eu WebSocket opened");
+        reportStarted("DonatePay.eu");
         websocketClient.send(
           JSON.stringify({
             params: { token: centrifugoToken },
@@ -249,8 +251,14 @@ function startDonatePayEuClient(
         scheduleReconnect();
       });
 
-      websocketClient.addEventListener("close", () => {
+      websocketClient.addEventListener("close", (event) => {
         console.log("DonatePay.eu WebSocket closed");
+        if (event.code !== 1000) {
+          reportError(
+            "DonatePay.eu",
+            `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
+          );
+        }
         scheduleReconnect();
       });
     })

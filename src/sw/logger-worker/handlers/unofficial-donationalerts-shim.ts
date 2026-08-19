@@ -3,6 +3,7 @@
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { connect } from "socket.io-client";
 import { getRecipientId } from "./user-authorized";
+import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
@@ -167,6 +168,7 @@ function startSocketClient(odaToken: string, daToken: string): void {
 
   socket.on("connect", () => {
     console.log("UnofficialDonationAlerts socket connected");
+    reportStarted("UnofficialDonationAlerts");
     socket.emit("add-user", {
       token: daToken,
       type: "alert_widget",
@@ -175,6 +177,12 @@ function startSocketClient(odaToken: string, daToken: string): void {
 
   socket.on("connect_error", (msg: string) => {
     console.error("UnofficialDonationAlerts connection_error:", msg);
+    reportError("UnofficialDonationAlerts", `connect_error: ${msg}`);
+  });
+
+  socket.on("disconnect", (reason: string) => {
+    if (reason === "io client disconnect") return;
+    reportError("UnofficialDonationAlerts", `disconnected: ${reason}`);
   });
 
   socket.on("reconnect", () => {

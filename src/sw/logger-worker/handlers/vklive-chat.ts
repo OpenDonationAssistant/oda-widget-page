@@ -4,6 +4,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmoteItem, EmotesStore } from "../../../stores/EmotesStore";
+import { reportError, reportStarted } from "../worker-status";
 
 const swScope = self as unknown as ServiceWorkerGlobalScope;
 
@@ -170,8 +171,17 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + VKLIVE_WEBSOCKET_URL);
+    reportStarted("VKLive");
     websocketClient.send(
       JSON.stringify({ id: 1, connect: { token: connectionToken } }),
+    );
+  });
+
+  websocketClient.addEventListener("close", (event) => {
+    if (event.code === 1000) return;
+    reportError(
+      "VKLive",
+      `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
   });
 

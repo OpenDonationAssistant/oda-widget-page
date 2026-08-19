@@ -3,6 +3,7 @@
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { getRecipientId } from "./user-authorized";
+import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
@@ -105,10 +106,18 @@ function startDonateXConnection(
 
   connection
     .start()
-    .then(() => console.log("DonateX SignalR connection started"))
-    .catch((err) =>
-      console.error("Failed to start DonateX SignalR connection:", err),
-    );
+    .then(() => {
+      console.log("DonateX SignalR connection started");
+      reportStarted("DonateX");
+    })
+    .catch((err) => {
+      console.error("Failed to start DonateX SignalR connection:", err);
+      reportError("DonateX", `failed to start connection: ${err}`);
+    });
+
+  connection.onclose((err) => {
+    reportError("DonateX", `connection closed: ${err ?? "unknown error"}`);
+  });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────

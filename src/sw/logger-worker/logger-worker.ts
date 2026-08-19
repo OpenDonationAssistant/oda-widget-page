@@ -10,6 +10,7 @@ import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
 import { register as registerUnofficialDonationAlertsHandler } from "./handlers/unofficial-donationalerts-shim";
 import { register as registerVKLiveChatHandler } from "./handlers/vklive-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
+import { register as registerWorkerStatusHandler } from "./worker-status";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
 
@@ -49,6 +50,7 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   registerTwitchChatHandler(info.token, eventbus, swScope, emotesStore);
   registerVKLiveChatHandler(info.token, eventbus, swScope, emotesStore);
   registerWidgetsHandler(info.token, swScope);
+  registerWorkerStatusHandler(swScope);
   registerDonationAlertsHandler(info.token);
   registerDonatePayHandler(info.token);
   registerDonatePayEuHandler(info.token);

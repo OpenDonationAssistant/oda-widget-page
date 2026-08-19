@@ -6,6 +6,7 @@ import {
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import { getRecipientId } from "./user-authorized";
+import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 
 const DONATIONALERTS_API_URL = "https://api.oda.digital/donationalerts";
@@ -198,6 +199,7 @@ function startWebSocketClient(
 
   socket.addEventListener("open", () => {
     console.log("DonationAlerts Centrifugo WebSocket opened");
+    reportStarted("DonationAlerts");
     socket.send(
       JSON.stringify({
         params: {
@@ -219,10 +221,16 @@ function startWebSocketClient(
     );
   });
 
-  socket.addEventListener("close", () => {
+  socket.addEventListener("close", (event) => {
     console.log(
       "DonationAlerts Centrifugo WebSocket closed. Reconnection attempt in 1s",
     );
+    if (event.code !== 1000) {
+      reportError(
+        "DonationAlerts",
+        `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
+      );
+    }
     setTimeout(() => {
       startConnection(odaToken, daToken, settings);
     }, 1000);

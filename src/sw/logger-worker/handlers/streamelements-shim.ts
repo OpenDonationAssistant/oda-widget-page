@@ -4,6 +4,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { getRecipientId } from "./user-authorized";
+import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
@@ -253,15 +254,21 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("open", () => {
     console.log("StreamElements Astro WebSocket opened");
+    reportStarted("StreamElements");
   });
 
   websocketClient.addEventListener("message", (event) => {
     handleWebSocketMessage(odaToken, seToken, event.data as string, eventbus);
   });
 
-  websocketClient.addEventListener("close", () => {
+  websocketClient.addEventListener("close", (event) => {
     console.log("StreamElements Astro WebSocket closed");
     activeSockets.delete(seToken);
+    if (event.code === 1000) return;
+    reportError(
+      "StreamElements",
+      `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
+    );
   });
 
   activeSockets.set(seToken, websocketClient);

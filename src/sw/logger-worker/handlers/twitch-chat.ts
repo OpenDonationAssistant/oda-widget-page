@@ -4,6 +4,7 @@ import { DefaultApiFactory as RecipientService } from "@opendonationassistant/od
 import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
+import { reportError, reportStarted } from "../worker-status";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
@@ -133,6 +134,15 @@ function startWebSocketClient(token: string, eventbus: EventBus) {
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + EVENTSUB_WEBSOCKET_URL);
+    reportStarted("Twitch");
+  });
+
+  websocketClient.addEventListener("close", (event) => {
+    if (event.code === 1000) return;
+    reportError(
+      "Twitch",
+      `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
+    );
   });
 
   websocketClient.addEventListener("message", (data) => {
