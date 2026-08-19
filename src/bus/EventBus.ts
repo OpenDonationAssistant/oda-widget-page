@@ -1,6 +1,7 @@
 import { uuidv7 } from "uuidv7";
 import { log } from "../logging";
 import { Client } from "@stomp/stompjs";
+import { reportError, reportStarted } from "../sw/logger-worker/worker-status";
 
 const defaultTtl = (1000 * 60 * 60 * 24).toString(); // 24 hours
 
@@ -125,6 +126,7 @@ export class DefaultEventBus implements EventBus {
   constructor(recipientId: string, swScope: ServiceWorkerGlobalScope) {
     this._swScope = swScope;
     this._socket.onConnect = () => {
+      reportStarted("ODA");
       this._socket.subscribe(
         `/topic/${recipientId}.events`,
         (message) => {
@@ -141,6 +143,15 @@ export class DefaultEventBus implements EventBus {
           "x-expires": defaultTtl,
         },
       );
+    };
+    this._socket.onStompError = (frame) => {
+      reportError("ODA", `stomp error: ${frame.headers.message ?? "unknown"}`);
+    };
+    this._socket.onWebSocketError = (evt) => {
+      reportError("ODA", `websocket error: ${evt}`);
+    };
+    this._socket.onWebSocketClose = (evt) => {
+      reportError("ODA", `websocket closed: ${evt.code} ${evt.reason}`);
     };
     this._db = openLogDB();
     this._socket.activate();

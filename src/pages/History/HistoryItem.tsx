@@ -142,10 +142,7 @@ export const HistoryItemComponent = observer(
               />
             )}
             {item.system === "VKLive" && (
-              <VKLiveIcon
-                color="var(--oda-primary-color)"
-                className={classes.icon}
-              />
+              <VKLiveIcon className={classes.icon} />
             )}
             {item.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
@@ -154,9 +151,7 @@ export const HistoryItemComponent = observer(
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>
-                {item.nickname ?? "Аноним"} подарил подписку{" "}
-              </span>
+              <span>{item.nickname ?? "Аноним"} подарил подписку </span>
               <span className={`${classes.levelname}`}>{item.levelName}</span>
             </span>
           </Flex>
@@ -178,10 +173,7 @@ export const HistoryItemComponent = observer(
               />
             )}
             {item.system === "VKLive" && (
-              <VKLiveIcon
-                color="var(--oda-primary-color)"
-                className={classes.icon}
-              />
+              <VKLiveIcon className={classes.icon} />
             )}
             {item.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
@@ -278,10 +270,7 @@ export const HistoryItemComponent = observer(
               />
             )}
             {item.system === "VKLive" && (
-              <VKLiveIcon
-                color="var(--oda-primary-color)"
-                className={classes.icon}
-              />
+              <VKLiveIcon className={classes.icon} />
             )}
             {item.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
@@ -311,10 +300,7 @@ export const HistoryItemComponent = observer(
               />
             )}
             {item.system === "VKLive" && (
-              <VKLiveIcon
-                color="var(--oda-primary-color)"
-                className={classes.icon}
-              />
+              <VKLiveIcon className={classes.icon} />
             )}
             <span
               className={classes.title}

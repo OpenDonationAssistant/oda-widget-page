@@ -4,7 +4,7 @@ export default function ODAIcon({ color, className }:{ color?: string; className
       width="24"
       height="24"
       className={className}
-      viewBox="15 -30 20 80"
+      viewBox="20 -30 20 80"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

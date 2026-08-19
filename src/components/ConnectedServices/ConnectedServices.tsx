@@ -8,8 +8,10 @@ import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonatePayIcon from "../../icons/DonatePayIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import { DefaultWorkersStore, WorkersStore } from "../../stores/WorkersStore";
+import ODAIcon from "../../icons/ODAIcon";
 
 const serviceIcons: Record<string, JSX.Element> = {
+  ODA: <ODAIcon color="var(--oda-primary-color)" />,
   Twitch: <TwitchIcon />,
   VKLive: <VKLiveIcon />,
   DonationAlerts: <DonationAlertsIcon color="var(--oda-primary-color)" />,
@@ -32,10 +34,9 @@ export default observer(function ConnectedServices() {
       <span className={`material-symbols-sharp ${classes.cableicon}`}>
         cable
       </span>
-      <span>:</span>
       <span className={classes.services}>
         {store.connected.map((handler) => (
-          <span key={handler} title={handler}>
+          <span className={classes.icon} key={handler} title={handler}>
             {serviceIcons[handler]}
           </span>
         ))}

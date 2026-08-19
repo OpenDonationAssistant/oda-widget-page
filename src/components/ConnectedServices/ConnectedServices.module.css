@@ -1,6 +1,7 @@
 .container {
-  background-color: var(--oda-color-150);
-  padding: 6px 9px;
+  /* background-color: var(--oda-color-150); */
+  /* padding: 6px 9px; */
+  padding-left: 6px;
   border-radius: 9px;
   color: var(--oda-color-950);
 }
@@ -12,6 +13,13 @@
 
 .services {
   gap: 6px;
+  background-color: var(--oda-color-150);
+  border-radius: 9px;
   display: inline-flex;
+  padding: 6px 9px;
   align-items: center;
+}
+
+.icon {
+  margin-top: -3px;
 }
