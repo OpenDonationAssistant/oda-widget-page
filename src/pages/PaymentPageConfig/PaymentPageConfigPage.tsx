@@ -18,6 +18,7 @@ import {
 import { AddListItemButton } from "../../components/List/List";
 import { NotBorderedIconButton } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
+import Panel from "../../components/Panel/Panel";
 
 export default function PaymentPageConfigPage() {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -138,7 +139,7 @@ export default function PaymentPageConfigPage() {
     <>
       <h1>Страница доната</h1>
       <div className={classes.paymentpageconfig}>
-        <Flex className={`${classes.panel}`} vertical gap={12}>
+        <Panel>
           <Flex style={{ flexGrow: 1 }} align="center">
             <Flex vertical style={{ flexGrow: 1 }}>
               <a
@@ -234,8 +235,8 @@ export default function PaymentPageConfigPage() {
               />
             </Flex>
           </Flex>
-        </Flex>
-        <Flex className={`${classes.panel}`} vertical>
+        </Panel>
+        <Panel>
           <div style={{ marginBottom: "9px", fontSize: "21px" }}>
             Для самозанятого или ИП
           </div>
@@ -277,8 +278,8 @@ export default function PaymentPageConfigPage() {
               />
             </Flex>
           </Flex>
-        </Flex>
-        <Flex className={`${classes.panel}`} vertical>
+        </Panel>
+        <Panel>
           <div style={{ marginBottom: "9px", fontSize: "21px" }}>
             Социальные ссылки
           </div>
@@ -369,7 +370,7 @@ export default function PaymentPageConfigPage() {
             }}
             label="Добавить ссылку"
           />
-        </Flex>
+        </Panel>
         {hasChanges && (
           <Flex gap={12} justify="flex-end" className={`${classes.buttons}`}>
             <UtilityButton

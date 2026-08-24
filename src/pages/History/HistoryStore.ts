@@ -274,6 +274,7 @@ export class DefaultHistoryStore implements HistoryStore {
 
   public alert(item: HistoryItem) {
     return repeatAlert({
+      baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
       headers: {
         Authorization: `Bearer ${this._token}`,
       },
@@ -283,6 +284,7 @@ export class DefaultHistoryStore implements HistoryStore {
 
   public export() {
     return printCsv({
+      baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
       headers: {
         Authorization: `Bearer ${this._token}`,
       },
@@ -299,6 +301,7 @@ export class DefaultHistoryStore implements HistoryStore {
         ready =
           (
             await getCsvStatus({
+              baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
               headers: { Authorization: `Bearer ${this._token}` },
               path: {
                 id: response?.data?.printId ?? "",
@@ -307,6 +310,7 @@ export class DefaultHistoryStore implements HistoryStore {
           )?.data?.ready ?? false;
       }
       downloadCsv({
+        baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
         headers: { Authorization: `Bearer ${this._token}` },
         path: { id: response?.data?.printId ?? "" },
       }).then((response) => {
@@ -528,6 +532,7 @@ export class DefaultHistoryStore implements HistoryStore {
     );
     this._refreshing = true;
     return getHistory({
+      baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
       headers: {
         Authorization: `Bearer ${this._token}`,
       },

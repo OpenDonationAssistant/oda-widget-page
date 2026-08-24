@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import {
@@ -13,6 +13,7 @@ const DONATEX_HUB_URL = "https://donatex.gg/api/public-donations-hub";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 const connectedTokens: string[] = [];
+const activeConnections = new Set<HubConnection>();
 
 // ── DonateX SignalR event types ─────────────────────────────────────
 
@@ -69,6 +70,7 @@ function handleDonationCreated(
   };
 
   addHistoryItem({
+    baseURL: "https://api.oda.digital",
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,
@@ -93,12 +95,11 @@ function startDonateXConnection(
 ): void {
   console.log("Starting DonateX SignalR connection");
   const connection = new HubConnectionBuilder()
-    .withUrl(
-      `${DONATEX_HUB_URL}?access_token=${encodeURIComponent(dxToken)}`,
-    )
+    .withUrl(`${DONATEX_HUB_URL}?access_token=${encodeURIComponent(dxToken)}`)
     .withAutomaticReconnect()
     .configureLogging(LogLevel.Information)
     .build();
+  activeConnections.add(connection);
 
   connection.on("DonationCreated", (donation: DonateXDonation) => {
     handleDonationCreated(odaToken, settings, donation);
@@ -116,6 +117,7 @@ function startDonateXConnection(
     });
 
   connection.onclose((err) => {
+    if (!activeConnections.has(connection)) return; // Stopped by deregister.
     reportError("DonateX", `connection closed: ${err ?? "unknown error"}`);
   });
 }
@@ -125,22 +127,37 @@ function startDonateXConnection(
 export function register(token: string): void {
   console.log({ connected: connectedTokens }, "add donatex-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((t) => t.system === "DonateX")
-      .filter((t) => t.enabled)
-      .filter((t) => !connectedTokens.includes(t.id))
-      .forEach((t) => {
-        console.log(`add donatex handler for ${t.id}`);
-        connectedTokens.push(t.id);
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((t) => t.system === "DonateX")
+        .filter((t) => t.enabled)
+        .filter((t) => !connectedTokens.includes(t.id))
+        .forEach((t) => {
+          console.log(`add donatex handler for ${t.id}`);
+          connectedTokens.push(t.id);
 
-        startDonateXConnection(
-          token,
-          t.token,
-          // Generated API types model settings as a generic record; the
-          // shape is known for DonateX tokens so cast through unknown.
-          t.settings as unknown as DonateXTokenSettings,
-        );
-      });
+          startDonateXConnection(
+            token,
+            t.token,
+            // Generated API types model settings as a generic record; the
+            // shape is known for DonateX tokens so cast through unknown.
+            t.settings as unknown as DonateXTokenSettings,
+          );
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to DonateX", err);
+      reportError("DonateX", err);
+    });
+}
+
+export function deregister(): void {
+  console.log({ connected: connectedTokens }, "remove donatex listener");
+  activeConnections.forEach((connection) => {
+    activeConnections.delete(connection);
+    void connection.stop();
   });
+  connectedTokens.length = 0;
 }

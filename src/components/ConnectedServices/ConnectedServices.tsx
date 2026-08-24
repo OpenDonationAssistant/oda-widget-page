@@ -4,6 +4,7 @@ import { Flex } from "antd";
 import classes from "./ConnectedServices.module.css";
 import TwitchIcon from "../../icons/TwitchIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
+import KickIcon from "../../icons/KickIcon";
 import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonatePayIcon from "../../icons/DonatePayIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
@@ -14,6 +15,7 @@ const serviceIcons: Record<string, JSX.Element> = {
   ODA: <ODAIcon color="var(--oda-primary-color)" />,
   Twitch: <TwitchIcon />,
   VKLive: <VKLiveIcon />,
+  Kick: <KickIcon />,
   DonationAlerts: <DonationAlertsIcon color="var(--oda-primary-color)" />,
   UnofficialDonationAlerts: (
     <DonationAlertsIcon color="var(--oda-primary-color)" />
@@ -30,10 +32,7 @@ export default observer(function ConnectedServices() {
   useEffect(() => () => store.dispose(), [store]);
 
   return (
-    <Flex align="center" gap={6} className={classes.container}>
-      <span className={`material-symbols-sharp ${classes.cableicon}`}>
-        cable
-      </span>
+    <Flex align="center" className={classes.container}>
       <span className={classes.services}>
         {store.connected.map((handler) => (
           <span className={classes.icon} key={handler} title={handler}>

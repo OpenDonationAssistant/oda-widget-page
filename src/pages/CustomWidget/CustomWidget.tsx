@@ -107,7 +107,7 @@ export const CustomWidget = observer(
               navigator.serviceWorker.addEventListener("message", (message) => {
                 const event = message.data;
                 console.log({event:event}, "Received message");
-                if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE") {
+                if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE" || event._type === "KICK_CHAT_MESSAGE") {
                   const e = new CustomEvent("onEventReceived", {
                     detail: {
                       listener: "message",

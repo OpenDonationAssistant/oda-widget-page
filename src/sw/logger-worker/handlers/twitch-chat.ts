@@ -1,10 +1,11 @@
 /// <reference lib="webworker" />
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
+import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
+import { emotesFromText } from "./emotes";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
@@ -62,7 +63,12 @@ async function registerEventSubListeners(
   }
 }
 
-function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
+function handleWebSocketMessage(
+  token: string,
+  data: any,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+) {
   switch (data.metadata.message_type) {
     case "session_welcome":
       registerEventSubListeners(data.payload.session.id, token);
@@ -71,21 +77,26 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
           console.log("data.payload.event", data.payload.event);
-          const emotes = data.payload.event.message?.fragments
-            ?.filter((fragment: any) => fragment.type === "emote")
-            .map((fragment: any) => {
-              const id = fragment.emote.id;
-              const url = `https://static-cdn.jtvnw.net/emoticons/v2/${id}/static/light/1.0`;
-              return {
-                type: "twitch",
-                name: fragment.text,
-                id: fragment.emote.id,
-                gif: false,
-                urls: { "1": url },
-                start: 0,
-                end: 0,
-              } as Emotes;
-            });
+          const emotes = emotesFromText(
+            data.payload.event.message?.text ?? "",
+            emotesStore,
+          );
+          emotes.push(
+            ...(data.payload.event.message?.fragments ?? [])
+              .filter((fragment) => fragment.type === "emote")
+              .map((fragment) => {
+                const link = `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`;
+                return {
+                  type: "twitch",
+                  name: fragment.text,
+                  id: fragment.emote.id,
+                  gif: false,
+                  urls: { "1": link, "2": link, "4": link },
+                  start: 0,
+                  end: 0,
+                };
+              }),
+          );
           const variables: Variable[] = [];
           variables.push(
             {
@@ -96,8 +107,8 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
             },
             {
               id: uuidv7(),
-              name: "chatter_user_login",
-              value: data.payload.event.chatter_user_login,
+              name: "chatter_user_name",
+              value: `<span class="oda-message-author"><img height="16" width="16" src="https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png"/><span>${data.payload.event.chatter_user_name ?? ""}</span></span>`,
               type: "string",
             },
             {
@@ -105,12 +116,6 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
               name: "emotes",
               value: emotes,
               type: "object",
-            },
-            {
-              id: uuidv7(),
-              name: "chatter_user_login",
-              value: data.payload.event.chatter_user_login,
-              type: "string",
             },
             {
               id: uuidv7(),
@@ -126,7 +131,11 @@ function handleWebSocketMessage(token: string, data: any, eventbus: EventBus) {
   }
 }
 
-function startWebSocketClient(token: string, eventbus: EventBus) {
+function startWebSocketClient(
+  token: string,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+) {
   console.log({ token }, "Starting WebSocket connection");
   let websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
 
@@ -146,8 +155,10 @@ function startWebSocketClient(token: string, eventbus: EventBus) {
   });
 
   websocketClient.addEventListener("message", (data) => {
-    handleWebSocketMessage(token, JSON.parse(data.data), eventbus);
+    handleWebSocketMessage(token, JSON.parse(data.data), eventbus, emotesStore);
   });
+
+  websocketClients.add(websocketClient);
 
   return websocketClient;
 }
@@ -155,27 +166,42 @@ function startWebSocketClient(token: string, eventbus: EventBus) {
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 
 const connectedTokens: string[] = [];
+const websocketClients = new Set<WebSocket>();
 
 export function register(
   token: string,
   eventbus: EventBus,
-  sw: ServiceWorkerGlobalScope,
   emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add twitch-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((token) => token.system === "Twitch")
-      .filter((token) => !connectedTokens.includes(token.id))
-      .forEach((token) => {
-        console.log(`add handler for ${token.id}`);
-        connectedTokens.push(token.id);
-        recipientService
-          .getAccessToken({ tokenId: token.id }, auth)
-          .then((response) =>
-            startWebSocketClient(response.data.token, eventbus),
-          );
-      });
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((token) => token.system === "Twitch")
+        .filter((token) => !connectedTokens.includes(token.id))
+        .forEach((token) => {
+          console.log(`add handler for ${token.id}`);
+          connectedTokens.push(token.id);
+          recipientService
+            .getAccessToken({ tokenId: token.id }, auth)
+            .then((response) =>
+              startWebSocketClient(response.data.token, eventbus, emotesStore),
+            );
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to Twitch", err);
+      reportError("Twitch", err);
+    });
+}
+
+export function deregister(): void {
+  console.log({ connected: connectedTokens }, "remove twitch-listener");
+  websocketClients.forEach((websocketClient) => {
+    websocketClient.close(1000, "deregistered");
+    websocketClients.delete(websocketClient);
   });
+  connectedTokens.length = 0;
 }

@@ -10,3 +10,7 @@
 .section {
   margin-bottom: 21px;
 }
+
+.sectionname {
+  color: var(--oda-color-950);
+}

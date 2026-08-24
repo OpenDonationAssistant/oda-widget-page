@@ -17,6 +17,7 @@ const CENTRIFUGO_SUBSCRIBE_URL =
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 const connectedTokens: string[] = [];
+const activeSockets = new Set<WebSocket>();
 
 // ── DonationAlerts data shapes ─────────────────────────────────────
 
@@ -105,9 +106,7 @@ function handleWebSocketMessage(
     }
     subscribeToChannel(daToken, channel, client)
       .then((channelToken) => {
-        console.log(
-          `DonationAlerts subscribed to channel ${channel}`,
-        );
+        console.log(`DonationAlerts subscribed to channel ${channel}`);
         socket.send(
           JSON.stringify({
             params: {
@@ -162,6 +161,7 @@ function handleDonation(
   };
 
   addHistoryItem({
+    baseURL: "https://api.oda.digital",
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,
@@ -192,6 +192,7 @@ function startWebSocketClient(
   console.log("Starting DonationAlerts Centrifugo WebSocket connection");
   const socket = new WebSocket(CENTRIFUGO_WEBSOCKET_URL);
   const channel = `$alerts:donation_${userId}`;
+  activeSockets.add(socket);
 
   socket.addEventListener("error", (err) => {
     console.error("DonationAlerts WebSocket error:", err);
@@ -222,15 +223,17 @@ function startWebSocketClient(
   });
 
   socket.addEventListener("close", (event) => {
-    console.log(
-      "DonationAlerts Centrifugo WebSocket closed. Reconnection attempt in 1s",
-    );
+    const wasRegistered = activeSockets.delete(socket);
     if (event.code !== 1000) {
       reportError(
         "DonationAlerts",
         `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
       );
     }
+    if (!wasRegistered) return; // Closed by deregister — do not reconnect.
+    console.log(
+      "DonationAlerts Centrifugo WebSocket closed. Reconnection attempt in 1s",
+    );
     setTimeout(() => {
       startConnection(odaToken, daToken, settings);
     }, 1000);
@@ -244,14 +247,21 @@ function startConnection(
 ): void {
   getSocketConnectionInfo(daToken)
     .then(({ userId, centrifugoToken }) => {
-      startWebSocketClient(odaToken, daToken, settings, userId, centrifugoToken);
+      startWebSocketClient(
+        odaToken,
+        daToken,
+        settings,
+        userId,
+        centrifugoToken,
+      );
     })
-    .catch((err) =>
+    .catch((err) => {
       console.error(
         "Failed to get DonationAlerts socket connection info:",
         err,
-      ),
-    );
+      );
+      reportError("DonationAlerts", err);
+    });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────
@@ -259,20 +269,41 @@ function startConnection(
 export function register(token: string): void {
   console.log({ connected: connectedTokens }, "add donationalerts-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((t) => t.system === "DonationAlerts")
-      .filter((t) => t.enabled)
-      .filter((t) => !connectedTokens.includes(t.id))
-      .forEach((t) => {
-        console.log(`add donationalerts handler for ${t.id}`);
-        connectedTokens.push(t.id);
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((t) => t.system === "DonationAlerts")
+        .filter((t) => t.enabled)
+        .filter((t) => !connectedTokens.includes(t.id))
+        .forEach((t) => {
+          console.log(`add donationalerts handler for ${t.id}`);
+          connectedTokens.push(t.id);
 
-        startConnection(
-          token,
-          t.token,
-          t.settings as unknown as DonationAlertsSettings,
-        );
-      });
+          startConnection(
+            token,
+            t.token,
+            t.settings as unknown as DonationAlertsSettings,
+          );
+        });
+    })
+    .catch((err) => {
+      console.error(
+        "Failed to subscribe to DonationAlerts",
+        err,
+      );
+      reportError("DonationAlerts", err);
+    });
+}
+
+export function deregister(): void {
+  console.log(
+    { connected: connectedTokens },
+    "remove donationalerts listener",
+  );
+  activeSockets.forEach((socket) => {
+    activeSockets.delete(socket);
+    socket.close(1000, "deregistered");
   });
+  connectedTokens.length = 0;
 }

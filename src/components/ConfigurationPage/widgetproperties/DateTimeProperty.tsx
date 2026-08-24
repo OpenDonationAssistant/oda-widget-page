@@ -2,17 +2,15 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { DatePicker } from "antd";
-import dayjs from "dayjs";
 import { log } from "../../../logging";
 import { toJS } from "mobx";
 import { produce } from "immer";
+import dayjs from "dayjs";
+import DateTimeInput from "../../DateTimeInput/DateTimeInput";
 
 export interface DateTimePropertyValue {
   timestamp?: Date;
 }
-
-const dateFormat = "DD/MM/YYYY   HH:mm";
 
 export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValue> {
   constructor(params: {
@@ -32,24 +30,23 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
     });
   }
 
-  DateTimePropertyComponent = observer(() => {
-    return (
-      <>
-        <LabeledContainer help={this.help} displayName={this.name}>
-          <DatePicker
-            value={dayjs(this.value.timestamp)}
-            className="full-width"
-            showTime
-            format={dateFormat}
-            onChange={(value) => {
-              this.value = { timestamp: value.toDate() };
-              log.debug({ value: toJS(this.value) }, "updated value");
-            }}
-          />
-        </LabeledContainer>
-      </>
-    );
-  });
+  DateTimePropertyComponent = observer(
+    ({ property }: { property: DateTimeProperty }) => {
+      return (
+        <>
+          <LabeledContainer help={property.help} displayName={property.name}>
+            <DateTimeInput
+              value={new Date(property.value.timestamp ?? Date.now()).getTime()}
+              onChange={(value) => {
+                property.value = { timestamp: new Date(value) };
+                log.debug({ value: toJS(property.value) }, "updated value");
+              }}
+            />
+          </LabeledContainer>
+        </>
+      );
+    },
+  );
 
   copy() {
     return new DateTimeProperty({
@@ -61,6 +58,6 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
   }
 
   markup(): ReactNode {
-    return <this.DateTimePropertyComponent />;
+    return <this.DateTimePropertyComponent property={this} />;
   }
 }

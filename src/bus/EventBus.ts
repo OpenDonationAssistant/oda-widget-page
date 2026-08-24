@@ -220,5 +220,13 @@ export class DefaultEventBus implements EventBus {
   public async push(event: Event) {
     log.debug({ message: event }, "EventBus message");
     await this.sendMessage(event);
+    const tokenType = event.get("tokenType");
+    const eventName = event.get("event");
+    if (
+      event.type === "AuthUpdated" &&
+      !(tokenType === "refreshToken" && eventName === "TOKEN_UPDATED")
+    ) {
+      // this.reloadServiceWorker();
+    }
   }
 }

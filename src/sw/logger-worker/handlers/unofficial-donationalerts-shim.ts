@@ -13,6 +13,7 @@ const DONATIONALERTS_SOCKET_URL = "wss://socket.donationalerts.com/";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 const connectedTokens: string[] = [];
+const activeSockets = new Set<SocketIOClient.Socket>();
 
 // Matches the number of meme packs bought in a MemeAlerts message,
 // e.g. "купил 5 мемов" → 5.
@@ -67,6 +68,7 @@ function persistDonation(
   command: AddHistoryItemApiAddHistoryItemCommand,
 ): void {
   addHistoryItem({
+    baseURL: "https://api.oda.digital",
     body: {
       recipientId: getRecipientId(),
       nickname: donation.username,
@@ -165,6 +167,7 @@ function startSocketClient(odaToken: string, daToken: string): void {
     reconnectionDelayMax: 5000,
     reconnectionDelay: 1000,
   });
+  activeSockets.add(socket);
 
   socket.on("connect", () => {
     console.log("UnofficialDonationAlerts socket connected");
@@ -202,16 +205,34 @@ export function register(token: string): void {
     "add unofficial-donationalerts-listener",
   );
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((t) => t.system === "UnofficialDonationAlerts")
-      .filter((t) => t.enabled)
-      .filter((t) => !connectedTokens.includes(t.id))
-      .forEach((t) => {
-        console.log(`add unofficial-donationalerts handler for ${t.id}`);
-        connectedTokens.push(t.id);
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((t) => t.system === "UnofficialDonationAlerts")
+        .filter((t) => t.enabled)
+        .filter((t) => !connectedTokens.includes(t.id))
+        .forEach((t) => {
+          console.log(`add unofficial-donationalerts handler for ${t.id}`);
+          connectedTokens.push(t.id);
 
-        startSocketClient(token, t.token);
-      });
+          startSocketClient(token, t.token);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to UnofficialDonationAlerts", err);
+      reportError("UnofficialDonationAlerts", err);
+    });
+}
+
+export function deregister(): void {
+  console.log(
+    { connected: connectedTokens },
+    "remove unofficial-donationalerts listener",
+  );
+  activeSockets.forEach((socket) => {
+    activeSockets.delete(socket);
+    socket.disconnect();
   });
+  connectedTokens.length = 0;
 }

@@ -7,7 +7,7 @@ export default function KickIcon({
 }) {
   return (
     <svg
-      fill={color ? color : "#B2D4FB"}
+      fill={color ? color : "var(--oda-primary-color)"}
       className={className}
       height="19px"
       width="19px"

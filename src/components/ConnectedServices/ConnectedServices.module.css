@@ -1,7 +1,6 @@
 .container {
   /* background-color: var(--oda-color-150); */
   /* padding: 6px 9px; */
-  padding-left: 6px;
   border-radius: 9px;
   color: var(--oda-color-950);
 }
@@ -22,4 +21,12 @@
 
 .icon {
   margin-top: -3px;
+}
+
+.refreshicon {
+  color: var(--oda-color-900);
+}
+
+.reloadbutton {
+  color: var(--oda-color-900);
 }

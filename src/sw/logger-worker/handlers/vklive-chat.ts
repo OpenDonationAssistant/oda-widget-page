@@ -1,12 +1,11 @@
 /// <reference lib="webworker" />
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-import { Emotes, Event, EventBus, Variable } from "../../../bus/EventBus";
+import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
-import { EmoteItem, EmotesStore } from "../../../stores/EmotesStore";
+import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
-
-const swScope = self as unknown as ServiceWorkerGlobalScope;
+import { emotesFromText } from "./emotes";
 
 const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
@@ -65,8 +64,8 @@ async function getSubscriptionToken(
 function messageText(message: any): string {
   const parts: any[] = message.parts ?? [];
   return parts
-    .map((part) => part.text?.content ?? part.link?.content ?? "")
-    .join("");
+    .map((part) => part.text?.content ?? part.smile?.name ?? "")
+    .join(" ");
 }
 
 function handleChatMessage(
@@ -75,27 +74,31 @@ function handleChatMessage(
   emotesStore: EmotesStore,
 ): void {
   console.debug({ message }, "VK Live chat message");
-  const words = message.split(/[^\p{L}]+/u);
-  const emotes = words
-    .map((word: string) => emotesStore.getEmote(word))
-    .filter(Boolean)
-    .map(
-      (emote: EmoteItem) =>
-        ({
-          type: emote.type,
-          name: emote.code,
-          id: emote.id,
-          gif: false,
-          urls: { "1": emote.link, "2": emote.link, "4": emote.link },
+  const emotes = emotesFromText(messageText(message), emotesStore);
+  emotes.push(
+    ...(message.parts ?? [])
+      .filter((part: any) => part.smile)
+      .map((part: any) => {
+        return {
+          type: "vklive",
+          name: part.smile.name,
+          id: part.smile.id,
+          gif: part.smile.animated,
+          urls: {
+            "1": part.smile.medium_url,
+            "2": part.smile.medium_url,
+            "4": part.smile.medium_url,
+          },
           start: 0,
           end: 0,
-        }) as Emotes,
-    );
+        };
+      }),
+  );
   const variables: Variable[] = [
     {
       id: uuidv7(),
       name: "chatter_user_login",
-      value: `<div class="message-author"><img height="16" width="16" src="https://dev.live.vkvideo.ru/static/favicon.png"/><div>${message.author?.nick ?? ""}</div></div>`,
+      value: `<span class="oda-message-author"><img height="16" width="16" src="https://dev.live.vkvideo.ru/static/favicon.png"/><span>${message.author?.nick ?? ""}</span></span>`,
       type: "string",
     },
     {
@@ -201,6 +204,8 @@ function startWebSocketClient(
     );
   });
 
+  websocketClients.add(websocketClient);
+
   return websocketClient;
 }
 
@@ -230,27 +235,42 @@ async function startVKLiveClient(
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 
 const connectedTokens: string[] = [];
+const websocketClients = new Set<WebSocket>();
 
 export function register(
   token: string,
   eventbus: EventBus,
-  sw: ServiceWorkerGlobalScope,
   emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add vklive-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((token) => token.system === "VKLive")
-      .filter((token) => !connectedTokens.includes(token.id))
-      .forEach((token) => {
-        console.log(`add handler for ${token.id}`);
-        connectedTokens.push(token.id);
-        recipientService
-          .getAccessToken({ tokenId: token.id }, auth)
-          .then((response) =>
-            startVKLiveClient(response.data.token, eventbus, emotesStore),
-          );
-      });
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((token) => token.system === "VKLive")
+        .filter((token) => !connectedTokens.includes(token.id))
+        .forEach((token) => {
+          console.log(`add handler for ${token.id}`);
+          connectedTokens.push(token.id);
+          recipientService
+            .getAccessToken({ tokenId: token.id }, auth)
+            .then((response) =>
+              startVKLiveClient(response.data.token, eventbus, emotesStore),
+            );
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to VKLive", err);
+      reportError("VKLive", err);
+    });
+}
+
+export function deregister(): void {
+  console.log({ connected: connectedTokens }, "remove vklive-listener");
+  websocketClients.forEach((websocketClient) => {
+    websocketClient.close(1000, "deregistered");
+    websocketClients.delete(websocketClient);
   });
+  connectedTokens.length = 0;
 }

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Flex, Input, Select } from "antd";
@@ -19,6 +19,7 @@ import AddIcon from "../../icons/AddIcon";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./AddHistoryItemModal.module.css";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
+import DateTimeInput from "../../components/DateTimeInput/DateTimeInput";
 import SecondaryButton from "../../components/Button/SecondaryButton";
 import { addHistoryItem } from "@opendonationassistant/history-service";
 
@@ -37,14 +38,18 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const [triggerDonaton, setTriggerDonaton] = useState<boolean>(false);
   const [goalId, setGoalId] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [authorizationTimestamp, setAuthorizationTimestamp] = useState<number>(
+    () => Date.now(),
+  );
   const token = localStorage.getItem("access-token");
 
-  const paymentPageConfig = useRef<PaymentPageConfig | null>(
-    new PaymentPageConfig(recipientId),
+  const [paymentPageConfig] = useState<PaymentPageConfig>(
+    () => new PaymentPageConfig(recipientId),
   );
 
   async function addItem() {
     addHistoryItem({
+      baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -66,9 +71,8 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
               {
                 goalId: goalId,
                 goalTitle:
-                  paymentPageConfig.current?.goals.find(
-                    (goal) => goal.id === goalId,
-                  )?.briefDescription ?? "",
+                  paymentPageConfig.goals.find((goal) => goal.id === goalId)
+                    ?.briefDescription ?? "",
               },
             ]
           : [],
@@ -76,6 +80,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
         addToGoal: false,
         paymentId: uuidv7(),
         event: "payment",
+        authorizationTimestamp: new Date(authorizationTimestamp).toISOString(),
       },
     });
   }
@@ -134,9 +139,16 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     className="full-width"
                     value={goalId}
                     onChange={(selected) => setGoalId(selected)}
-                    options={paymentPageConfig.current?.goals.map((goal) => {
+                    options={paymentPageConfig.goals.map((goal) => {
                       return { value: goal.id, label: goal.briefDescription };
                     })}
+                  />
+                </Flex>
+                <Flex vertical>
+                  <div className={`${classes.label}`}>Дата доната</div>
+                  <DateTimeInput
+                    value={authorizationTimestamp}
+                    onChange={(value) => setAuthorizationTimestamp(value)}
                   />
                 </Flex>
               </Flex>

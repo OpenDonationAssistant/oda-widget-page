@@ -5,16 +5,19 @@ import classes from "./IconButton.module.css";
 export function NotBorderedIconButton({
   children,
   onClick,
-  className
+  className,
+  title
 }:{
   children: ReactNode;
   onClick: () => void;
   className?: string;
+  title?: string;
 }){
   return (
     <>
       <button
         className={`${classes.button} ${classes.notbordered} ${className ? className : ""}`}
+        title={title}
         onClick={() => {
           onClick();
         }}

@@ -191,6 +191,7 @@ function handleTipEvent(
   };
 
   addHistoryItem({
+    baseURL: "https://api.oda.digital",
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,
@@ -280,15 +281,30 @@ function startWebSocketClient(
 export function register(token: string, eventbus: EventBus): void {
   console.log({ connected: connectedTokens }, "add streamelements-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService.listTokens(auth).then((tokens) => {
-    tokens.data
-      .filter((t) => t.system === "StreamElements")
-      .filter((t) => !connectedTokens.includes(t.id))
-      .forEach((t) => {
-        console.log(`add streamelements handler for ${t.id}`);
-        connectedTokens.push(t.id);
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      tokens.data
+        .filter((t) => t.system === "StreamElements")
+        .filter((t) => !connectedTokens.includes(t.id))
+        .forEach((t) => {
+          console.log(`add streamelements handler for ${t.id}`);
+          connectedTokens.push(t.id);
 
-        startWebSocketClient(token, t.token, eventbus);
-      });
+          startWebSocketClient(token, t.token, eventbus);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to StreamElements", err);
+      reportError("StreamElements", err);
+    });
+}
+
+export function deregister(): void {
+  console.log({ connected: connectedTokens }, "remove streamelements listener");
+  activeSockets.forEach((websocketClient) => {
+    websocketClient.close(1000, "deregistered");
   });
+  activeSockets.clear();
+  connectedTokens.length = 0;
 }

@@ -34,6 +34,11 @@ export function reportError(handler: string, message: string): void {
   console.error(`[worker-status] ${handler} error: ${message}`);
 }
 
+export function removeStatuses(handler: string): void {
+  statuses.delete(handler);
+  console.log(`[worker-status] ${handler} status removed`);
+}
+
 export function getStatuses(): Map<string, WorkerStatusMessage> {
   return statuses;
 }
@@ -41,11 +46,17 @@ export function getStatuses(): Map<string, WorkerStatusMessage> {
 export function register(sw: ServiceWorkerGlobalScope): void {
   sw.addEventListener("message", (event: ExtendableMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
-    if (!data || data.type !== "GetWorkersStatus") return;
-    event.source?.postMessage({
-      type: "WorkersStatus",
-      statuses: getStatuses(),
-    });
+    if (!data || typeof data.type !== "string") return;
+    if (data.type === "GetWorkersStatus") {
+      event.source?.postMessage({
+        type: "WorkersStatus",
+        statuses: getStatuses(),
+      });
+    } else if (
+      data.type === "RemoveWorkersStatus" &&
+      typeof data.handler === "string"
+    ) {
+      removeStatuses(data.handler);
+    }
   });
 }
-

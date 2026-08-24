@@ -1,5 +1,5 @@
 .container {
-  background-color: var(--oda-color-150);
+  background-color: var(--oda-warning-color);
   padding: 6px 9px;
   border-radius: 9px;
   margin-top: 12px;
@@ -15,4 +15,12 @@
 
 .line {
   color: var(--oda-color-950);
+  font-size: 18px;
+  & span {
+    font-weight: 900;
+  }
+}
+
+.row {
+  justify-content: space-between;
 }

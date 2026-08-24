@@ -4,6 +4,7 @@ import { register as registerDonationAlertsHandler } from "./handlers/donational
 import { register as registerDonatePayEuHandler } from "./handlers/donatepay-eu-shim";
 import { register as registerDonatePayHandler } from "./handlers/donatepay-shim";
 import { register as registerDonateXHandler } from "./handlers/donatex-shim";
+import { register as registerKickChatHandler } from "./handlers/kick-chat";
 import { register as registerLogHandler } from "./handlers/log";
 import { register as registerStreamElementsHandler } from "./handlers/streamelements-shim";
 import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
@@ -25,12 +26,14 @@ swScope.addEventListener("install", () => {
 
 swScope.addEventListener("activate", (event) => {
   event.waitUntil(swScope.clients.claim());
+  console.log("main worker activated");
 });
 
 // ── Register message handlers ───────────────────────────────────────
 //
 //
 let connected = false;
+const tokens = new Map<String, String>();
 
 swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
@@ -40,15 +43,20 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
 
   console.log("main worker received USER_AUTHORIZED");
 
-  const emotesStore = new DefaultEmotesStore();
-
   const info = (data.payload ?? data) as Record<string, unknown>;
   const recipientId = String(info.recipientId ?? "");
+  const token = String(info.token ?? "");
+  tokens.set(recipientId, token);
+
   const eventbus = new DefaultEventBus(recipientId, swScope);
+  const emotesStore = new DefaultEmotesStore();
+  emotesStore.load("");
+
   registerLogHandler(swScope);
   registerStreamElementsHandler(info.token, eventbus);
-  registerTwitchChatHandler(info.token, eventbus, swScope, emotesStore);
-  registerVKLiveChatHandler(info.token, eventbus, swScope, emotesStore);
+  registerTwitchChatHandler(info.token, eventbus, emotesStore);
+  registerVKLiveChatHandler(info.token, eventbus, emotesStore);
+  registerKickChatHandler(info.token, eventbus, emotesStore);
   registerWidgetsHandler(info.token, swScope);
   registerWorkerStatusHandler(swScope);
   registerDonationAlertsHandler(info.token);

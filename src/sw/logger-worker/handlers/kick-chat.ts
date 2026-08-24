@@ -1,97 +1,214 @@
 /// <reference lib="webworker" />
 
-// import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
-// import { createClient, type MessageData } from "@retconned/kick-js";
-// import { Event, EventBus, Variable } from "../../../bus/EventBus";
-// import { uuidv7 } from "uuidv7";
-//
-// const swScope = self as unknown as ServiceWorkerGlobalScope;
-//
-// const recipientService = RecipientService(undefined, "https://api.oda.digital");
-//
-// const connectedSlugs: string[] = [];
-//
-// function getSlug(token: {
-//   token: string;
-//   settings: { [key: string]: unknown };
-// }): string {
-//   if (typeof token.settings.slug === "string" && token.settings.slug) {
-//     return token.settings.slug as string;
-//   }
-//   if (typeof token.settings.name === "string" && token.settings.name) {
-//     return (token.settings.name as string).toLowerCase();
-//   }
-//   return token.token;
-// }
-//
-// function handleChatMessage(message: MessageData, eventbus: EventBus): void {
-//   const variables: Variable[] = [
-//     {
-//       id: uuidv7(),
-//       name: "sender_username",
-//       value: message.sender.username,
-//       type: "string",
-//     },
-//     {
-//       id: uuidv7(),
-//       name: "message_text",
-//       value: message.content,
-//       type: "string",
-//     },
-//     {
-//       id: uuidv7(),
-//       name: "message_id",
-//       value: message.id,
-//       type: "string",
-//     },
-//   ];
-//   eventbus.push(new Event("KICK_CHAT_MESSAGE", variables));
-// }
-//
-// function startKickClient(slug: string, eventbus: EventBus): void {
-//   console.log({ slug }, "Starting Kick chat client");
-//   const client = createClient(slug, {
-//     readOnly: true,
-//     logger: true,
-//   });
-//
-//   client.on("ready", () => {
-//     console.log(`Connected to Kick chat for channel: ${slug}`);
-//   });
-//
-//   client.on("ChatMessage", (message: MessageData) => {
-//     handleChatMessage(message, eventbus);
-//   });
-//
-//   client.on("disconnect", () => {
-//     console.log(`Disconnected from Kick chat for channel: ${slug}`);
-//     const index = connectedSlugs.indexOf(slug);
-//     if (index !== -1) {
-//       connectedSlugs.splice(index, 1);
-//     }
-//   });
-//
-//   client.on("error", (error) => {
-//     console.error(`Kick chat error for channel ${slug}:`, error);
-//   });
-// }
-//
-// export function register(
-//   token: string,
-//   eventbus: EventBus,
-//   sw: ServiceWorkerGlobalScope,
-// ): void {
-//   console.log({ connected: connectedSlugs }, "add kick-listener");
-//   const auth = { headers: { Authorization: `Bearer ${token}` } };
-//   recipientService.listTokens(auth).then((tokens) => {
-//     tokens.data
-//       .filter((token) => token.system === "Kick")
-//       .filter((token) => !connectedSlugs.includes(getSlug(token)))
-//       .forEach((token) => {
-//         const slug = getSlug(token);
-//         console.log(`add kick handler for ${slug}`);
-//         connectedSlugs.push(slug);
-//         startKickClient(slug, eventbus);
-//       });
-//   });
-// }
+import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { getChannelInfo } from "@opendonationassistant/kick-service";
+import { Event, EventBus, Variable } from "../../../bus/EventBus";
+import { uuidv7 } from "uuidv7";
+import { reportError, reportStarted } from "../worker-status";
+import { EmotesStore } from "../../../stores/EmotesStore";
+import { emotesFromText } from "./emotes";
+
+// Kick uses Pusher for its chat websocket. The app key and query params
+// (protocol, client, version) below match what kick-js uses.
+const KICK_PUSHER_WEBSOCKET_URL =
+  "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false";
+
+const EVENT_NAME = "KICK_CHAT_MESSAGE";
+
+// Endpoints come from the build-time environment (.env.development /
+// .env.production), with a fallback to the production gateway.
+const RECIPIENT_API_ENDPOINT =
+  process.env.REACT_APP_RECIPIENT_API_ENDPOINT ?? "https://api.oda.digital";
+const KICK_API_ENDPOINT =
+  process.env.REACT_APP_API_ENDPOINT ?? "https://api.oda.digital";
+
+const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
+
+const connectedTokens: string[] = [];
+const websocketClients = new Set<WebSocket>();
+
+function handleChatMessage(
+  message: any,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): void {
+  const emotes = emotesFromText(message.content ?? "", emotesStore);
+  emotes.push(
+    ...((message.content ?? "").match(/\[emote:\d+:[^\]]+\]/g) ?? []).map(
+      (emote: string) => {
+        const parts = emote.split(":") ?? ["[", "", "]"];
+        const link = `https://files.kick.com/emotes/${parts[1]}/fullsize`;
+        return {
+          type: "kick",
+          name: parts[2].slice(0, -1),
+          id: parts[1],
+          gif: false,
+          urls: { "1": link, "2": link, "4": link },
+          start: 0,
+          end: 0,
+        };
+      },
+    ),
+  );
+  const variables: Variable[] = [
+    {
+      id: uuidv7(),
+      name: "chatter_user_login",
+      value: `<span class="oda-message-author"><img height="16" width="16" src="https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico="/><span>${message.sender?.username ?? ""}</span></span>`,
+      type: "string",
+    },
+    {
+      id: uuidv7(),
+      name: "message_text",
+      value:
+        message.content?.replace(
+          /\[emote:\d+:([^\]]+)\]/g,
+          (_1: string, _2: string, _3: any) => " " + _2 + " ",
+        ) ?? "",
+      type: "string",
+    },
+    {
+      id: uuidv7(),
+      name: "message_id",
+      value: String(message.id ?? ""),
+      type: "string",
+    },
+    {
+      id: uuidv7(),
+      name: "emotes",
+      value: emotes,
+      type: "object",
+    },
+  ];
+  eventbus.push(new Event(EVENT_NAME, variables));
+}
+
+function handleFrame(
+  frame: any,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): void {
+  switch (frame.event) {
+    case "App\\Events\\ChatMessageEvent": {
+      let data = frame.data;
+      if (typeof data === "string") {
+        try {
+          data = JSON.parse(data);
+        } catch (error) {
+          console.error("Kick: failed to parse chat message data", error);
+          return;
+        }
+      }
+      handleChatMessage(data, eventbus, emotesStore);
+      break;
+    }
+    default:
+      console.log("Kick: unsupported event type", frame.event);
+  }
+}
+
+function startWebSocketClient(
+  chatroomId: string,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): WebSocket {
+  const channel = `chatrooms.${chatroomId}.v2`;
+  console.log({ chatroomId }, "Starting Kick WebSocket connection");
+  const websocketClient = new WebSocket(KICK_PUSHER_WEBSOCKET_URL);
+
+  websocketClient.addEventListener("error", console.error);
+
+  websocketClient.addEventListener("open", () => {
+    console.log(
+      "Kick WebSocket connection opened to " + KICK_PUSHER_WEBSOCKET_URL,
+    );
+    reportStarted("Kick");
+    const connect = JSON.stringify({
+      event: "pusher:subscribe",
+      data: { auth: "", channel },
+    });
+    websocketClient.send(connect);
+  });
+
+  websocketClient.addEventListener("close", (event) => {
+    if (event.code === 1000) return;
+    reportError(
+      "Kick",
+      `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
+    );
+  });
+
+  websocketClient.addEventListener("message", (data) => {
+    let frame: any;
+    try {
+      frame = JSON.parse(data.data);
+    } catch (error) {
+      console.error("Kick: failed to parse WebSocket message", error);
+      return;
+    }
+    handleFrame(frame, eventbus, emotesStore);
+  });
+
+  websocketClients.add(websocketClient);
+
+  return websocketClient;
+}
+
+async function startKickClient(
+  tokenId: string,
+  auth: { Authorization: string },
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): Promise<void> {
+  try {
+    const { data, error } = await getChannelInfo({
+      baseURL: KICK_API_ENDPOINT,
+      headers: auth,
+      body: { tokenId },
+    });
+    if (error || !data?.chatroom?.id) {
+      console.error("Failed to get Kick channel info", { data, error });
+      reportError("Kick", error?.message ?? "Failed to get Kick channel info");
+      return;
+    }
+    startWebSocketClient(data.chatroom.id, eventbus, emotesStore);
+  } catch (error) {
+    console.error("Failed to start Kick chat client", error);
+    reportError("Kick", String(error));
+  }
+}
+
+export function register(
+  userToken: string,
+  eventbus: EventBus,
+  emotesStore: EmotesStore,
+): void {
+  console.log({ connected: connectedTokens }, "add kick-chat listener");
+  const auth = { headers: { Authorization: `Bearer ${userToken}` } };
+  recipientService
+    .listTokens(auth)
+    .then((tokens) => {
+      console.log({ tokens }, "kick list tokens response");
+      tokens.data
+        .filter((token) => token.system === "Kick")
+        .filter((token) => !connectedTokens.includes(token.id))
+        .forEach((token) => {
+          console.log(`add kick-chat handler for ${token.id}`);
+          connectedTokens.push(token.id);
+          startKickClient(token.id, auth.headers, eventbus, emotesStore);
+        });
+    })
+    .catch((err) => {
+      console.error("Failed to subscribe to Kick", err);
+      reportError("Kick", err);
+    });
+}
+
+export function deregister(): void {
+  console.log({ connected: connectedTokens }, "remove kick-chat listener");
+  websocketClients.forEach((websocketClient) => {
+    websocketClient.close(1000, "deregistered");
+    websocketClients.delete(websocketClient);
+  });
+  connectedTokens.length = 0;
+}
