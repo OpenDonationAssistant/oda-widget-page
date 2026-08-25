@@ -107,7 +107,7 @@ function handleWebSocketMessage(
             },
             {
               id: uuidv7(),
-              name: "chatter_user_name",
+              name: "chatter_user_login",
               value: `<span class="oda-message-author"><img height="16" width="16" src="https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png"/><span>${data.payload.event.chatter_user_name ?? ""}</span></span>`,
               type: "string",
             },
@@ -165,7 +165,7 @@ function startWebSocketClient(
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
 
 export function register(
@@ -203,5 +203,5 @@ export function deregister(): void {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

@@ -75,7 +75,7 @@ export const CustomWidget = observer(
             ${css}
           </style>
           <style>
-            .message-author {
+            .oda-message-author {
               display: flex;
               flex-direction: row;
               align-items: center;
@@ -133,14 +133,7 @@ export const CustomWidget = observer(
                           "nick": "sendername",
                           "userId": "123123",
                           "displayColor": "#641FEF",
-                          "badges": [
-                            {
-                              "type": "broadcaster",
-                              "version": "1",
-                              "url":"https://dev.live.vkvideo.ru/static/favicon.png",
-                              "description": "Broadcaster"
-                            }
-                          ],
+                          "badges": [],
                           "channel": "channelname",
                           "isAction": false,
                           emotes: getValue(event._variables, "emotes"),

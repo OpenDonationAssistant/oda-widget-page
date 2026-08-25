@@ -15,7 +15,7 @@ const DONATEPAY_EU_API_URL = "https://donatepay.eu";
 const RECONNECT_DELAY_MS = 5000;
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
 // ── DonatePay.eu data shapes ────────────────────────────────────────
@@ -307,5 +307,5 @@ export function deregister(): void {
     activeSockets.delete(websocketClient);
     websocketClient.close(1000, "deregistered");
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

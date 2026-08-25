@@ -13,7 +13,7 @@ import {
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 
 // ── StreamElements WebSocket message types ──────────────────────────
 
@@ -306,5 +306,5 @@ export function deregister(): void {
     websocketClient.close(1000, "deregistered");
   });
   activeSockets.clear();
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

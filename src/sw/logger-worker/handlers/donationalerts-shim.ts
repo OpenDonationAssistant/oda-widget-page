@@ -16,7 +16,7 @@ const CENTRIFUGO_SUBSCRIBE_URL =
   "https://www.donationalerts.com/api/v1/centrifuge/subscribe";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
 // ── DonationAlerts data shapes ─────────────────────────────────────
@@ -305,5 +305,5 @@ export function deregister(): void {
     activeSockets.delete(socket);
     socket.close(1000, "deregistered");
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

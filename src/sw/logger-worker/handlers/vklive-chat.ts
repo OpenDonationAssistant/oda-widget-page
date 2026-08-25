@@ -234,7 +234,7 @@ async function startVKLiveClient(
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
 
 export function register(
@@ -272,5 +272,5 @@ export function deregister(): void {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

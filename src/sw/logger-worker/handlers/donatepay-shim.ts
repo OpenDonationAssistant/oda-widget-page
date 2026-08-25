@@ -15,7 +15,7 @@ const CENTRIFUGO_WEBSOCKET_URL =
 const RECONNECT_DELAY_MS = 1000;
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
 // ── DonatePay data shapes ──────────────────────────────────────────
@@ -299,7 +299,7 @@ export function deregister(): void {
     activeSockets.delete(socket);
     socket.close(1000, "deregistered");
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────

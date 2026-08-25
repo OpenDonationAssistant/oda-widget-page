@@ -12,7 +12,7 @@ import {
 const DONATIONALERTS_SOCKET_URL = "wss://socket.donationalerts.com/";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const activeSockets = new Set<SocketIOClient.Socket>();
 
 // Matches the number of meme packs bought in a MemeAlerts message,
@@ -234,5 +234,5 @@ export function deregister(): void {
     activeSockets.delete(socket);
     socket.disconnect();
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

@@ -12,7 +12,7 @@ import {
 const DONATEX_HUB_URL = "https://donatex.gg/api/public-donations-hub";
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const activeConnections = new Set<HubConnection>();
 
 // ── DonateX SignalR event types ─────────────────────────────────────
@@ -159,5 +159,5 @@ export function deregister(): void {
     activeConnections.delete(connection);
     void connection.stop();
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }

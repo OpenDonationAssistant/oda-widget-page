@@ -24,7 +24,7 @@ const KICK_API_ENDPOINT =
 
 const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
 
-const connectedTokens: string[] = [];
+let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
 
 function handleChatMessage(
@@ -210,5 +210,5 @@ export function deregister(): void {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);
   });
-  connectedTokens.length = 0;
+  connectedTokens = [];
 }
