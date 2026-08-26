@@ -1,15 +1,42 @@
 /// <reference lib="webworker" />
 
-import { register as registerDonationAlertsHandler } from "./handlers/donationalerts-shim";
-import { register as registerDonatePayEuHandler } from "./handlers/donatepay-eu-shim";
-import { register as registerDonatePayHandler } from "./handlers/donatepay-shim";
-import { register as registerDonateXHandler } from "./handlers/donatex-shim";
-import { register as registerKickChatHandler } from "./handlers/kick-chat";
+import {
+  register as registerDonationAlertsHandler,
+  deregister as deregisterDonationAlertsHandler,
+} from "./handlers/donationalerts-shim";
+import {
+  register as registerDonatePayEuHandler,
+  deregister as deregisterDonatePayEuHandler,
+} from "./handlers/donatepay-eu-shim";
+import {
+  register as registerDonatePayHandler,
+  deregister as deregisterDonatePayHandler,
+} from "./handlers/donatepay-shim";
+import {
+  register as registerDonateXHandler,
+  deregister as deregisterDonateXHandler,
+} from "./handlers/donatex-shim";
+import {
+  register as registerKickChatHandler,
+  deregister as deregisterKickChatHandler,
+} from "./handlers/kick-chat";
 import { register as registerLogHandler } from "./handlers/log";
-import { register as registerStreamElementsHandler } from "./handlers/streamelements-shim";
-import { register as registerTwitchChatHandler } from "./handlers/twitch-chat";
-import { register as registerUnofficialDonationAlertsHandler } from "./handlers/unofficial-donationalerts-shim";
-import { register as registerVKLiveChatHandler } from "./handlers/vklive-chat";
+import {
+  register as registerStreamElementsHandler,
+  deregister as deregisterStreamElementsHandler,
+} from "./handlers/streamelements-shim";
+import {
+  register as registerTwitchChatHandler,
+  deregister as deregisterTwitchChatHandler,
+} from "./handlers/twitch-chat";
+import {
+  register as registerUnofficialDonationAlertsHandler,
+  deregister as deregisterUnofficialDonationAlertsHandler,
+} from "./handlers/unofficial-donationalerts-shim";
+import {
+  register as registerVKLiveChatHandler,
+  deregister as deregisterVKLiveChatHandler,
+} from "./handlers/vklive-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { register as registerWorkerStatusHandler } from "./worker-status";
 import { DefaultEventBus } from "../../bus/EventBus";
@@ -34,6 +61,39 @@ swScope.addEventListener("activate", (event) => {
 //
 let connected = false;
 const tokens = new Map<String, String>();
+let eventbus: DefaultEventBus | null = null;
+let emotesStore: DefaultEmotesStore | null = null;
+
+/**
+ * Register handlers that can be deregistered and re-registered with a
+ * (possibly new) token. Event bus and emotes store are reused, so the
+ * handlers keep feeding events into the same bus after a reload.
+ */
+function registerHandlers(token: string) {
+  registerStreamElementsHandler(token, eventbus!);
+  registerTwitchChatHandler(token, eventbus!, emotesStore!);
+  registerVKLiveChatHandler(token, eventbus!, emotesStore!);
+  registerKickChatHandler(token, eventbus!, emotesStore!);
+  registerWidgetsHandler(token, swScope);
+  registerDonationAlertsHandler(token);
+  registerDonatePayHandler(token);
+  registerDonatePayEuHandler(token);
+  registerUnofficialDonationAlertsHandler(token);
+  registerDonateXHandler(token);
+}
+
+/** Deregister all handlers that support it. */
+function deregisterHandlers() {
+  deregisterDonationAlertsHandler();
+  deregisterDonatePayEuHandler();
+  deregisterDonatePayHandler();
+  deregisterDonateXHandler();
+  deregisterKickChatHandler();
+  deregisterStreamElementsHandler();
+  deregisterTwitchChatHandler();
+  deregisterUnofficialDonationAlertsHandler();
+  deregisterVKLiveChatHandler();
+}
 
 swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
@@ -48,20 +108,27 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   const token = String(info.token ?? "");
   tokens.set(recipientId, token);
 
-  const eventbus = new DefaultEventBus(recipientId, swScope);
-  const emotesStore = new DefaultEmotesStore();
+  eventbus = new DefaultEventBus(recipientId, swScope);
+  emotesStore = new DefaultEmotesStore();
   emotesStore.load("");
 
+  // One-time handlers — registered once, never duplicated on reload.
   registerLogHandler(swScope);
-  registerStreamElementsHandler(info.token, eventbus);
-  registerTwitchChatHandler(info.token, eventbus, emotesStore);
-  registerVKLiveChatHandler(info.token, eventbus, emotesStore);
-  registerKickChatHandler(info.token, eventbus, emotesStore);
-  registerWidgetsHandler(info.token, swScope);
   registerWorkerStatusHandler(swScope);
-  registerDonationAlertsHandler(info.token);
-  registerDonatePayHandler(info.token);
-  registerDonatePayEuHandler(info.token);
-  registerUnofficialDonationAlertsHandler(info.token);
-  registerDonateXHandler(info.token);
+
+  registerHandlers(token);
+});
+
+swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
+  const data = event.data as Record<string, unknown> | undefined;
+  if (!data || data.type !== "Reload") return;
+
+  console.log("main worker received Reload");
+
+  const info = (data.payload ?? data) as Record<string, unknown>;
+  const token = String(info.token ?? "");
+  if (!token || !eventbus || !emotesStore) return;
+
+  deregisterHandlers();
+  registerHandlers(token);
 });

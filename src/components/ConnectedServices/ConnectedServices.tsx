@@ -10,6 +10,9 @@ import DonatePayIcon from "../../icons/DonatePayIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import { DefaultWorkersStore, WorkersStore } from "../../stores/WorkersStore";
 import ODAIcon from "../../icons/ODAIcon";
+import { useAuth } from "../../contexts/AuthContext";
+import { sendMessageToSW } from "../../utils";
+import { NotBorderedIconButton } from "../IconButton/IconButton";
 
 const serviceIcons: Record<string, JSX.Element> = {
   ODA: <ODAIcon color="var(--oda-primary-color)" />,
@@ -28,6 +31,7 @@ const serviceIcons: Record<string, JSX.Element> = {
 
 export default observer(function ConnectedServices() {
   const [store] = useState<WorkersStore>(() => new DefaultWorkersStore());
+  const { accessToken } = useAuth();
 
   useEffect(() => () => store.dispose(), [store]);
 
@@ -40,6 +44,12 @@ export default observer(function ConnectedServices() {
           </span>
         ))}
       </span>
+      <NotBorderedIconButton
+        className={classes.reloadbutton}
+        onClick={() => sendMessageToSW({ type: "Reload", token: accessToken })}
+      >
+        <span className="material-symbols-sharp">replay</span>
+      </NotBorderedIconButton>
     </Flex>
   );
 });
