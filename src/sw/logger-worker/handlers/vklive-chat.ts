@@ -161,6 +161,7 @@ function handleFrame(
 }
 
 function startWebSocketClient(
+  odaToken: string,
   channel: string,
   connectionToken: string,
   subscriptionToken: string,
@@ -183,6 +184,7 @@ function startWebSocketClient(
   websocketClient.addEventListener("close", (event) => {
     if (event.code === 1000) return;
     reportError(
+      odaToken,
       "VKLive",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
@@ -221,6 +223,7 @@ async function startVKLiveClient(
       getSubscriptionToken(token, channel),
     ]);
     startWebSocketClient(
+      token,
       channel,
       connectionToken,
       subscriptionToken,
@@ -238,12 +241,12 @@ let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
 
 export function register(
-  token: string,
+  odaToken: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add vklive-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -262,7 +265,7 @@ export function register(
     })
     .catch((err) => {
       console.error("Failed to subscribe to VKLive", err);
-      reportError("VKLive", err);
+      reportError(odaToken, "VKLive", err);
     });
 }
 

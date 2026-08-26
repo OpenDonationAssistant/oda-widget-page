@@ -132,6 +132,7 @@ function handleWebSocketMessage(
 }
 
 function startWebSocketClient(
+  odaToken: string,
   token: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
@@ -149,6 +150,7 @@ function startWebSocketClient(
   websocketClient.addEventListener("close", (event) => {
     if (event.code === 1000) return;
     reportError(
+      odaToken,
       "Twitch",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
@@ -169,12 +171,12 @@ let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
 
 export function register(
-  token: string,
+  odaToken: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add twitch-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -187,13 +189,18 @@ export function register(
           recipientService
             .getAccessToken({ tokenId: token.id }, auth)
             .then((response) =>
-              startWebSocketClient(response.data.token, eventbus, emotesStore),
+              startWebSocketClient(
+                odaToken,
+                response.data.token,
+                eventbus,
+                emotesStore,
+              ),
             );
         });
     })
     .catch((err) => {
       console.error("Failed to subscribe to Twitch", err);
-      reportError("Twitch", err);
+      reportError(odaToken, "Twitch", err);
     });
 }
 

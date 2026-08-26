@@ -108,6 +108,7 @@ function handleFrame(
 }
 
 function startWebSocketClient(
+  odaToken: string,
   chatroomId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
@@ -133,6 +134,7 @@ function startWebSocketClient(
   websocketClient.addEventListener("close", (event) => {
     if (event.code === 1000) return;
     reportError(
+      
       "Kick",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
@@ -155,6 +157,7 @@ function startWebSocketClient(
 }
 
 async function startKickClient(
+  odaToken: string,
   tokenId: string,
   auth: { Authorization: string },
   eventbus: EventBus,
@@ -168,23 +171,23 @@ async function startKickClient(
     });
     if (error || !data?.chatroom?.id) {
       console.error("Failed to get Kick channel info", { data, error });
-      reportError("Kick", error?.message ?? "Failed to get Kick channel info");
+      reportError(odaToken, "Kick", error?.message ?? "Failed to get Kick channel info");
       return;
     }
-    startWebSocketClient(data.chatroom.id, eventbus, emotesStore);
+    startWebSocketClient(odaToken, data.chatroom.id, eventbus, emotesStore);
   } catch (error) {
     console.error("Failed to start Kick chat client", error);
-    reportError("Kick", String(error));
+    reportError(odaToken, "Kick", String(error));
   }
 }
 
 export function register(
-  userToken: string,
+  odaToken: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
   console.log({ connected: connectedTokens }, "add kick-chat listener");
-  const auth = { headers: { Authorization: `Bearer ${userToken}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -195,12 +198,12 @@ export function register(
         .forEach((token) => {
           console.log(`add kick-chat handler for ${token.id}`);
           connectedTokens.push(token.id);
-          startKickClient(token.id, auth.headers, eventbus, emotesStore);
+          startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
         });
     })
     .catch((err) => {
       console.error("Failed to subscribe to Kick", err);
-      reportError("Kick", err);
+      reportError(odaToken, "Kick", err);
     });
 }
 

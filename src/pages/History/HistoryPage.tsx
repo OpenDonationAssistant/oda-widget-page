@@ -42,6 +42,7 @@ import {
   HistoryWidgetSettings,
   HistoryWidgetSettingsContenxt,
 } from "./HistoryWidgetSettings";
+import { useAuth } from "../../contexts/AuthContext";
 
 const dateFormat = "DD/MM/YYYY HH:mm";
 
@@ -89,7 +90,10 @@ const HistoryItemList = observer(({}: {}) => {
 });
 
 const NewsLineComponent = observer(({}) => {
-  const [newsStore] = useState<NewsStore>(() => new DefaultNewsStore());
+  const { accessToken } = useAuth();
+  const [newsStore] = useState<NewsStore>(
+    () => new DefaultNewsStore(accessToken ?? ""),
+  );
   return (
     <>
       {newsStore.news && newsStore.news.length > 0 && (

@@ -113,20 +113,20 @@ function startDonateXConnection(
     })
     .catch((err) => {
       console.error("Failed to start DonateX SignalR connection:", err);
-      reportError("DonateX", `failed to start connection: ${err}`);
+      reportError(odaToken, "DonateX", `failed to start connection: ${err}`);
     });
 
   connection.onclose((err) => {
     if (!activeConnections.has(connection)) return; // Stopped by deregister.
-    reportError("DonateX", `connection closed: ${err ?? "unknown error"}`);
+    reportError(odaToken, "DonateX", `connection closed: ${err ?? "unknown error"}`);
   });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string): void {
+export function register(odaToken: string): void {
   console.log({ connected: connectedTokens }, "add donatex-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -139,7 +139,7 @@ export function register(token: string): void {
           connectedTokens.push(t.id);
 
           startDonateXConnection(
-            token,
+            odaToken,
             t.token,
             // Generated API types model settings as a generic record; the
             // shape is known for DonateX tokens so cast through unknown.
@@ -149,7 +149,7 @@ export function register(token: string): void {
     })
     .catch((err) => {
       console.error("Failed to subscribe to DonateX", err);
-      reportError("DonateX", err);
+      reportError(odaToken, "DonateX", err);
     });
 }
 

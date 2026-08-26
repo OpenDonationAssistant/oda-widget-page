@@ -238,6 +238,7 @@ function startWebSocketClient(
     const wasRegistered = activeSockets.delete(socket);
     if (event.code !== 1000) {
       reportError(
+        odaToken,
         "DonatePay",
         `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
       );
@@ -266,9 +267,9 @@ function startConnection(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string): void {
+export function register(odaToken: string): void {
   console.log({ connected: connectedTokens }, "add donatepay-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -281,7 +282,7 @@ export function register(token: string): void {
           connectedTokens.push(t.id);
 
           startConnection(
-            token,
+            odaToken,
             t.token,
             t.settings as unknown as DonatePaySettings,
           );
@@ -289,7 +290,7 @@ export function register(token: string): void {
     })
     .catch((err) => {
       console.error("Failed to subscribe to DonatePay", err);
-      reportError("DonatePay", err);
+      reportError(odaToken, "DonatePay", err);
     });
 }
 

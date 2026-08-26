@@ -5,6 +5,7 @@
 // Handlers report connection lifecycle events (started / error) into a
 // shared map keyed by handler name. The logger-worker returns the map
 // to clients that send a `GetWorkersStatus` message.
+import { addWarning } from "@opendonationassistant/news-service";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -24,12 +25,25 @@ export function reportStarted(handler: string): void {
   console.log(`[worker-status] ${handler} started`);
 }
 
-export function reportError(handler: string, message: string): void {
+export function reportError(
+  token: string,
+  handler: string,
+  message: string,
+): void {
   statuses.set(handler, {
     type: "HandlerError",
     handler,
     message,
     timestamp: Date.now(),
+  });
+  addWarning({
+    baseURL: "https://api.oda.digital",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: {
+      message: `Worker ${handler} error: ${message}`,
+    },
   });
   console.error(`[worker-status] ${handler} error: ${message}`);
 }

@@ -180,12 +180,12 @@ function startSocketClient(odaToken: string, daToken: string): void {
 
   socket.on("connect_error", (msg: string) => {
     console.error("UnofficialDonationAlerts connection_error:", msg);
-    reportError("UnofficialDonationAlerts", `connect_error: ${msg}`);
+    reportError(odaToken, "UnofficialDonationAlerts", `connect_error: ${msg}`);
   });
 
   socket.on("disconnect", (reason: string) => {
     if (reason === "io client disconnect") return;
-    reportError("UnofficialDonationAlerts", `disconnected: ${reason}`);
+    reportError(odaToken, "UnofficialDonationAlerts", `disconnected: ${reason}`);
   });
 
   socket.on("reconnect", () => {
@@ -199,12 +199,12 @@ function startSocketClient(odaToken: string, daToken: string): void {
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string): void {
+export function register(odaToken: string): void {
   console.log(
     { connected: connectedTokens },
     "add unofficial-donationalerts-listener",
   );
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -216,12 +216,12 @@ export function register(token: string): void {
           console.log(`add unofficial-donationalerts handler for ${t.id}`);
           connectedTokens.push(t.id);
 
-          startSocketClient(token, t.token);
+          startSocketClient(odaToken, t.token);
         });
     })
     .catch((err) => {
       console.error("Failed to subscribe to UnofficialDonationAlerts", err);
-      reportError("UnofficialDonationAlerts", err);
+      reportError(odaToken, "UnofficialDonationAlerts", err);
     });
 }
 

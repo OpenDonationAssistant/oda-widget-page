@@ -132,7 +132,7 @@ export class DefaultEventBus implements EventBus {
   });
   private _db: Promise<IDBDatabase>;
 
-  constructor(recipientId: string, swScope: ServiceWorkerGlobalScope) {
+  constructor(token: string, recipientId: string, swScope: ServiceWorkerGlobalScope) {
     this._swScope = swScope;
     this._socket.onConnect = () => {
       reportStarted("ODA");
@@ -154,13 +154,13 @@ export class DefaultEventBus implements EventBus {
       );
     };
     this._socket.onStompError = (frame) => {
-      reportError("ODA", `stomp error: ${frame.headers.message ?? "unknown"}`);
+      reportError(token, "ODA", `stomp error: ${frame.headers.message ?? "unknown"}`);
     };
     this._socket.onWebSocketError = (evt) => {
-      reportError("ODA", `websocket error: ${evt}`);
+      reportError(token, "ODA", `websocket error: ${evt}`);
     };
     this._socket.onWebSocketClose = (evt) => {
-      reportError("ODA", `websocket closed: ${evt.code} ${evt.reason}`);
+      reportError(token, "ODA", `websocket closed: ${evt.code} ${evt.reason}`);
     };
     this._db = openLogDB();
     this._socket.activate();

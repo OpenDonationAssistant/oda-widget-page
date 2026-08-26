@@ -259,6 +259,7 @@ function startDonatePayEuClient(
         console.log("DonatePay.eu WebSocket closed");
         if (event.code !== 1000) {
           reportError(
+            odaToken,
             "DonatePay.eu",
             `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
           );
@@ -297,7 +298,7 @@ export function register(token: string): void {
     })
     .catch((err) => {
       console.error("Failed to subscribe to DonatePay.eu", err);
-      reportError("DonatePay.eu", err);
+      reportError(token,"DonatePay.eu", err);
     });
 }
 

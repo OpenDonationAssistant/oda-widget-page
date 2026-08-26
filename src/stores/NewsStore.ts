@@ -1,5 +1,5 @@
-import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
 import { makeAutoObservable } from "mobx";
+import { getFeed, markAsRead } from "@opendonationassistant/news-service";
 
 export interface News {
   id: string;
@@ -15,26 +15,29 @@ export interface NewsStore {
 
 export class DefaultNewsStore {
   private _news: News[] = [];
+  private _token: string;
 
-  constructor() {
-    this.client()
-      .getFeed()
+  constructor(token: string) {
+    this._token = token;
+    getFeed({
+      baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((data) => data.data)
       .then((news) => {
-        this._news = news.map((it) => {
-          return {
-            id: it.id ?? "",
-            title: it.title ?? "",
-            description: it.description ?? "",
-            demoUrl: it.demoUrl ?? "",
-          };
-        });
+        this._news =
+          news?.map((it) => {
+            return {
+              id: it.id ?? "",
+              title: it.title ?? "",
+              description: it.description ?? "",
+              demoUrl: it.demoUrl ?? "",
+            };
+          }) ?? [];
       });
     makeAutoObservable(this);
-  }
-
-  private client() {
-    return NewsService(undefined, process.env.REACT_APP_NEWS_API_ENDPOINT);
   }
 
   public get news() {
@@ -46,8 +49,12 @@ export class DefaultNewsStore {
     if (!id) {
       return;
     }
-    this.client().markAsRead({
-      newsId: id,
+    markAsRead({
+      baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+      body: { newsId: id },
     });
     this._news = [];
   }

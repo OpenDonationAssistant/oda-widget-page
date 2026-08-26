@@ -226,6 +226,7 @@ function startWebSocketClient(
     const wasRegistered = activeSockets.delete(socket);
     if (event.code !== 1000) {
       reportError(
+        odaToken,
         "DonationAlerts",
         `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
       );
@@ -260,7 +261,7 @@ function startConnection(
         "Failed to get DonationAlerts socket connection info:",
         err,
       );
-      reportError("DonationAlerts", err);
+      reportError(odaToken, "DonationAlerts", err);
     });
 }
 
@@ -292,7 +293,7 @@ export function register(token: string): void {
         "Failed to subscribe to DonationAlerts",
         err,
       );
-      reportError("DonationAlerts", err);
+      reportError(token, "DonationAlerts", err);
     });
 }
 

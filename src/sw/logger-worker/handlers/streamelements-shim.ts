@@ -267,6 +267,7 @@ function startWebSocketClient(
     activeSockets.delete(seToken);
     if (event.code === 1000) return;
     reportError(
+      odaToken,
       "StreamElements",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
@@ -278,9 +279,9 @@ function startWebSocketClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string, eventbus: EventBus): void {
+export function register(odaToken: string, eventbus: EventBus): void {
   console.log({ connected: connectedTokens }, "add streamelements-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
+  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
     .listTokens(auth)
     .then((tokens) => {
@@ -291,12 +292,12 @@ export function register(token: string, eventbus: EventBus): void {
           console.log(`add streamelements handler for ${t.id}`);
           connectedTokens.push(t.id);
 
-          startWebSocketClient(token, t.token, eventbus);
+          startWebSocketClient(odaToken, t.token, eventbus);
         });
     })
     .catch((err) => {
       console.error("Failed to subscribe to StreamElements", err);
-      reportError("StreamElements", err);
+      reportError(odaToken, "StreamElements", err);
     });
 }
 

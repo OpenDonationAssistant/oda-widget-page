@@ -108,7 +108,7 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   const token = String(info.token ?? "");
   tokens.set(recipientId, token);
 
-  eventbus = new DefaultEventBus(recipientId, swScope);
+  eventbus = new DefaultEventBus(token, recipientId, swScope);
   emotesStore = new DefaultEmotesStore();
   emotesStore.load("");
 
@@ -132,3 +132,4 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   deregisterHandlers();
   registerHandlers(token);
 });
+
