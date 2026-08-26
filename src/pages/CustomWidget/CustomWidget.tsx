@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { CustomWidgetSettings } from "./CustomWidgetSettings";
 import { useEffect, useState } from "react";
 import { CustomWidgetStore } from "./CustomWidgetStore";
+import { sendMessageToSW } from "../../utils";
 
 function resolvePlaceholders(str: string, data: any) {
   return str.replace(/(\{\{?\s*[A-Za-z0-9]+?\s*\}?\})/g, (_, expr) => {
@@ -58,6 +59,9 @@ export const CustomWidget = observer(
             setCss(text);
           });
       });
+      setInterval(() => {
+        sendMessageToSW({ type: "GetWorkersStatus" });
+      }, 10000);
     }, [settings]);
 
     useEffect(() => {

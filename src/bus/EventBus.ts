@@ -2,6 +2,15 @@ import { uuidv7 } from "uuidv7";
 import { log } from "../logging";
 import { Client } from "@stomp/stompjs";
 import { reportError, reportStarted } from "../sw/logger-worker/worker-status";
+import { deregister as deregisterDonationalerts } from "../sw/logger-worker/handlers/donationalerts-shim";
+import { deregister as deregisterDonatepayEu } from "../sw/logger-worker/handlers/donatepay-eu-shim";
+import { deregister as deregisterDonatepay } from "../sw/logger-worker/handlers/donatepay-shim";
+import { deregister as deregisterDonatex } from "../sw/logger-worker/handlers/donatex-shim";
+import { deregister as deregisterKickChat } from "../sw/logger-worker/handlers/kick-chat";
+import { deregister as deregisterStreamelements } from "../sw/logger-worker/handlers/streamelements-shim";
+import { deregister as deregisterTwitch } from "../sw/logger-worker/handlers/twitch-chat";
+import { deregister as deregisterUnofficialDonationalerts } from "../sw/logger-worker/handlers/unofficial-donationalerts-shim";
+import { deregister as deregisterVkLive } from "../sw/logger-worker/handlers/vklive-chat";
 
 const defaultTtl = (1000 * 60 * 60 * 24).toString(); // 24 hours
 
@@ -217,6 +226,29 @@ export class DefaultEventBus implements EventBus {
     return new Event(json.type, json.variables);
   }
 
+  private async reloadServiceWorker() {
+    deregisterDonationalerts();
+    deregisterDonatepayEu();
+    deregisterDonatepay();
+    deregisterDonatex();
+    deregisterKickChat();
+    deregisterStreamelements();
+    deregisterTwitch();
+    deregisterUnofficialDonationalerts();
+    deregisterVkLive();
+
+    await this._swScope.clients
+      .matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })
+      .then((clients) =>
+        clients.forEach((client) => {
+          client.navigate(client.url);
+        }),
+      );
+  }
+
   public async push(event: Event) {
     log.debug({ message: event }, "EventBus message");
     await this.sendMessage(event);
@@ -226,7 +258,7 @@ export class DefaultEventBus implements EventBus {
       event.type === "AuthUpdated" &&
       !(tokenType === "refreshToken" && eventName === "TOKEN_UPDATED")
     ) {
-      // this.reloadServiceWorker();
+      // await this.reloadServiceWorker();
     }
   }
 }

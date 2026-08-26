@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { sendMessageToSW } from "../utils";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -56,26 +57,13 @@ export class DefaultWorkersStore {
   };
 
   public refresh() {
-    this.postMessage({ type: "GetWorkersStatus" });
+    sendMessageToSW({ type: "GetWorkersStatus" });
   }
 
   public remove(handler: string) {
     this._connected = this._connected.filter((name) => name !== handler);
     this._errors = this._errors.filter((error) => error.handler !== handler);
-    this.postMessage({ type: "RemoveWorkersStatus", handler });
-  }
-
-  private postMessage(message: Record<string, unknown>) {
-    if (!navigator.serviceWorker) {
-      return;
-    }
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage(message);
-    } else {
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.active?.postMessage(message);
-      });
-    }
+    sendMessageToSW({ type: "RemoveWorkersStatus", handler });
   }
 
   public get connected() {

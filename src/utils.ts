@@ -3,6 +3,19 @@ import { ChangeEvent, ReactNode } from "react";
 import { uuidv7 } from "uuidv7";
 import { Event } from "./bus/EventBus";
 
+export function sendMessageToSW(message: Record<string, unknown>) {
+  if (!navigator.serviceWorker) {
+    return;
+  }
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage(message);
+  } else {
+    navigator.serviceWorker.ready.then((reg) => {
+      reg.active?.postMessage(message);
+    });
+  }
+}
+
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
@@ -124,10 +137,10 @@ export function deepEqual(x: any, y: any): boolean {
     : x === y;
 }
 
-export function hashString(str:string) {
+export function hashString(str: string) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i); // hash * 31 + char
+    hash = (hash << 5) - hash + str.charCodeAt(i); // hash * 31 + char
     hash |= 0; // force 32-bit int
   }
   return hash; // signed 32-bit
