@@ -32,6 +32,7 @@ import { uploadBlob } from "../../../../utils";
 import { Preset } from "../../../../types/Preset";
 import { PresetsComponent } from "../../PresetsComponent";
 import { TriggersStoreContext } from "./triggers/TriggersStore";
+import { DemoTokenStore } from "../../../../stores/TokenStore";
 
 const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
@@ -196,7 +197,10 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
                 minConstraints={[400, 100]}
               >
                 <div style={{ margin: "auto" }}>
-                  <PaymentAlerts alertController={alertController} />
+                  <PaymentAlerts
+                    alertController={alertController}
+                    tokenStore={new DemoTokenStore()}
+                  />
                 </div>
               </ResizableBox>
             </Flex>

@@ -39,6 +39,7 @@ import {
 } from "./handlers/vklive-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { register as registerWorkerStatusHandler } from "./worker-status";
+import type { Feature } from "./types";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
 
@@ -61,9 +62,18 @@ swScope.addEventListener("activate", (event) => {
 //
 let connected = false;
 let recipientId = "unknown";
+let donationsEnabled = false;
 const tokens = new Map<String, String>();
 let eventbus: DefaultEventBus | null = null;
 let emotesStore: DefaultEmotesStore | null = null;
+
+/** Feature flag that gates registration of the donation handlers. */
+const SW_DONATIONS_FEATURE = "SW_DONATIONS";
+
+/** True when the given feature is present and toggled on. */
+function isFeatureEnabled(features: Feature[], name: string): boolean {
+  return features.some((f) => f.name === name && f.state === "ENABLED");
+}
 
 /**
  * Register handlers that can be deregistered and re-registered with a
@@ -71,11 +81,23 @@ let emotesStore: DefaultEmotesStore | null = null;
  * handlers keep feeding events into the same bus after a reload.
  */
 function registerHandlers(token: string, recipientId: string) {
-  registerStreamElementsHandler(token, recipientId, eventbus!);
+  registerCoreHandlers(token, recipientId);
+  if (donationsEnabled) {
+    registerDonationHandlers(token, recipientId);
+  }
+}
+
+/** Chat and widget handlers — always registered. */
+function registerCoreHandlers(token: string, recipientId: string) {
   registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerKickChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerWidgetsHandler(token, recipientId, swScope);
+}
+
+/** Donation handlers — only registered when SW_DONATIONS is enabled. */
+function registerDonationHandlers(token: string, recipientId: string) {
+  registerStreamElementsHandler(token, recipientId, eventbus!);
   registerDonationAlertsHandler(token, recipientId);
   registerDonatePayHandler(token, recipientId);
   registerDonatePayEuHandler(token, recipientId);
@@ -85,15 +107,25 @@ function registerHandlers(token: string, recipientId: string) {
 
 /** Deregister all handlers that support it. */
 function deregisterHandlers() {
+  deregisterCoreHandlers();
+  if (donationsEnabled) {
+    deregisterDonationHandlers();
+  }
+}
+
+function deregisterCoreHandlers() {
+  deregisterKickChatHandler();
+  deregisterTwitchChatHandler();
+  deregisterVKLiveChatHandler();
+}
+
+function deregisterDonationHandlers() {
   deregisterDonationAlertsHandler();
   deregisterDonatePayEuHandler();
   deregisterDonatePayHandler();
   deregisterDonateXHandler();
-  deregisterKickChatHandler();
   deregisterStreamElementsHandler();
-  deregisterTwitchChatHandler();
   deregisterUnofficialDonationAlertsHandler();
-  deregisterVKLiveChatHandler();
 }
 
 swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
@@ -108,6 +140,12 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   recipientId = String(info.recipientId ?? "unknown");
   const token = String(info.token ?? "");
   tokens.set(recipientId, token);
+
+  const features = (info.features ?? []) as Feature[];
+  donationsEnabled = isFeatureEnabled(features, SW_DONATIONS_FEATURE);
+  console.log(
+    `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
+  );
 
   eventbus = new DefaultEventBus(token, recipientId, swScope);
   emotesStore = new DefaultEmotesStore();

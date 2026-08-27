@@ -5,14 +5,20 @@ export interface LogRecord {
   ts: number;
 }
 
+/** A single toggled feature flag from recipient-service settings. */
+export interface Feature {
+  name: string;
+  state: string;
+}
+
 export interface UserAuthorizedPayload {
   recipientId: string;
-  features: { name: string; state: string }[];
+  features: Feature[];
 }
 
 export type WorkerIncomingMessage =
   | { type: "LOG"; log: LogRecord }
-  | { type: "USER_AUTHORIZED"; recipientId: string; features: { name: string; state: string }[] };
+  | { type: "USER_AUTHORIZED"; recipientId: string; features: Feature[] };
 
 /** OTEL-compliant log attribute. */
 export interface OtelAttribute {
