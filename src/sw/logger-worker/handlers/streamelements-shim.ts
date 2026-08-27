@@ -3,7 +3,6 @@
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
@@ -103,6 +102,7 @@ function toOdaAmount(
 
 function handleWebSocketMessage(
   odaToken: string,
+  recipientId: string,
   seToken: string,
   raw: string,
   eventbus: EventBus,
@@ -155,7 +155,7 @@ function handleWebSocketMessage(
 
     case "message": {
       if (message.topic === "channel.tips") {
-        handleTipEvent(odaToken, message, eventbus);
+        handleTipEvent(odaToken, recipientId, message, eventbus);
       }
       break;
     }
@@ -169,11 +169,11 @@ function handleWebSocketMessage(
 
 function handleTipEvent(
   odaToken: string,
+  recipientId: string,
   event: StreamElementsTipEvent,
   eventbus: EventBus,
 ): void {
   const tip = event.data.donation;
-  const recipientId = getRecipientId();
   console.log(
     `StreamElements tip: ${tip.amount} ${tip.currency} from ${tip.user.username}`,
   );
@@ -243,6 +243,7 @@ function getActiveWebSocket(jwtToken: string): WebSocket | undefined {
 
 function startWebSocketClient(
   odaToken: string,
+  recipientId: string,
   seToken: string,
   eventbus: EventBus,
 ): WebSocket {
@@ -259,7 +260,7 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("message", (event) => {
-    handleWebSocketMessage(odaToken, seToken, event.data as string, eventbus);
+    handleWebSocketMessage(odaToken, recipientId, seToken, event.data as string, eventbus);
   });
 
   websocketClient.addEventListener("close", (event) => {
@@ -279,7 +280,7 @@ function startWebSocketClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, eventbus: EventBus): void {
+export function register(odaToken: string, recipientId: string, eventbus: EventBus): void {
   console.log({ connected: connectedTokens }, "add streamelements-listener");
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
@@ -292,7 +293,7 @@ export function register(odaToken: string, eventbus: EventBus): void {
           console.log(`add streamelements handler for ${t.id}`);
           connectedTokens.push(t.id);
 
-          startWebSocketClient(odaToken, t.token, eventbus);
+          startWebSocketClient(odaToken, recipientId, t.token, eventbus);
         });
     })
     .catch((err) => {

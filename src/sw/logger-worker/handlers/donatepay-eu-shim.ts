@@ -5,7 +5,6 @@ import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 
@@ -104,10 +103,10 @@ async function getChannelToken(
 
 function handlePayment(
   odaToken: string,
+  recipientId: string,
   payment: DonatePayEuNotification,
   settings: DonatePayEuSettings,
 ): void {
-  const recipientId = getRecipientId();
   console.log(
     `DonatePay.eu payment: ${payment.vars.sum} ${payment.vars.currency} from ${payment.vars.name}`,
   );
@@ -156,6 +155,7 @@ function handlePayment(
 
 function handleWebSocketMessage(
   odaToken: string,
+  recipientId: string,
   donatePayEuToken: string,
   settings: DonatePayEuSettings,
   channel: string,
@@ -188,7 +188,7 @@ function handleWebSocketMessage(
     message.result?.channel === channel &&
     message.result?.data?.data?.notification
   ) {
-    handlePayment(odaToken, message.result.data.data.notification, settings);
+    handlePayment(odaToken, recipientId, message.result.data.data.notification, settings);
   }
 }
 
@@ -196,6 +196,7 @@ function handleWebSocketMessage(
 
 function startDonatePayEuClient(
   odaToken: string,
+  recipientId: string,
   donatePayEuToken: string,
   settings: DonatePayEuSettings,
 ): void {
@@ -223,7 +224,7 @@ function startDonatePayEuClient(
         );
         setTimeout(() => {
           reconnectScheduled = false;
-          startDonatePayEuClient(odaToken, donatePayEuToken, settings);
+          startDonatePayEuClient(odaToken, recipientId, donatePayEuToken, settings);
         }, RECONNECT_DELAY_MS);
       };
 
@@ -241,6 +242,7 @@ function startDonatePayEuClient(
       websocketClient.addEventListener("message", (event) => {
         handleWebSocketMessage(
           odaToken,
+          recipientId,
           donatePayEuToken,
           settings,
           channel,
@@ -275,7 +277,7 @@ function startDonatePayEuClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string): void {
+export function register(token: string, recipientId: string): void {
   console.log({ connected: connectedTokens }, "add donatepay-eu-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   recipientService
@@ -291,6 +293,7 @@ export function register(token: string): void {
 
           startDonatePayEuClient(
             token,
+            recipientId,
             t.token,
             t.settings as unknown as DonatePayEuSettings,
           );

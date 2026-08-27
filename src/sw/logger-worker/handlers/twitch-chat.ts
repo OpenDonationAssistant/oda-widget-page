@@ -172,6 +172,7 @@ const websocketClients = new Set<WebSocket>();
 
 export function register(
   odaToken: string,
+  recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {

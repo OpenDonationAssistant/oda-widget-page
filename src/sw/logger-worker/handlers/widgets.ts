@@ -23,7 +23,11 @@ export function getWidget(id: string): WidgetDto | undefined {
 
 // ── Registration ────────────────────────────────────────────────────
 
-export function register(token: string, sw: ServiceWorkerGlobalScope): void {
+export function register(
+  token: string,
+  recipientId: string,
+  sw: ServiceWorkerGlobalScope,
+): void {
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   const service = WidgetService(undefined, WIDGET_API_ENDPOINT);
 

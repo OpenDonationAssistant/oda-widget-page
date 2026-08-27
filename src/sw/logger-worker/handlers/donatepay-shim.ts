@@ -5,7 +5,6 @@ import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 
@@ -89,6 +88,7 @@ async function subscribeToChannel(
 
 function handleWebSocketMessage(
   odaToken: string,
+  recipientId: string,
   dpToken: string,
   settings: DonatePaySettings,
   channel: string,
@@ -127,16 +127,16 @@ function handleWebSocketMessage(
     message.result?.channel === channel &&
     message.result?.data?.data?.notification
   ) {
-    handleDonation(odaToken, settings, message.result.data.data.notification);
+    handleDonation(odaToken, recipientId, settings, message.result.data.data.notification);
   }
 }
 
 function handleDonation(
   odaToken: string,
+  recipientId: string,
   settings: DonatePaySettings,
   payment: DonatePayPayment,
 ): void {
-  const recipientId = getRecipientId();
   console.log(
     `DonatePay donation: ${payment.vars.sum} ${payment.vars.currency} from ${payment.vars.name}`,
   );
@@ -185,6 +185,7 @@ function handleDonation(
 
 function startWebSocketClient(
   odaToken: string,
+  recipientId: string,
   dpToken: string,
   settings: DonatePaySettings,
   centrifugoToken: string,
@@ -201,7 +202,7 @@ function startWebSocketClient(
     if (reconnecting) return;
     reconnecting = true;
     setTimeout(() => {
-      startConnection(odaToken, dpToken, settings);
+      startConnection(odaToken, recipientId, dpToken, settings);
     }, RECONNECT_DELAY_MS);
   };
 
@@ -226,6 +227,7 @@ function startWebSocketClient(
   socket.addEventListener("message", (event) => {
     handleWebSocketMessage(
       odaToken,
+      recipientId,
       dpToken,
       settings,
       channel,
@@ -253,12 +255,13 @@ function startWebSocketClient(
 
 function startConnection(
   odaToken: string,
+  recipientId: string,
   dpToken: string,
   settings: DonatePaySettings,
 ): void {
   getCentrifugoToken(dpToken)
     .then((centrifugoToken) => {
-      startWebSocketClient(odaToken, dpToken, settings, centrifugoToken);
+      startWebSocketClient(odaToken, recipientId, dpToken, settings, centrifugoToken);
     })
     .catch((err) =>
       console.error("Failed to get DonatePay socket token:", err),
@@ -267,7 +270,7 @@ function startConnection(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string): void {
+export function register(odaToken: string, recipientId: string): void {
   console.log({ connected: connectedTokens }, "add donatepay-listener");
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
@@ -283,6 +286,7 @@ export function register(odaToken: string): void {
 
           startConnection(
             odaToken,
+            recipientId,
             t.token,
             t.settings as unknown as DonatePaySettings,
           );

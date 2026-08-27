@@ -2,7 +2,6 @@
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { connect } from "socket.io-client";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
@@ -64,13 +63,14 @@ function extractMemeAlertsCount(message?: string): number | null {
  */
 function persistDonation(
   odaToken: string,
+  recipientId: string,
   donation: UnofficialDonationAlertsDonation,
   command: AddHistoryItemApiAddHistoryItemCommand,
 ): void {
   addHistoryItem({
     baseURL: "https://api.oda.digital",
     body: {
-      recipientId: getRecipientId(),
+      recipientId,
       nickname: donation.username,
       message: donation.message,
       triggerAlert: true,
@@ -101,7 +101,7 @@ function persistDonation(
 
 // ── Donation handling ───────────────────────────────────────────────
 
-function handleDonation(odaToken: string, raw: string): void {
+function handleDonation(odaToken: string, recipientId: string, raw: string): void {
   let donation: UnofficialDonationAlertsDonation;
   try {
     donation = JSON.parse(raw);
@@ -113,7 +113,7 @@ function handleDonation(odaToken: string, raw: string): void {
   switch (donation.alert_type) {
     case 27:
       // Boosty follow
-      persistDonation(odaToken, donation, {
+      persistDonation(odaToken, recipientId, donation, {
         amount: { minor: 0, major: 0, currency: "RUB" },
         event: "follow",
         paymentId: donation.id,
@@ -123,7 +123,7 @@ function handleDonation(odaToken: string, raw: string): void {
     case 20:
     case 28:
       // Boosty subscription
-      persistDonation(odaToken, donation, {
+      persistDonation(odaToken, recipientId, donation, {
         amount: { minor: 0, major: donation.amount_main, currency: "RUB" },
         event: "subscription",
         levelName: donation.additional_data?.event_data?.level_name,
@@ -133,7 +133,7 @@ function handleDonation(odaToken: string, raw: string): void {
       break;
     case 32:
       // MemeAlerts payment
-      persistDonation(odaToken, donation, {
+      persistDonation(odaToken, recipientId, donation, {
         amount: { minor: 0, major: donation.amount_main, currency: "RUB" },
         event: "payment",
         count: extractMemeAlertsCount(donation.message),
@@ -145,7 +145,7 @@ function handleDonation(odaToken: string, raw: string): void {
       break;
     case 1:
       // DonationAlerts payment
-      persistDonation(odaToken, donation, {
+      persistDonation(odaToken, recipientId, donation, {
         amount: { minor: 0, major: donation.amount_main, currency: "RUB" },
         event: "payment",
         paymentId: donation.id,
@@ -160,7 +160,11 @@ function handleDonation(odaToken: string, raw: string): void {
 
 // ── Socket.io lifecycle ─────────────────────────────────────────────
 
-function startSocketClient(odaToken: string, daToken: string): void {
+function startSocketClient(
+  odaToken: string,
+  recipientId: string,
+  daToken: string,
+): void {
   console.log("Starting UnofficialDonationAlerts socket.io connection");
   const socket = connect(DONATIONALERTS_SOCKET_URL, {
     reconnection: true,
@@ -197,13 +201,13 @@ function startSocketClient(odaToken: string, daToken: string): void {
   });
 
   socket.on("donation", (msg: string) => {
-    handleDonation(odaToken, msg);
+    handleDonation(odaToken, recipientId, msg);
   });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string): void {
+export function register(odaToken: string, recipientId: string): void {
   console.log(
     { connected: connectedTokens },
     "add unofficial-donationalerts-listener",
@@ -220,7 +224,7 @@ export function register(odaToken: string): void {
           console.log(`add unofficial-donationalerts handler for ${t.id}`);
           connectedTokens.push(t.id);
 
-          startSocketClient(odaToken, t.token);
+          startSocketClient(odaToken, recipientId, t.token);
         });
     })
     .catch((err) => {

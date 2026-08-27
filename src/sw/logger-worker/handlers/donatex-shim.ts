@@ -2,7 +2,6 @@
 
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
@@ -37,10 +36,10 @@ interface DonateXTokenSettings {
 
 function handleDonationCreated(
   odaToken: string,
+  recipientId: string,
   settings: DonateXTokenSettings,
   donation: DonateXDonation,
 ): void {
-  const recipientId = getRecipientId();
   console.log(
     `DonateX donation: ${donation.amountInRub} RUB from ${donation.username}`,
   );
@@ -90,6 +89,7 @@ function handleDonationCreated(
 
 function startDonateXConnection(
   odaToken: string,
+  recipientId: string,
   dxToken: string,
   settings: DonateXTokenSettings,
 ): void {
@@ -102,7 +102,7 @@ function startDonateXConnection(
   activeConnections.add(connection);
 
   connection.on("DonationCreated", (donation: DonateXDonation) => {
-    handleDonationCreated(odaToken, settings, donation);
+    handleDonationCreated(odaToken, recipientId, settings, donation);
   });
 
   connection
@@ -124,7 +124,7 @@ function startDonateXConnection(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string): void {
+export function register(odaToken: string, recipientId: string): void {
   console.log({ connected: connectedTokens }, "add donatex-listener");
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
   recipientService
@@ -140,6 +140,7 @@ export function register(odaToken: string): void {
 
           startDonateXConnection(
             odaToken,
+            recipientId,
             t.token,
             // Generated API types model settings as a generic record; the
             // shape is known for DonateX tokens so cast through unknown.

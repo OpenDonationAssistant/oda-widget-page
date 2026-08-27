@@ -5,7 +5,6 @@ import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
-import { getRecipientId } from "./user-authorized";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 
@@ -90,6 +89,7 @@ async function subscribeToChannel(
 
 function handleWebSocketMessage(
   odaToken: string,
+  recipientId: string,
   daToken: string,
   settings: DonationAlertsSettings,
   channel: string,
@@ -125,16 +125,16 @@ function handleWebSocketMessage(
   }
 
   if (message.result?.channel === channel && message.result?.data?.data) {
-    handleDonation(odaToken, settings, message.result.data.data);
+    handleDonation(odaToken, recipientId, settings, message.result.data.data);
   }
 }
 
 function handleDonation(
   odaToken: string,
+  recipientId: string,
   settings: DonationAlertsSettings,
   payment: DonationAlertsPayment,
 ): void {
-  const recipientId = getRecipientId();
   console.log(
     `DonationAlerts donation: ${payment.amount_in_user_currency} RUB from ${payment.username}`,
   );
@@ -184,6 +184,7 @@ function handleDonation(
 
 function startWebSocketClient(
   odaToken: string,
+  recipientId: string,
   daToken: string,
   settings: DonationAlertsSettings,
   userId: string,
@@ -214,6 +215,7 @@ function startWebSocketClient(
   socket.addEventListener("message", (event) => {
     handleWebSocketMessage(
       odaToken,
+      recipientId,
       daToken,
       settings,
       channel,
@@ -236,13 +238,14 @@ function startWebSocketClient(
       "DonationAlerts Centrifugo WebSocket closed. Reconnection attempt in 1s",
     );
     setTimeout(() => {
-      startConnection(odaToken, daToken, settings);
+      startConnection(odaToken, recipientId, daToken, settings);
     }, 1000);
   });
 }
 
 function startConnection(
   odaToken: string,
+  recipientId: string,
   daToken: string,
   settings: DonationAlertsSettings,
 ): void {
@@ -250,6 +253,7 @@ function startConnection(
     .then(({ userId, centrifugoToken }) => {
       startWebSocketClient(
         odaToken,
+        recipientId,
         daToken,
         settings,
         userId,
@@ -267,7 +271,7 @@ function startConnection(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string): void {
+export function register(token: string, recipientId: string): void {
   console.log({ connected: connectedTokens }, "add donationalerts-listener");
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   recipientService
@@ -283,6 +287,7 @@ export function register(token: string): void {
 
           startConnection(
             token,
+            recipientId,
             t.token,
             t.settings as unknown as DonationAlertsSettings,
           );

@@ -60,6 +60,7 @@ swScope.addEventListener("activate", (event) => {
 //
 //
 let connected = false;
+let recipientId = "unknown";
 const tokens = new Map<String, String>();
 let eventbus: DefaultEventBus | null = null;
 let emotesStore: DefaultEmotesStore | null = null;
@@ -69,17 +70,17 @@ let emotesStore: DefaultEmotesStore | null = null;
  * (possibly new) token. Event bus and emotes store are reused, so the
  * handlers keep feeding events into the same bus after a reload.
  */
-function registerHandlers(token: string) {
-  registerStreamElementsHandler(token, eventbus!);
-  registerTwitchChatHandler(token, eventbus!, emotesStore!);
-  registerVKLiveChatHandler(token, eventbus!, emotesStore!);
-  registerKickChatHandler(token, eventbus!, emotesStore!);
-  registerWidgetsHandler(token, swScope);
-  registerDonationAlertsHandler(token);
-  registerDonatePayHandler(token);
-  registerDonatePayEuHandler(token);
-  registerUnofficialDonationAlertsHandler(token);
-  registerDonateXHandler(token);
+function registerHandlers(token: string, recipientId: string) {
+  registerStreamElementsHandler(token, recipientId, eventbus!);
+  registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!);
+  registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!);
+  registerKickChatHandler(token, recipientId, eventbus!, emotesStore!);
+  registerWidgetsHandler(token, recipientId, swScope);
+  registerDonationAlertsHandler(token, recipientId);
+  registerDonatePayHandler(token, recipientId);
+  registerDonatePayEuHandler(token, recipientId);
+  registerUnofficialDonationAlertsHandler(token, recipientId);
+  registerDonateXHandler(token, recipientId);
 }
 
 /** Deregister all handlers that support it. */
@@ -104,7 +105,7 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   console.log("main worker received USER_AUTHORIZED");
 
   const info = (data.payload ?? data) as Record<string, unknown>;
-  const recipientId = String(info.recipientId ?? "");
+  recipientId = String(info.recipientId ?? "unknown");
   const token = String(info.token ?? "");
   tokens.set(recipientId, token);
 
@@ -113,10 +114,10 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   emotesStore.load("");
 
   // One-time handlers — registered once, never duplicated on reload.
-  registerLogHandler(swScope);
+  registerLogHandler(recipientId, swScope);
   registerWorkerStatusHandler(swScope);
 
-  registerHandlers(token);
+  registerHandlers(token, recipientId);
 });
 
 swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
@@ -130,6 +131,5 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
   if (!token || !eventbus || !emotesStore) return;
 
   deregisterHandlers();
-  registerHandlers(token);
+  registerHandlers(token, recipientId);
 });
-

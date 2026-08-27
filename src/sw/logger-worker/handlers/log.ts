@@ -2,7 +2,6 @@
 
 import { buildOtelPayload } from "../otel-payload";
 import type { LogRecord } from "../types";
-import { getRecipientId } from "./user-authorized";
 
 // ── Configuration ───────────────────────────────────────────────────
 
@@ -13,6 +12,7 @@ const MAX_BATCH_SIZE = 10;
 // ── State ──────────────────────────────────────────────────────────
 
 let logQueue: LogRecord[] = [];
+let currentRecipientId = "unknown";
 
 // ── Flusher ─────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ async function flushQueue(): Promise<void> {
     await fetch(OTEL_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildOtelPayload(getRecipientId(), batch)),
+      body: JSON.stringify(buildOtelPayload(currentRecipientId, batch)),
       keepalive: true,
     });
   } catch {}
@@ -32,7 +32,8 @@ async function flushQueue(): Promise<void> {
 
 setInterval(flushQueue, BATCH_INTERVAL_MS);
 
-export function register(sw: ServiceWorkerGlobalScope): void {
+export function register(recipientId: string, sw: ServiceWorkerGlobalScope): void {
+  currentRecipientId = recipientId;
   sw.addEventListener("message", (event: ExtendableMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
     if (!data) return;

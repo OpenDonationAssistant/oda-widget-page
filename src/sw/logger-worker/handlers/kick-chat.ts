@@ -183,6 +183,7 @@ async function startKickClient(
 
 export function register(
   odaToken: string,
+  recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {

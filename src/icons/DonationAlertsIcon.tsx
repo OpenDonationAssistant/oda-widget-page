@@ -11,7 +11,7 @@ export default function DonationAlertsIcon({
       width="24"
       height="24"
       className={className}
-      viewBox="0 -10 30 50"
+      viewBox="5 -5 30 50"
     >
       <path
         fill={color || "#000000"}
