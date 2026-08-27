@@ -21,7 +21,9 @@ export class CustomWidgetSettings extends AbstractWidgetSettings {
     this.addSection({
       key: "style",
       title: "Общее",
-      properties: [this._sources],
+      properties: [
+        this._sources
+      ],
     });
   }
 

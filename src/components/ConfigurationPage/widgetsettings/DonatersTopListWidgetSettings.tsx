@@ -9,6 +9,7 @@ import {
 } from "../widgetproperties/ColorProperty";
 import { DonatersTopListCarouselProperty } from "../widgetproperties/DonatersTopListCarouselProperty";
 import { DonatersTopListLayoutProperty } from "../widgetproperties/DonatersTopListLayoutProperty";
+import { DonatersTopListLabelProperty } from "../widgetproperties/DonatersTopListLabelProperty";
 import { NumberProperty } from "../widgetproperties/NumberProperty";
 import {
   SELECTION_TYPE,
@@ -194,6 +195,7 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
           value: "center",
           displayName: "widget-donaterslist-list-alignment",
         }),
+        new DonatersTopListLabelProperty(),
         new AnimatedFontProperty({
           name: "messageFont",
         }),
@@ -402,6 +404,12 @@ export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {
 
   public get itemBackgroundImage(): BackgroundImageProperty {
     return this.get("itemBackgroundImage") as BackgroundImageProperty;
+  }
+
+  public get labelTemplate(): string {
+    return (
+      this.get("labelTemplate")?.value || "<nickname> - <amount> <currency>"
+    );
   }
 
   public get layout(): "horizontal" | "vertical" {

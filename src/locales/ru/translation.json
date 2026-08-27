@@ -104,6 +104,7 @@
   "widget-donaterslist-title-color": "Цвет",
   "widget-donaterslist-title-background-color": "Фон",
   "widget-donaterslist-title-transparency": "Прозрачность",
+  "widget-donaterslist-label-template": "Шаблон надписи",
   "widget-donaterslist-list-font-family": "Шрифт",
   "widget-donaterslist-list-font-size": "Размер шрифта",
   "widget-donaterslist-list-color": "Цвет",

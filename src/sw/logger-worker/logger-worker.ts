@@ -39,7 +39,11 @@ import {
 } from "./handlers/vklive-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { register as registerWorkerStatusHandler } from "./worker-status";
-import type { Feature } from "./types";
+import {
+  isFeatureEnabled,
+  SW_DONATIONS_FEATURE,
+  type Feature,
+} from "../../shared/features";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
 
@@ -66,14 +70,6 @@ let donationsEnabled = false;
 const tokens = new Map<String, String>();
 let eventbus: DefaultEventBus | null = null;
 let emotesStore: DefaultEmotesStore | null = null;
-
-/** Feature flag that gates registration of the donation handlers. */
-const SW_DONATIONS_FEATURE = "SW_DONATIONS";
-
-/** True when the given feature is present and toggled on. */
-function isFeatureEnabled(features: Feature[], name: string): boolean {
-  return features.some((f) => f.name === name && f.state === "ENABLED");
-}
 
 /**
  * Register handlers that can be deregistered and re-registered with a

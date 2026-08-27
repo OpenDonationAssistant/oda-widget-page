@@ -5,13 +5,9 @@ import { CustomWidgetStore } from "./CustomWidgetStore";
 import { sendMessageToSW } from "../../utils";
 
 function resolvePlaceholders(str: string, data: any) {
-  return str.replace(/(\{\{?\s*[A-Za-z0-9]+?\s*\}?\})/g, (_, expr) => {
+  return str.replace(/\{\{?\s*([A-Za-z0-9_\.]+?)\s*\}?\}/g, (_, expr) => {
     // support "a.b.c" paths
-    const path = expr
-      .replace(/\{\{?\s*/g, "")
-      .replace(/\s*\}?\}/g, "")
-      .trim()
-      .split(".");
+    const path = expr.trim().split(".");
     let cur = data;
     for (const key of path) {
       cur = cur?.[key];
@@ -47,6 +43,7 @@ export const CustomWidget = observer(
         settings
           .jsContent()
           .then((blob) => blob.text())
+          .then((text) => resolvePlaceholders(text, config))
           .then((text) => {
             setJs(text);
           });

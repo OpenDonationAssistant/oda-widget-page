@@ -1,14 +1,10 @@
+import type { Feature } from "../../shared/features";
+
 /** Messages the main thread sends to the service worker. */
 export interface LogRecord {
   level: string;
   messages: string;
   ts: number;
-}
-
-/** A single toggled feature flag from recipient-service settings. */
-export interface Feature {
-  name: string;
-  state: string;
 }
 
 export interface UserAuthorizedPayload {

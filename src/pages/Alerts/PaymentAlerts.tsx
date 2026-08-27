@@ -18,6 +18,7 @@ import { hashString } from "../../utils";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { log } from "../../logging";
+import { isFeatureEnabled, SW_DONATIONS_FEATURE } from "../../shared/features";
 
 const memeAlertsRegexp = /купил (\d+)/;
 
@@ -419,12 +420,15 @@ const PaymentAlerts = observer(
     alertController: AlertController;
     tokenStore: TokenStore;
   }) => {
-    const { recipientId } = useLoaderData() as WidgetData;
+    const { recipientId, features } = useLoaderData() as WidgetData;
     const navigate = useNavigate();
     const integrationLog = log.child({ module: "donationIntegration" });
     const odaToken = localStorage.getItem("access-token");
 
     useEffect(() => {
+      // When SW_DONATIONS is enabled the service worker owns the donation
+      // connections — skip the in-page duplicates.
+      if (isFeatureEnabled(features, SW_DONATIONS_FEATURE)) return;
       const tokens = tokenStore.tokens.filter((token) => token.enabled);
       tokens
         .filter((token) => token.system === "DonationAlerts")
@@ -986,7 +990,7 @@ const PaymentAlerts = observer(
           });
           connection.start();
         });
-    }, [alertController, tokenStore.tokens, recipientId, navigate]);
+    }, [alertController, tokenStore.tokens, recipientId, navigate, features]);
 
     return (
       <AlertStateContext.Provider value={alertController.state}>
