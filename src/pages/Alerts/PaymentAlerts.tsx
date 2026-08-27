@@ -18,7 +18,21 @@ import { hashString } from "../../utils";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { log } from "../../logging";
+import { addWarning } from "@opendonationassistant/news-service";
 import { isFeatureEnabled, SW_DONATIONS_FEATURE } from "../../shared/features";
+
+function reportWarning(token: string, handler: string, message: string): void {
+  addWarning({
+    baseURL: "https://api.oda.digital",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: {
+      message: `${handler} error: ${message}`,
+    },
+  });
+  console.error(`[PaymentAlerts] ${handler} error: ${message}`);
+}
 
 const memeAlertsRegexp = /купил (\d+)/;
 
@@ -460,6 +474,7 @@ const PaymentAlerts = observer(
 
                 socket.addEventListener("error", (event) => {
                   integrationLog.debug("error", event);
+                  reportWarning(odaToken ?? "", "DonationAlerts", "socket error");
                 });
 
                 socket.addEventListener("open", (event) => {
@@ -476,7 +491,17 @@ const PaymentAlerts = observer(
 
                 socket.addEventListener("message", (event) => {
                   const channel = `$alerts:donation_${userId}`;
-                  const data = JSON.parse(event.data);
+                  let data: any;
+                  try {
+                    data = JSON.parse(event.data);
+                  } catch (e) {
+                    reportWarning(
+                      odaToken ?? "",
+                      "DonationAlerts",
+                      `message parse error: ${e}`,
+                    );
+                    return;
+                  }
                   integrationLog.debug({ data: data }, "Message from DA ");
                   if (
                     data.result?.channel === channel &&
@@ -571,6 +596,7 @@ const PaymentAlerts = observer(
 
               socket.addEventListener("error", (event) => {
                 integrationLog.error("DonatePay error", event);
+                reportWarning(odaToken ?? "", "DonatePay", "socket error");
                 navigate(0);
               });
 
@@ -588,7 +614,17 @@ const PaymentAlerts = observer(
 
               socket.addEventListener("message", (event) => {
                 const channel = `$public:${id}`;
-                const data = JSON.parse(event.data);
+                let data: any;
+                try {
+                  data = JSON.parse(event.data);
+                } catch (e) {
+                  reportWarning(
+                    odaToken ?? "",
+                    "DonatePay",
+                    `message parse error: ${e}`,
+                  );
+                  return;
+                }
                 integrationLog.debug({ data: data }, "Message from DonatePay");
                 if (data.id === 1) {
                   integrationLog.debug("getting centrifugo token");
@@ -683,6 +719,7 @@ const PaymentAlerts = observer(
                   });
 
                   socket.addEventListener("error", (event) => {
+                    reportWarning(odaToken ?? "", "DonatePay.eu", "socket error");
                     navigate(0);
                   });
 
@@ -700,7 +737,17 @@ const PaymentAlerts = observer(
 
                   socket.addEventListener("message", (event) => {
                     const channel = `$public:${id}`;
-                    const data = JSON.parse(event.data);
+                    let data: any;
+                    try {
+                      data = JSON.parse(event.data);
+                    } catch (e) {
+                      reportWarning(
+                        odaToken ?? "",
+                        "DonatePay.eu",
+                        `message parse error: ${e}`,
+                      );
+                      return;
+                    }
                     if (data.id === 1) {
                       integrationLog.debug("getting centrifugo token");
                       const clientId = data.result.client;
@@ -789,6 +836,11 @@ const PaymentAlerts = observer(
               { msg: msg },
               "UnofficialDonationAlerts WS: connection_error",
             );
+            reportWarning(
+              odaToken ?? "",
+              "UnofficialDonationAlerts",
+              `connection error: ${msg}`,
+            );
             navigate(0);
           });
 
@@ -796,6 +848,11 @@ const PaymentAlerts = observer(
             integrationLog.error(
               { msg: msg },
               "UnofficialDonationAlerts WS: connection_timeout",
+            );
+            reportWarning(
+              odaToken ?? "",
+              "UnofficialDonationAlerts",
+              `connection timeout: ${msg}`,
             );
             navigate(0);
           });
@@ -808,7 +865,17 @@ const PaymentAlerts = observer(
           });
 
           socket.on("donation", function (msg: string) {
-            const donation = JSON.parse(msg);
+            let donation: any;
+            try {
+              donation = JSON.parse(msg);
+            } catch (e) {
+              reportWarning(
+                odaToken ?? "",
+                "UnofficialDonationAlerts",
+                `donation parse error: ${e}`,
+              );
+              return;
+            }
             integrationLog.debug({ donation: msg }, "Received DA donation");
             switch (donation.alert_type) {
               case 27:
@@ -988,7 +1055,9 @@ const PaymentAlerts = observer(
               },
             });
           });
-          connection.start();
+          connection.start().catch((err) => {
+            reportWarning(odaToken ?? "", "DonateX", `connection error: ${err}`);
+          });
         });
     }, [alertController, tokenStore.tokens, recipientId, navigate, features]);
 
