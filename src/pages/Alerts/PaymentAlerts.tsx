@@ -23,7 +23,7 @@ import { isFeatureEnabled, SW_DONATIONS_FEATURE } from "../../shared/features";
 
 function reportWarning(token: string, handler: string, message: string): void {
   addWarning({
-    baseURL: "https://api.oda.digital",
+    baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -474,7 +474,11 @@ const PaymentAlerts = observer(
 
                 socket.addEventListener("error", (event) => {
                   integrationLog.debug("error", event);
-                  reportWarning(odaToken ?? "", "DonationAlerts", "socket error");
+                  reportWarning(
+                    odaToken ?? "",
+                    "DonationAlerts",
+                    "socket error",
+                  );
                 });
 
                 socket.addEventListener("open", (event) => {
@@ -719,7 +723,11 @@ const PaymentAlerts = observer(
                   });
 
                   socket.addEventListener("error", (event) => {
-                    reportWarning(odaToken ?? "", "DonatePay.eu", "socket error");
+                    reportWarning(
+                      odaToken ?? "",
+                      "DonatePay.eu",
+                      "socket error",
+                    );
                     navigate(0);
                   });
 
@@ -1056,7 +1064,11 @@ const PaymentAlerts = observer(
             });
           });
           connection.start().catch((err) => {
-            reportWarning(odaToken ?? "", "DonateX", `connection error: ${err}`);
+            reportWarning(
+              odaToken ?? "",
+              "DonateX",
+              `connection error: ${err}`,
+            );
           });
         });
     }, [alertController, tokenStore.tokens, recipientId, navigate, features]);
