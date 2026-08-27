@@ -5,9 +5,9 @@ import classes from "../../components/ConfigurationPage/widgetsettings/AbstractW
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import { CustomWidget } from "./CustomWidget";
 import { SourcesProperty } from "./SourcesProperty";
-import { log } from "../../logging";
-import { toJS } from "mobx";
-import { downloadFile, fullUri } from "../../utils";
+import { WidthProperty } from "../../components/ConfigurationPage/widgetproperties/WidthProperty";
+import { HeightProperty } from "../../components/ConfigurationPage/widgetproperties/HeightProperty";
+import { downloadFile } from "../../utils";
 import { DemoCustomWidgetStore } from "./CustomWidgetStore";
 
 export class CustomWidgetSettings extends AbstractWidgetSettings {
@@ -15,16 +15,30 @@ export class CustomWidgetSettings extends AbstractWidgetSettings {
     name: "sources",
     displayName: "Файлы",
   });
+  private _width: WidthProperty = new WidthProperty({
+    name: "width",
+    displayName: "Ширина",
+  });
+  private _height: HeightProperty = new HeightProperty({
+    name: "height",
+    displayName: "Высота",
+  });
   constructor() {
     super({ sections: [] });
 
     this.addSection({
       key: "style",
       title: "Общее",
-      properties: [
-        this._sources
-      ],
+      properties: [this._width, this._height, this._sources],
     });
+  }
+
+  public get widthProperty(): WidthProperty {
+    return this._width;
+  }
+
+  public get heightProperty(): HeightProperty {
+    return this._height;
   }
 
   public prepareConfig(): Promise<{ name: string; value: any }[]> {

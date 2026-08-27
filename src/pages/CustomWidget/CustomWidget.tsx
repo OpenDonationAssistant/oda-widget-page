@@ -102,6 +102,7 @@ export const CustomWidget = observer(
                 detail: ${JSON.stringify(store.session)},
               });
 
+              console.log({ session: ${JSON.stringify(store.session)}}, "Sending onWidgetLoad event");
               window.dispatchEvent(e);
               console.log('adding message listener');
               navigator.serviceWorker.addEventListener("message", (message) => {
@@ -155,12 +156,21 @@ export const CustomWidget = observer(
       );
     }, [html, css, js, store.session]);
 
+    const width =
+      settings.widthProperty.value > 0
+        ? `${settings.widthProperty.value}px`
+        : "100%";
+    const height =
+      settings.heightProperty.value > 0
+        ? `${settings.heightProperty.value}px`
+        : "100%";
+
     return (
       <>
         {doc && (
           <iframe
-            width="100%"
-            height="100%"
+            width={width}
+            height={height}
             sandbox="allow-scripts allow-same-origin"
             scrolling="no"
             srcDoc={doc}
