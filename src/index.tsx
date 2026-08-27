@@ -45,6 +45,7 @@ import AutomationPage from "./pages/Automation/AutomationPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/Button/UtilityButton";
+import WarningsPanel from "./components/WarningsPanel/WarningsPanel";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
 import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";
@@ -271,6 +272,7 @@ function ConfigurationPageTemplate() {
                 backgroundColor: "var(--oda-color-100)",
               }}
             >
+              <WarningsPanel />
               <FontContext.Provider value={fontStore}>
                 <WidgetStoreContext.Provider value={widgetStore}>
                   <PaymentPageConfigContext.Provider value={paymentPageConfig}>
