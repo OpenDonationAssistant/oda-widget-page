@@ -13,7 +13,7 @@ const lastDonations = async () => {
     query: {
       page: 0,
       size: 50,
-      sort: "authorizationTimestamp,desc",
+      sort: "timestamp,desc",
       events: ["payment"],
     },
   });
