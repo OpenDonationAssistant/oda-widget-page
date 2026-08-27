@@ -6,6 +6,7 @@ import { DonatersTopList } from "./DonatersTopList";
 import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
 import { DonatersListStore } from "./DonatersListStore";
 import { DefaultHistoryStore } from "../History/HistoryStore";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function DonatersTopListPage() {
   const { widgetId, recipientId, settings, conf } =
@@ -14,6 +15,7 @@ export default function DonatersTopListPage() {
   const widgetSettings = Widget.configFromJson(
     settings,
   ) as DonatersTopListWidgetSettings;
+  const { accessToken } = useAuth();
 
   const store = new DonatersListStore(
     widgetId,
@@ -23,14 +25,8 @@ export default function DonatersTopListPage() {
     conf.topic.donaterstoplist,
   );
 
-  const token = localStorage.getItem("access-token");
-  if (!token) {
-    // TODO relogin
-    throw new Error("Access token not found");
-  }
-
   const historyStore = new DefaultHistoryStore(
-    token,
+    accessToken ?? "",
     recipientId,
     widgetId,
     conf,

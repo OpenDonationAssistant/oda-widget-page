@@ -22,7 +22,9 @@ export const getRndInteger = (min: number, max: number): number => {
 
 export function onEvent(fn: (event: Event) => void) {
   navigator.serviceWorker.addEventListener("message", (event) => {
-    fn(event.data as Event);
+    fn(
+      new Event(event.data._type, event.data._variables, event.data._timestamp),
+    );
   });
 }
 

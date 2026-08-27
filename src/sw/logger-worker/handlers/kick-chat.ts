@@ -134,7 +134,7 @@ function startWebSocketClient(
   websocketClient.addEventListener("close", (event) => {
     if (event.code === 1000) return;
     reportError(
-      
+      odaToken,
       "Kick",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );

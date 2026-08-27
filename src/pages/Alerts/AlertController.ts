@@ -59,7 +59,8 @@ export class AlertController {
       })
       .then(() => {
         onEvent((event) => {
-          if (event.type === "TwitchChannelRaidEvent") {
+          console.log(event);
+          if (event._type === "TwitchChannelRaidEvent") {
             const channel = event.get("channel");
             const viewerCount = event.get("viewerCount");
             const data = {
@@ -83,7 +84,7 @@ export class AlertController {
             }
             this.log.info("Alert is handled");
           }
-          if (event.type === "Alert") {
+          if (event._type === "Alert") {
             const alertmedia = event.get("alertmedia");
             const amount = event.get("amount");
             const system = event.get("system");

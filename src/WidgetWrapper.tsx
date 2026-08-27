@@ -35,7 +35,7 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log("registering service worker");
     if ("serviceWorker" in navigator) {
-      const swUrl = `http://localhost:3001/logger-worker.js`;
+      const swUrl = `${process.env.PUBLIC_URL || ""}/logger-worker.js`;
       try {
         navigator.serviceWorker
           .register(swUrl, {

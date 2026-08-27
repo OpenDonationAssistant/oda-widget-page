@@ -24,7 +24,7 @@ export class StreamCreditsStore {
   };
 
   constructor(widgetId: string) {
-    const stateKey = `stream-credits-state-${widgetId}`;
+    const stateKey = `1-stream-credits-state-${widgetId}`;
     let data = localStorage.getItem(stateKey);
     if (data) {
       this._state = JSON.parse(data) as CreditsState;

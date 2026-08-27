@@ -74,10 +74,10 @@ function persistDonation(
       nickname: donation.username,
       message: donation.message,
       triggerAlert: true,
-      triggerReel: false,
-      triggerDonaton: false,
-      addToTop: false,
-      addToGoal: false,
+      triggerReel: true,
+      triggerDonaton: true,
+      addToTop: true,
+      addToGoal: true,
       goals: [],
       authorizationTimestamp: new Date().toISOString(),
       ...command,
@@ -185,7 +185,11 @@ function startSocketClient(odaToken: string, daToken: string): void {
 
   socket.on("disconnect", (reason: string) => {
     if (reason === "io client disconnect") return;
-    reportError(odaToken, "UnofficialDonationAlerts", `disconnected: ${reason}`);
+    reportError(
+      odaToken,
+      "UnofficialDonationAlerts",
+      `disconnected: ${reason}`,
+    );
   });
 
   socket.on("reconnect", () => {

@@ -119,7 +119,6 @@ const allButtons: Section[] = [
     nonactive: <span className="material-symbols-sharp">manage_accounts</span>,
     label: "menu-account",
   },
-  
 ];
 
 function NewFeature({

@@ -15,22 +15,19 @@ import {
 } from "../../stores/WidgetStore";
 import { Widget } from "../../types/Widget";
 import { HistoryWidgetSettings, HistoryWidgetSettingsContenxt } from "./HistoryWidgetSettings";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function HistoryWidgetPage() {
   const { recipientId, conf, widgetId, settings } =
     useLoaderData() as WidgetData;
+  const { accessToken } = useAuth();
 
   const widgetSettings = Widget.configFromJson(
     settings,
   ) as HistoryWidgetSettings;
 
-  const token = localStorage.getItem("access-token");
-  if (!token) {
-    throw new Error("No token");
-  }
-
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(token, recipientId, widgetId, conf),
+    () => new DefaultHistoryStore(accessToken ?? "", recipientId, widgetId, conf),
   );
   const [widgetStore] = useState<WidgetStore>(() => new DefaultWidgetStore());
 

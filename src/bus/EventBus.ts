@@ -43,7 +43,6 @@ async function trimKeepLastN(db: IDBDatabase) {
     cReq.onsuccess = () => resolve(cReq.result);
     cReq.onerror = () => reject(cReq.error);
   });
-  console.log(`${count} counted in ${STORE}`);
 
   const toDelete = count - RETAIN_LAST;
   if (toDelete <= 0) return;
@@ -124,7 +123,7 @@ export interface EventBus {
 export class DefaultEventBus implements EventBus {
   private _swScope: ServiceWorkerGlobalScope;
   private _socket = new Client({
-    brokerURL: "ws://localhost/ws",
+    brokerURL: process.env.REACT_APP_WS_ENDPOINT,
     // connectHeaders: {
     //   passcode: localStorage.getItem("access-token") ?? ""
     // },
@@ -132,7 +131,11 @@ export class DefaultEventBus implements EventBus {
   });
   private _db: Promise<IDBDatabase>;
 
-  constructor(token: string, recipientId: string, swScope: ServiceWorkerGlobalScope) {
+  constructor(
+    token: string,
+    recipientId: string,
+    swScope: ServiceWorkerGlobalScope,
+  ) {
     this._swScope = swScope;
     this._socket.onConnect = () => {
       reportStarted("ODA");
@@ -154,7 +157,11 @@ export class DefaultEventBus implements EventBus {
       );
     };
     this._socket.onStompError = (frame) => {
-      reportError(token, "ODA", `stomp error: ${frame.headers.message ?? "unknown"}`);
+      reportError(
+        token,
+        "ODA",
+        `stomp error: ${frame.headers.message ?? "unknown"}`,
+      );
     };
     this._socket.onWebSocketError = (evt) => {
       reportError(token, "ODA", `websocket error: ${evt}`);
@@ -213,7 +220,7 @@ export class DefaultEventBus implements EventBus {
     });
 
     const db = await this._db;
-    console.log({ msg: msg }, "Storing message");
+    log.debug({ msg: msg }, "Storing message");
     db.transaction(STORE, "readwrite").objectStore(STORE).put(msg);
 
     for (const client of clients) {

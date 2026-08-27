@@ -2,35 +2,22 @@ import axios from "axios";
 import { makeAutoObservable } from "mobx";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
+import { getHistory } from "@opendonationassistant/history-service";
 
-const lastDonations = async (recipientId: string) => {
-  const data = await HistoryService(
-    undefined,
-    process.env.REACT_APP_HISTORY_API_ENDPOINT,
-  ).getHistory({
-    recipientId: recipientId,
-    pageable: {
+const lastDonations = async () => {
+  const data = await getHistory({
+    baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+    query: {
+      page: 0,
       size: 50,
-      number: 0,
-      orderBy: [
-        {
-          property: "authorizationTimestamp",
-          direction: "DESC",
-          ignoreCase: true,
-        },
-      ],
-      sort: {
-        orderBy: [
-          {
-            property: "authorizationTimestamp",
-            direction: "DESC",
-            ignoreCase: true,
-          },
-        ],
-      },
+      sort: "authorizationTimestamp,desc",
+      events: ["payment"],
     },
   });
-  return data.data.content;
+  return data.data?.content;
 };
 
 const listDonaters = (recipientId: string, period: string) =>
@@ -83,14 +70,15 @@ export class DonatersListStore implements AbstractDonatersListStore {
 
   updateDonaters(period: "month" | "day", type: "Top" | "Last") {
     if (type === "Last") {
-      lastDonations(this._recipientId).then((data) => {
+      lastDonations().then((data) => {
         log.debug({ updatedDonaters: data }, "updating donaters");
-        this._list = data.map((donation) => {
-          return {
-            nickname: donation.nickname ?? "",
-            amount: donation.amount?.major ?? 0,
-          };
-        });
+        this._list =
+          data?.map((donation) => {
+            return {
+              nickname: donation.nickname ?? "",
+              amount: donation.amount?.major ?? 0,
+            };
+          }) ?? [];
       });
       return;
     }
