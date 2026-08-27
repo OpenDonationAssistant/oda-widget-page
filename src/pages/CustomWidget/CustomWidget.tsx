@@ -43,7 +43,6 @@ export const CustomWidget = observer(
         settings
           .jsContent()
           .then((blob) => blob.text())
-          .then((text) => resolvePlaceholders(text, config))
           .then((text) => {
             setJs(text);
           });

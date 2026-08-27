@@ -163,7 +163,7 @@ export class DemoCustomWidgetStore implements CustomWidgetStore {
             name: "denimanev65",
             createdAt: "2026-05-24T17:05:29.074Z",
             type: "follower",
-          }
+          },
         ],
         "subscriber-recent": [],
         "host-recent": [],
@@ -562,6 +562,7 @@ export class DefaultCustomWidgetStore implements CustomWidgetStore {
         return this.client().getSession();
       })
       .then((session) => {
+        log.info({ session }, "SE session updated");
         this._session.session = session.data.session;
         this._session.channel = session.data.channel;
       });
