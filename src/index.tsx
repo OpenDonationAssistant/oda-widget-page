@@ -76,6 +76,7 @@ import AuctionPage from "./pages/AuctionWidget/AuctionPage";
 import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 import { ApiPage } from "./pages/Api/ApiPage";
 import { AuthProvider } from "./contexts/AuthContext";
+import ChatWidgetPage from "./pages/ChatWidget/ChatWidgetPage";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -464,6 +465,11 @@ const router = createBrowserRouter([
       {
         path: "/stream-credits/:widgetId",
         element: <StreamCreditsWidgetPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/chat/:widgetId",
+        element: <ChatWidgetPage />,
         loader: widgetSettingsLoader,
       },
     ],

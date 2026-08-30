@@ -1,0 +1,11 @@
+.inlined {
+  display: inline;
+  & div {
+    display:inline;
+  }
+}
+
+.icon {
+  display: inline;
+  vertical-align: text-bottom;
+}

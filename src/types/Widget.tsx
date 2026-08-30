@@ -36,6 +36,7 @@ import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCredit
 import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
 import { CustomWidgetSettings } from "../pages/CustomWidget/CustomWidgetSettings";
+import { ChatWidgetSettings } from "../pages/ChatWidget/ChatWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -235,6 +236,16 @@ export const WIDGET_TYPES = [
     description:
       "Виджет, поддерживающий кастомные виджеты в формате StreamElements",
     create: () => new CustomWidgetSettings(),
+  },
+  {
+    name: "chat",
+    title: "Чат",
+    icon: <span className="material-symbols-sharp">forum</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick",
+    create: () => new ChatWidgetSettings(),
   },
 ];
 

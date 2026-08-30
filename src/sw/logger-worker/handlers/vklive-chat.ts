@@ -94,11 +94,24 @@ function handleChatMessage(
         };
       }),
   );
+  const badges = (message.author?.badges ?? []).map(
+    (badge: {
+      achievement_name: string;
+      id: string;
+      large_url: string;
+      name: string;
+    }) => ({
+      type: badge.achievement_name,
+      version: badge.id,
+      url: badge.large_url,
+      description: badge.name || badge.achievement_name,
+    }),
+  );
   const variables: Variable[] = [
     {
       id: uuidv7(),
       name: "chatter_user_login",
-      value: `<span class="oda-message-author"><img height="16" width="16" src="https://dev.live.vkvideo.ru/static/favicon.png"/><span>${message.author?.nick ?? ""}</span></span>`,
+      value: message.author?.nick ?? "",
       type: "string",
     },
     {
@@ -117,6 +130,12 @@ function handleChatMessage(
       id: uuidv7(),
       name: "emotes",
       value: emotes,
+      type: "object",
+    },
+    {
+      id: uuidv7(),
+      name: "badges",
+      value: badges,
       type: "object",
     },
   ];

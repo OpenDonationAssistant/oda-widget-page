@@ -1,8 +1,14 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { AlertState } from "./AlertState";
 import { log as parent } from "../../logging";
-import { publish } from "../../socket";
-import { delay, getRndInteger, onEvent, sleep } from "../../utils";
+import { publish, subscribe } from "../../socket";
+import {
+  delay,
+  getRndInteger,
+  onEvent,
+  sendMessageToSW,
+  sleep,
+} from "../../utils";
 import { VoiceController } from "../../logic/voice/VoiceController";
 import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { PaymentAlertsProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsProperty";
@@ -59,7 +65,6 @@ export class AlertController {
       })
       .then(() => {
         onEvent((event) => {
-          console.log(event);
           if (event._type === "TwitchChannelRaidEvent") {
             const channel = event.get("channel");
             const viewerCount = event.get("viewerCount");
@@ -129,6 +134,9 @@ export class AlertController {
           }
         });
       });
+    setInterval(() => {
+      sendMessageToSW({ type: "GetWorkersStatus" });
+    }, 10000);
   }
 
   protected pausePlayer() {

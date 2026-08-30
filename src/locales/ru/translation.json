@@ -1,4 +1,11 @@
 {
+  "vertical": "Вертикально",
+  "horizontal": "Горизонтально",
+  "left": "Слева",
+  "right": "Справа",
+  "center": "По центру",
+  "separate-blocks": "Отдельными блоками",
+  "one-line": "Одной строкой",
   "menu-widgets": "Виджеты",
   "menu-history": "История",
   "menu-payment-page-config": "Страница доната",

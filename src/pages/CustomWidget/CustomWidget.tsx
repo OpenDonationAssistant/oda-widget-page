@@ -108,37 +108,40 @@ export const CustomWidget = observer(
                 const event = message.data;
                 console.log({event:event}, "Received message");
                 if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE" || event._type === "KICK_CHAT_MESSAGE") {
+                  const badges = getValue(event._variables, "badges");
+                  const hasBroadcaster = badges?.filter((it) => it.type === "broadcaster").length > 0;
+                  let author = '<span class="oda-message-author"><img height="16" width="16" src="https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png"/><span>' + getValue(event._variables, "chatter_user_login")  + "</span></span>";
+                  if (event._type === "VKLIVE_CHAT_MESSAGE") {
+                    author = '<span class="oda-message-author"><img height="16" width="16" src="https://dev.live.vkvideo.ru/static/favicon.png"/><span>' + getValue(event._variables, "chatter_user_login")  + "</span></span>";
+                  }
+                  if (event._type === "KICK_CHAT_MESSAGE") {
+                    author = '<span class="oda-message-author"><img height="16" width="16" src="https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico="/><span>' + getValue(event._variables, "chatter_user_login")  + "</span></span>";
+                  }
                   const e = new CustomEvent("onEventReceived", {
                     detail: {
                       listener: "message",
                       event: {
-                        renderedText: getValue(event._variables, "message_text"),
+                      renderedText: getValue(event._variables, "message_text"),
                         data: {
                           "time": Date.now(),
                           "tags": {
-                            "badges": "broadcaster/1",
+                            "badges": hasBroadcaster ? "broadcaster/1" : "",
                             "color": "#641FEF",
                             "display-name": "SenderName",
-                            "emotes": "25:5-9",
-                            "flags": "",
-                            "id": "885d1f33-8387-4206-a668-e9b1409a998b",
-                            "mod": "0",
-                            "room-id": "85827806",
-                            "subscriber": "0",
-                            "tmi-sent-ts": "1552400351927",
+                            "mod": "1",
+                            "subscriber": "1",
                             "turbo": "0",
-                            "user-id": "85827806",
                             "user-type": ""
                           },
                           "nick": "sendername",
                           "userId": "123123",
                           "displayColor": "#641FEF",
-                          "badges": [],
+                          "badges": getValue(event._variables, "badges"),
                           "channel": "channelname",
                           "isAction": false,
                           emotes: getValue(event._variables, "emotes"),
                           "msgId": "885d1f33-8387-4206-a668-e9b1409a99Xb",
-                          displayName: getValue(event._variables, "chatter_user_login"),
+                          displayName: author,
                           text: getValue(event._variables, "message_text"),
                         }
                       }

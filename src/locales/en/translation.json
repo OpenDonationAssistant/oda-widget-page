@@ -1,4 +1,11 @@
 {
+  "vertical": "Vertical",
+  "horisontal": "Horisontal",
+  "left": "Left",
+  "right": "Right",
+  "separate-blocks": "Separate blocks",
+  "one-line": "One line",
+  "center": "Center",
   "menu-widgets": "Widgets",
   "menu-history": "History",
   "menu-payment-page-config": "Donation Page",

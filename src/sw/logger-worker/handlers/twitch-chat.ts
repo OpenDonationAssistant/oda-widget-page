@@ -9,6 +9,50 @@ import { emotesFromText } from "./emotes";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 
+interface BadgeDef {
+  type: string;
+  version: string;
+  url: string;
+  description: string;
+}
+
+const badgeDefinitions = new Map<string, Map<string, BadgeDef>>();
+
+async function fetchBadgeDefinitions(
+  token: string,
+  broadcasterId: string,
+): Promise<Map<string, BadgeDef>> {
+  const headers = {
+    Authorization: "Bearer " + token,
+    "Client-Id": "2f9aljaudj3678kp4gc9bj99tb7bev",
+  };
+  const badgeMap = new Map<string, BadgeDef>();
+  const endpoints = [
+    `https://api.twitch.tv/helix/chat/badges?broadcaster_id=${broadcasterId}`,
+    "https://api.twitch.tv/helix/chat/badges/global",
+  ];
+  for (const url of endpoints) {
+    try {
+      const response = await fetch(url, { headers });
+      if (response.status !== 200) continue;
+      const json = await response.json();
+      for (const set of json.data ?? []) {
+        for (const version of set.versions ?? []) {
+          badgeMap.set(`${set.set_id}/${version.id}`, {
+            type: set.set_id,
+            version: version.id,
+            url: version.image_url_4x,
+            description: version.title,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch Twitch badges", error);
+    }
+  }
+  return badgeMap;
+}
+
 async function getTwitchUserId(token: string) {
   const response = await fetch("https://id.twitch.tv/oauth2/validate", {
     method: "GET",
@@ -26,6 +70,7 @@ async function registerEventSubListeners(
 ) {
   // Register channel.chat.message
   let userId = await getTwitchUserId(token);
+  badgeDefinitions.set(token, await fetchBadgeDefinitions(token, userId));
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
     {
@@ -97,6 +142,13 @@ function handleWebSocketMessage(
                 };
               }),
           );
+          const badges = (data.payload.event.badges ?? [])
+            .map((badge: { set_id: string; id: string }) =>
+              badgeDefinitions.get(token)?.get(`${badge.set_id}/${badge.id}`),
+            )
+            .filter((badge: BadgeDef | undefined): badge is BadgeDef =>
+              Boolean(badge),
+            );
           const variables: Variable[] = [];
           variables.push(
             {
@@ -108,13 +160,19 @@ function handleWebSocketMessage(
             {
               id: uuidv7(),
               name: "chatter_user_login",
-              value: `<span class="oda-message-author"><img height="16" width="16" src="https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png"/><span>${data.payload.event.chatter_user_name ?? ""}</span></span>`,
+              value: data.payload.event.chatter_user_name ?? "",
               type: "string",
             },
             {
               id: uuidv7(),
               name: "emotes",
               value: emotes,
+              type: "object",
+            },
+            {
+              id: uuidv7(),
+              name: "badges",
+              value: badges,
               type: "object",
             },
             {

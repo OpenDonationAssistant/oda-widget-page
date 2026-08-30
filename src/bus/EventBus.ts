@@ -111,7 +111,7 @@ export class Event {
     return this._timestamp;
   }
 
-  public get(name: string): string | number | null {
+  public get(name: string): any {
     return this._variables.find((it) => it.name === name)?.value ?? null;
   }
 }

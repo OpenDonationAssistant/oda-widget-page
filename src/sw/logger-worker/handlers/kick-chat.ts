@@ -54,7 +54,7 @@ function handleChatMessage(
     {
       id: uuidv7(),
       name: "chatter_user_login",
-      value: `<span class="oda-message-author"><img height="16" width="16" src="https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico="/><span>${message.sender?.username ?? ""}</span></span>`,
+      value: message.sender?.username ?? "",
       type: "string",
     },
     {

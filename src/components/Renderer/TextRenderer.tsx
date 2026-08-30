@@ -67,12 +67,12 @@ function wordStyle(font: AnimatedFontProperty) {
 }
 
 export const TextRenderer = observer(
-  ({ font, text }: { font: AnimatedFontProperty; text: string }) => {
+  ({ font, text, className }: { font: AnimatedFontProperty; text: string; className?: string }) => {
     const color = wordStyle(font);
     return (
       <>
         {font.createFontImport()}
-        <div style={containerStyle(font)}>
+        <div className={className} style={containerStyle(font)}>
           {font.value.animation === "none" && <div style={color}>{text}</div>}
           {font.value.animation !== "none" && (
             <>
