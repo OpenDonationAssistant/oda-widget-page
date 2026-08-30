@@ -13,8 +13,8 @@ const TwitchIcon = observer(
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M3.2547 0H15.5799V9.12383L9.74631 14.9574H7.16745L3.89497 18.2299V14.9574H0V3.27248L3.2547 0ZM3.89502 1.29883H14.2994V8.4485L11.6672 11.0807H9.1061L6.84737 13.3394V11.0807H3.89502V1.29883Z"
             fill="var(--oda-control-color)"
           />
