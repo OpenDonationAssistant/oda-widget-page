@@ -6,6 +6,10 @@
 // shared map keyed by handler name. The logger-worker returns the map
 // to clients that send a `GetWorkersStatus` message.
 import { addWarning } from "@opendonationassistant/news-service";
+import type {
+  MessageListenerRegistrar,
+  WorkerMessageEvent,
+} from "./messaging";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -57,12 +61,12 @@ export function getStatuses(): Map<string, WorkerStatusMessage> {
   return statuses;
 }
 
-export function register(sw: ServiceWorkerGlobalScope): void {
-  sw.addEventListener("message", (event: ExtendableMessageEvent) => {
+export function register(addMessageListener: MessageListenerRegistrar): void {
+  addMessageListener((event: WorkerMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
     if (!data || typeof data.type !== "string") return;
     if (data.type === "GetWorkersStatus") {
-      event.source?.postMessage({
+      event.port.postMessage({
         type: "WorkersStatus",
         statuses: getStatuses(),
       });

@@ -1,12 +1,11 @@
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { AlertState } from "./AlertState";
 import { log as parent } from "../../logging";
-import { publish, subscribe } from "../../socket";
+import { publish } from "../../socket";
 import {
   delay,
   getRndInteger,
   onEvent,
-  sendMessageToSW,
   sleep,
 } from "../../utils";
 import { VoiceController } from "../../logic/voice/VoiceController";
@@ -134,9 +133,6 @@ export class AlertController {
           }
         });
       });
-    setInterval(() => {
-      sendMessageToSW({ type: "GetWorkersStatus" });
-    }, 10000);
   }
 
   protected pausePlayer() {

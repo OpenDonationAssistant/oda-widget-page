@@ -11,7 +11,7 @@ import DonateXIcon from "../../icons/DonateXIcon";
 import { DefaultWorkersStore, WorkersStore } from "../../stores/WorkersStore";
 import ODAIcon from "../../icons/ODAIcon";
 import { useAuth } from "../../contexts/AuthContext";
-import { sendMessageToSW } from "../../utils";
+import { sendMessageToWorker } from "../../worker";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 
 const serviceIcons: Record<string, JSX.Element> = {
@@ -46,7 +46,7 @@ export default observer(function ConnectedServices() {
       </span>
       <NotBorderedIconButton
         className={classes.reloadbutton}
-        onClick={() => sendMessageToSW({ type: "Reload", token: accessToken })}
+        onClick={() => sendMessageToWorker({ type: "Reload", token: accessToken })}
       >
         <span className="material-symbols-sharp">replay</span>
       </NotBorderedIconButton>

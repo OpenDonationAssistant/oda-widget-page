@@ -1,4 +1,5 @@
 import pino from "pino";
+import { sendMessageToWorker } from "./worker";
 
 function valueOf(level: string): number {
   switch (level.toLowerCase()) {
@@ -26,21 +27,15 @@ const send = async function (level: string, logEvent: any) {
   if (valueOf(level) > valueOf(loglevel)) {
     return;
   }
-  navigator.serviceWorker?.ready.then((worker) => {
-    try {
-      worker.active?.postMessage({
-        type: "LOG",
-        log: {
-          level: logEvent.level.label.toUpperCase(),
-          messages: logEvent.messages
-            .map((m: any) => JSON.stringify(m))
-            .join(";"),
-          ts: logEvent.ts,
-        },
-      });
-    } catch (e) {
-      console.error({ logEvent }, `Error while transmitting log`);
-    }
+  sendMessageToWorker({
+    type: "LOG",
+    log: {
+      level: logEvent.level.label.toUpperCase(),
+      messages: logEvent.messages
+        .map((m: any) => JSON.stringify(m))
+        .join(";"),
+      ts: logEvent.ts,
+    },
   });
 };
 

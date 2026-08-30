@@ -2,6 +2,7 @@ import axios from "axios";
 import { log } from "./logging";
 import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { tokenRequest } from "./pages/Login/Login";
+import { sendMessageToWorker } from "./worker";
 
 interface LogLevel {
   name: string;
@@ -112,25 +113,12 @@ export default async function auth(): Promise<Session> {
     recipientId = sessionInfo.id;
     axios.defaults.headers.common["Authorization"] =
       `Bearer ${localStorage.getItem("access-token")}`;
-    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: "USER_AUTHORIZED",
-        recipientId: recipientId,
-        features: sessionInfo.features,
-        token: localStorage.getItem("access-token"),
-      });
-    } else if (navigator.serviceWorker) {
-      // ensure active SW and then notify
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.active &&
-          reg.active.postMessage({
-            type: "USER_AUTHORIZED",
-            recipientId: recipientId,
-            features: sessionInfo.features,
-            token: localStorage.getItem("access-token"),
-          });
-      });
-    }
+    sendMessageToWorker({
+      type: "USER_AUTHORIZED",
+      recipientId: recipientId,
+      features: sessionInfo.features,
+      token: localStorage.getItem("access-token"),
+    });
   }
 
   return sessionInfo;

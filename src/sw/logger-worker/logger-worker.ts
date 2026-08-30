@@ -46,24 +46,57 @@ import {
 } from "../../shared/features";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
+import type {
+  MessageListener,
+  MessageListenerRegistrar,
+  WorkerMessageEvent,
+} from "./messaging";
 
-/** Service worker scope — cast from the generic `self`. */
-const swScope = self as unknown as ServiceWorkerGlobalScope;
+/** Shared worker scope — cast from the generic `self`. */
+const swScope = self as unknown as SharedWorkerGlobalScope;
 
-// ── Lifecycle ───────────────────────────────────────────────────────
-
-swScope.addEventListener("install", () => {
-  swScope.skipWaiting();
-});
-
-swScope.addEventListener("activate", (event) => {
-  event.waitUntil(swScope.clients.claim());
-  console.log("main worker activated");
-});
-
-// ── Register message handlers ───────────────────────────────────────
+// ── Port management ─────────────────────────────────────────────────
 //
-//
+// Every client that constructs `new SharedWorker(...)` with the same URL
+// and name connects to this scope. We keep the ports in a Set so events
+// can be broadcast to all connected clients (the SharedWorker equivalent
+// of `clients.matchAll()`).
+
+const ports = new Set<MessagePort>();
+const messageListeners = new Set<MessageListener>();
+
+function broadcast(msg: unknown) {
+  for (const port of ports) {
+    try {
+      port.postMessage(msg);
+    } catch {
+      // Port is dead (tab closed) — drop it.
+      ports.delete(port);
+    }
+  }
+}
+
+function addMessageListener(listener: MessageListener) {
+  messageListeners.add(listener);
+}
+
+function dispatchMessage(data: unknown, port: MessagePort) {
+  const event: WorkerMessageEvent = { data, port };
+  for (const listener of messageListeners) {
+    listener(event);
+  }
+}
+
+swScope.onconnect = (event: MessageEvent) => {
+  const port = event.ports[0];
+  ports.add(port);
+  port.onmessage = (msgEvent: MessageEvent) =>
+    dispatchMessage(msgEvent.data, port);
+  port.start();
+};
+
+// ── State ───────────────────────────────────────────────────────────
+
 let connected = false;
 let recipientId = "unknown";
 let donationsEnabled = false;
@@ -88,7 +121,7 @@ function registerCoreHandlers(token: string, recipientId: string) {
   registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerKickChatHandler(token, recipientId, eventbus!, emotesStore!);
-  registerWidgetsHandler(token, recipientId, swScope);
+  registerWidgetsHandler(token, recipientId, addMessageListener);
 }
 
 /** Donation handlers — only registered when SW_DONATIONS is enabled. */
@@ -124,7 +157,9 @@ function deregisterDonationHandlers() {
   deregisterUnofficialDonationAlertsHandler();
 }
 
-swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
+// ── Message dispatch ────────────────────────────────────────────────
+
+addMessageListener((event: WorkerMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
   if (!data || data.type !== "USER_AUTHORIZED") return;
   if (connected) return;
@@ -143,18 +178,23 @@ swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
     `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
   );
 
-  eventbus = new DefaultEventBus(token, recipientId, swScope);
+  eventbus = new DefaultEventBus(
+    token,
+    recipientId,
+    broadcast,
+    addMessageListener,
+  );
   emotesStore = new DefaultEmotesStore();
   emotesStore.load("");
 
   // One-time handlers — registered once, never duplicated on reload.
-  registerLogHandler(recipientId, swScope);
-  registerWorkerStatusHandler(swScope);
+  registerLogHandler(recipientId, addMessageListener);
+  registerWorkerStatusHandler(addMessageListener);
 
   registerHandlers(token, recipientId);
 });
 
-swScope.addEventListener("message", (event: ExtendableMessageEvent) => {
+addMessageListener((event: WorkerMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
   if (!data || data.type !== "Reload") return;
 

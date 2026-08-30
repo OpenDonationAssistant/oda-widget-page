@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { sendMessageToSW } from "../utils";
+import { sendMessageToWorker } from "../worker";
+import { onWorkerMessage } from "../worker";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -34,21 +35,16 @@ export class DefaultWorkersStore {
   private _connected: string[] = [];
   private _errors: WorkerStatusMessage[] = [];
   private timer?: number;
+  private unsubscribe?: () => void;
 
   constructor() {
     makeAutoObservable(this);
-    if (!navigator.serviceWorker) {
-      return;
-    }
-    navigator.serviceWorker.addEventListener("message", this.onMessage);
+    this.unsubscribe = onWorkerMessage(this.onMessage);
     this.refresh();
     this.timer = window.setInterval(() => this.refresh(), 5000);
   }
 
-  private onMessage = (event: MessageEvent) => {
-    const data = event.data as
-      | { type?: string; statuses?: Map<string, WorkerStatusMessage> }
-      | undefined;
+  private onMessage = (data: any) => {
     if (!data || data.type !== "WorkersStatus" || !data.statuses) {
       return;
     }
@@ -57,13 +53,13 @@ export class DefaultWorkersStore {
   };
 
   public refresh() {
-    sendMessageToSW({ type: "GetWorkersStatus" });
+    sendMessageToWorker({ type: "GetWorkersStatus" });
   }
 
   public remove(handler: string) {
     this._connected = this._connected.filter((name) => name !== handler);
     this._errors = this._errors.filter((error) => error.handler !== handler);
-    sendMessageToSW({ type: "RemoveWorkersStatus", handler });
+    sendMessageToWorker({ type: "RemoveWorkersStatus", handler });
   }
 
   public get connected() {
@@ -79,6 +75,6 @@ export class DefaultWorkersStore {
       window.clearInterval(this.timer);
       this.timer = undefined;
     }
-    navigator.serviceWorker?.removeEventListener("message", this.onMessage);
+    this.unsubscribe?.();
   }
 }

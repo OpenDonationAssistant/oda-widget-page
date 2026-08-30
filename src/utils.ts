@@ -2,28 +2,18 @@ import axios from "axios";
 import { ChangeEvent, ReactNode } from "react";
 import { uuidv7 } from "uuidv7";
 import { Event } from "./bus/EventBus";
+import { onWorkerMessage, sendMessageToWorker } from "./worker";
 
-export function sendMessageToSW(message: Record<string, unknown>) {
-  if (!navigator.serviceWorker) {
-    return;
-  }
-  if (navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage(message);
-  } else {
-    navigator.serviceWorker.ready.then((reg) => {
-      reg.active?.postMessage(message);
-    });
-  }
-}
+export { sendMessageToWorker };
 
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
 export function onEvent(fn: (event: Event) => void) {
-  navigator.serviceWorker.addEventListener("message", (event) => {
+  onWorkerMessage((data) => {
     fn(
-      new Event(event.data._type, event.data._variables, event.data._timestamp),
+      new Event(data._type, data._variables, data._timestamp),
     );
   });
 }

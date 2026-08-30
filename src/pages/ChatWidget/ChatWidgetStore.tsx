@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Event } from "../../bus/EventBus";
+import { onWorkerMessage } from "../../worker";
 
 export interface ChatWidgetStore {
   messages: Message[];
@@ -69,9 +70,8 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
   private _messages: Message[] = [];
   private _size = 50;
   constructor({}: {}) {
-    navigator.serviceWorker.addEventListener("message", (message) => {
-      console.log(message);
-      const data = message.data;
+    onWorkerMessage((data) => {
+      console.log(data);
       if (
         data._type === "TWITCH_CHAT_MESSAGE" ||
         data._type === "VKLIVE_CHAT_MESSAGE" ||
@@ -88,11 +88,12 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
     let emotes = item.get("emotes");
     const text: string = item.get("message_text");
     let lastIndex = 0;
-    emotes = emotes.map((it: any) => {
-      const index = text.indexOf(it.name, lastIndex);
-      lastIndex = index + 1;
-      return { ...it, ...{ start: index, end: index + it.name.length } };
-    });
+    emotes =
+      emotes?.map((it: any) => {
+        const index = text.indexOf(it.name, lastIndex);
+        lastIndex = index + 1;
+        return { ...it, ...{ start: index, end: index + it.name.length } };
+      }) ?? [];
     let index = 0;
     const parts: MessagePart[] = [];
     emotes.forEach((emote: any) => {
@@ -105,14 +106,43 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
       index = emote.end;
     });
     parts.push({ type: "string", text: text.slice(index) });
-    const badgets = item.get("badges");
-    const message = {
-      badges: badgets.map((it: any) => {
+    let badgets = item.get("badges");
+    badgets =
+      badgets?.map((it: any) => {
         return {
           name: it.name,
           url: it.url,
         };
-      }),
+      }) ?? [];
+    if (item.type === "KICK_CHAT_MESSAGE") {
+      badgets = [
+        {
+          name: "KICK",
+          url: "https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico=",
+        },
+        ...badgets,
+      ];
+    }
+    if (item.type === "VKLIVE_CHAT_MESSAGE") {
+      badgets = [
+        {
+          name: "VKLIVE",
+          url: "https://dev.live.vkvideo.ru/static/favicon.png",
+        },
+        ...badgets,
+      ];
+    }
+    if (item.type === "TWITCH_CHAT_MESSAGE") {
+      badgets = [
+        {
+          name: "TWITCH",
+          url: "https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png",
+        },
+        ...badgets,
+      ];
+    }
+    const message = {
+      badges: badgets,
       nickname: item.get("chatter_user_login"),
       parts,
     };

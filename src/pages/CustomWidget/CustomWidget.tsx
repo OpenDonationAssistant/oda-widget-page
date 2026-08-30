@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { CustomWidgetSettings } from "./CustomWidgetSettings";
 import { useEffect, useState } from "react";
 import { CustomWidgetStore } from "./CustomWidgetStore";
-import { sendMessageToSW } from "../../utils";
+import { sendMessageToWorker } from "../../worker";
 
 function resolvePlaceholders(str: string, data: any) {
   return str.replace(/\{\{?\s*([A-Za-z0-9_\.]+?)\s*\}?\}/g, (_, expr) => {
@@ -55,7 +55,7 @@ export const CustomWidget = observer(
           });
       });
       setInterval(() => {
-        sendMessageToSW({ type: "GetWorkersStatus" });
+        sendMessageToWorker({ type: "GetWorkersStatus" });
       }, 10000);
     }, [settings]);
 
@@ -104,7 +104,9 @@ export const CustomWidget = observer(
               console.log({ session: ${JSON.stringify(store.session)}}, "Sending onWidgetLoad event");
               window.dispatchEvent(e);
               console.log('adding message listener');
-              navigator.serviceWorker.addEventListener("message", (message) => {
+              const worker = new SharedWorker("${process.env.PUBLIC_URL || ""}/logger-worker.js", { name: "logger-worker" });
+              worker.port.start();
+              worker.port.onmessage = (message) => {
                 const event = message.data;
                 console.log({event:event}, "Received message");
                 if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE" || event._type === "KICK_CHAT_MESSAGE") {
@@ -150,7 +152,7 @@ export const CustomWidget = observer(
                   console.log({event:e}, "Sending CustomWidgetEvent");
                   window.dispatchEvent(e);
                 }
-              });
+              };
             });
           </script>
         </body>

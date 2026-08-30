@@ -2,6 +2,10 @@
 
 import { buildOtelPayload } from "../otel-payload";
 import type { LogRecord } from "../types";
+import type {
+  MessageListenerRegistrar,
+  WorkerMessageEvent,
+} from "../messaging";
 
 // ── Configuration ───────────────────────────────────────────────────
 
@@ -32,9 +36,12 @@ async function flushQueue(): Promise<void> {
 
 setInterval(flushQueue, BATCH_INTERVAL_MS);
 
-export function register(recipientId: string, sw: ServiceWorkerGlobalScope): void {
+export function register(
+  recipientId: string,
+  addMessageListener: MessageListenerRegistrar,
+): void {
   currentRecipientId = recipientId;
-  sw.addEventListener("message", (event: ExtendableMessageEvent) => {
+  addMessageListener((event: WorkerMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
     if (!data) return;
 

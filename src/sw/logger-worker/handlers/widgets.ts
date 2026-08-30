@@ -2,6 +2,10 @@
 
 import { DefaultApiFactory as WidgetService } from "@opendonationassistant/oda-widget-service-client";
 import type { WidgetDto } from "@opendonationassistant/oda-widget-service-client";
+import type {
+  MessageListenerRegistrar,
+  WorkerMessageEvent,
+} from "../messaging";
 
 // ── Configuration ───────────────────────────────────────────────────
 
@@ -26,7 +30,7 @@ export function getWidget(id: string): WidgetDto | undefined {
 export function register(
   token: string,
   recipientId: string,
-  sw: ServiceWorkerGlobalScope,
+  addMessageListener: MessageListenerRegistrar,
 ): void {
   const auth = { headers: { Authorization: `Bearer ${token}` } };
   const service = WidgetService(undefined, WIDGET_API_ENDPOINT);
@@ -41,7 +45,7 @@ export function register(
   loadWidgets();
 
   // Allow other handlers to trigger a refresh
-  sw.addEventListener("message", (event: ExtendableMessageEvent) => {
+  addMessageListener((event: WorkerMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
     if (!data) return;
     if (data.type === "WIDGETS_REFRESH") {

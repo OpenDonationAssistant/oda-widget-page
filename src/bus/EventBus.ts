@@ -11,6 +11,10 @@ import { deregister as deregisterStreamelements } from "../sw/logger-worker/hand
 import { deregister as deregisterTwitch } from "../sw/logger-worker/handlers/twitch-chat";
 import { deregister as deregisterUnofficialDonationalerts } from "../sw/logger-worker/handlers/unofficial-donationalerts-shim";
 import { deregister as deregisterVkLive } from "../sw/logger-worker/handlers/vklive-chat";
+import type {
+  MessageListenerRegistrar,
+  WorkerMessageEvent,
+} from "../sw/logger-worker/messaging";
 
 const defaultTtl = (1000 * 60 * 60 * 24).toString(); // 24 hours
 
@@ -121,7 +125,7 @@ export interface EventBus {
 }
 
 export class DefaultEventBus implements EventBus {
-  private _swScope: ServiceWorkerGlobalScope;
+  private _broadcast: (msg: unknown) => void;
   private _socket = new Client({
     brokerURL: process.env.REACT_APP_WS_ENDPOINT,
     // connectHeaders: {
@@ -134,9 +138,10 @@ export class DefaultEventBus implements EventBus {
   constructor(
     token: string,
     recipientId: string,
-    swScope: ServiceWorkerGlobalScope,
+    broadcast: (msg: unknown) => void,
+    addMessageListener: MessageListenerRegistrar,
   ) {
-    this._swScope = swScope;
+    this._broadcast = broadcast;
     this._socket.onConnect = () => {
       reportStarted("ODA");
       this._socket.subscribe(
@@ -171,61 +176,49 @@ export class DefaultEventBus implements EventBus {
     };
     this._db = openLogDB();
     this._socket.activate();
-    this._swScope.addEventListener(
-      "message",
-      (event: ExtendableMessageEvent) => {
-        const data = event.data as Record<string, unknown> | undefined;
-        if (!data) return;
-        if (data.type !== "REPLAY") return;
+    addMessageListener((event: WorkerMessageEvent) => {
+      const data = event.data as Record<string, unknown> | undefined;
+      if (!data) return;
+      if (data.type !== "REPLAY") return;
 
-        event.waitUntil(
-          (async () => {
-            const db = await this._db;
-            const tx = db.transaction(STORE, "readonly");
-            const os = tx.objectStore(STORE);
+      (async () => {
+        const db = await this._db;
+        const tx = db.transaction(STORE, "readonly");
+        const os = tx.objectStore(STORE);
 
-            // Walk forward from fromSeq
-            const out: Event[] = [];
-            const req = os.openCursor();
+        // Walk forward from fromSeq
+        const out: Event[] = [];
+        const req = os.openCursor();
 
-            await new Promise((resolve, reject) => {
-              req.onsuccess = () => {
-                const cursor = req.result;
-                if (!cursor) return resolve(null);
+        await new Promise((resolve, reject) => {
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (!cursor) return resolve(null);
 
-                if (cursor.value.timestamp >= data.timestamp) {
-                  out.push(cursor.value);
-                }
-                cursor.continue();
-              };
-              req.onerror = () => reject(req.error);
-            });
-
-            // Send chunks if large; for simplicity send once
-            const targetClient = event.source; // a specific window/tab (preferred if available)
-            if (targetClient) {
-              out.forEach((event) => targetClient.postMessage(event));
+            if (cursor.value._timestamp >= Number(data.timestamp)) {
+              out.push(cursor.value);
             }
-          })(),
-        );
-      },
-    );
+            cursor.continue();
+          };
+          req.onerror = () => reject(req.error);
+        });
+
+        // Send chunks if large; for simplicity send once
+        const targetPort = event.port; // the specific client that asked
+        if (targetPort) {
+          out.forEach((event) => targetPort.postMessage(event));
+        }
+      })();
+    });
     this._db.then((db) => setInterval(() => trimKeepLastN(db), 10000));
   }
 
   async sendMessage(msg: any) {
-    const clients = await this._swScope.clients.matchAll({
-      type: "window",
-      includeUncontrolled: true,
-    });
-
     const db = await this._db;
     log.debug({ msg: msg }, "Storing message");
     db.transaction(STORE, "readwrite").objectStore(STORE).put(msg);
 
-    for (const client of clients) {
-      client.postMessage(msg);
-    }
+    this._broadcast(msg);
   }
 
   private convert(body: string): Event {
@@ -244,16 +237,9 @@ export class DefaultEventBus implements EventBus {
     deregisterUnofficialDonationalerts();
     deregisterVkLive();
 
-    await this._swScope.clients
-      .matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      })
-      .then((clients) =>
-        clients.forEach((client) => {
-          client.navigate(client.url);
-        }),
-      );
+    // SharedWorker has no `clients` API — ask every connected client to
+    // reload itself instead of navigating windows from the worker.
+    this._broadcast({ type: "RELOAD" });
   }
 
   public async push(event: Event) {

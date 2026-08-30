@@ -1,11 +1,11 @@
 /**
- * Build the TypeScript service worker into a single JS file.
+ * Build the TypeScript shared worker into a single JS file.
  *
- * Service workers run in a separate scope and cannot use native ES
+ * Shared workers run in a separate scope and cannot use native ES
  * module imports in browsers. This script bundles logger-worker.ts
  * and all its local imports into one self-contained file that is
- * written to public/logger-worker.js (matching the registration URL
- * used in index.tsx).
+ * written to public/logger-worker.js (matching the URL used by
+ * `new SharedWorker(...)` in src/worker.ts).
  *
  * Environment: the worker needs build-time values of `process.env.REACT_APP_*`.
  * Pass the mode as the first CLI argument ("development" or "production",
@@ -89,7 +89,9 @@ const result = await esbuild.build({
   entryPoints: [resolve(root, "src/sw/logger-worker/logger-worker.ts")],
   outfile: resolve(outDir, "logger-worker.js"),
   bundle: true,
-  format: "esm",
+  // SharedWorker is constructed as a classic worker (`new SharedWorker(url)`),
+  // so the bundle must be a classic script — IIFE is the safe format.
+  format: "iife",
   target: "es2021",
   platform: "browser",
   minify: false,
