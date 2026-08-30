@@ -11,6 +11,8 @@
  * and subscribing to messages coming back from it.
  */
 
+import { addWarning } from "@opendonationassistant/news-service";
+
 let worker: SharedWorker | null = null;
 let port: MessagePort | null = null;
 
@@ -35,11 +37,39 @@ export function getWorkerPort(): MessagePort | null {
   return port;
 }
 
-/** Send a message to the logger-worker. No-op when SharedWorker is unavailable. */
+/**
+ * Send a message to the logger-worker. No-op when SharedWorker is unavailable.
+ *
+ * When the environment does not support SharedWorker, the logger-worker
+ * cannot run at all — report that to the backend (with the recipient id)
+ * so the missing realtime services are visible instead of silently absent.
+ */
 export function sendMessageToWorker(message: Record<string, unknown>): void {
+  if (!isWorkerSupported()) {
+    reportWorkerUnavailable(message);
+    return;
+  }
   const p = getWorkerPort();
   if (!p) return;
   p.postMessage(message);
+}
+
+function reportWorkerUnavailable(message: Record<string, unknown>): void {
+  // Only the USER_AUTHORIZED bootstrap carries the recipient id — warn once
+  // per page load, not for every LOG/status message.
+  if (message.type !== "USER_AUTHORIZED") return;
+  const info = (message.payload ?? message) as Record<string, unknown>;
+  const recipientId = String(info.recipientId ?? "unknown");
+  const token = String(info.token ?? "");
+  addWarning({
+    baseURL: "https://api.oda.digital",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: {
+      message: `SharedWorker is not supported in this browser (recipientId: ${recipientId})`,
+    },
+  });
 }
 
 /**
