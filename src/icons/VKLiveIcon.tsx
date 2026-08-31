@@ -1,8 +1,4 @@
-export default function VKLiveIcon({
-  className,
-}: {
-  className?: string;
-}) {
+export default function VKLiveIcon({ className }: { className?: string }) {
   return (
     <>
       <svg

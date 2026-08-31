@@ -116,6 +116,12 @@ function handleChatMessage(
     },
     {
       id: uuidv7(),
+      name: "chatter_color",
+      value: "#FFFFFF",
+      type: "string",
+    },
+    {
+      id: uuidv7(),
       name: "message_text",
       value: messageText(message),
       type: "string",

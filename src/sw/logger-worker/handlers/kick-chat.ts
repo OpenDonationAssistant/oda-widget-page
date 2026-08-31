@@ -59,6 +59,12 @@ function handleChatMessage(
     },
     {
       id: uuidv7(),
+      name: "chatter_color",
+      value: message.sender?.identity?.color ?? "",
+      type: "string",
+    },
+    {
+      id: uuidv7(),
       name: "message_text",
       value:
         message.content?.replace(

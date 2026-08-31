@@ -8,8 +8,13 @@ export interface ChatWidgetStore {
 
 export interface Message {
   badges: Badge[];
-  nickname: string;
+  chatter: Chatter;
   parts: MessagePart[];
+}
+
+export interface Chatter {
+  nickname: string;
+  color: string;
 }
 
 export interface Badge {
@@ -26,7 +31,10 @@ export interface MessagePart {
 export class DemoChatWidgetStore implements ChatWidgetStore {
   messages: Message[] = [
     {
-      nickname: "username",
+      chatter: {
+        nickname: "username",
+        color: "#ff0000",
+      },
       badges: [],
       parts: [
         {
@@ -36,7 +44,10 @@ export class DemoChatWidgetStore implements ChatWidgetStore {
       ],
     },
     {
-      nickname: "username",
+      chatter: {
+        nickname: "username2",
+        color: "#00FF00",
+      },
       badges: [],
       parts: [
         {
@@ -46,7 +57,10 @@ export class DemoChatWidgetStore implements ChatWidgetStore {
       ],
     },
     {
-      nickname: "username",
+      chatter: {
+        nickname: "username3",
+        color: "#001212",
+      },
       badges: [],
       parts: [
         {
@@ -57,6 +71,10 @@ export class DemoChatWidgetStore implements ChatWidgetStore {
           type: "emote",
           text: "EZ",
           url: "https://static-cdn.jtvnw.net/emoticons/v1/108/1.0",
+        },
+        {
+          type: "string",
+          text: " emote",
         },
       ],
     },
@@ -143,7 +161,10 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
     }
     const message = {
       badges: badgets,
-      nickname: item.get("chatter_user_login"),
+      chatter: {
+        nickname: item.get("chatter_user_login"),
+        color: item.get("chatter_color"),
+      },
       parts,
     };
     this._messages.push(message);

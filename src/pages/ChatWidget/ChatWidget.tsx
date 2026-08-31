@@ -4,6 +4,13 @@ import { ChatWidgetStore } from "./ChatWidgetStore";
 import { Flex } from "antd";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import classes from "./ChatWidget.module.css";
+import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+
+function correctFontColor(font: AnimatedFontProperty, color: string) {
+  const updated = font.copy();
+  updated.value.color.colors[0].color = color;
+  return updated;
+}
 
 export const ChatWidget = observer(
   ({
@@ -42,16 +49,44 @@ export const ChatWidget = observer(
           store.messages.map((message) => (
             <Flex gap={settings.lineGap} align="flex-start">
               {message.badges.map((badge: { url: string }) => (
-                  <img src={badge.url} width={imgSize} height={imgSize} />
-                ))}
+                <img
+                  key={badge.url}
+                  src={badge.url}
+                  width={imgSize}
+                  height={imgSize}
+                />
+              ))}
               <TextRenderer
-                font={settings.authorFont}
-                text={String(message.get("chatter_user_login"))}
+                font={correctFontColor(
+                  settings.authorFont,
+                  message.chatter.color,
+                )}
+                text={message.chatter.nickname}
               />
-              <TextRenderer
-                font={settings.messageFont}
-                text={String(message.get("message_text"))}
-              />
+              <div>
+                {message.parts.map((part) => {
+                  if (part.type === "emote") {
+                    return (
+                      <img
+                        id={part.url}
+                        className={classes.icon}
+                        src={part.url}
+                        width={imgSize}
+                        height={imgSize}
+                      />
+                    );
+                  }
+                  if (part.type === "string") {
+                    return (
+                      <TextRenderer
+                        font={settings.messageFont}
+                        className={classes.inlined}
+                        text={part.text ?? ""}
+                      />
+                    );
+                  }
+                })}
+              </div>
             </Flex>
           ))}
         {!settings.isBlock &&
@@ -60,16 +95,19 @@ export const ChatWidget = observer(
               {message.badges.map((badge: { url: string }) => (
                 <img
                   id={badge.url}
-                  className={classes.icon}
+                  className={classes.badge}
                   src={badge.url}
                   width={imgSize}
                   height={imgSize}
                 />
               ))}
               <TextRenderer
-                font={settings.authorFont}
                 className={classes.inlined}
-                text={message.nickname + ": "}
+                font={correctFontColor(
+                  settings.authorFont,
+                  message.chatter.color,
+                )}
+                text={message.chatter.nickname + ": "}
               />
               {message.parts.map((part) => {
                 if (part.type === "emote") {

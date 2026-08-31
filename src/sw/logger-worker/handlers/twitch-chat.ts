@@ -67,10 +67,9 @@ async function getTwitchUserId(token: string) {
 async function registerEventSubListeners(
   websocketSessionID: string,
   token: string,
+  twitchId: string,
 ) {
   // Register channel.chat.message
-  let userId = await getTwitchUserId(token);
-  badgeDefinitions.set(token, await fetchBadgeDefinitions(token, userId));
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
     {
@@ -84,8 +83,8 @@ async function registerEventSubListeners(
         type: "channel.chat.message",
         version: "1",
         condition: {
-          broadcaster_user_id: userId,
-          user_id: userId,
+          broadcaster_user_id: twitchId,
+          user_id: twitchId,
         },
         transport: {
           method: "websocket",
@@ -106,17 +105,19 @@ async function registerEventSubListeners(
     const data = await response.json();
     console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
   }
+  badgeDefinitions.set(token, await fetchBadgeDefinitions(token, twitchId));
 }
 
 function handleWebSocketMessage(
   token: string,
+  twitchId: string,
   data: any,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ) {
   switch (data.metadata.message_type) {
     case "session_welcome":
-      registerEventSubListeners(data.payload.session.id, token);
+      registerEventSubListeners(data.payload.session.id, token, twitchId);
       break;
     case "notification":
       switch (data.metadata.subscription_type) {
@@ -165,6 +166,12 @@ function handleWebSocketMessage(
             },
             {
               id: uuidv7(),
+              name: "chatter_color",
+              value: data.payload.event.color ?? "#000000",
+              type: "string",
+            },
+            {
+              id: uuidv7(),
               name: "emotes",
               value: emotes,
               type: "object",
@@ -191,11 +198,12 @@ function handleWebSocketMessage(
 
 function startWebSocketClient(
   odaToken: string,
+  twitchId: string,
   token: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ) {
-  console.log({ token }, "Starting WebSocket connection");
+  console.log({ twitchId: twitchId }, "Starting Twitch WebSocket connection");
   let websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
 
   websocketClient.addEventListener("error", console.error);
@@ -215,7 +223,13 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("message", (data) => {
-    handleWebSocketMessage(token, JSON.parse(data.data), eventbus, emotesStore);
+    handleWebSocketMessage(
+      token,
+      twitchId,
+      JSON.parse(data.data),
+      eventbus,
+      emotesStore,
+    );
   });
 
   websocketClients.add(websocketClient);
@@ -250,6 +264,7 @@ export function register(
             .then((response) =>
               startWebSocketClient(
                 odaToken,
+                token.settings.id,
                 response.data.token,
                 eventbus,
                 emotesStore,

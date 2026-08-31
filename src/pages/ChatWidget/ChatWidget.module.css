@@ -9,3 +9,10 @@
   display: inline;
   vertical-align: text-bottom;
 }
+
+.badge {
+  display: inline;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  margin-right: 3px;
+}
