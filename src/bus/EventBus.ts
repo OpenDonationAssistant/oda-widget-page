@@ -143,7 +143,7 @@ export class DefaultEventBus implements EventBus {
   ) {
     this._broadcast = broadcast;
     this._socket.onConnect = () => {
-      reportStarted("ODA");
+      reportStarted(token, "ODA");
       this._socket.subscribe(
         `/topic/${recipientId}.events`,
         (message) => {

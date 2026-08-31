@@ -1,7 +1,10 @@
 import { Flex } from "antd";
 import { useRequest } from "ahooks";
 import { useAuth } from "../../contexts/AuthContext";
-import { getWarnings, clearWarnings } from "@opendonationassistant/news-service";
+import {
+  getWarnings,
+  clearWarnings,
+} from "@opendonationassistant/news-service";
 import classes from "./WarningsPanel.module.css";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
@@ -47,6 +50,7 @@ export default function WarningsPanel() {
                 headers: {
                   Authorization: `Bearer ${accessToken}`,
                 },
+                body: {},
               }).then(() => refresh());
             }}
             title="Clear all warnings"

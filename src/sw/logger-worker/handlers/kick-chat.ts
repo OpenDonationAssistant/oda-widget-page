@@ -129,7 +129,7 @@ function startWebSocketClient(
     console.log(
       "Kick WebSocket connection opened to " + KICK_PUSHER_WEBSOCKET_URL,
     );
-    reportStarted("Kick");
+    reportStarted(odaToken, "Kick");
     const connect = JSON.stringify({
       event: "pusher:subscribe",
       data: { auth: "", channel },

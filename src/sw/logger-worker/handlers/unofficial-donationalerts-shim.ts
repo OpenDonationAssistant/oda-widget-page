@@ -175,7 +175,7 @@ function startSocketClient(
 
   socket.on("connect", () => {
     console.log("UnofficialDonationAlerts socket connected");
-    reportStarted("UnofficialDonationAlerts");
+    reportStarted(odaToken, "UnofficialDonationAlerts");
     socket.emit("add-user", {
       token: daToken,
       type: "alert_widget",

@@ -5,11 +5,8 @@
 // Handlers report connection lifecycle events (started / error) into a
 // shared map keyed by handler name. The logger-worker returns the map
 // to clients that send a `GetWorkersStatus` message.
-import { addWarning } from "@opendonationassistant/news-service";
-import type {
-  MessageListenerRegistrar,
-  WorkerMessageEvent,
-} from "./messaging";
+import { addWarning, clearWarnings } from "@opendonationassistant/news-service";
+import type { MessageListenerRegistrar, WorkerMessageEvent } from "./messaging";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -20,11 +17,18 @@ export interface WorkerStatusMessage {
 
 const statuses = new Map<string, WorkerStatusMessage>();
 
-export function reportStarted(handler: string): void {
+export function reportStarted(token: string, handler: string): void {
   statuses.set(handler, {
     type: "HandlerStarted",
     handler,
     timestamp: Date.now(),
+  });
+  clearWarnings({
+    baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: { components: [handler] },
   });
   console.log(`[worker-status] ${handler} started`);
 }
@@ -47,6 +51,7 @@ export function reportError(
     },
     body: {
       message: `Worker ${handler} error: ${message}`,
+      component: handler,
     },
   });
   console.error(`[worker-status] ${handler} error: ${message}`);

@@ -200,7 +200,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + VKLIVE_WEBSOCKET_URL);
-    reportStarted("VKLive");
+    reportStarted(odaToken, "VKLive");
     websocketClient.send(
       JSON.stringify({ id: 1, connect: { token: connectionToken } }),
     );

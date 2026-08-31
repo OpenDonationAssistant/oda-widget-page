@@ -201,7 +201,7 @@ function startWebSocketClient(
 
   socket.addEventListener("open", () => {
     console.log("DonationAlerts Centrifugo WebSocket opened");
-    reportStarted("DonationAlerts");
+    reportStarted(odaToken, "DonationAlerts");
     socket.send(
       JSON.stringify({
         params: {
@@ -294,19 +294,13 @@ export function register(token: string, recipientId: string): void {
         });
     })
     .catch((err) => {
-      console.error(
-        "Failed to subscribe to DonationAlerts",
-        err,
-      );
+      console.error("Failed to subscribe to DonationAlerts", err);
       reportError(token, "DonationAlerts", err);
     });
 }
 
 export function deregister(): void {
-  console.log(
-    { connected: connectedTokens },
-    "remove donationalerts listener",
-  );
+  console.log({ connected: connectedTokens }, "remove donationalerts listener");
   activeSockets.forEach((socket) => {
     activeSockets.delete(socket);
     socket.close(1000, "deregistered");

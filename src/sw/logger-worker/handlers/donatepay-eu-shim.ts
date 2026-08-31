@@ -230,7 +230,7 @@ function startDonatePayEuClient(
 
       websocketClient.addEventListener("open", () => {
         console.log("DonatePay.eu WebSocket opened");
-        reportStarted("DonatePay.eu");
+        reportStarted(odaToken, "DonatePay.eu");
         websocketClient.send(
           JSON.stringify({
             params: { token: centrifugoToken },

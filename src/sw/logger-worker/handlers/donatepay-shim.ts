@@ -213,7 +213,7 @@ function startWebSocketClient(
 
   socket.addEventListener("open", () => {
     console.log("DonatePay Centrifugo WebSocket opened");
-    reportStarted("DonatePay");
+    reportStarted(odaToken, "DonatePay");
     socket.send(
       JSON.stringify({
         params: {

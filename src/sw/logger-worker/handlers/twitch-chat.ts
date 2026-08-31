@@ -210,7 +210,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + EVENTSUB_WEBSOCKET_URL);
-    reportStarted("Twitch");
+    reportStarted(odaToken, "Twitch");
   });
 
   websocketClient.addEventListener("close", (event) => {

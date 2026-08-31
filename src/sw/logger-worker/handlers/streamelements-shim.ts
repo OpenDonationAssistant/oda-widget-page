@@ -256,7 +256,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("open", () => {
     console.log("StreamElements Astro WebSocket opened");
-    reportStarted("StreamElements");
+    reportStarted(odaToken, "StreamElements");
   });
 
   websocketClient.addEventListener("message", (event) => {

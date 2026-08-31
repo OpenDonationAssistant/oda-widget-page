@@ -109,7 +109,7 @@ function startDonateXConnection(
     .start()
     .then(() => {
       console.log("DonateX SignalR connection started");
-      reportStarted("DonateX");
+      reportStarted(odaToken, "DonateX");
     })
     .catch((err) => {
       console.error("Failed to start DonateX SignalR connection:", err);
