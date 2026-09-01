@@ -60,7 +60,10 @@ export const StreamCreditsWidget = observer(
             >
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Танцующие на столе (участники квиза)
+                  Танцующие на столе
+                </div>
+                <div style={titleFontStyle}>
+                  (участники стрима)
                 </div>
                 {creditsStore.voters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
@@ -71,7 +74,10 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Новые посетители таверны (фоллоу)
+                  Новые посетители таверны
+                </div>
+                <div style={titleFontStyle}>
+                  (фоллоу)
                 </div>
                 {creditsStore.newFollowers.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
@@ -82,7 +88,10 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Пришли в своей компании (рейдеры)
+                  Пришли в своей компании
+                </div>
+                <div style={titleFontStyle}>
+                  (рейдеры)
                 </div>
                 {creditsStore.raiders.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
@@ -93,7 +102,10 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Угостили лисят в баре (подарочные подписки)
+                  Угостили лисят в баре
+                </div>
+                <div style={titleFontStyle}>
+                  (подарочные подписки)
                 </div>
                 {creditsStore.gifters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
@@ -104,7 +116,10 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Подкинули бармену на отпуск (донатеры)
+                  Подкинули бармену на отпуск
+                </div>
+                <div style={titleFontStyle}>
+                  (донатеры)
                 </div>
                 {creditsStore.donaters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>

@@ -24,13 +24,13 @@ export class StreamCreditsStore {
   };
 
   constructor(widgetId: string) {
-    const stateKey = `1-stream-credits-state-${widgetId}`;
+    const stateKey = `3-stream-credits-state-${widgetId}`;
     let data = localStorage.getItem(stateKey);
     if (data) {
       this._state = JSON.parse(data) as CreditsState;
     }
     makeAutoObservable(this);
-    onEvent(this.listen);
+    onEvent((event) => this.listen(event));
     setInterval(() => {
       localStorage.setItem(stateKey, JSON.stringify(this._state));
     }, 10000);
@@ -38,6 +38,16 @@ export class StreamCreditsStore {
 
   private listen(event: Event) {
     const state = this._state;
+    if (
+      event.type === "TWITCH_CHAT_MESSAGE" ||
+      event.type === "VKLIVE_CHAT_MESSAGE" ||
+      event.type === "KICK_CHAT_MESSAGE"
+    ) {
+      const nickname = event.get("chatter_user_login");
+      if (!state.voters.includes(nickname)) {
+        state.voters.push(nickname);
+      }
+    }
     if (event.type === "Alert") {
       const nickname = String(event.get("nickname")) ?? "";
       if (!state.donaters.includes(nickname)) {
@@ -93,12 +103,5 @@ export class StreamCreditsStore {
 
   public get voters() {
     return this._state.voters;
-  }
-
-  public addVoter(nickname: string) {
-    if (this._state.voters.includes(nickname)) {
-      return;
-    }
-    this._state.voters.push(nickname);
   }
 }

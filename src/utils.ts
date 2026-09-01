@@ -12,9 +12,7 @@ export const getRndInteger = (min: number, max: number): number => {
 
 export function onEvent(fn: (event: Event) => void) {
   onWorkerMessage((data) => {
-    fn(
-      new Event(data._type, data._variables, data._timestamp),
-    );
+    fn(new Event(data._type, data._variables, data._timestamp));
   });
 }
 

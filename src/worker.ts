@@ -76,9 +76,7 @@ function reportWorkerUnavailable(message: Record<string, unknown>): void {
  * Subscribe to messages from the logger-worker.
  * Returns an unsubscribe function.
  */
-export function onWorkerMessage(
-  listener: (data: any) => void,
-): () => void {
+export function onWorkerMessage(listener: (data: any) => void): () => void {
   const p = getWorkerPort();
   if (!p) return () => {};
   const handler = (event: MessageEvent) => listener(event.data);

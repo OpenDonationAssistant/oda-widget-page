@@ -11,9 +11,6 @@ const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
 const VKLIVE_API_URL = "https://apidev.live.vkvideo.ru";
 
-/** Channel URL slug to listen to (hardcoded). */
-const VK_CHANNEL_URL = "stcarolas";
-
 const EVENT_NAME = "VKLIVE_CHAT_MESSAGE";
 
 async function getJson(url: string, token: string): Promise<any> {
@@ -35,8 +32,10 @@ async function getJson(url: string, token: string): Promise<any> {
 }
 
 async function getChatChannelName(token: string): Promise<string> {
+  const channelUrl = (await getJson(`${VKLIVE_API_URL}/v1/current_user`, token))
+    .data.channel.url as string;
   const json = await getJson(
-    `${VKLIVE_API_URL}/v1/channel?channel_url=${encodeURIComponent(VK_CHANNEL_URL)}`,
+    `${VKLIVE_API_URL}/v1/channel?channel_url=${encodeURIComponent(channelUrl)}`,
     token,
   );
   return json.data.channel.web_socket_channels.chat;
