@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Button, Flex, Modal, Input, Tabs } from "antd";
+import { Button, Flex, Modal, Input, Switch, Tabs } from "antd";
 import { Variable, useAutomationState } from "./AutomationState";
 import RuleComponent from "./RuleComponent";
 import { observer } from "mobx-react-lite";
@@ -131,6 +131,12 @@ const RuleList = observer(() => {
                   >
                     <EditIcon />
                   </Button>
+                  <Switch
+                    checked={rule.enabled}
+                    onChange={(checked) =>
+                      state.setRuleEnabled(rule.id, checked)
+                    }
+                  />
                 </Flex>
               </>
             }

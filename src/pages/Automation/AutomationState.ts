@@ -5,6 +5,7 @@ import { uuidv7 } from "uuidv7";
 import { createContext, useContext } from "react";
 import {
   getState,
+  setEnabled as setRuleEnabledApi,
   setState as setAutomationState,
   type AutomationRuleDto,
   type AutomationVariableDto,
@@ -35,12 +36,21 @@ export interface AutomationAction {
 export class AutomationRule {
   private _id: string;
   private _name: string = "Без названия";
+  private _enabled: boolean = true;
   private _triggers: (AutomationTrigger & Renderable)[] = [];
   private _actions: (AutomationAction & Renderable)[] = [];
 
   constructor(id?: string) {
     this._id = id ?? uuidv7();
     makeAutoObservable(this);
+  }
+
+  public get enabled() {
+    return this._enabled;
+  }
+
+  public set enabled(enabled: boolean) {
+    this._enabled = enabled;
   }
 
   public addTrigger(trigger?: AutomationTrigger & Renderable) {
@@ -142,6 +152,7 @@ export class AutomationState {
         data?.rules?.map((rule) => {
           const converted = new AutomationRule(rule.id);
           converted.name = rule.name ?? "";
+          converted.enabled = rule.enabled ?? true;
           rule.actions?.forEach((action) => {
             const found = this.actions.get(action.id);
             if (found) {
@@ -181,6 +192,28 @@ export class AutomationState {
     log.debug({ index: index, newstate: this._rules }, "deleting rule");
   }
 
+  public setRuleEnabled(id: string, enabled: boolean) {
+    const rule = this._rules.find((item) => item.id === id);
+    if (!rule) {
+      log.warn(`rule ${id} not found`);
+      return;
+    }
+    rule.enabled = enabled;
+    setRuleEnabledApi({
+      baseURL: process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+      body: { ruleId: rule.id },
+    }).then((response) => {
+      if (response.error) {
+        log.error(response.error, `failed to toggle rule ${rule.id}`);
+        // revert local state on failure so the switch reflects the server state
+        rule.enabled = !enabled;
+      }
+    });
+  }
+
   public set rules(rules: AutomationRule[]) {
     this._rules = rules;
   }
@@ -218,7 +251,7 @@ export class AutomationState {
           return {
             id: rule.id,
             name: rule.name,
-            enabled: false,
+            enabled: rule.enabled,
             triggers: rule.triggers.map((trigger) => {
               return { id: trigger.id ?? uuidv7(), value: toJS(trigger.value) };
             }),
