@@ -235,7 +235,7 @@ export const WIDGET_TYPES = [
     description:
       "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick",
     create: () => new ChatWidgetSettings(),
-  },
+  }
 ];
 
 interface SavedProperty {

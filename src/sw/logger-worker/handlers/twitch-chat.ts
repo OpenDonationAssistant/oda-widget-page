@@ -53,17 +53,6 @@ async function fetchBadgeDefinitions(
   return badgeMap;
 }
 
-async function getTwitchUserId(token: string) {
-  const response = await fetch("https://id.twitch.tv/oauth2/validate", {
-    method: "GET",
-    headers: {
-      Authorization: "OAuth " + token,
-    },
-  });
-  const json = await response.json();
-  return json.user_id;
-}
-
 async function registerEventSubListeners(
   websocketSessionID: string,
   token: string,

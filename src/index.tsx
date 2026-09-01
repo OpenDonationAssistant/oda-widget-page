@@ -76,6 +76,7 @@ import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 import { ApiPage } from "./pages/Api/ApiPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import ChatWidgetPage from "./pages/ChatWidget/ChatWidgetPage";
+import ChatWidgetV2Page from "./pages/ChatWidgetV2/ChatWidgetV2Page";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -463,7 +464,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/chat/:widgetId",
-        element: <ChatWidgetPage />,
+        element: <ChatWidgetV2Page />,
         loader: widgetSettingsLoader,
       },
     ],

@@ -28,6 +28,71 @@ export interface MessagePart {
   url?: string;
 }
 
+const PLATFORM_BADGES: Record<string, Badge> = {
+  KICK_CHAT_MESSAGE: {
+    name: "KICK",
+    url: "https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico=",
+  },
+  VKLIVE_CHAT_MESSAGE: {
+    name: "VKLIVE",
+    url: "https://dev.live.vkvideo.ru/static/favicon.png",
+  },
+  TWITCH_CHAT_MESSAGE: {
+    name: "TWITCH",
+    url: "https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png",
+  },
+};
+
+export function eventToMessage(event: Event): Message {
+  const text: string = event.get("message_text") ?? "";
+  let lastIndex = 0;
+  const emotes =
+    event
+      .get("emotes")
+      ?.map((it: any) => {
+        const index = text.indexOf(it.name, lastIndex);
+        lastIndex = index + 1;
+        return { ...it, ...{ start: index, end: index + it.name.length } };
+      }) ?? [];
+
+  let index = 0;
+  const parts: MessagePart[] = [];
+  emotes.forEach((emote: any) => {
+    parts.push({ type: "string", text: text.slice(index, emote.start) });
+    parts.push({
+      type: "emote",
+      text: emote.name,
+      url: emote.urls?.["1"],
+    });
+    index = emote.end;
+  });
+  parts.push({ type: "string", text: text.slice(index) });
+
+  let badges =
+    event
+      .get("badges")
+      ?.map((it: any) => {
+        return {
+          name: it.name,
+          url: it.url,
+        };
+      }) ?? [];
+
+  const platformBadge = PLATFORM_BADGES[event.type];
+  if (platformBadge) {
+    badges = [platformBadge, ...badges];
+  }
+
+  return {
+    badges,
+    chatter: {
+      nickname: event.get("chatter_user_login"),
+      color: event.get("chatter_color"),
+    },
+    parts,
+  };
+}
+
 export class DemoChatWidgetStore implements ChatWidgetStore {
   messages: Message[] = [
     {
@@ -102,74 +167,8 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
   }
 
   private addItem(item: Event) {
-    console.log({ item }, "chat event received");
-    let emotes = item.get("emotes");
-    const text: string = item.get("message_text");
-    let lastIndex = 0;
-    emotes =
-      emotes?.map((it: any) => {
-        const index = text.indexOf(it.name, lastIndex);
-        lastIndex = index + 1;
-        return { ...it, ...{ start: index, end: index + it.name.length } };
-      }) ?? [];
-    let index = 0;
-    const parts: MessagePart[] = [];
-    emotes.forEach((emote: any) => {
-      parts.push({ type: "string", text: text.slice(index, emote.start) });
-      parts.push({
-        type: "emote",
-        text: emote.name,
-        url: emote.urls?.["1"],
-      });
-      index = emote.end;
-    });
-    parts.push({ type: "string", text: text.slice(index) });
-    let badgets = item.get("badges");
-    badgets =
-      badgets?.map((it: any) => {
-        return {
-          name: it.name,
-          url: it.url,
-        };
-      }) ?? [];
-    if (item.type === "KICK_CHAT_MESSAGE") {
-      badgets = [
-        {
-          name: "KICK",
-          url: "https://kick.com/favicon.ico?favicon.1782phf7eyk2q.ico=",
-        },
-        ...badgets,
-      ];
-    }
-    if (item.type === "VKLIVE_CHAT_MESSAGE") {
-      badgets = [
-        {
-          name: "VKLIVE",
-          url: "https://dev.live.vkvideo.ru/static/favicon.png",
-        },
-        ...badgets,
-      ];
-    }
-    if (item.type === "TWITCH_CHAT_MESSAGE") {
-      badgets = [
-        {
-          name: "TWITCH",
-          url: "https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png",
-        },
-        ...badgets,
-      ];
-    }
-    const message = {
-      badges: badgets,
-      chatter: {
-        nickname: item.get("chatter_user_login"),
-        color: item.get("chatter_color"),
-      },
-      parts,
-    };
+    const message = eventToMessage(item);
     this._messages.push(message);
-
-    console.log({ message }, "adding message");
 
     while (this._messages.length > this._size) {
       this._messages.shift();
