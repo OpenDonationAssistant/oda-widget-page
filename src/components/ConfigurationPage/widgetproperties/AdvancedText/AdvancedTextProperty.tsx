@@ -77,6 +77,8 @@ export const DEFAULT_ADVANCED_TEXT_PROPERTY_VALUE = {
   backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
 };
 
+// TODO до мержа ветки с контейнерами - точно не используется
+
 export class AdvancedTextProperty extends DefaultWidgetProperty<AdvancedTextPropertyValue> {
   private _label: string;
 

@@ -62,7 +62,6 @@ import {
 import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
 import { AccountPage } from "./pages/Account/AccountPage";
-import TwitchAlertsPage from "./pages/TwitchAlerts/TwitchAlertsPage";
 import { BotsPage } from "./pages/Bots/BotsPage";
 import {
   ErrorStore,
@@ -366,11 +365,6 @@ const router = createBrowserRouter([
       {
         path: "/payment-alerts/:widgetId",
         element: <PaymentAlertsPage />,
-        loader: widgetSettingsLoader,
-      },
-      {
-        path: "/twitch-alerts/:widgetId",
-        element: <TwitchAlertsPage />,
         loader: widgetSettingsLoader,
       },
       {

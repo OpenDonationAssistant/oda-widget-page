@@ -1,8 +1,12 @@
-import { DefaultApiFactory } from "@opendonationassistant/oda-automation-service-client";
+import {
+  listVariables,
+  type AutomationVariableDto,
+} from "@opendonationassistant/automation-service";
 import { Variable } from "../pages/Automation/AutomationState";
 import { makeAutoObservable } from "mobx";
-import { createContext } from "react";
+import { useState } from "react";
 import { log } from "../logging";
+import { useAuth } from "../contexts/AuthContext";
 
 export interface VariableStore {
   variables: Variable[];
@@ -12,33 +16,36 @@ export interface VariableStore {
 
 export class DefaultVariableStore implements VariableStore {
   private _variables: Variable[] = [];
+  private _token: string;
 
-  constructor() {
+  constructor(token: string) {
     makeAutoObservable(this);
+    this._token = token;
     this.load();
   }
 
-  private client() {
-    return DefaultApiFactory(
-      undefined,
-      process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
-    );
-  }
-
   public load() {
-    this.client()
-      .listVariables({})
-      .then(
-        (response) =>
-          (this._variables = response.data.map((variable) => {
-            return {
-              name: variable.name,
-              type: "string",
-              value: variable.value,
-              id: variable.id,
-            };
-          })),
+    listVariables({
+      baseURL: process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then((response) => {
+      if (response.error) {
+        log.error(response.error, "failed to load variables");
+        return;
+      }
+      this._variables = ((response.data ?? []) as AutomationVariableDto[]).map(
+        (variable) => {
+          return {
+            name: variable.name,
+            type: "string",
+            value: variable.value,
+            id: variable.id,
+          };
+        },
       );
+    });
   }
 
   public get variables() {
@@ -62,8 +69,10 @@ export class DefaultVariableStore implements VariableStore {
   }
 }
 
-export const VariableStoreContext = createContext<VariableStore>({
-  variables: [],
-  processTemplate: (template: string) => template,
-  load: () => {},
-});
+export function useVariableStore() {
+  const { accessToken } = useAuth();
+  const [variablesStore, setVariablesStore] = useState(
+    () => new DefaultVariableStore(accessToken ?? ""),
+  );
+  return { variablesStore };
+}

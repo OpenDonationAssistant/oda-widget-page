@@ -6,6 +6,10 @@ import { onWorkerMessage, sendMessageToWorker } from "./worker";
 
 export { sendMessageToWorker };
 
+export class ObjectWrapper<T> {
+  constructor(public value: T | null) {}
+}
+
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };

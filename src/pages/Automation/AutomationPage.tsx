@@ -1,10 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Button, Flex, Modal, Input, Tabs } from "antd";
-import {
-  AutomationState,
-  AutomationStateContext,
-  Variable,
-} from "./AutomationState";
+import { Variable, useAutomationState } from "./AutomationState";
 import RuleComponent from "./RuleComponent";
 import { observer } from "mobx-react-lite";
 import classes from "./AutomationPage.module.css";
@@ -31,12 +27,11 @@ import {
   AddListItemButton,
   CollapsibleListItem,
   List,
-  ListItem,
 } from "../../components/List/List";
 import { DefaultTokenStore, TokenStoreContext } from "../../stores/TokenStore";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
 
   return (
     <Flex
@@ -90,7 +85,7 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
 });
 
 const RuleList = observer(() => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
   const [showModal, setShowModal] = useState<boolean>(false);
   const { t } = useTranslation();
   const toggleModal = () => {
@@ -177,7 +172,7 @@ const RuleList = observer(() => {
 });
 
 const VariableList = observer(({ type }: { type: "string" | "number" }) => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
 
   return (
     <Flex vertical className={`${classes.container}`}>
@@ -201,53 +196,47 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 });
 
 const AutomationPage = observer(() => {
-  const state = new AutomationState(true);
+  const { state } = useAutomationState();
   const widgetStore = new DefaultWidgetStore();
   const tokenStore = new DefaultTokenStore();
 
   return (
     <TokenStoreContext.Provider value={tokenStore}>
-      <AutomationStateContext.Provider value={state}>
-        <WidgetStoreContext.Provider value={widgetStore}>
-          <h1>Автоматизация</h1>
+      <WidgetStoreContext.Provider value={widgetStore}>
+        <h1>Автоматизация</h1>
 
-          <Tabs
-            tabBarExtraContent={
-              <SecondaryButton
-                onClick={() => {
-                  state.save();
-                }}
-              >
-                Сохранить
-              </SecondaryButton>
-            }
-            type="card"
-            items={[
-              {
-                label: "Правила",
-                key: "rules",
-                children: <RuleList />,
-              },
-              {
-                label: "Переменные",
-                key: "variables",
-                children: (
-                  <Flex vertical className={`${classes.variabletab}`}>
-                    <div className={`${classes.variablesectionname}`}>
-                      Числа
-                    </div>
-                    <VariableList type="number" />
-                    <div className={`${classes.variablesectionname}`}>
-                      Строки
-                    </div>
-                    <VariableList type="string" />
-                  </Flex>
-                ),
-              },
-            ]}
-          />
-        </WidgetStoreContext.Provider>
-      </AutomationStateContext.Provider>
+        <Tabs
+          tabBarExtraContent={
+            <SecondaryButton
+              onClick={() => {
+                state.save();
+              }}
+            >
+              Сохранить
+            </SecondaryButton>
+          }
+          type="card"
+          items={[
+            {
+              label: "Правила",
+              key: "rules",
+              children: <RuleList />,
+            },
+            {
+              label: "Переменные",
+              key: "variables",
+              children: (
+                <Flex vertical className={`${classes.variabletab}`}>
+                  <div className={`${classes.variablesectionname}`}>Числа</div>
+                  <VariableList type="number" />
+                  <div className={`${classes.variablesectionname}`}>Строки</div>
+                  <VariableList type="string" />
+                </Flex>
+              ),
+            },
+          ]}
+        />
+      </WidgetStoreContext.Provider>
     </TokenStoreContext.Provider>
   );
 });

@@ -1,9 +1,9 @@
-import { CSSProperties, useContext, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
 import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import { useVariableStore } from "../../stores/VariableStore";
 import { AbstractDonationGoalState } from "./DonationGoalState";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
@@ -16,7 +16,7 @@ export const DonationGoal = observer(
     state: AbstractDonationGoalState;
     settings: DonationGoalWidgetSettings;
   }) => {
-    const variables = useContext(VariableStoreContext);
+    const { variablesStore } = useVariableStore();
 
     const [innerBackgroundImage, setInnerBackgroundImage] =
       useState<CSSProperties>({});
@@ -147,8 +147,7 @@ export const DonationGoal = observer(
             <>
               <div className={`${classes.goalitem}`}>
                 {settings.showTitle && (
-                  <AlignmentRenderer
-                    alignment={settings.titleTextAlign}>
+                  <AlignmentRenderer alignment={settings.titleTextAlign}>
                     <div
                       style={{
                         ...titleBorderStyle,
@@ -163,7 +162,9 @@ export const DonationGoal = observer(
                       className={`${classes.goaldescription}}`}
                     >
                       <TextRenderer
-                        text={variables.processTemplate(goal.briefDescription)}
+                        text={variablesStore.processTemplate(
+                          goal.briefDescription,
+                        )}
                         font={settings.titleFontProperty}
                       />
                     </div>
@@ -217,7 +218,7 @@ export const DonationGoal = observer(
                     >
                       <TextRenderer
                         font={settings.amountFontProperty}
-                        text={variables
+                        text={variablesStore
                           .processTemplate(settings.labelTemplate)
                           .replaceAll(
                             "<collected>",

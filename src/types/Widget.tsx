@@ -31,7 +31,6 @@ import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
-import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
 import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
 import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
@@ -47,16 +46,6 @@ export const WIDGET_TYPES = [
     preview: "https://api.oda.digital/assets/alert.png",
     description: "Показывает оповещения о получаемых донатах.",
     create: () => new PaymentAlertsWidgetSettings(),
-  },
-  {
-    name: "twitch-alerts",
-    title: "Оповещения для Twitch",
-    icon: <AlertsIcon />,
-    category: "onscreen",
-    preview: "",
-    description:
-      "Отображает оповещения на разные события Twitch-a: follow, subscribe, raid и прочие.",
-    create: () => new TwitchAlertsWidgetSettings(),
   },
   {
     name: "donationgoal",
