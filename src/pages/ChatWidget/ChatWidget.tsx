@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import classes from "./ChatWidget.module.css";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { useEffect, useRef } from "react";
 
 function correctFontColor(font: AnimatedFontProperty, color: string) {
   const updated = font.copy();
@@ -35,6 +36,12 @@ export const ChatWidget = observer(
 
     const imgSize = settings.authorFont.value.size;
 
+    const bottomRef = useRef<HTMLDivElement | HTMLSpanElement>(null);
+    useEffect(() => {
+      console.log("scrollIntoView");
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [bottomRef.current]);
+
     return (
       <Flex
         vertical={settings.layout === "vertical"}
@@ -46,8 +53,13 @@ export const ChatWidget = observer(
         }}
       >
         {settings.isBlock &&
-          store.messages.map((message) => (
-            <Flex gap={settings.lineGap} align="flex-start">
+          store.messages.map((message, i) => (
+            <Flex
+              key={i}
+              gap={settings.lineGap}
+              align="flex-start"
+              ref={i === store.messages.length - 1 ? bottomRef : undefined}
+            >
               {message.badges.map((badge: { url: string }) => (
                 <img
                   key={badge.url}
@@ -90,8 +102,9 @@ export const ChatWidget = observer(
             </Flex>
           ))}
         {!settings.isBlock &&
-          store.messages.map((message) => (
-            <span>
+          store.messages.map((message, i) => (
+            <span ref={i === store.messages.length - 1 ? bottomRef : undefined}>
+              {i === store.messages.length - 1 ? "TEST" : ""}
               {message.badges.map((badge: { url: string }) => (
                 <img
                   id={badge.url}
