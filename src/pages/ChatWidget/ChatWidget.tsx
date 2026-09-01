@@ -104,7 +104,6 @@ export const ChatWidget = observer(
         {!settings.isBlock &&
           store.messages.map((message, i) => (
             <span ref={i === store.messages.length - 1 ? bottomRef : undefined}>
-              {i === store.messages.length - 1 ? "TEST" : ""}
               {message.badges.map((badge: { url: string }) => (
                 <img
                   id={badge.url}
