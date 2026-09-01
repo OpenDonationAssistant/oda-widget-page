@@ -143,13 +143,37 @@ function handleWebSocketMessage(
                 };
               }),
           );
-          const badges = (data.payload.event.badges ?? [])
+          const badges: BadgeDef[] = (data.payload.event.badges ?? [])
             .map((badge: { set_id: string; id: string }) =>
               badgeDefinitions.get(token)?.get(`${badge.set_id}/${badge.id}`),
             )
             .filter((badge: BadgeDef | undefined): badge is BadgeDef =>
               Boolean(badge),
             );
+          let role = "viewer";
+          let isSubscriber = false;
+          if (
+            badges.filter((it: BadgeDef) => it.type === "broadcaster").length >
+            0
+          ) {
+            role = "broadcaster";
+          }
+          if (
+            badges.filter((it: BadgeDef) => it.type === "lead_moderator")
+              .length > 0
+          ) {
+            role = "lead_moderator";
+          }
+          if (
+            badges.filter((it: BadgeDef) => it.type === "moderator").length > 0
+          ) {
+            role = "moderator";
+          }
+          if (
+            badges.filter((it: BadgeDef) => it.type === "subscriber").length > 0
+          ) {
+            isSubscriber = true;
+          }
           const variables: Variable[] = [];
           variables.push(
             {
@@ -181,6 +205,18 @@ function handleWebSocketMessage(
               name: "badges",
               value: badges,
               type: "object",
+            },
+            {
+              id: uuidv7(),
+              name: "role",
+              value: role,
+              type: "string",
+            },
+            {
+              id: uuidv7(),
+              name: "isSubscriber",
+              value: isSubscriber,
+              type: "boolean",
             },
             {
               id: uuidv7(),

@@ -111,7 +111,10 @@ export const CustomWidget = observer(
                 console.log({event:event}, "Received message");
                 if (event._type === "TWITCH_CHAT_MESSAGE" || event._type === "VKLIVE_CHAT_MESSAGE" || event._type === "KICK_CHAT_MESSAGE") {
                   const badges = getValue(event._variables, "badges");
-                  const hasBroadcaster = badges?.filter((it) => it.type === "broadcaster").length > 0;
+                  const role = getValue(event._variables, "role");
+                  const isBroadcaster = role === "broadcaster";
+                  const isModerator = role === "moderator" || role === "lead_moderator";
+                  const isSubscriber = getValue(event._variables, "isSubscriber");
                   let author = '<span class="oda-message-author"><img height="16" width="16" src="https://assets.twitch.tv/assets/favicon-32-e29e246c157142c94346.png"/><span>' + getValue(event._variables, "chatter_user_login")  + "</span></span>";
                   if (event._type === "VKLIVE_CHAT_MESSAGE") {
                     author = '<span class="oda-message-author"><img height="16" width="16" src="https://dev.live.vkvideo.ru/static/favicon.png"/><span>' + getValue(event._variables, "chatter_user_login")  + "</span></span>";
@@ -127,15 +130,15 @@ export const CustomWidget = observer(
                         data: {
                           "time": Date.now(),
                           "tags": {
-                            "badges": hasBroadcaster ? "broadcaster/1" : "",
+                            "badges": isBroadcaster ? "broadcaster/1" : "",
                             "color": "#641FEF",
-                            "display-name": "SenderName",
-                            "mod": "1",
-                            "subscriber": "1",
+                            "display-name": author,
+                            "mod": isModerator ? "1" : "0",
+                            "subscriber": isSubscriber ? "1" : "0",
                             "turbo": "0",
                             "user-type": ""
                           },
-                          "nick": "sendername",
+                          "nick": author,
                           "userId": "123123",
                           "displayColor": "#641FEF",
                           "badges": getValue(event._variables, "badges"),
