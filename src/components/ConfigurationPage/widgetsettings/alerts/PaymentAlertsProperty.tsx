@@ -1,15 +1,15 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { Alert } from "./Alerts";
+import MiniSearch from "minisearch";
 import classes from "./PaymentAlertsProperty.module.css";
 import { observer } from "mobx-react-lite";
 import { AlertComponent } from "./AlertComponent";
-import { Flex, Switch } from "antd";
+import { Flex, Input, Segmented, Switch } from "antd";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../../../types/WidgetData";
 import { log } from "../../../../logging";
 import { publish } from "../../../../socket";
-import { uuidv7 } from "uuidv7";
 import { extendObservable, observable, reaction, toJS } from "mobx";
 import SubActionButton from "../../../Button/SubActionButton";
 import CloseIcon from "../../../../icons/CloseIcon";
@@ -38,16 +38,39 @@ import { deepEqual } from "../../../../utils";
 import { TriggersStore } from "../../../../stores/triggers/TriggersStore";
 
 function testAlert(topic: string, alert: Alert) {
-  publish(topic, {
-    id: uuidv7(), // TODO: сделать опциональным
-    alertId: alert.id,
-    nickname: "Тестовый алерт",
-    message: "Тестовое сообщение",
-    amount: {
-      major: 100,
-      minor: 0,
-      currency: "RUB",
+  const variables = [
+    {
+      name: "amount",
+      value: "100",
     },
+    {
+      name: "alertId",
+      value: alert.id,
+    },
+    {
+      name: "nickname",
+      value: "Тестовый алерт",
+    },
+    {
+      name: "message",
+      value: "Тестовое сообщение",
+    },
+    {
+      name: "event",
+      value: "payment",
+    },
+    {
+      name: "system",
+      value: "ODA",
+    },
+    {
+      name: "force",
+      value: true,
+    },
+  ];
+  publish(topic, {
+    type: "Alert",
+    variables: variables,
   });
 }
 
@@ -84,7 +107,7 @@ const AlertItemComponent = observer(
           second={
             <Flex className={`${classes.alertbuttons}`} gap={9}>
               <SubActionButton
-                onClick={() => testAlert(conf.topic.alerts, alert)}
+                onClick={() => testAlert(conf.topic.events, alert)}
               >
                 <div>Тест</div>
               </SubActionButton>
@@ -150,6 +173,101 @@ const ChooseTemplate = observer(() => {
   );
 });
 
+interface ListFilter {
+  enabled: "all" | "enabled" | "disabled";
+}
+
+const ListComponent = observer(
+  ({
+    property,
+    configuration,
+  }: {
+    property: PaymentAlertsProperty;
+    configuration: WizardConfigurationStore;
+  }) => {
+    const selection = useContext(SelectedIndexContext);
+    const [filter, setFilter] = useState<ListFilter>(() => {
+      return { enabled: "all" };
+    });
+    const [search, setSearch] = useState<string>("");
+    const [alerts, setAlerts] = useState<Alert[]>([]);
+    useEffect(() => {
+      let filtered =
+        filter.enabled === "all"
+          ? property.value
+          : property.value.filter((it) =>
+              filter.enabled === "enabled"
+                ? it.property("enabled")
+                : !it.property("enabled"),
+            );
+      if (search) {
+        const index = new MiniSearch({
+          fields: ["name"],
+          storeFields: ["alert"],
+        });
+        index.addAll(
+          filtered.map((it) => ({
+            id: it.id,
+            alert: it,
+            name: it.property("name"),
+          })),
+        );
+        filtered = index
+          .search(search, { prefix: true, fuzzy: 0.2 })
+          .map((it) => it.alert);
+      }
+      // property.value.filter((alert) => {});
+      setAlerts(filtered);
+    }, [filter, search, property.value]);
+    return (
+      <>
+        {property.value.length > 5 && (
+          <Flex
+            className={`${classes.filterbuttons}`}
+            gap={6}
+            align="center"
+            justify="flex-start"
+          >
+            <Flex className={`${classes.searchbutton}`} align="center">
+              <span className="material-symbols-sharp">search</span>
+              <Input
+                className={`${classes.smallinput}`}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </Flex>
+            <Segmented
+              className={`${classes.smallsegmented}`}
+              value={filter.enabled}
+              options={[
+                { value: "all", label: "Все" },
+                { value: "enabled", label: "Включенные" },
+                { value: "disabled", label: "Выключенные" },
+              ]}
+              onChange={(value) =>
+                setFilter({ enabled: value as "all" | "enabled" | "disabled" })
+              }
+            />
+          </Flex>
+        )}
+        <List>
+          {alerts.map((alert) => (
+            <AlertItemComponent
+              key={alert.id}
+              alert={alert}
+              open={selection.id === alert.id}
+            />
+          ))}
+          <AddListItemButton
+            label="button-add-alert"
+            onClick={() => configuration.next()}
+          />
+        </List>
+      </>
+    );
+  },
+);
+
 const PaymentAlertsPropertyComponent = observer(
   ({ property }: { property: PaymentAlertsProperty }) => {
     const [selection] = useState<SelectedIndexStore>(
@@ -186,8 +304,12 @@ const PaymentAlertsPropertyComponent = observer(
               "finish adding alert",
             );
             if (added) {
-              wizardStore.preset?.applyTo(added, "alert");
-              selection.id = added.id;
+              return (
+                wizardStore.preset
+                  ?.applyTo(added, "alert")
+                  .then(() => (selection.id = added.id))
+                  .then(() => wizardStore.reset()) ?? Promise.resolve()
+              );
             }
             wizardStore.reset();
             return Promise.resolve();
@@ -209,19 +331,10 @@ const PaymentAlertsPropertyComponent = observer(
     return (
       <SelectedIndexContext.Provider value={selection}>
         <Wizard configurationStore={wizardConfiguration} />
-        <List>
-          {property.value.map((alert) => (
-            <AlertItemComponent
-              key={alert.id}
-              alert={alert}
-              open={selection.id === alert.id}
-            />
-          ))}
-          <AddListItemButton
-            label="button-add-alert"
-            onClick={() => wizardConfiguration.next()}
-          />
-        </List>
+        <ListComponent
+          property={property}
+          configuration={wizardConfiguration}
+        />
       </SelectedIndexContext.Provider>
     );
   },

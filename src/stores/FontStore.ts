@@ -3,7 +3,9 @@ import {
   FontControllerFontDto,
 } from "@opendonationassistant/oda-font-service-client";
 import { createContext } from "react";
-import { log } from "../logging";
+import { log as rootLogger } from "../logging";
+
+const log = rootLogger.child({ module: "FontStore" });
 
 export class FontStore {
   private _fonts: FontControllerFontDto[] | null = null;

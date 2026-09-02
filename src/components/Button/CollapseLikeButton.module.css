@@ -1,11 +1,12 @@
 .collapselikebutton {
+  font-size: 21px;
   text-align: center;
   width: 100%;
   background-color: var(--oda-color-150);
   border: none;
   border-radius: 12px;
   color: var(--oda-primary-color);
-  height: 52px;
+  height: 60px;
   &:hover{
     background-color: var(--oda-color-250);
     cursor: pointer;

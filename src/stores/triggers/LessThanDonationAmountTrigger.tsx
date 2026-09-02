@@ -7,7 +7,7 @@ import {
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 
 export const LESS_THAN_DONATION_AMOUNT_TRIGGER = {
-  description: "сумма меньше",
+  description: "Сумма меньше",
   type: "less-than-donation-amount",
   category: "donation",
 };

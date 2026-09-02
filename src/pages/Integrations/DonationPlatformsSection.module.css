@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+.comment {
+  font-size: 12px;
+}
+
 .container {
   padding-top: 36px;
 }

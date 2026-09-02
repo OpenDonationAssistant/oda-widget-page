@@ -1,7 +1,10 @@
-import { DefaultApiFactory } from "@opendonationassistant/oda-automation-service-client";
+import {
+  listVariables,
+  type AutomationVariableDto,
+} from "@opendonationassistant/automation-service";
 import { Variable } from "../pages/Automation/AutomationState";
 import { makeAutoObservable } from "mobx";
-import { createContext } from "react";
+import { useState } from "react";
 import { log } from "../logging";
 
 export interface LabelTemplate {
@@ -21,6 +24,7 @@ export interface TemplateSettings {
   variables: VariableDescription[];
   templates: LabelTemplate[];
 }
+import { useAuth } from "../contexts/AuthContext";
 
 export interface VariableStore {
   variables: Variable[];
@@ -225,41 +229,14 @@ class LocalVariableStore implements VariableStore {
 export class DefaultVariableStore implements VariableStore {
   private _storage: VariableStorage;
   private _processor: TemplateProcessor;
+  private _token: string;
 
-  constructor(storage?: VariableStorage) {
+  constructor(token: string, storage?: VariableStorage) {
     this._storage = storage ?? new VariableStorage();
     this._processor = new DefaultTemplateProcessor(this._storage);
+    this._token = token;
     makeAutoObservable(this);
     this.load();
-  }
-  getValue(
-    name: string,
-    defaultValue: string | number | Variable[] | Variable[][],
-  ): string | number | Variable[] | Variable[][] {
-    const variable = this._storage.variables.find((item) => item.name === name);
-    return variable?.value ?? defaultValue;
-  }
-
-  templating: TemplateSettings = { variables: [], templates: [] };
-  addTemplate(template: LabelTemplate): void {
-    throw new Error("Method not implemented.");
-  }
-  addVariableDescription(variable: VariableDescription): void {
-    throw new Error("Method not implemented.");
-  }
-
-  public processTemplate(template: string) {
-    return this._processor.processTemplate(template);
-  }
-
-  public addVariable(variable: Variable): void {
-    this._storage.addVariable(variable);
-  }
-  public get variables(): Variable[] {
-    return this._storage.variables;
-  }
-  public clear(tag: string){
-    this._storage.clear(tag);
   }
 
   private client() {
@@ -283,6 +260,7 @@ export class DefaultVariableStore implements VariableStore {
           });
         }),
       );
+    });
   }
 
   public clone(): VariableStore {
@@ -290,6 +268,10 @@ export class DefaultVariableStore implements VariableStore {
   }
 }
 
-export const VariableStoreContext = createContext<VariableStore>(
-  new LocalVariableStore(),
-);
+export function useVariableStore() {
+  const { accessToken } = useAuth();
+  const [variablesStore, setVariablesStore] = useState(
+    () => new DefaultVariableStore(accessToken ?? ""),
+  );
+  return { variablesStore };
+}

@@ -38,7 +38,7 @@ export class ReelWidgetSettings extends ElementsWidgetSettings {
     const choosenIndex = getRndInteger(0, optionList.length - 1);
     publish(conf.topic.reel, {
       type: "trigger",
-      selection: optionList[choosenIndex].name,
+      selection: optionList[choosenIndex],
       widgetId: id,
     });
   }

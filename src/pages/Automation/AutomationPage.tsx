@@ -1,10 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Button, Flex, Modal, Input, Tabs } from "antd";
-import {
-  AutomationState,
-  AutomationStateContext,
-  Variable,
-} from "./AutomationState";
+import { Button, Flex, Modal, Input, Switch, Tabs } from "antd";
+import { Variable, useAutomationState } from "./AutomationState";
 import RuleComponent from "./RuleComponent";
 import { observer } from "mobx-react-lite";
 import classes from "./AutomationPage.module.css";
@@ -27,9 +23,15 @@ import {
   Overlay,
   Warning,
 } from "../../components/Overlay/Overlay";
+import {
+  AddListItemButton,
+  CollapsibleListItem,
+  List,
+} from "../../components/List/List";
+import { DefaultTokenStore, TokenStoreContext } from "../../stores/TokenStore";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
 
   return (
     <Flex
@@ -83,86 +85,100 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
 });
 
 const RuleList = observer(() => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
   const [showModal, setShowModal] = useState<boolean>(false);
   const { t } = useTranslation();
   const toggleModal = () => {
     setShowModal((old) => !old);
   };
   const parentModalState = useContext(ModalStateContext);
-  const [deleteRuleDialogState] =
-    useState<ModalState>(() => new ModalState(parentModalState));
+  const [deleteRuleDialogState] = useState<ModalState>(
+    () => new ModalState(parentModalState),
+  );
 
   return (
-    <Flex vertical className={`${classes.container}`} align="flex-start">
+    <Flex
+      vertical
+      className={`${classes.container}`}
+      align="flex-start"
+      gap={3}
+    >
       {state.rules.map((rule, index) => (
-        <Flex key={rule.id} vertical className={`${classes.rulecontainer}`}>
-          <Flex className={`${classes.rulename}`} justify="space-between">
-            <Flex align="center">
-              <div>{rule.name}</div>
-              <Modal
-                className={`${classes.helpmodal}`}
-                title="rename-rule"
-                open={showModal}
-                onCancel={toggleModal}
-                onClose={toggleModal}
-                onOk={toggleModal}
-              >
-                <Input
-                  value={rule.name}
-                  onChange={(value) => {
-                    rule.name = value.target.value;
-                  }}
-                />
-              </Modal>
-              <Button
-                className={`${classes.rename} oda-icon-button`}
-                onClick={() => toggleModal()}
-              >
-                <EditIcon />
-              </Button>
-            </Flex>
-            <div>
-              <ModalStateContext.Provider value={deleteRuleDialogState}>
-                <Overlay>
-                  <Warning
-                    action={() => {
-                      state.removeRule(index);
-                      deleteRuleDialogState.show = false;
-                    }}
+        <List>
+          <CollapsibleListItem
+            title={
+              <>
+                <Flex className={`full-width`} align="center">
+                  <div>{rule.name}</div>
+                  <Modal
+                    className={`${classes.helpmodal}`}
+                    title="rename-rule"
+                    open={showModal}
+                    onCancel={toggleModal}
+                    onClose={toggleModal}
+                    onOk={toggleModal}
                   >
-                    Вы точно хотите удалить правило?
-                  </Warning>
-                </Overlay>
-              </ModalStateContext.Provider>
-              <SubActionButton
-                onClick={() => (deleteRuleDialogState.show = true)}
-              >
-                <CloseIcon color="#FF8888" />
-                <span style={{ color: "#FF8888" }}>Удалить</span>
-              </SubActionButton>
-            </div>
-          </Flex>
-          <RuleComponent rule={rule} />
-        </Flex>
+                    <Input
+                      value={rule.name}
+                      onChange={(value) => {
+                        rule.name = value.target.value;
+                      }}
+                    />
+                  </Modal>
+                  <Button
+                    className={`${classes.rename} oda-icon-button`}
+                    onClick={() => toggleModal()}
+                  >
+                    <EditIcon />
+                  </Button>
+                  <Switch
+                    checked={rule.enabled}
+                    onChange={(checked) =>
+                      state.setRuleEnabled(rule.id, checked)
+                    }
+                  />
+                </Flex>
+              </>
+            }
+            actions={
+              <>
+                <ModalStateContext.Provider value={deleteRuleDialogState}>
+                  <Overlay>
+                    <Warning
+                      action={() => {
+                        state.removeRule(index);
+                        deleteRuleDialogState.show = false;
+                      }}
+                    >
+                      Вы точно хотите удалить правило?
+                    </Warning>
+                  </Overlay>
+                </ModalStateContext.Provider>
+                <SubActionButton
+                  onClick={() => (deleteRuleDialogState.show = true)}
+                  icon={<CloseIcon color="#FF8888" />}
+                >
+                  <span style={{ color: "#FF8888" }}>Удалить</span>
+                </SubActionButton>
+              </>
+            }
+          >
+            <RuleComponent rule={rule} />
+          </CollapsibleListItem>
+        </List>
       ))}
-      <div
-        className={`${classes.addbutton}`}
+      <AddListItemButton
         onClick={() => {
           state.addRule();
         }}
-      >
-        <Flex justify="center" align="center" gap={3} className="full-height">
-          <span className="material-symbols-sharp">add</span>
-          <div>{t("button-add-automation-rule")}</div>
-        </Flex>
-      </div>
+        label={t("button-add-automation-rule")}
+      />
     </Flex>
   );
 });
 
 const VariableList = observer(({ type }: { type: "string" | "number" }) => {
-  const state = useContext(AutomationStateContext);
+  const { state } = useAutomationState();
 
   return (
     <Flex vertical className={`${classes.container}`}>
@@ -186,11 +202,12 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 });
 
 const AutomationPage = observer(() => {
-  const state = new AutomationState(true);
+  const { state } = useAutomationState();
   const widgetStore = new DefaultWidgetStore();
+  const tokenStore = new DefaultTokenStore();
 
   return (
-    <AutomationStateContext.Provider value={state}>
+    <TokenStoreContext.Provider value={tokenStore}>
       <WidgetStoreContext.Provider value={widgetStore}>
         <h1>Автоматизация</h1>
 
@@ -226,7 +243,7 @@ const AutomationPage = observer(() => {
           ]}
         />
       </WidgetStoreContext.Provider>
-    </AutomationStateContext.Provider>
+    </TokenStoreContext.Provider>
   );
 });
 

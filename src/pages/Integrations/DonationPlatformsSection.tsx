@@ -25,6 +25,23 @@ import PrimaryButton from "../../components/Button/PrimaryButton";
 import classes from "./DonationPlatformsSection.module.css";
 import { toJS } from "mobx";
 import { deepEqual } from "../../utils";
+import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
+import DonateXIcon from "../../icons/DonateXIcon";
+import DonatePayIcon from "../../icons/DonatePayIcon";
+import { NewFeature } from "../../components/Experimental/Experimental";
+
+const icons = new Map<string, JSX.Element>();
+icons.set(
+  "DonationAlerts",
+  <DonationAlertsIcon color="var(--oda-primary-color)" />,
+);
+icons.set(
+  "UnofficialDonationAlerts",
+  <DonationAlertsIcon color="var(--oda-primary-color)" />,
+);
+icons.set("DonateX", <DonateXIcon color="var(--oda-primary-color)" />);
+icons.set("DonatePay", <DonatePayIcon color="var(--oda-primary-color)" />);
+icons.set("DonatePay.eu", <DonatePayIcon color="var(--oda-primary-color)" />);
 
 export const DonationPlatformsSection = observer(({}) => {
   const [selection, setSelection] = useState<string>("");
@@ -108,6 +125,106 @@ export const DonationPlatformsSection = observer(({}) => {
                   }
                 }}
               />
+              {token?.system === "Tribute" && (
+                <>
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Показывать оповещения"
+                    value={
+                      token?.settings["subscriptionsTriggerAlerts"] ?? true
+                    }
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerAlerts"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в сборе средств"
+                    value={token?.settings["subscriptionsAddToGoal"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsAddToGoal"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в таймере"
+                    value={
+                      token?.settings["subscriptionsTriggerDonaton"] ?? true
+                    }
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerDonaton"] =
+                          newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Запускать рулетку"
+                    value={token?.settings["subscriptionsTriggerReel"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsTriggerReel"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Подписки: Учитывать в топе"
+                    value={token?.settings["subscriptionsCountInTop"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["subscriptionsCountInTop"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Показывать оповещения"
+                    value={token?.settings["purchasesTriggerAlerts"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerAlerts"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в сборе средств"
+                    value={token?.settings["purchasesAddToGoal"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesAddToGoal"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в таймере"
+                    value={token?.settings["purchasesTriggerDonaton"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerDonaton"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Запускать рулетку"
+                    value={token?.settings["purchasesTriggerReel"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesTriggerReel"] = newValue;
+                      }
+                    }}
+                  />
+                  <LightLabeledSwitchComponent
+                    label="Покупки: Учитывать в топе"
+                    value={token?.settings["purchasesCountInTop"] ?? true}
+                    onChange={(newValue) => {
+                      if (token) {
+                        token.settings["purchasesCountInTop"] = newValue;
+                      }
+                    }}
+                  />
+                </>
+              )}
+
               <Flex
                 align="center"
                 justify="flex-end"
@@ -135,7 +252,13 @@ export const DonationPlatformsSection = observer(({}) => {
           </Panel>
         </Overlay>
       </ModalStateContext.Provider>
-      <CardSectionTitle>Донатные платформы</CardSectionTitle>
+      <CardSectionTitle>
+        <div>Донатные платформы</div>
+        <span className={`${classes.comment}`}>
+          * Для корректной работы интеграций нужно чтобы виджет
+          'Оповещения/Алерты' был включен в ОБС.
+        </span>
+      </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens
           .filter(
@@ -144,7 +267,9 @@ export const DonationPlatformsSection = observer(({}) => {
               token.system === "DonatePay.eu" ||
               token.system === "DonationAlerts" ||
               token.system === "UnofficialDonationAlerts" ||
-              token.system === "DonateX",
+              token.system === "DonateX" ||
+              token.system === "Tribute" ||
+              token.system === "Paywall",
           )
           .map((token) => (
             <Card
@@ -165,6 +290,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 align="center"
               >
                 <Flex gap={9} align="center" style={{ height: "fit-content" }}>
+                  {icons.get(token.system)}
                   <CardTitle>{token.system}</CardTitle>
                   <Switch
                     value={token.enabled}

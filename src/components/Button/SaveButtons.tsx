@@ -7,6 +7,7 @@ import { log } from "../../logging";
 import { Flex } from "antd";
 import SecondaryButton from "./SecondaryButton";
 import PrimaryButton from "./PrimaryButton";
+import classes from "./SaveButtons.module.css";
 
 export const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
@@ -40,3 +41,42 @@ export const SaveButtons = observer(() => {
     </Flex>
   );
 });
+
+export interface Changeable {
+  changed: boolean;
+  save: () => void;
+  reload: () => void;
+}
+
+export const SaveOrCancel = observer(
+  ({
+    changeable,
+    saveLabel,
+  }: {
+    saveLabel?: string;
+    changeable: { changed: boolean; save: () => void };
+  }) => {
+    const parentModalState = useContext(ModalStateContext);
+
+    return (
+      <Flex
+        align="center"
+        justify="flex-end"
+        gap={12}
+        className={`${classes.buttons}`}
+      >
+        <SecondaryButton onClick={() => (parentModalState.show = false)}>
+          Отменить
+        </SecondaryButton>
+        <PrimaryButton
+          disabled={!changeable.changed}
+          onClick={() => {
+            changeable.save();
+          }}
+        >
+          {saveLabel ?? "Сохранить"}
+        </PrimaryButton>
+      </Flex>
+    );
+  },
+);

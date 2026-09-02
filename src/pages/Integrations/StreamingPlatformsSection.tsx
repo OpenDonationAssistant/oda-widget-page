@@ -17,6 +17,17 @@ import {
   Overlay,
   Warning,
 } from "../../components/Overlay/Overlay";
+import TwitchIcon from "../../icons/TwitchIcon";
+import YouTubeIcon from "../../icons/YouTubeIcon";
+import KickIcon from "../../icons/KickIcon";
+import VKLiveIcon from "../../icons/VKLiveIcon";
+import { NewFeature } from "../../components/Experimental/Experimental";
+
+const icons = new Map<string, JSX.Element>();
+icons.set("Twitch", <TwitchIcon />);
+icons.set("YouTube", <YouTubeIcon />);
+icons.set("Kick", <KickIcon />);
+icons.set("VKLive", <VKLiveIcon />);
 
 export const StreamingPlatformsSection = observer(() => {
   const tokenStore = useContext(TokenStoreContext);
@@ -42,18 +53,21 @@ export const StreamingPlatformsSection = observer(() => {
           </Warning>
         </Overlay>
       </ModalStateContext.Provider>
-      <CardSectionTitle>Стриминговые платформы</CardSectionTitle>
+      <CardSectionTitle>
+        <span>Стриминговые платформы</span>
+      </CardSectionTitle>
       <CardList>
         {tokenStore?.tokens
           .filter(
             (token) =>
               token.system === "Twitch" ||
               token.system === "YouTube" ||
-              token.system === "VKLive" ||
-              token.system === "Kick",
+              token.system === "Discord" ||
+              token.system === "Kick" ||
+              token.system === "VKLive",
           )
           .map((token) => (
-            <Card key={token.id} onClick={() => {}}>
+            <Card key={token.id}>
               <Flex
                 style={{ height: "fit-content" }}
                 justify="space-between"
@@ -61,7 +75,8 @@ export const StreamingPlatformsSection = observer(() => {
                 align="center"
               >
                 <Flex gap={9} align="center" style={{ height: "fit-content" }}>
-                  <CardTitle>{token.system}</CardTitle>
+                  {icons.get(token.system)}
+                  <CardTitle>{token.settings.name ?? token.system}</CardTitle>
                   <Switch
                     value={token.enabled}
                     onChange={() =>

@@ -1,14 +1,15 @@
 import pino from "pino";
+import { sendMessageToWorker } from "./worker";
 
-function valueOf(level: string):number {
-  switch(level){
-    case 'error':
+function valueOf(level: string): number {
+  switch (level.toLowerCase()) {
+    case "error":
       return 0;
-    case 'warn':
+    case "warn":
       return 1;
-    case 'info':
+    case "info":
       return 2;
-    case 'debug':
+    case "debug":
       return 3;
     default:
       return 0;
@@ -16,27 +17,37 @@ function valueOf(level: string):number {
 }
 
 const send = async function (level: string, logEvent: any) {
+  if (!logEvent?.level?.label) {
+    return;
+  }
+  const module = logEvent.bindings.at(-1)?.module;
+  const loglevel = module
+    ? (loglevels.find((l) => l.name === module)?.level.toLowerCase() ?? "error")
+    : "error";
   if (valueOf(level) > valueOf(loglevel)) {
     return;
   }
-  const url = `${process.env.REACT_APP_LOG_API_ENDPOINT}/logs/${localStorage.getItem("login")}`;
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([logEvent]),
-    });
-    console.log(response);
-  } catch (Exception) {}
+  sendMessageToWorker({
+    type: "LOG",
+    log: {
+      level: logEvent.level.label.toUpperCase(),
+      messages: logEvent.messages
+        .map((m: any) => JSON.stringify(m))
+        .join(";"),
+      ts: logEvent.ts,
+    },
+  });
 };
 
-let loglevel = "error";
+interface LogLevel {
+  name: string;
+  level: "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE" | "DISABLED";
+}
 
-function setLoglevel(level: string){
-  loglevel = level;
+let loglevels: LogLevel[] = [];
+
+function setLoglevel(levels: LogLevel[]) {
+  loglevels = levels;
 }
 
 const log = pino({
@@ -48,6 +59,6 @@ const log = pino({
     },
   },
 });
-log.level = process.env.REACT_APP_PINO_LOG_LEVEL || "debug";
+log.level = "debug";
 
 export { log, setLoglevel };

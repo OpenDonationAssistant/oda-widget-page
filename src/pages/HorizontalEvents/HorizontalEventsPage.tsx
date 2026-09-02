@@ -6,13 +6,16 @@ import { HorizontalEventsWidget } from "./HorizontalEventsWidget";
 import { HorizontalEventsWidgetSettings } from "./HorizontalEventsWidgetSettings";
 import { DefaultHistoryStore, HistoryStore } from "../History/HistoryStore";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function HorizontalEventsPage() {
   const { recipientId, widgetId, settings, conf } =
     useLoaderData() as WidgetData;
+  const { accessToken } = useAuth();
 
   const [store] = useState<HistoryStore>(
-    () => new DefaultHistoryStore(recipientId, widgetId, conf),
+    () =>
+      new DefaultHistoryStore(accessToken ?? "", recipientId, widgetId, conf),
   );
 
   return (

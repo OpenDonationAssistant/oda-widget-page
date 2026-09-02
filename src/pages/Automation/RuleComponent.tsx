@@ -174,7 +174,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {trigger.name ? trigger.name : "<Не выбрано>"}
                         </div>
-                        <BorderedIconButton onClick={() => rule.removeTrigger(index)}>
+                        <BorderedIconButton
+                          onClick={() => rule.removeTrigger(index)}
+                        >
                           <CloseIcon color="#FF8888" />
                         </BorderedIconButton>
                       </Flex>
@@ -224,7 +226,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         <div className={`${classes.triggername}`}>
                           {action.name ? action.name : "<Не выбрано>"}
                         </div>
-                        <BorderedIconButton onClick={() => rule.removeAction(index)}>
+                        <BorderedIconButton
+                          onClick={() => rule.removeAction(index)}
+                        >
                           <CloseIcon color="#FF8888" />
                         </BorderedIconButton>
                       </Flex>

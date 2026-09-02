@@ -7,8 +7,8 @@ import { Widget } from "../../types/Widget";
 import { PaymentAlertsWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/alerts/PaymentAlertsWidgetSettings";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
-import { DefaultTokenStore } from "../../stores/TokenStore";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
+import { DefaultTokenStore } from "../../stores/TokenStore";
 
 export default function PaymentAlertsPage() {
   const { conf, widgetId, recipientId, settings } =
@@ -18,15 +18,15 @@ export default function PaymentAlertsPage() {
     settings,
   ) as PaymentAlertsWidgetSettings;
 
+  const tokenStore = new DefaultTokenStore();
+
   const pageConfig = new PaymentPageConfig(recipientId);
   const alertController = new AlertController(
     widgetSettings,
     recipientId,
     pageConfig.displayName,
   );
-  alertController.listen(widgetId, conf);
-
-  const tokenStore = new DefaultTokenStore();
+  alertController.listen(conf);
 
   subscribe(widgetId, conf.topic.alertWidgetCommans, (message) => {
     log.info({ command: message.body }, `Received alert command`);
@@ -39,10 +39,7 @@ export default function PaymentAlertsPage() {
 
   return (
     <WidgetWrapper>
-      <PaymentAlerts
-        alertController={alertController}
-        tokenStore={tokenStore}
-      />
+      <PaymentAlerts alertController={alertController} tokenStore={tokenStore} />
     </WidgetWrapper>
   );
 }

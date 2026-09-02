@@ -73,9 +73,9 @@ class Playlist {
     if (index < 0 || index >= this._songs.length) {
       return;
     }
-    const originId = this._songs[index].originId;
-    if (originId) {
-      markListened(originId);
+    const id = this._songs[index].id;
+    if (id) {
+      markListened(id);
     }
     this._songs.splice(index, 1);
     if (
@@ -141,10 +141,6 @@ class Playlist {
     this._songs.map((song) => {
       if (song.id === id) {
         markListened(song.id);
-        if (song.originId) {
-          log.debug(`mark as listened: ${song.title}`);
-          markListened(song.originId);
-        }
       }
       return song;
     });

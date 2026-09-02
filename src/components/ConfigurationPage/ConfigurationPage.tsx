@@ -25,7 +25,7 @@ import {
   Title,
 } from "../Overlay/Overlay";
 import PrimaryButton from "../Button/PrimaryButton";
-import { List } from "../List/List";
+import { AddListItemButton, List } from "../List/List";
 import {
   DefaultPresetStore,
   PresetStore,
@@ -37,7 +37,6 @@ import {
   SelectPresetComponent,
   SelectWidgetComponent,
 } from "./AddWidgetWizard";
-import CollapseLikeButton from "../Button/CollapseLikeButton";
 import { reaction } from "mobx";
 import { log } from "../../logging";
 
@@ -62,10 +61,9 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             title: "Выберите шаблон",
             subtitle: "",
             content: <SelectPresetComponent />,
-            condition: () => {
-              return presetStore.for(wizardStore.type).then((presets) => {
-                return presets.length > 0;
-              });
+            condition: async () => {
+              const presets = await presetStore.for(wizardStore.type);
+              return presets.length > 0;
             },
             handler: () => {
               if (!wizardStore.preset || !wizardStore.type) {
@@ -95,10 +93,12 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               { preset: wizardStore.preset, type: widget.type },
               "applying preset to created widget",
             );
-            wizardStore.preset?.applyTo(widget.config, widget.type);
-            return widget.save().then(() => {
-              setSelection(widget.id);
-            });
+            return wizardStore.preset
+              ?.applyTo(widget.config, widget.type)
+              .then(() => widget.save())
+              .then(() => {
+                setSelection(widget.id);
+              });
           });
         },
       }),
@@ -154,14 +154,12 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
               )}
             </Draggable>
           ))}
-          <CollapseLikeButton
+          <AddListItemButton
             onClick={() => {
               wizardConfiguration.next();
             }}
-          >
-            <AddIcon color="var(--oda-primary-color)" />
-            <div>Добавить виджет</div>
-          </CollapseLikeButton>
+            label="Добавить виджет"
+          />
         </List>
       )}
       {asCards && (
@@ -235,32 +233,60 @@ export default function ConfigurationPage() {
   const code = localStorage.getItem("code");
   const authState = localStorage.getItem("state");
   if (code) {
+    console.log({ code, authState }, "code and state");
     localStorage.removeItem("code");
     if (authState) {
       localStorage.removeItem("state");
       const platform = localStorage.getItem(authState);
       localStorage.removeItem(authState);
       if (platform === "twitch" && code) {
-        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-          .getTwitchToken({
-            authorizationCode: code,
-          })
-          .then(() => {
-            state.show = true;
-          });
+        RecipientService(
+          undefined,
+          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+        ).linkTwitch({
+          authorizationCode: code,
+        });
       }
       if (platform === "vklive" && code) {
         RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-          .getVKLiveToken({
+          .linkVKlive({
             authorizationCode: code,
           })
           .then(() => {
             state.show = true;
           });
       }
+      if (platform === "discord" && code) {
+        RecipientService(
+          undefined,
+          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+        )
+          .linkDiscord({
+            authorizationCode: code,
+          })
+          .then(() => {
+            state.show = true;
+          });
+      }
+      if (platform === "kick" && code) {
+        const code_challenge = localStorage.getItem("code_challenge");
+        if (code_challenge) {
+          RecipientService(
+            undefined,
+            process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+          )
+            .linkKick({
+              authorizationCode: code,
+              codeVerifier: code_challenge,
+            })
+            .then(() => {
+              state.show = true;
+            });
+        }
+      }
     } else {
       RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .getDonationAlertsToken({
+        .linkDonationAlerts({
           authorizationCode: code,
         })
         .then((response) => {

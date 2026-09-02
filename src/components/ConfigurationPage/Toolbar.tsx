@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import classes from "./Toolbar.module.css";
 import style from "./Toolbar-theme-2.module.css";
@@ -7,10 +7,11 @@ import WidgetsIcon from "../../icons/WidgetsIcon";
 import HistoryIcon from "../../icons/HistoryIcon";
 import RubleIcon from "../../icons/RubleIcon";
 import AutomationIcon from "../../icons/AutomationIcon";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import WalletIcon from "../../icons/WalletIcon";
 import GuideIcon from "../../icons/GuideIcon";
 import IntegrationIcon from "../../icons/IntegrationIcon";
+import { WidgetData } from "../../types/WidgetData";
 
 enum Page {
   WIDGETS,
@@ -20,6 +21,8 @@ enum Page {
   AUTOMATION,
   GUIDES,
   INTEGRATIONS,
+  BOTS,
+  API,
   ACCOUNT,
 }
 
@@ -31,7 +34,7 @@ interface Section {
   label: string;
 }
 
-const buttons: Section[] = [
+const allButtons: Section[] = [
   {
     page: Page.WIDGETS,
     url: "/configuration/widgets",
@@ -45,6 +48,27 @@ const buttons: Section[] = [
     active: <HistoryIcon color="var(--oda-color-800)" />,
     nonactive: <HistoryIcon color="var(--oda-color-500)" />,
     label: "menu-history",
+  },
+  {
+    page: Page.BOTS,
+    url: "/configuration/bots",
+    active: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-800)", marginRight: "3px" }}
+      >
+        robot_2
+      </span>
+    ),
+    nonactive: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-500)", marginRight: "3px" }}
+      >
+        robot_2
+      </span>
+    ),
+    label: "menu-bots",
   },
   {
     page: Page.PAYMENTPAGE,
@@ -82,6 +106,13 @@ const buttons: Section[] = [
     label: "menu-guides",
   },
   {
+    page: Page.API,
+    url: "/configuration/api",
+    active: <span className="material-symbols-sharp">extension </span>,
+    nonactive: <span className="material-symbols-sharp">extension </span>,
+    label: "menu-api",
+  },
+  {
     page: Page.ACCOUNT,
     url: "/configuration/account",
     active: <span className="material-symbols-sharp">manage_accounts</span>,
@@ -90,9 +121,36 @@ const buttons: Section[] = [
   },
 ];
 
+function NewFeature({
+  children,
+  className,
+  show,
+}: {
+  children: ReactNode;
+  className?: string;
+  show?: boolean;
+}) {
+  return (
+    <div className={`${classes.wrapper} ${className ?? ""}`}>
+      {show && <span className={`${classes.newfeature}`}>new</span>}
+      {children}
+    </div>
+  );
+}
+
 export default function Toolbar({ page }: { page: Page }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { features } = useLoaderData() as WidgetData;
+  const [buttons, setButtons] = useState<Section[]>([]);
+
+  useEffect(() => {
+    if (features.find((f) => f.name === "Bots")?.state === "ENABLED") {
+      setButtons(allButtons);
+    } else {
+      setButtons(allButtons.filter((b) => b.page !== Page.BOTS));
+    }
+  }, [features]);
 
   return (
     <div className={`${style.toolbar}`}>

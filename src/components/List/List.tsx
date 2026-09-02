@@ -6,6 +6,36 @@ import { useTranslation } from "react-i18next";
 import ArrowUp from "../../icons/ArrowUp";
 import ArrowDown from "../../icons/ArrowDown";
 import AddIcon from "../../icons/AddIcon";
+import ArrowUp from "../../icons/ArrowUp";
+import ArrowDown from "../../icons/ArrowDown";
+import CollapseLikeButton from "../Button/CollapseLikeButton";
+
+export const CollapsibleListItem = ({
+  title,
+  actions,
+  children,
+}: {
+  title: ReactNode;
+  actions: ReactNode;
+  children: ReactNode;
+}) => {
+  const [opened, setOpened] = useState<boolean>(false);
+  return (
+    <Flex vertical className={`${classes.collapsible}`}>
+      <ListItem
+        first={title}
+        second={
+          <Flex align="center" gap={3}>
+            {actions}
+            {opened ? <ArrowUp /> : <ArrowDown />}
+          </Flex>
+        }
+        onClick={() => setOpened(!opened)}
+      />
+      {opened && <div className={`${classes.listitemcontent}`}>{children}</div>}
+    </Flex>
+  );
+};
 
 export const ListItem = ({
   first,
@@ -85,18 +115,16 @@ export const AddListItemButton = ({
   const { t } = useTranslation();
 
   return (
-    <button className={`${classes.adddalertbutton}`} onClick={onClick}>
-      <Flex justify="center" align="center" gap={3}>
-        <AddIcon color="var(--oda-primary-color)" />
-        <div>{t(label)}</div>
-      </Flex>
-    </button>
+    <CollapseLikeButton onClick={onClick}>
+      <span className="material-symbols-sharp">add</span>
+      <div>{t(label)}</div>
+    </CollapseLikeButton>
   );
 };
 
 export const List = ({ children }: { children: ReactNode }) => {
   return (
-    <Flex gap={3} vertical>
+    <Flex gap={3} vertical className={`${classes.list}`}>
       {children}
     </Flex>
   );

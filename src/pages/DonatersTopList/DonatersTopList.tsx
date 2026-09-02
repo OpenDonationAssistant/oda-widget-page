@@ -1,4 +1,9 @@
-import { CSSProperties, ReactNode, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import "./DonatersTopList.css";
 import { Flex } from "antd";
 import { DonatersTopListWidgetSettings } from "./DonatersTopListWidgetSettings";
@@ -8,6 +13,9 @@ import { log } from "../../logging";
 import { SlideShowComponent } from "../../components/SlideShow/SlideShowComponent";
 import { HistoryStore } from "../History/HistoryStore";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
+import {
+  useVariableStore,
+} from "../../stores/VariableStore";
 
 export const DonatersTopList = observer(
   ({
@@ -78,6 +86,7 @@ export const DonatersTopList = observer(
 
     const layout = settings.layout;
     const title = settings.title;
+    const { variablesStore } = useVariableStore();
     const widgetMarginTopAndBottomStyle = settings.boxShadow.requiredHeight;
     const widgetMarginLeftAndRightStyle = settings.boxShadow.requiredWidth;
 
@@ -135,7 +144,11 @@ export const DonatersTopList = observer(
             }}
           >
             <TextRenderer
-              text={`${record.nickname} - ${record.amount} RUB`}
+              text={variablesStore
+                .processTemplate(settings.labelTemplate)
+                .replaceAll("<nickname>", `${record.nickname}`)
+                .replaceAll("<amount>", `${record.amount}`)
+                .replaceAll("<currency>", "RUB")}
               font={settings.messageFont.value}
             />
           </div>

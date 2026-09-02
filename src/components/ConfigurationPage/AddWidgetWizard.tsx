@@ -71,20 +71,49 @@ const WidgetPreviewComponent = observer(
 
 const NewWidgetSection = observer(({ category }: { category: string }) => {
   const wizardStore = useContext(AddWidgetWizardStoreContext);
+  const { features } = useLoaderData() as WidgetData;
 
   return (
     <CardList>
-      {WIDGET_TYPES.filter((type) => type.category === category).map((type) => (
-        <Card
-          selected={wizardStore.type === type.name}
-          onClick={() => {
-            wizardStore.type =
-              wizardStore.type === type.name ? null : type.name;
-          }}
-        >
-          <WidgetPreviewComponent widget={type} />
-        </Card>
-      ))}
+      {WIDGET_TYPES.filter((type) => {
+        if (type.name === "auction") {
+          return (
+            features.find((f) => f.name === "Auction")?.state === "ENABLED"
+          );
+        }
+        if (type.name === "twitch-alerts") {
+          return (
+            features.find((f) => f.name === "TwitchAlerts")?.state === "ENABLED"
+          );
+        }
+        if (type.name === "canvas") {
+          return features.find((f) => f.name === "Canvas")?.state === "ENABLED";
+        }
+        if (type.name === "stream-credits") {
+          return (
+            features.find((f) => f.name === "StreamCredits")?.state ===
+            "ENABLED"
+          );
+        }
+        if (type.name === "action-queue") {
+          return (
+            features.find((f) => f.name === "ActionQueue")?.state === "ENABLED"
+          );
+        }
+        return true;
+      })
+        .filter((type) => type.category === category)
+        .map((type) => (
+          <Card
+            selected={wizardStore.type === type.name}
+            onClick={() => {
+              wizardStore.type =
+                wizardStore.type === type.name ? null : type.name;
+            }}
+          >
+            <WidgetPreviewComponent widget={type} />
+          </Card>
+        ))}
     </CardList>
   );
 });

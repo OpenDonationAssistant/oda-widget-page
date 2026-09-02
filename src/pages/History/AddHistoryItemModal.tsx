@@ -1,8 +1,7 @@
-import { useContext, useRef, useState } from "react";
-import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
+import { useContext, useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { Flex, Input, Select, Switch } from "antd";
+import { Flex, Input, Select } from "antd";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { uuidv7 } from "uuidv7";
 import { useTranslation } from "react-i18next";
@@ -14,15 +13,15 @@ import {
   Title,
 } from "../../components/Overlay/Overlay";
 import PrimaryButton from "../../components/Button/PrimaryButton";
-import {
-  BorderedIconButton,
-} from "../../components/IconButton/IconButton";
+import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import SubActionButton from "../../components/Button/SubActionButton";
 import AddIcon from "../../icons/AddIcon";
 import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import classes from "./AddHistoryItemModal.module.css";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
+import DateTimeInput from "../../components/DateTimeInput/DateTimeInput";
 import SecondaryButton from "../../components/Button/SecondaryButton";
+import { addHistoryItem } from "@opendonationassistant/history-service";
 
 export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const { recipientId } = useLoaderData() as WidgetData;
@@ -39,49 +38,60 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
   const [triggerDonaton, setTriggerDonaton] = useState<boolean>(false);
   const [goalId, setGoalId] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [authorizationTimestamp, setAuthorizationTimestamp] = useState<number>(
+    () => Date.now(),
+  );
+  const token = localStorage.getItem("access-token");
 
-  const paymentPageConfig = useRef<PaymentPageConfig | null>(
-    new PaymentPageConfig(recipientId),
+  const [paymentPageConfig] = useState<PaymentPageConfig>(
+    () => new PaymentPageConfig(recipientId),
   );
 
   async function addItem() {
-    await HistoryService(
-      undefined,
-      process.env.REACT_APP_HISTORY_API_ENDPOINT,
-    ).addHistoryItem({
-      recipientId: recipientId,
-      amount: {
-        minor: 0,
-        major: amount,
-        currency: "RUB",
+    addHistoryItem({
+      baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      message: message,
-      nickname: nickname,
-      triggerAlert: showAlert,
-      triggerReel: triggerReel,
-      triggerDonaton: triggerDonaton,
-      goals: goalId
-        ? [
-            {
-              goalId: goalId,
-              goalTitle:
-                paymentPageConfig.current?.goals.find(
-                  (goal) => goal.id === goalId,
-                )?.briefDescription ?? "",
-            },
-          ]
-        : [],
-      addToTop: countInTop,
-      addToGoal: false,
-      id: uuidv7(),
-      paymentId: uuidv7(),
+      body: {
+        recipientId: recipientId,
+        amount: {
+          minor: 0,
+          major: amount,
+          currency: "RUB",
+        },
+        message: message,
+        nickname: nickname,
+        triggerAlert: showAlert,
+        triggerReel: triggerReel,
+        triggerDonaton: triggerDonaton,
+        system: "ODA",
+        goals: goalId
+          ? [
+              {
+                goalId: goalId,
+                goalTitle:
+                  paymentPageConfig.goals.find((goal) => goal.id === goalId)
+                    ?.briefDescription ?? "",
+              },
+            ]
+          : [],
+        addToTop: countInTop,
+        addToGoal: false,
+        paymentId: uuidv7(),
+        event: "payment",
+        authorizationTimestamp: new Date(authorizationTimestamp).toISOString(),
+      },
     });
   }
 
   return (
     <>
       {!compact && (
-        <SubActionButton onClick={() => (showModal.show = true)}>
+        <SubActionButton
+          onClick={() => (showModal.show = true)}
+          icon={<AddIcon color="var(--oda-color-1000)" />}
+        >
           {t("button-add-historyitem")}
         </SubActionButton>
       )}
@@ -129,9 +139,16 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     className="full-width"
                     value={goalId}
                     onChange={(selected) => setGoalId(selected)}
-                    options={paymentPageConfig.current?.goals.map((goal) => {
+                    options={paymentPageConfig.goals.map((goal) => {
                       return { value: goal.id, label: goal.briefDescription };
                     })}
+                  />
+                </Flex>
+                <Flex vertical>
+                  <div className={`${classes.label}`}>Дата доната</div>
+                  <DateTimeInput
+                    value={authorizationTimestamp}
+                    onChange={(value) => setAuthorizationTimestamp(value)}
                   />
                 </Flex>
               </Flex>

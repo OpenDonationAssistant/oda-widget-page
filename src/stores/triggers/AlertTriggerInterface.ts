@@ -14,6 +14,7 @@ export interface DonationTriggerCause extends TriggerCause {
   type: "donation";
   amount: Amount;
   system: string;
+  event: string;
 }
 
 export interface TriggerType {

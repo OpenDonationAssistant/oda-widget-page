@@ -68,95 +68,56 @@ function wordStyle(font: FontPropertyValue) {
   return style;
 }
 
-function calcClassName(font: FontPropertyValue) {
-  const fontClassName = "backgroundClipText";
-  if (!font.animation || font.animation === "none") {
-    return fontClassName;
-  }
-  let classes = `${fontClassName} animate__animated animate__infinite animate__${font.animation}`;
-  if (font.animationSpeed !== "normal") {
-    classes = classes.concat(` animate__${font.animationSpeed}`);
-  }
-  return classes;
-}
-
-const TextComponent = observer(
-  ({ font, text }: { font: FontPropertyValue; text: string }) => {
+export const TextRenderer = observer(
+  ({ font, text }: { font: AnimatedFontProperty; text: string }) => {
     const color = wordStyle(font);
     return (
       <>
-        {font.animation === "none" && <div style={color}>{text}</div>}
-        {font.animation !== "none" && (
-          <>
-            {font.animationType === "entire" && (
-              <div
-                className={`${calcClassName(font)} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
-                style={color}
-              >
-                {text}
-              </div>
-            )}
-            {font.animationType === "word" && (
-              <>
-                {text.split(" ").map((word, i) => (
-                  <>
-                    <span
-                      key={i}
-                      className={`${calcClassName(font)} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
-                      style={color}
-                    >
-                      {word}{" "}
-                    </span>
-                  </>
-                ))}
-              </>
-            )}
-            {font.animationType === "letter" && (
-              <>
-                {Array.from(text).map((word, i) => (
-                  <>
-                    <div
-                      key={i}
-                      style={color}
-                      className={`${calcClassName(font)} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
-                    >
-                      <pre>{word}</pre>
-                    </div>
-                  </>
-                ))}
-              </>
-            )}
-          </>
-        )}
-      </>
-    );
-  },
-);
-
-export const TextRenderer = observer(
-  ({
-    font,
-    text,
-    saveFormatting,
-  }: {
-    font: FontPropertyValue;
-    text: string;
-    saveFormatting?: boolean;
-  }) => {
-    return (
-      <>
-        <FontImport font={font.family} />
+        {font.createFontImport()}
         <div style={containerStyle(font)}>
-          {saveFormatting && (
-            <pre>
-              <TextComponent
-                font={font}
-                text={text}
-              />
-            </pre>
-          )}
-          {!saveFormatting && (
-            <TextComponent font={font} text={text} />
+          {font.value.animation === "none" && <div style={color}>{text}</div>}
+          {font.value.animation !== "none" && (
+            <>
+              {font.value.animationType === "entire" && (
+                <div
+                  className={`${font.calcClassName()} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
+                  style={color}
+                >
+                  {text}
+                </div>
+              )}
+              {font.value.animationType === "word" && (
+                <>
+                  {text.split(" ").map((word, i) => (
+                    <>
+                      {" "}
+                      <div
+                        key={i}
+                        className={`${font.calcClassName()} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
+                        style={color}
+                      >
+                        {word}
+                      </div>
+                    </>
+                  ))}
+                </>
+              )}
+              {font.value.animationType === "letter" && (
+                <>
+                  {Array.from(text).map((word, i) => (
+                    <>
+                      <div
+                        key={i}
+                        style={color}
+                        className={`${font.calcClassName()} ${`animate__delay-${getRndInteger(0, 5)}s`}`}
+                      >
+                        <pre>{word}</pre>
+                      </div>
+                    </>
+                  ))}
+                </>
+              )}
+            </>
           )}
         </div>
       </>

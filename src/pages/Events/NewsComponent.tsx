@@ -1,9 +1,14 @@
 import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
-import { DefaultApiFactory as NewsService } from "@opendonationassistant/oda-news-service-client";
 import { useRequest } from "ahooks";
 import VoteUp from "../../icons/VoteUp";
 import VoteDown from "../../icons/VoteDown";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  getFeed,
+  createFeedback,
+  markAsRead,
+} from "@opendonationassistant/news-service";
 
 interface News {
   id: string;
@@ -13,35 +18,52 @@ interface News {
 }
 
 export default function NewsComponent() {
+  const { accessToken } = useAuth();
   const { data, mutate } = useRequest<News | null, any>(async () => {
-    const feed = await NewsService(
-      undefined,
-      process.env.REACT_APP_NEWS_API_ENDPOINT,
-    )
-      .getFeed()
-      .then((data) => data.data);
-    return feed.map((it) => {
-      return {
-        id: it.id ?? "",
-        title: it.title ?? "",
-        description: it.description ?? "",
-        demoUrl: it.demoUrl ?? "",
-      };
-    })[0];
+    const feed = await getFeed({
+      baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }).then((data) => data.data);
+    return (
+      feed
+        ?.map((it) => {
+          return {
+            id: it.id ?? "",
+            title: it.title ?? "",
+            description: it.description ?? "",
+            demoUrl: it.demoUrl ?? "",
+          };
+        })
+        ?.at(0) ?? null
+    );
   });
 
   function sendFeedback(rating: number) {
     mutate((prev) => {
       if (prev) {
-        const service = NewsService(
-          undefined,
-          process.env.REACT_APP_NEWS_API_ENDPOINT,
-        );
-        service.createFeedback(prev.id, {
-          rating: rating,
-        });
-        service.markAsRead({
-          newsId: prev.id,
+        createFeedback({
+          baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          path: {
+            newsId: prev.id,
+          },
+          body: {
+            rating: rating,
+          },
+        }).then(() => {
+          markAsRead({
+            baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: {
+              newsId: prev.id,
+            },
+          });
         });
       }
       return null;
@@ -58,13 +80,7 @@ export default function NewsComponent() {
         >
           <div className={`${classes.closebutton}`}>
             <a href="https://oda.digital/news">Новости</a>
-            <button
-              onClick={() => {
-                sendFeedback(-1);
-              }}
-            >
-              скрыть сообщение
-            </button>
+            <button onClick={() => sendFeedback(-1)}>скрыть сообщение</button>
           </div>
           <Flex justify="center" align="baseline">
             <div className={`${classes.newstitle}`}>{data.title}</div>

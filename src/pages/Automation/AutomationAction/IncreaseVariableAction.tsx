@@ -1,15 +1,14 @@
 import { Flex, Select } from "antd";
 import { Renderable } from "../../../utils";
-import { AutomationAction, AutomationStateContext } from "../AutomationState";
+import { AutomationAction, useAutomationState } from "../AutomationState";
 import InputNumber from "../../../components/ConfigurationPage/components/InputNumber";
-import { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { log } from "../../../logging";
 import { makeAutoObservable, toJS } from "mobx";
 
 const IncreaseVariableActionComponent = observer(
   ({ action }: { action: IncreaseVariableAction }) => {
-    const state = useContext(AutomationStateContext);
+    const { state } = useAutomationState();
 
     return (
       <Flex vertical gap={9}>
@@ -74,7 +73,7 @@ export class IncreaseVariableAction implements AutomationAction, Renderable {
     this._value.id = id;
   }
 
-  public set value(value: IncreaseVariableActionValue){
+  public set value(value: IncreaseVariableActionValue) {
     this._value = value;
   }
 

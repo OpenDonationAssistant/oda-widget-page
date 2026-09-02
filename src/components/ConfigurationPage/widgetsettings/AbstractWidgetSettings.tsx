@@ -71,7 +71,7 @@ export class AbstractWidgetSettings {
     );
   }
 
-  public prepareConfig(): { name: string; value: any }[] {
+  public async prepareConfig(): Promise<{ name: string; value: any }[]> {
     const prepared = this._sections
       .flatMap((section) => section.properties)
       .map((prop) => {
@@ -80,7 +80,7 @@ export class AbstractWidgetSettings {
           value: toJS(prop.value),
         };
       });
-    log.debug({ preparedConfig: prepared });
+    log.debug({ preparedConfig: prepared }, "config prepared");
     return prepared;
   }
 

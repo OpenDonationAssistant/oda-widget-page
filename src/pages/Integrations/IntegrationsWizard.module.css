@@ -2,6 +2,10 @@
   color: var(--oda-color-1000);
 }
 
+.description {
+  color: var(--oda-color-550);
+}
+
 .content{
   margin-top: 12px;
   width: 100%;

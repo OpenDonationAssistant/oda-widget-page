@@ -167,18 +167,12 @@ export const PresetsComponent = observer(
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={() => {
-                    if (target instanceof Widget) {
-                      if (target.config instanceof ElementsWidgetSettings) {
-                        log.debug(
-                          { selected: selected },
-                          "apply elements widget settings",
-                        );
-                        target.config.apply(selected!);
-                      }
-                    } else if (target instanceof TwitchAlert) {
-                      target.apply(selected!);
-                    }
                     modalState.show = false;
+                    if (target instanceof Widget) {
+                      selected?.applyTo(target.config, target.type);
+                    } else if (target instanceof Alert) {
+                      selected?.applyTo(target, "alert");
+                    }
                   }}
                 >
                   Применить

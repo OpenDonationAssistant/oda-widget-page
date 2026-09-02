@@ -18,7 +18,7 @@ async function tokenApiCall(credentials: any) {
       ...{
         client_id: "oda-console",
         client_secret: "TYaqCopUUsx2Jmakif55qBquZSUXOGhL",
-        scope: "offline_access openid audience profile",
+        scope: "offline_access openid audience profile stomp",
       },
     },
     { headers: { "content-type": "application/x-www-form-urlencoded" } },

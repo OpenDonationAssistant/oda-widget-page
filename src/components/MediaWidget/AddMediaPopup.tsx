@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { useLoaderData } from "react-router";
@@ -6,6 +6,7 @@ import { log } from "../../logging";
 import { Playlist } from "../../logic/playlist/Playlist";
 import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
+import { sleep } from "../../utils";
 
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
@@ -24,7 +25,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }, [showNewMediaPopup]);
 
   function addVideo(videoId: string) {
-    log.debug({videoId: videoId}, "adding song");
+    log.debug({ videoId: videoId }, "adding song");
     return axios
       .get(
         `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/available?videoId=${videoId}`,
@@ -50,7 +51,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }
 
   function addPlaylistItems(playlistId: string) {
-    log.debug({playlistId: playlistId}, "adding playlist");
+    log.debug({ playlistId: playlistId }, "adding playlist");
     return axios
       .get(
         `${process.env.REACT_APP_MEDIA_API_ENDPOINT}/media/playlists/${playlistId}`,
@@ -75,7 +76,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
   }
 
   function addMedia(url: string) {
-    log.debug({url:url}, "adding media");
+    log.debug({ url: url }, "adding media");
     if (url.includes("playlist")) {
       const index = url.lastIndexOf("list=");
       let id = url.substring(index + 5);
@@ -102,22 +103,23 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         localStorage.setItem("playlists", JSON.stringify(filteredPlaylists));
       });
     } else {
-      if (url.includes("vkvideo")){
-        const originId = url.replace("https://vkvideo.ru/video","");
-        log.debug({vkId: originId}, "parsed vkId");
+      if (url.includes("vkvideo")) {
+        const originId = url.replace("https://vkvideo.ru/video", "");
+        log.debug({ vkId: originId }, "parsed vkId");
         playlist.addSong({
           id: uuidv4(),
           originId: originId,
           src: url,
-          provider:  Provider.VK,
+          provider: Provider.VK,
           type: "vk",
           owner: recipientId,
-          title: "Unknown"
+          title: "Unknown",
         });
-      } else{
-        const youtube_url_regexp = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
+      } else {
+        const youtube_url_regexp =
+          /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
         const videoId = youtube_url_regexp.exec(url)?.at(6);
-        log.debug({videoId: videoId}, "parsed videoId");
+        log.debug({ videoId: videoId }, "parsed videoId");
         videoId && addVideo(videoId);
       }
     }
@@ -149,7 +151,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
       <input
         id="new-media-input"
         onChange={(e) => {
-          log.debug({value:  e.target.value}, "handling input");
+          log.debug({ value: e.target.value }, "handling input");
           addMedia(e.target.value);
         }}
       />

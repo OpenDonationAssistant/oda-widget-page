@@ -1,10 +1,3 @@
-.panel {
-  background: var(--oda-color-150);
-  border-radius: 6px;
-  padding: 12px 15px 15px 15px;
-  margin-bottom: 9px;
-}
-
 .fieldname {
   color: var(--oda-color-500);
   font-size: 12px;
@@ -12,9 +5,9 @@
 }
 
 .paymentpageconfig {
+  max-width: 1000px;
   color: white;
   flex: 1 0 auto;
-  margin-top: 22px;
 }
 
 .paymentpage {
@@ -45,15 +38,17 @@
 }
 
 a.url {
-  font-size: 30px;
+  font-size: 36px;
   color: var(--oda-color-1000)!important;
   text-decoration: none;
+  margin-bottom: 12px;
 }
 
 .pagetext {
   border: 1px solid var(--oda-color-250);
   border-radius: 9px;
   background: none;
+  padding: 12px;
   color: var(--oda-color-1000);
 }
 
@@ -63,19 +58,26 @@ a.url {
 }
 
 .backgroundimage {
-  width: 227px;
-  height: 106px;
+  width: 100%;
+  height: 210px;
   padding: 12px;
   border: 1px solid var(--oda-color-250);
   border-radius: 6px;
+  &:hover {
+    cursor: pointer;
+    border: 1px solid var(--oda-primary-color);
+  }
 }
 
 .logoimage {
-	width: 106px;
-	height: 106px;
+	height: 210px;
   padding: 12px;
   border: 1px solid var(--oda-color-250);
   border-radius: 6px;
+  &:hover {
+    cursor: pointer;
+    border: 1px solid var(--oda-primary-color);
+  }
 }
 
 .backgroundimage:hover {
@@ -120,4 +122,14 @@ a.url {
   padding-left: 10px;
   padding-right: 10px;
   text-align: left;
+}
+
+.deletesocialbutton {
+  height: 56px;
+  align-self: flex-end;
+}
+
+.sociallink {
+  width: 100%;
+  margin-bottom: 12px;
 }

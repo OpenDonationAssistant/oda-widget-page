@@ -13,9 +13,12 @@ import {
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
 import { makeAutoObservable, reaction } from "mobx";
-import { Flex, Switch } from "antd";
+import { Flex, Input, Switch } from "antd";
 import CloseIcon from "../../icons/CloseIcon";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
+import SubActionButton from "../../components/Button/SubActionButton";
+import CopyIcon from "../../icons/CopyIcon";
+import classes from "./GamesSection.module.css";
 
 class GameSelection {
   private _game: string | null = null;
@@ -52,6 +55,24 @@ const GamesList = observer(({}) => {
   );
 });
 
+const DonationListenerInstruction = observer(({}) => {
+  const data = localStorage.getItem("access-token") ?? "";
+
+  return (
+    <Flex vertical gap={20} className="full-width">
+      <div className={`${classes.instructionline}`}>
+        Токен, который нужно указать в приложении.
+      </div>
+      <Flex gap={3} className="full-width" vertical align="flex-end">
+        <Input className={`${classes.token}`} value={data} />
+        <SubActionButton onClick={() => navigator.clipboard.writeText(data)} icon={<CopyIcon />}>
+          <span>Скопировать</span>
+        </SubActionButton>
+      </Flex>
+    </Flex>
+  );
+});
+
 export const GamesSection = observer(({}) => {
   const gamesStore = useContext(GamesStoreContext);
   const gameSelection = useContext(GameSelectionContext);
@@ -72,8 +93,8 @@ export const GamesSection = observer(({}) => {
         },
         {
           title: "Добавить интеграцию",
-          subtitle: "Настройте интеграцию",
-          content: <></>,
+          subtitle: "",
+          content: <DonationListenerInstruction />,
           condition: () => {
             return Promise.resolve(true);
           },
@@ -104,7 +125,7 @@ export const GamesSection = observer(({}) => {
       <CardSectionTitle>Игры</CardSectionTitle>
       <CardList>
         {gamesStore.added.map((game) => (
-          <Card key={game.id} onClick={() => {}}>
+          <Card key={game.id}>
             <CardTitle>
               <Flex className="full-width" justify="space-between">
                 <Flex gap={9} align="center">

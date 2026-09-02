@@ -2,36 +2,22 @@ import axios from "axios";
 import { makeAutoObservable } from "mobx";
 import { subscribe } from "../../socket";
 import { log } from "../../logging";
-import { DefaultApiFactory as HistoryService } from "@opendonationassistant/oda-history-service-client";
+import { getHistory } from "@opendonationassistant/history-service";
 
-const lastDonations = async (recipientId: string) => {
-  const data = await HistoryService(
-    undefined,
-    process.env.REACT_APP_HISTORY_API_ENDPOINT,
-  ).getHistory({
-    recipientId: recipientId,
-    pageable: {
+const lastDonations = async () => {
+  const data = await getHistory({
+    baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+    query: {
+      page: 0,
       size: 50,
-      number: 0,
-      orderBy: [
-        {
-          property: "authorizationTimestamp",
-          direction: "DESC",
-          ignoreCase: true,
-        },
-      ],
-      sort: {
-        orderBy: [
-          {
-            property: "authorizationTimestamp",
-            direction: "DESC",
-            ignoreCase: true,
-          },
-        ],
-      },
+      sort: "timestamp,desc",
+      events: ["payment"],
     },
   });
-  return data.data.content;
+  return data.data?.content;
 };
 
 const listDonaters = (recipientId: string, period: string) =>
@@ -45,7 +31,7 @@ export interface AbstractDonatersListStore {
   list: DonaterRecord[];
 }
 
-export interface DonaterRecord{
+export interface DonaterRecord {
   nickname: string;
   amount: number;
 }
@@ -75,6 +61,7 @@ export class DonatersListStore implements AbstractDonatersListStore {
   ) {
     log.debug("create subscription");
     subscribe(widgetId, topic, (message: any) => {
+      log.debug("receive message with updates for donaters");
       this.updateDonaters(period, type);
       message.ack();
     });
@@ -83,14 +70,15 @@ export class DonatersListStore implements AbstractDonatersListStore {
 
   updateDonaters(period: "month" | "day", type: "Top" | "Last") {
     if (type === "Last") {
-      lastDonations(this._recipientId).then((data) => {
+      lastDonations().then((data) => {
         log.debug({ updatedDonaters: data }, "updating donaters");
-        this._list = data.map((donation) => {
-          return {
-            nickname: donation.nickname ?? "",
-            amount: donation.amount?.major ?? 0,
-          };
-        })
+        this._list =
+          data?.map((donation) => {
+            return {
+              nickname: donation.nickname ?? "",
+              amount: donation.amount?.major ?? 0,
+            };
+          }) ?? [];
       });
       return;
     }
@@ -105,13 +93,12 @@ export class DonatersListStore implements AbstractDonatersListStore {
       const sortedMap = new Map(
         [...map.entries()].sort((a, b) => b[1].major - a[1].major),
       );
-      this._list = Array.from(sortedMap.keys())
-        .map((key) => {
-          return {
-            nickname: key,
-            amount: sortedMap.get(key)?.major ?? 0,
-          };
-        })
+      this._list = Array.from(sortedMap.keys()).map((key) => {
+        return {
+          nickname: key,
+          amount: sortedMap.get(key)?.major ?? 0,
+        };
+      });
     });
   }
 

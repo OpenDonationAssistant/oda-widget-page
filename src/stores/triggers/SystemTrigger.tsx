@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { Select } from "antd";
 
 export const SYSTEM_TRIGGER = {
-  description: "донат сделан через",
+  description: "Донат сделан через",
   type: "system",
   category: "donation",
 };
@@ -22,11 +22,20 @@ export class SystemTrigger implements Trigger {
     makeAutoObservable(this);
   }
 
+<<<<<<< HEAD:src/stores/triggers/SystemTrigger.tsx
   priorityFor(event: TriggerCause): number {
     if (event.type !== "donation") {
       return -1;
     }
     return (event as DonationTriggerCause).system  == this.system ? 0 : -1;
+  }
+
+  isTriggered(event: DonationEvent): boolean {
+    return event.event === "payment" && event.system === this.system;
+  }
+
+  public compare(other: Trigger): number {
+    return 0;
   }
 
   markup(): ReactNode {
@@ -38,6 +47,7 @@ export class SystemTrigger implements Trigger {
           options={[
             { value: "ODA", label: "ODA" },
             { value: "DonationAlerts", label: "DonationAlerts" },
+            { value: "DonateX", label: "DonateX" },
             { value: "DonatePay.ru", label: "DonatePay.ru" },
             { value: "DonatePay.eu", label: "DonatePay.eu" },
           ]}

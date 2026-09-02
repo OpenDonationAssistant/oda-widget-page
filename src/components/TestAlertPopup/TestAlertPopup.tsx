@@ -26,17 +26,36 @@ export default function TestAlertPopup({}: {}) {
   const [state] = useState<ModalState>(() => new ModalState(parentModalState));
 
   function sendTestAlert() {
-    publish(conf.topic.alerts, {
-      id: "ae7d3c02-209b-4b69-a95b-2a60de4aff9b",
-      nickname: nickname ? nickname : "Аноним",
-      message: message ? message : "Тестовое сообщение",
-      amount: {
-        major: amount,
-        minor: 0,
-        currency: "RUB",
+    const variables = [
+      {
+        name: "amount",
+        value: String(amount),
       },
+      {
+        name: "nickname",
+        value: nickname ? nickname : "Аноним",
+      },
+      {
+        name: "message",
+        value: message ? message : "Тестовое сообщение",
+      },
+      {
+        name: "event",
+        value: "payment",
+      },
+      {
+        name: "system",
+        value: "ODA",
+      },
+      {
+        name: "force",
+        value: true,
+      },
+    ];
+    publish(conf.topic.events, {
+      type: "Alert",
+      variables: variables,
     });
-    log.debug("Send test alert");
   }
 
   return (

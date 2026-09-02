@@ -15,7 +15,15 @@ import { SYSTEM_TRIGGER, SystemTrigger } from "./SystemTrigger";
 import { UNKNOWN_TRIGGER, UnknownTrigger } from "./UnknownTrigger";
 import { Trigger, TriggerType } from "./AlertTriggerInterface";
 import { makeAutoObservable } from "mobx";
-import { TwitchSimpleTrigger } from "./TwitchSimpleTrigger";
+import {
+  BOOSTY_SUBSCRIPTION_TRIGGER,
+  BoostySubscriptionTrigger,
+} from "./BoostySubscriptionTrigger";
+import {
+  BOOSTY_FOLLOW_TRIGGER,
+  BoostyFollowTrigger,
+} from "./BoostyFollowTrigger";
+import { TWITCH_RAID_TRIGGER, TwitchRaidTrigger } from "./TwitchRaidTrigger";
 
 export class TriggersStore {
   private _types: TriggerType[] = [
@@ -23,6 +31,9 @@ export class TriggersStore {
     RANDE_DONATION_AMOUNT_TRIGGER,
     LESS_THAN_DONATION_AMOUNT_TRIGGER,
     SYSTEM_TRIGGER,
+    BOOSTY_SUBSCRIPTION_TRIGGER,
+    BOOSTY_FOLLOW_TRIGGER,
+    TWITCH_RAID_TRIGGER,
     UNKNOWN_TRIGGER,
     {
       type: "TwitchChannelCheerEvent",
@@ -62,29 +73,56 @@ export class TriggersStore {
 
   public available(added: Trigger[]): TriggerType[] {
     const additionalFilters: ((t: TriggerType) => boolean)[] = [];
-    added.forEach((a) => {
-      additionalFilters.push(
-        (checked: TriggerType) => checked.category === a.category,
-      );
-      if (a.category === "twitch") {
-        additionalFilters.push((checked: TriggerType) => false);
+    this._added.forEach((t) => {
+      if (t.type === BOOSTY_SUBSCRIPTION_TRIGGER.type) {
+        additionalFilters.push((t: TriggerType) => false);
       }
-      if (a.type === FIXED_DONATION_AMOUNT_TRIGGER.type) {
+      if (t.type === BOOSTY_FOLLOW_TRIGGER.type) {
+        additionalFilters.push((t: TriggerType) => false);
+      }
+      if (t.type === FIXED_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== RANDE_DONATION_AMOUNT_TRIGGER.type,
         );
         additionalFilters.push(
           (t: TriggerType) => t.type !== LESS_THAN_DONATION_AMOUNT_TRIGGER.type,
         );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
+        );
       }
       if (a.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
+        );
       }
       if (a.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_FOLLOW_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
+        );
+        additionalFilters.push(
+          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
         );
       }
     });
@@ -111,15 +149,12 @@ export class TriggersStore {
         return new LessThanDonationAmountTrigger();
       case "system":
         return new SystemTrigger();
-      case "TwitchChannelCheerEvent":
-      case "TwitchChannelFollowEvent":
-      case "TwitchChannelPollBeginEvent":
-      case "TwitchChannelRaidEvent":
-      case "TwitchChannelSubscribeEvent":
-      case "TwitchChannelSubscriptionGift":
-      case "TwitchChannelSubscriptionGiftEvent":
-      case "TwitchChannelSubscriptionMessageEvent":
-        return new TwitchSimpleTrigger(type);
+      case BOOSTY_SUBSCRIPTION_TRIGGER.type:
+        return new BoostySubscriptionTrigger();
+      case BOOSTY_FOLLOW_TRIGGER.type:
+        return new BoostyFollowTrigger();
+      case TWITCH_RAID_TRIGGER.type:
+        return new TwitchRaidTrigger();
       default:
         return new UnknownTrigger();
     }
@@ -150,6 +185,12 @@ export class TriggersStore {
       case "TwitchChannelSubscriptionGiftEvent":
       case "TwitchChannelSubscriptionMessageEvent":
         return new TwitchSimpleTrigger(trigger.type);
+      case BOOSTY_SUBSCRIPTION_TRIGGER.type:
+        return new BoostySubscriptionTrigger();
+      case BOOSTY_FOLLOW_TRIGGER.type:
+        return new BoostyFollowTrigger();
+      case TWITCH_RAID_TRIGGER.type:
+        return new TwitchRaidTrigger();
       default:
         return new UnknownTrigger();
     }

@@ -94,8 +94,11 @@ export class WizardConfigurationStore {
     return this._configuration.steps.length;
   }
 
-  // TODO make separet index update
+  // Проверяет условия и переходит на следующий шаг
+  // Если шаги кончились - возвращает false
+  // Если шаг нашелся - переключается на него  и возвращает true
   private checkCondition(index: number): Promise<boolean> {
+    // TODO make separet index update
     if (index >= this._configuration.steps.length) {
       return Promise.resolve(false);
     }
@@ -117,15 +120,10 @@ export class WizardConfigurationStore {
   private nextIteration() {
     // todo make separet index update
     this.checkCondition(this._index + 1).then((success) => {
-      if (
-        success &&
-        this.configuration.steps.at(this._index)?.isInformation === true
-      ) {
-        this.canContinue = true;
-        return;
-      }
-      this.canContinue = false;
-      if (!success) {
+      if (success) {
+        this.canContinue =
+          this.configuration.steps.at(this._index)?.isInformation === true;
+      } else {
         const finish = this.configuration.finish;
         log.debug({ finish: finish }, "Checking for finish function");
         if (finish) {
@@ -160,6 +158,7 @@ export class WizardConfigurationStore {
   }
 
   public reset() {
+    log.debug("resetting wizard");
     this._index = -1;
     this._configuration.reset();
   }

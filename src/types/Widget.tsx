@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AbstractWidgetSettings } from "../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
-import { PaymentsWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PaymentsWidgetSettings";
+import { HistoryWidgetSettings } from "../pages/History/HistoryWidgetSettings";
 import { action, makeObservable, observable } from "mobx";
 import { WidgetStore } from "../stores/WidgetStore";
 import { PlayerPopupWidgetSettings } from "../components/ConfigurationPage/widgetsettings/PlayerPopupWidgetSettings";
@@ -30,31 +30,24 @@ import VideoIcon from "../icons/widgets/VideoIcon";
 import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
-import { socket } from "../socket";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
-import { TwitchAlertsWidgetSettings } from "../pages/TwitchAlerts/TwitchAlertsWidgetSettings";
+import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
+import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
+import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
+import { CustomWidgetSettings } from "../pages/CustomWidget/CustomWidgetSettings";
+import { ChatWidgetSettings } from "../pages/ChatWidget/ChatWidgetSettings";
 import { SocialsWidgetSettings } from "../pages/Socials/SocialsWidgetSettings";
 import { MarqueeWidgetSettings } from "../pages/Marquee/MarqueeWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
     name: "payment-alerts",
-    title: "Оповещения о донатах",
+    title: "Оповещения/Алерты",
     icon: <AlertsIcon />,
     category: "onscreen",
     preview: "https://api.oda.digital/assets/alert.png",
     description: "Показывает оповещения о получаемых донатах.",
     create: () => new PaymentAlertsWidgetSettings(),
-  },
-  {
-    name: "alerts",
-    title: "Оповещения для Twitch",
-    icon: <AlertsIcon />,
-    category: "onscreen",
-    preview: "",
-    description:
-      "Отображает оповещения на разные события Twitch-a: follow, subscribe, raid и прочие.",
-    create: () => new TwitchAlertsWidgetSettings(),
   },
   {
     name: "donationgoal",
@@ -96,7 +89,7 @@ export const WIDGET_TYPES = [
     preview: "https://api.oda.digital/assets/payments.png",
     description:
       "Показывает список донатов, обновляется в реальном времени. Также есть кнопки для прерывания/повтора алерта на стриме.",
-    create: () => new PaymentsWidgetSettings(),
+    create: () => new HistoryWidgetSettings(),
   },
   {
     name: "donation-timer",
@@ -214,6 +207,64 @@ export const WIDGET_TYPES = [
     description: "Показывает периодически контент внутри.",
     create: () => new MarqueeWidgetSettings(),
   },
+  {
+    name: "action-queue",
+    title: "Заказ действий",
+    icon: <span className="material-symbols-sharp">pending_actions</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Позволяет задать и управлять действиями, которые донатер может 'заказать' на стриме",
+    create: () => new RouletteWidgetSettings(),
+  },
+  {
+    name: "stream-credits",
+    title: "Титры",
+    icon: <span className="material-symbols-sharp">pending_actions</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Виджет со статистикой для показа в конце стрима как титры",
+    create: () => new StreamCreditsWidgetSettings(),
+  },
+  {
+    name: "auction",
+    title: "Аукцион",
+    icon: <span className="material-symbols-sharp">gavel</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет позволяет разыгрывать что-то, крутя колесо. Слоты автоматически добавляются из донатов.",
+    create: () => new AuctionWidgetSettings(),
+  },
+  {
+    name: "canvas",
+    title: "Холст",
+    icon: <span className="material-symbols-sharp">dashboard</span>,
+    category: "onscreen",
+    preview: "",
+    description: "Виджет для группировки других виджетов внутри себя.",
+    create: () => new CanvasWidgetSettings(),
+  },
+  {
+    name: "custom",
+    title: "Custom/Импорт из StreamElements",
+    icon: <span className="material-symbols-sharp">tools_power_drill</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет, поддерживающий кастомные виджеты в формате StreamElements",
+    create: () => new CustomWidgetSettings(),
+  },
+  {
+    name: "chat",
+    title: "Чат",
+    icon: <span className="material-symbols-sharp">forum</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick",
+    create: () => new ChatWidgetSettings(),
+  }
 ];
 
 interface SavedProperty {
@@ -356,10 +407,11 @@ export class Widget {
   }
 
   public async save(): Promise<void> {
+    const properties = await this._config.prepareConfig();
     const request = {
       name: this._name,
       config: {
-        properties: this._config.prepareConfig(),
+        properties: properties,
       },
     };
     await axios
@@ -369,15 +421,6 @@ export class Widget {
       )
       .then(() => {
         this.config.markSaved();
-      })
-      .then(() => {
-        socket.publish({
-          destination: "/topic/commands",
-          body: JSON.stringify({
-            id: this.id,
-            command: "reload",
-          }),
-        });
       });
   }
 

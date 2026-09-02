@@ -3,8 +3,7 @@ import { HorizontalEventsWidgetSettings } from "./HorizontalEventsWidgetSettings
 import Marquee from "react-fast-marquee";
 import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
-import { HistoryStore } from "../History/HistoryStore";
-import { HistoryItemData } from "@opendonationassistant/oda-history-service-client";
+import { HistoryItem, HistoryStore } from "../History/HistoryStore";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
 const dayDateDiff = 1000 * 60 * 60 * 24;
@@ -17,15 +16,14 @@ export const HorizontalEventsWidget = observer(
     settings: HorizontalEventsWidgetSettings;
     store: HistoryStore;
   }) => {
-    const [events, setEvents] = useState<HistoryItemData[]>([]);
+    const [events, setEvents] = useState<HistoryItem[]>([]);
 
     useEffect(() => {
       const now = new Date();
       setEvents(
-        store.items.filter((it) => {
-          const paymentDate = new Date(it.timestamp);
-          return now.getTime() - paymentDate.getTime() < dayDateDiff;
-        }),
+        store.items.filter(
+          (it) => now.getTime() - it.timestamp.getTime() < dayDateDiff,
+        ),
       );
     }, [store.items]);
 

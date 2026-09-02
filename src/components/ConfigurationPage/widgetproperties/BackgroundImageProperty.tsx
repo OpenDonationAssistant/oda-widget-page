@@ -113,49 +113,49 @@ export const ImagePropertyComponent = observer(
           )}
           {value.url && (
             <Flex vertical={true} className="full-width" justify="space-around">
-              <SmallLabeledContainer displayName="Изображение">
-                <Flex
-                  gap={10}
-                  align="center"
-                  className={`${classes.previewcontainer}`}
-                  justify="space-between"
-                >
-                  <div>{value.name}</div>
-                  <Flex align="center" gap={6}>
-                    <Image.PreviewGroup>
-                      <Image
-                        className={`${classes.preview}`}
-                        src={`${image}`}
-                      />
-                    </Image.PreviewGroup>
-                    <SubActionButton
-                      onClick={() => {
-                        value.name = null;
-                        value.url = null;
-                        value.size = "auto";
-                        value.repeat = false;
-                        value.opacity = 1;
-                        onChange?.(value);
-                      }}
-                    >
-                      <div>Загрузить</div>
-                    </SubActionButton>
-                    <SubActionButton
-                      onClick={() => {
-                        value.name = null;
-                        value.url = null;
-                        value.size = "auto";
-                        value.repeat = false;
-                        value.opacity = 1;
-                        onChange?.(value);
-                      }}
-                    >
-                      <CloseIcon color="#FF8888" />
-                      <div>Удалить</div>
-                    </SubActionButton>
-                  </Flex>
+              <Flex
+                gap={10}
+                align="center"
+                className={`${classes.previewcontainer}`}
+                justify="space-between"
+              >
+                <div>{value.name}</div>
+                <Flex align="center" gap={6}>
+                  <Image.PreviewGroup>
+                    <Image
+                      width={200}
+                      height={28}
+                      className={`${classes.preview}`}
+                      src={`${image}`}
+                    />
+                  </Image.PreviewGroup>
+                  <SubActionButton
+                    onClick={() => {
+                      value.name = null;
+                      value.url = null;
+                      value.size = "auto";
+                      value.repeat = false;
+                      value.opacity = 1;
+                      onChange?.(value);
+                    }}
+                  >
+                    <div>Загрузить</div>
+                  </SubActionButton>
+                  <SubActionButton
+                    onClick={() => {
+                      value.name = null;
+                      value.url = null;
+                      value.size = "auto";
+                      value.repeat = false;
+                      value.opacity = 1;
+                      onChange?.(value);
+                    }}
+                  >
+                    <CloseIcon color="#FF8888" />
+                    <div>Удалить</div>
+                  </SubActionButton>
                 </Flex>
-              </SmallLabeledContainer>
+              </Flex>
               <Flex gap={6} align="bottom">
                 {showOpacity && (
                   <SmallLabeledContainer displayName="Прозрачность">

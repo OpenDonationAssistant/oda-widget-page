@@ -15,6 +15,7 @@ import {
   DefaultVariableStore,
   VariableStoreContext,
 } from "./stores/VariableStore";
+import { getWorkerPort } from "./worker";
 
 const overflowHiddenForRootElement = (
   <style
@@ -35,6 +36,15 @@ const fullHeight = (
 export default function WidgetWrapper({ children }: { children: ReactNode }) {
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("connecting to shared worker");
+    try {
+      getWorkerPort();
+    } catch (err) {
+      console.error("SharedWorker connection failed:", err);
+    }
+  }, [widgetId]);
 
   useEffect(() => {
     if (!settings.enabled) {

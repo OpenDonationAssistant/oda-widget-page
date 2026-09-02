@@ -42,7 +42,10 @@ export default function PlaylistActionPanel({
       .then((data) => {
         setSavedPlaylists(
           data.map((playlist: PlaylistDto) => {
-            return { id: playlist.id, name: playlist.title };
+            return {
+              id: playlist.id ?? uuidv7(),
+              name: playlist.title ?? "<Без названия>",
+            };
           }),
         );
       });
@@ -94,9 +97,9 @@ export default function PlaylistActionPanel({
       .playlist(playlistId)
       .then((res) => {
         controller.current.clear();
-        setPlaylistName(res.data.title);
+        setPlaylistName(res.data.title ?? "Без названия");
         controller.current.addSongs(
-          res.data.items.map((item) => {
+          res.data.items?.map((item) => {
             return {
               src: item.src,
               title: item.title,
@@ -108,7 +111,7 @@ export default function PlaylistActionPanel({
                 ? Provider.VK
                 : Provider.YOUTUBE,
             };
-          }),
+          }) ?? [],
         );
       });
     setShowSavedPlaylists(false);

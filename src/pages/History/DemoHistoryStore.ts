@@ -48,4 +48,5 @@ export class DemoHistoryStore implements HistoryStore{
     showDonatePay = true;
     showDonatePayEu = true;
     showDonateStream = true;
+    showDonateX = true;
 }

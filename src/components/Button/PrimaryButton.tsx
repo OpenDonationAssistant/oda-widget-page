@@ -9,7 +9,7 @@ export default function PrimaryButton({
   className,
 }: {
   children: ReactNode;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
   disabled?: boolean;
   className?: string;
 }) {
@@ -18,9 +18,7 @@ export default function PrimaryButton({
       <button
         className={`oda-btn-default ${classes.primarybutton} ${className ? className : ""}`}
         disabled={disabled}
-        onClick={() => {
-          onClick();
-        }}
+        onClick={onClick}
       >
         <Flex align="center" gap={3}>
           {children}

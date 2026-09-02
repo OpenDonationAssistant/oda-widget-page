@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import { log } from "../../logging";
 import { createPortal } from "react-dom";
@@ -64,6 +65,12 @@ export class ModalState {
     }
     this._show = show;
   }
+  public open() {
+    this.show = true;
+  }
+  public close() {
+    this.show = false;
+  }
   public get show() {
     return this._show;
   }
@@ -93,10 +100,10 @@ export const FullscreenPanel = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Panel = ({ children }: { children: ReactNode }) => {
+export const Panel = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
     <Flex
-      className={`${classes.modal} ${classes.big}`}
+      className={`${classes.modal} ${classes.big} ${className ?? ""}`}
       justify="flex-start"
       vertical
     >
@@ -105,7 +112,13 @@ export const Panel = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const Dialog = ({ children, center }: { children: ReactNode, center?: boolean }) => {
+export const Dialog = ({
+  children,
+  center,
+}: {
+  children: ReactNode;
+  center?: boolean;
+}) => {
   return (
     <Flex vertical justify={center ? "center" : "flex-start"} align="center">
       <Flex

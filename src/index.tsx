@@ -19,7 +19,7 @@ import "@fontsource/material-symbols-sharp";
 import "@fontsource/play";
 import { config } from "./config";
 import { log, setLoglevel } from "./logging";
-import auth from "./auth";
+import auth, { separateWidgetAuth } from "./auth";
 import axios from "axios";
 import type { Params } from "react-router-dom";
 import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/PaymentGatewaysConfiguration";
@@ -32,6 +32,7 @@ import WidgetWrapper from "./WidgetWrapper";
 import Header from "./components/ConfigurationPage/Header";
 import Toolbar, { Page } from "./components/ConfigurationPage/Toolbar";
 import DonatonPage from "./pages/Donaton/DonatonPage";
+import CanvasPage from "./pages/Canvas/CanvasPage";
 import PaymentPageConfigPage from "./pages/PaymentPageConfig/PaymentPageConfigPage";
 import DonationTimerPage from "./pages/DonationTimer/DonationTimerPage";
 import PlayerPopupPage from "./pages/PlayerPopup/PlayerPopupPage";
@@ -44,6 +45,7 @@ import AutomationPage from "./pages/Automation/AutomationPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/Button/UtilityButton";
+import WarningsPanel from "./components/WarningsPanel/WarningsPanel";
 import HorizontalEventsPage from "./pages/HorizontalEvents/HorizontalEventsPage";
 import { FontContext, FontStore } from "./stores/FontStore";
 import RouletteWidgetPage from "./pages/Roulette/RouletteWidgetPage";
@@ -60,15 +62,64 @@ import {
 import HistoryWidgetPage from "./pages/History/HistoryWidgetPage";
 import ReelWidgetPage from "./pages/Reel/ReelWidgetPage";
 import { AccountPage } from "./pages/Account/AccountPage";
-import TwitchAlertsPage from "./pages/TwitchAlerts/TwitchAlertsPage";
+import { BotsPage } from "./pages/Bots/BotsPage";
+import {
+  ErrorStore,
+  ErrorStoreContext,
+  initGlobalErrorStore,
+} from "./stores/ErrorStore";
+import { ErrorPopup } from "./components/ErrorPopup/ErrorPopup";
+import StreamCreditsWidgetPage from "./pages/StreamCredits/StreamCreditsWidgetPage";
+import AuctionWidgetPage from "./pages/AuctionWidget/AuctionWidgetPage";
+import AuctionPage from "./pages/AuctionWidget/AuctionPage";
+import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
+import { ApiPage } from "./pages/Api/ApiPage";
+import { AuthProvider } from "./contexts/AuthContext";
+import ChatWidgetPage from "./pages/ChatWidget/ChatWidgetPage";
+import ChatWidgetV2Page from "./pages/ChatWidgetV2/ChatWidgetV2Page";
+
+const errorStore = new ErrorStore();
+initGlobalErrorStore(errorStore);
+
+// window.onerror = (message, source, lineno, colno, error) => {
+//   console.log("Handling window onerror");
+//   errorStore.setError(
+//     "Произошла ошибка. Попробуйте позже",
+//     `${message}\n${source}:${lineno}:${colno}`,
+//   );
+//   return true;
+// };
+// //
+// window.onunhandledrejection = (event) => {
+//   console.log("Handling window onunhandledrejection");
+//   errorStore.setError(
+//     "Произошла ошибка. Попробуйте позже",
+//     String(event.reason),
+//   );
+//   event.preventDefault();
+// };
+
+// axios.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     const message = error.response?.data?.message ?? error.message;
+//     errorStore.setError("Произошла ошибка. Попробуйте позже", message);
+//     return Promise.reject(error);
+//   },
+// );
 
 async function widgetSettingsLoader({
   params,
 }: {
   params: Params<"widgetId">;
 }): Promise<WidgetData> {
-  const recipientId = await auth();
-  log.debug(`loading settings for ${recipientId}`);
+  const separateSession = new URLSearchParams(window.location.search).get(
+    "separateSession",
+  );
+  const session =
+    separateSession && params.widgetId
+      ? await separateWidgetAuth(params.widgetId)
+      : await auth();
   let settings = {};
   if (params.widgetId) {
     settings = await axios
@@ -80,12 +131,14 @@ async function widgetSettingsLoader({
       });
   }
 
-  const conf = await config(recipientId);
-  setLoglevel(conf.loglevel);
+  const conf = await config(session.id);
+  setLoglevel(session.logLevels);
   log.debug({ configuration: conf });
   const widgetId = params.widgetId ?? "unknown";
+  const recipientId = session.id ?? "unknown";
+  const features = session.features ?? [];
 
-  return { recipientId, settings, conf, widgetId };
+  return { recipientId, settings, conf, widgetId, features };
 }
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -116,6 +169,12 @@ function detectPage(path: string): Page {
   }
   if (path.indexOf("integrations") > 0) {
     return Page.INTEGRATIONS;
+  }
+  if (path.indexOf("bots") > 0) {
+    return Page.BOTS;
+  }
+  if (path.indexOf("api") > 0) {
+    return Page.API;
   }
   if (path.endsWith("account")) {
     return Page.ACCOUNT;
@@ -156,10 +215,10 @@ function ConfigurationPageTemplate() {
           Обратная связь
         </UtilityButton>
       </Flex>
+      <AntHeader>
+        <Header />
+      </AntHeader>
       <Flex vertical className="newstyle">
-        <AntHeader>
-          <Header />
-        </AntHeader>
         <Flex style={{ paddingTop: "18px" }}>
           <style
             dangerouslySetInnerHTML={{
@@ -214,6 +273,7 @@ function ConfigurationPageTemplate() {
                 backgroundColor: "var(--oda-color-100)",
               }}
             >
+              <WarningsPanel />
               <FontContext.Provider value={fontStore}>
                 <WidgetStoreContext.Provider value={widgetStore}>
                   <PaymentPageConfigContext.Provider value={paymentPageConfig}>
@@ -227,6 +287,14 @@ function ConfigurationPageTemplate() {
         </Flex>
       </Flex>
     </>
+  );
+}
+
+function AuthLayout() {
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
   );
 }
 
@@ -288,7 +356,7 @@ const router = createBrowserRouter([
     loader: widgetSettingsLoader,
   },
   {
-    path: "/alerts/:widgetId",
+    path: "/twitch-alerts/:widgetId",
     element: <TwitchAlertsPage />,
     loader: widgetSettingsLoader,
   },
@@ -371,12 +439,15 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-      }}
-    >
-      <RouterProvider router={router} />
-    </ConfigProvider>,
+    <ErrorStoreContext.Provider value={errorStore}>
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+        }}
+      >
+        <RouterProvider router={router} />
+      </ConfigProvider>
+      <ErrorPopup />
+    </ErrorStoreContext.Provider>,
   );
 }

@@ -1,11 +1,18 @@
-.toolbar {
-  height: 100%;
-  padding-top: 10px;
-  width: 400px!important;
+.wrapper {
+  position: relative;
+  width: fit-content;
+}
 
-  & [class*="material-symbols-sharp"] {
-    vertical-align: bottom;
-  }
+.newfeature {
+  position: absolute;
+  top: 0px;
+  right: 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oda-primary-color);
 }
 
 .toolbarbutton {

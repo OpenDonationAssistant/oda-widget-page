@@ -36,9 +36,7 @@ export const GatewayCard = observer(
     return (
       <Card
         selected={!onDelete && selected}
-        onClick={() => {
-          if (!onDelete) onClick();
-        }}
+        onClick={onDelete ? undefined : onClick}
       >
         <Flex vertical gap={36}>
           <Flex align="center" justify="space-between">

@@ -1,10 +1,24 @@
 import axios from "axios";
 import { ChangeEvent, ReactNode } from "react";
 import { uuidv7 } from "uuidv7";
+import { Event } from "./bus/EventBus";
+import { onWorkerMessage, sendMessageToWorker } from "./worker";
+
+export { sendMessageToWorker };
+
+export class ObjectWrapper<T> {
+  constructor(public value: T | null) {}
+}
 
 export const getRndInteger = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
+
+export function onEvent(fn: (event: Event) => void) {
+  return onWorkerMessage((data) => {
+    fn(new Event(data._type, data._variables, data._timestamp));
+  });
+}
 
 export async function uploadBlob(
   data: Blob | File,
@@ -35,6 +49,22 @@ export const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
   return uploadBlob(file, name).then((result) => {
     return { url: result.url, name: result.name, originalName: file.name };
   });
+};
+
+export const downloadFile = async (url: string | null): Promise<Blob> => {
+  if (!url) {
+    return Promise.resolve(new Blob());
+  }
+  let urlToFetch = url;
+  if (!url.startsWith("http")) {
+    urlToFetch = `${process.env.REACT_APP_FILE_API_ENDPOINT}/files/${url}`;
+  }
+  // TODO: вынести в общий модуль
+  return fetch(urlToFetch, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+    },
+  }).then((res) => res.blob());
 };
 
 export const fullUri = async (url: string | null): Promise<string> => {
@@ -100,4 +130,13 @@ export function deepEqual(x: any, y: any): boolean {
     ? ok(x).length === ok(y).length &&
         ok(x).every((key) => deepEqual(x[key], y[key]))
     : x === y;
+}
+
+export function hashString(str: string) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i); // hash * 31 + char
+    hash |= 0; // force 32-bit int
+  }
+  return hash; // signed 32-bit
 }

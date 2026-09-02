@@ -4,7 +4,8 @@ import { Goal } from "../ConfigurationPage/widgetproperties/DonationGoalProperty
 import { createContext } from "react";
 
 export class PaymentPageConfig {
-  private _log = parent.child({ module: "PaymentPageConfig" });
+  private _log = parent.child({ module: "paymentPageConfig" });
+
   config: any = {};
   email: string = "";
   fio: string = "";
@@ -21,6 +22,8 @@ export class PaymentPageConfig {
   private _tooltip: string = "";
   private _url: string = "";
   private _displayName: string = "";
+  private _description: string = "";
+  private _socials: Map<string, string>[] = [];
 
   constructor(recipientId: string) {
     this._log.debug("Loading PaymentPageConfig");
@@ -47,6 +50,17 @@ export class PaymentPageConfig {
         this._customCss = json.value["customCss"] ?? [];
         this._tooltip = json.value["tooltip"] ?? "";
         this._url = json["url"] ?? "";
+        this._description = json.value["streamer.description"] ?? "";
+        if (json.value["url"] !== undefined) {
+          const socials = json.value["url"] ?? [];
+          socials.forEach((social) => {
+            const link = new Map();
+            Object.keys(social).forEach((key) => {
+              link.set(key, social[key]);
+              this._socials.push(link);
+            });
+          });
+        }
         this.sendMediaRequestsEnabledState();
         this.sendEventPaymentPageUpdated();
         this._log.debug({ config: this }, "PaymentPageConfig loaded");
@@ -87,6 +101,12 @@ export class PaymentPageConfig {
   setRequestsCost(cost: number) {
     this.requestCost = cost;
     this.config.value["media.requests.cost"] = this.requestCost;
+    this.sendEventPaymentPageUpdated();
+  }
+
+  setDescription(description: string) {
+    this._description = description;
+    this.config.value["streamer.description"] = description;
     this.sendEventPaymentPageUpdated();
   }
 
@@ -131,6 +151,9 @@ export class PaymentPageConfig {
   public set goals(value: Goal[]) {
     this._goals = value;
   }
+  public get description(): string {
+    return this._description;
+  }
   public get minimalAmount(): number {
     return this._minimalAmount;
   }
@@ -155,9 +178,50 @@ export class PaymentPageConfig {
     this.config.value["customCss"] = value;
     this.sendEventPaymentPageUpdated();
   }
+
   public set tooltip(value: string) {
     this._tooltip = value;
     this.config.value["tooltip"] = value;
+    this.sendEventPaymentPageUpdated();
+  }
+
+  public changeSocial(oldKey: string, newKey: string) {
+    this._socials = this._socials.map((social) => {
+      if (social.has(oldKey)) {
+        social.set(newKey, social.get(oldKey));
+        social.delete(oldKey);
+      }
+      return social;
+    });
+    this.config.value["url"] = this._socials;
+    this.sendEventPaymentPageUpdated();
+  }
+
+  public addSocial(key: string, value: string) {
+    const link = new Map();
+    link.set(key, value);
+    this._socials.push(link);
+    const json = this._socials.map((social) => Object.fromEntries(social));
+    this.config.value["url"] = json;
+    this.sendEventPaymentPageUpdated();
+  }
+
+  public updateSocial(key: string, value: string) {
+    this._socials = this._socials.map((social) => {
+      if (social.has(key)) {
+        social.set(key, value);
+      }
+      return social;
+    });
+    const json = this._socials.map((social) => Object.fromEntries(social));
+    this.config.value["url"] = json;
+    this.sendEventPaymentPageUpdated();
+  }
+
+  public deleteSocial(key: string) {
+    this._socials = this._socials.filter((social) => !social.has(key));
+    const json = this._socials.map((social) => Object.fromEntries(social));
+    this.config.value["url"] = json;
     this.sendEventPaymentPageUpdated();
   }
 
@@ -177,6 +241,10 @@ export class PaymentPageConfig {
     return this._displayName;
   }
 
+  public get socials(): Map<string, string>[] {
+    return this._socials;
+  }
+
   async reloadConfig(): Promise<void> {
     const data = await axios.get(
       `${process.env.REACT_APP_CONFIG_API_ENDPOINT}/config/paymentpage?ownerId=${this._recipientId}`,
@@ -192,6 +260,17 @@ export class PaymentPageConfig {
     this.minimalAmount = this.config.value["minimalAmount"] ?? 40;
     this.arbitraryText = this.config.value["arbitraryText"] ?? null;
     this.tooltip = this.config.value["tooltip"] ?? "";
+    this._socials = [];
+    if (this.config.value["url"] !== undefined) {
+      const socials = this.config.value["url"] ?? [];
+      socials.forEach((social) => {
+        const link = new Map();
+        Object.keys(social).forEach((key) => {
+          link.set(key, social[key]);
+          this._socials.push(link);
+        });
+      });
+    }
     this.sendMediaRequestsEnabledState();
     this.sendEventPaymentPageUpdated();
   }

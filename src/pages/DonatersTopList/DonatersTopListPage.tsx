@@ -6,6 +6,7 @@ import { DonatersTopList } from "./DonatersTopList";
 import { DonatersTopListWidgetSettings } from "./DonatersTopListWidgetSettings";
 import { DonatersListStore } from "./DonatersListStore";
 import { DefaultHistoryStore } from "../History/HistoryStore";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function DonatersTopListPage() {
   const { widgetId, recipientId, settings, conf } =
@@ -14,6 +15,7 @@ export default function DonatersTopListPage() {
   const widgetSettings = Widget.configFromJson(
     settings,
   ) as DonatersTopListWidgetSettings;
+  const { accessToken } = useAuth();
 
   const store = new DonatersListStore(
     widgetId,
@@ -23,7 +25,35 @@ export default function DonatersTopListPage() {
     conf.topic.donaterstoplist,
   );
 
-  const historyStore = new DefaultHistoryStore(recipientId, widgetId, conf);
+  const historyStore = new DefaultHistoryStore(
+    accessToken ?? "",
+    recipientId,
+    widgetId,
+    conf,
+    {
+      showODA: true,
+      showDonationAlerts: true,
+      showDonatePay: true,
+      showDonatePayEu: true,
+      showDonateStream: true,
+      showDonateX: true,
+      showTribute: true,
+      showBoostySubs: false,
+      showBoostyFollows: false,
+      showMemeAlertsCoins: false,
+      showTwitchFollows: false,
+      showTwitchRaids: false,
+      showTwitchCheers: false,
+      showTwitchSubs: false,
+      showTwitchSubGifts: false,
+      showKickFollows: false,
+      showKickGifts: false,
+      showKickSubs: false,
+      showKickSubGifts: false,
+      showVKLiveFollows: false,
+      showVKLiveSubs: false,
+    },
+  );
 
   return (
     <WidgetWrapper>

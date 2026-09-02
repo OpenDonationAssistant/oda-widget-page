@@ -1,22 +1,22 @@
-import { Flex, Spin, Switch } from "antd";
+import { DatePicker, Flex, Spin, Switch } from "antd";
 import classes from "./HistoryPage.module.css";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import dayjs from "dayjs";
 import AddHistoryItemModal from "./AddHistoryItemModal";
 import {
   BorderedIconButton,
   NotBorderedIconButton,
 } from "../../components/IconButton/IconButton";
 import {
+  CloseOverlayButton,
   ModalState,
   ModalStateContext,
   Overlay,
   Panel,
   Subtitle,
-  Title,
 } from "../../components/Overlay/Overlay";
 import { useContext, useEffect, useState } from "react";
-import { LabeledSwitchComponent } from "../../components/LabeledSwitch/LabeledSwitchComponent";
 import {
   DefaultHistoryStore,
   HistoryStore,
@@ -30,46 +30,70 @@ import { log } from "../../logging";
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 import { produce } from "immer";
 import { toJS } from "mobx";
-import ODALogo from "../../components/ODALogo/ODALogo";
+import ConnectedServices from "../../components/ConnectedServices/ConnectedServices";
+import ConnectionErrorsPanel from "../../components/ConnectionErrorsPanel/ConnectionErrorsPanel";
 import { DefaultNewsStore, NewsStore } from "../../stores/NewsStore";
 import Marquee from "react-fast-marquee";
 import SecondaryButton from "../../components/Button/SecondaryButton";
-import { uuidv7 } from "uuidv7";
+import { useTranslation } from "react-i18next";
+import SubActionButton from "../../components/Button/SubActionButton";
+import LabeledContainer from "../../components/LabeledContainer/LabeledContainer";
+import {
+  HistoryWidgetSettings,
+  HistoryWidgetSettingsContenxt,
+} from "./HistoryWidgetSettings";
+import { useAuth } from "../../contexts/AuthContext";
+
+const dateFormat = "DD/MM/YYYY HH:mm";
 
 const HistoryItemList = observer(({}: {}) => {
   const historyStore = useContext(HistoryStoreContext);
+  const settings = new HistoryWidgetSettings();
+  settings.set("showRequests", true);
+  settings.set("showGoals", true);
 
   return (
-    <Flex vertical gap={3}>
-      {historyStore?.items.map((item, index) => (
-        <>
-          {index === 0 && item.date === historyStore?.today && (
-            <div className={`${classes.historyday}`}>Сегодня ({item.date})</div>
-          )}
-          {index === 0 && item.date !== historyStore?.today && (
-            <div className={`${classes.historyday}`}>{item.date}</div>
-          )}
-          {index !== 0 &&
-            item.date !== historyStore?.items.at(index - 1)?.date && (
+    <HistoryWidgetSettingsContenxt.Provider value={settings}>
+      <Flex vertical gap={3}>
+        {historyStore?.items.map((item, index) => (
+          <>
+            {index === 0 && item.date === historyStore?.today && (
+              <div className={`${classes.historyday}`}>
+                Сегодня ({item.date})
+              </div>
+            )}
+            {index === 0 && item.date !== historyStore?.today && (
               <div className={`${classes.historyday}`}>{item.date}</div>
             )}
-          <HistoryItemComponent key={index} item={item} />
-        </>
-      ))}
-      {historyStore?.isRefreshing && <Spin />}
-      {!historyStore?.isRefreshing && historyStore?.hasNext() && (
-        <Flex className={`${classes.loadmore}`} justify="center" align="center">
-          <SecondaryButton onClick={() => historyStore?.next()}>
-            Показать еще
-          </SecondaryButton>
-        </Flex>
-      )}
-    </Flex>
+            {index !== 0 &&
+              item.date !== historyStore?.items.at(index - 1)?.date && (
+                <div className={`${classes.historyday}`}>{item.date}</div>
+              )}
+            <HistoryItemComponent key={index} item={item} />
+          </>
+        ))}
+        {historyStore?.isRefreshing && <Spin />}
+        {!historyStore?.isRefreshing && historyStore?.hasNext() && (
+          <Flex
+            className={`${classes.loadmore}`}
+            justify="center"
+            align="center"
+          >
+            <SecondaryButton onClick={() => historyStore?.next()}>
+              Показать еще
+            </SecondaryButton>
+          </Flex>
+        )}
+      </Flex>
+    </HistoryWidgetSettingsContenxt.Provider>
   );
 });
 
 const NewsLineComponent = observer(({}) => {
-  const [newsStore] = useState<NewsStore>(() => new DefaultNewsStore());
+  const { accessToken } = useAuth();
+  const [newsStore] = useState<NewsStore>(
+    () => new DefaultNewsStore(accessToken ?? ""),
+  );
   return (
     <>
       {newsStore.news && newsStore.news.length > 0 && (
@@ -99,16 +123,37 @@ const NewsLineComponent = observer(({}) => {
   );
 });
 
+const SwitchComponent = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (update: any) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Flex justify="space-between" align="center" gap={21}>
+      <div className={`${classes.switchlabel}`}>{t(label)}</div>
+      <Switch value={value} onChange={onChange} />
+    </Flex>
+  );
+};
+
 export const HistoryComponent = observer(
   ({ showHeader }: { showHeader: boolean }) => {
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+    const { t } = useTranslation();
 
     const historyStore = useContext(HistoryStoreContext);
     const widgetStore = useContext(WidgetStoreContext);
     const [premoderation, setPremoderation] = useState<boolean>(() => false);
+    const [showFilters, setShowFilters] = useState<boolean>(false);
 
     useEffect(() => {
       const alerts = widgetStore.search({ type: "payment-alerts" });
@@ -144,88 +189,250 @@ export const HistoryComponent = observer(
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
             <Panel>
-              <Title>Настройки отображения</Title>
+              <Flex justify="space-between" className="full-width">
+                <div className={`${classes.title}`}>Настройки отображения</div>
+                <CloseOverlayButton />
+              </Flex>
               <Subtitle>
                 Выберите, какие события будут отображаться в истории
               </Subtitle>
-              <Flex vertical gap={9} className={`${classes.filters}`}>
-                <div className={`${classes.filtersection}`}>Донаты</div>
-                <div className={`${classes.filterlist}`}>
-                  <LabeledSwitchComponent
-                    value={historyStore.showODA}
-                    label="ODA"
-                    onChange={(update) => {
-                      historyStore.showODA = update;
-                    }}
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonationAlerts}
-                    label="DonationAlerts"
-                    onChange={(update) =>
-                      (historyStore.showDonationAlerts = update)
-                    }
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonatePay}
-                    label="DonatePay.ru"
-                    onChange={(update) => (historyStore.showDonatePay = update)}
-                  />
-                  <LabeledSwitchComponent
-                    value={historyStore.showDonatePayEu}
-                    label="DonatePay.eu"
-                    onChange={(update) =>
-                      (historyStore.showDonatePayEu = update)
-                    }
-                  />
-                </div>
-              </Flex>
+              <div className={`${classes.filters}`}>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Донаты</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showODA}
+                      label="ODA"
+                      onChange={(update) => {
+                        historyStore.showODA = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonationAlerts}
+                      label="DonationAlerts"
+                      onChange={(update) =>
+                        (historyStore.showDonationAlerts = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonatePay}
+                      label="DonatePay.ru"
+                      onChange={(update) =>
+                        (historyStore.showDonatePay = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonatePayEu}
+                      label="DonatePay.eu"
+                      onChange={(update) =>
+                        (historyStore.showDonatePayEu = update)
+                      }
+                    />
+                    <SwitchComponent
+                      value={historyStore.showDonateX}
+                      label="DonateX"
+                      onChange={(update) => (historyStore.showDonateX = update)}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTribute}
+                      label="Tribute"
+                      onChange={(update) => (historyStore.showTribute = update)}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Boosty</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showBoostySubs}
+                      label="Подписки Boosty"
+                      onChange={(update) => {
+                        historyStore.showBoostySubs = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showBoostyFollows}
+                      label="Отслеживания Boosty"
+                      onChange={(update) => {
+                        historyStore.showBoostyFollows = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Meme Alerts</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showMemeAlertsCoins}
+                      label="Покупки Meme Alerts"
+                      onChange={(update) => {
+                        historyStore.showMemeAlertsCoins = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Twitch</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showTwitchFollows}
+                      label="Подписки (фолловы) Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchRaids}
+                      label="Рейды Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchRaids = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchCheers}
+                      label="Чиры Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchCheers = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchSubs}
+                      label="Подписки Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchSubs = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showTwitchSubGifts}
+                      label="Подаренные подписки Twitch"
+                      onChange={(update) => {
+                        historyStore.showTwitchSubGifts = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>Kick</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showKickFollows}
+                      label="Подписки (фолловы) Kick"
+                      onChange={(update) => {
+                        historyStore.showKickFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickGifts}
+                      label="Подарки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickGifts = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickSubs}
+                      label="Подписки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickSubs = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showKickSubGifts}
+                      label="Подаренные подписки Kick"
+                      onChange={(update) => {
+                        historyStore.showKickSubGifts = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+                <Flex className={`${classes.filterpanel}`} vertical>
+                  <div className={`${classes.filtersection}`}>VK Live</div>
+                  <div className={`${classes.filterlist}`}>
+                    <SwitchComponent
+                      value={historyStore.showVKLiveFollows}
+                      label="Подписки (фолловы) VK Live"
+                      onChange={(update) => {
+                        historyStore.showVKLiveFollows = update;
+                      }}
+                    />
+                    <SwitchComponent
+                      value={historyStore.showVKLiveSubs}
+                      label="Подписки VK Live"
+                      onChange={(update) => {
+                        historyStore.showVKLiveSubs = update;
+                      }}
+                    />
+                  </div>
+                </Flex>
+              </div>
             </Panel>
           </Overlay>
-          <Flex
-            justify="space-between"
-            align="center"
-            style={
-              showHeader ? { marginBottom: "36px" } : { marginBottom: "12px" }
-            }
-          >
+          <Flex justify="space-between" align="center" gap={12}>
             {showHeader && <h1 className={`${classes.header}`}>История</h1>}
-            {!showHeader && <ODALogo />}
-            <Flex gap={9}>
-              {widgetStore.list.filter(
-                (widget) => widget.type === "payment-alerts",
-              ).length > 0 && (
-                <Flex
-                  align="center"
-                  justify="center"
-                  gap={6}
-                  className={`${classes.premoderationbutton}`}
+            {!showHeader && <ConnectedServices />}
+            <Flex gap={9} className={`${classes.headerbuttons}`}>
+              {!showHeader &&
+                widgetStore.list.filter(
+                  (widget) => widget.type === "payment-alerts",
+                ).length > 0 && (
+                  <Flex
+                    align="center"
+                    justify="center"
+                    gap={6}
+                    className={`${classes.premoderationbutton}`}
+                  >
+                    <Flex align="center">
+                      <span className={`material-symbols-sharp`}>
+                        local_police
+                      </span>
+                      <div className={`${classes.moderationlabel}`}>
+                        Премодерация
+                      </div>
+                    </Flex>
+                    <Switch
+                      value={premoderation}
+                      onChange={(update) => {
+                        widgetStore
+                          .search({ type: "payment-alerts" })
+                          .forEach((widget) => {
+                            const property = widget.config.get(
+                              "premoderation",
+                            ) as PremoderationProperty | undefined;
+                            if (!property) {
+                              return;
+                            }
+                            property.value = produce(
+                              toJS(property.value),
+                              (draft) => {
+                                draft.enabled = update;
+                              },
+                            );
+                            widget.save().then(() => setPremoderation(update));
+                          });
+                      }}
+                    />
+                  </Flex>
+                )}
+              {showHeader && (
+                <SubActionButton
+                  onClick={() => setShowFilters((old) => !old)}
+                  icon={<span className="material-symbols-sharp">search</span>}
                 >
-                  <div>Премодерация</div>
-                  <Switch
-                    value={premoderation}
-                    onChange={(update) => {
-                      widgetStore
-                        .search({ type: "payment-alerts" })
-                        .forEach((widget) => {
-                          const property = widget.config.get(
-                            "premoderation",
-                          ) as PremoderationProperty | undefined;
-                          if (!property) {
-                            return;
-                          }
-                          property.value = produce(
-                            toJS(property.value),
-                            (draft) => {
-                              draft.enabled = update;
-                            },
-                          );
-                          widget.save().then(() => setPremoderation(update));
-                        });
-                    }}
-                  />
-                </Flex>
+                  {t("button-find")}
+                </SubActionButton>
               )}
               <AddHistoryItemModal compact={!showHeader} />
+              {showHeader && (
+                <SubActionButton
+                  onClick={() => {
+                    historyStore.export();
+                  }}
+                  icon={
+                    <span className="material-symbols-sharp">download</span>
+                  }
+                >
+                  {t("button-export")}
+                </SubActionButton>
+              )}
               <BorderedIconButton
                 onClick={() => {
                   dialogState.show = true;
@@ -240,6 +447,42 @@ export const HistoryComponent = observer(
               </BorderedIconButton>
             </Flex>
           </Flex>
+          {showFilters && (
+            <Flex vertical gap={9} className={`${classes.searchfilters}`}>
+              <LabeledContainer displayName="Дата">
+                <Flex
+                  gap={18}
+                  align="center"
+                  className={`${classes.searchline}`}
+                >
+                  <DatePicker
+                    value={
+                      historyStore.after ? dayjs(historyStore.after) : null
+                    }
+                    className="full-width"
+                    showTime
+                    format={dateFormat}
+                    onChange={(value) => {
+                      historyStore.after = value?.toDate();
+                    }}
+                  />
+                  <div> - </div>
+                  <DatePicker
+                    value={
+                      historyStore.before ? dayjs(historyStore.before) : null
+                    }
+                    className="full-width"
+                    showTime
+                    format={dateFormat}
+                    onChange={(value) => {
+                      historyStore.before = value?.toDate();
+                    }}
+                  />
+                </Flex>
+              </LabeledContainer>
+            </Flex>
+          )}
+          {!showHeader && <ConnectionErrorsPanel />}
           {!showHeader && <NewsLineComponent />}
           <HistoryItemList />
         </ModalStateContext.Provider>
@@ -252,9 +495,12 @@ export const HistoryComponent = observer(
 
 export const HistoryPage = observer(({}) => {
   const { recipientId, conf } = useLoaderData() as WidgetData;
+  const token = localStorage.getItem("access-token");
+  if (!token) {
+    throw new Error("No token");
+  }
   const [store] = useState<HistoryStore>(
-    () =>
-      new DefaultHistoryStore(recipientId, `history-page-${uuidv7()}`, conf),
+    () => new DefaultHistoryStore(token, recipientId, `history-page`, conf),
   );
 
   return (

@@ -75,6 +75,7 @@ export class VoiceController {
 
   pronounceTitle(alert: Alert, data: any): Promise<void | AudioBuffer> {
     log.debug("start to pronounce title");
+    return Promise.resolve();
 
     const playTitle = alert.property("enableVoiceForHeader") ?? true;
     const playTitleIfMessageIsEmpty =
@@ -118,7 +119,7 @@ export class VoiceController {
             if (data.nickname === "Тестовый алерт") {
               return this.loadAudio("https://api.oda.digital/public/title.mp3");
             }
-            return this.voiceByGoogle(resultText);
+            return this.voiceByMCS(resultText);
           })
           .then((audio) => {
             return this.pronounce(audio, volume);
@@ -143,10 +144,10 @@ export class VoiceController {
         if (data.message === "Тестовое сообщение") {
           return this.loadAudio("https://api.oda.digital/public/message.mp3");
         }
-        if (data.media?.url){
+        if (data.media?.url) {
           return this.loadAudio(data.media.url);
         }
-        return this.voiceByGoogle(data.message);
+        return this.voiceByMCS(data.message);
       })
       .then((audio) => {
         return this.pronounce(audio, alert.property("voiceVolume") ?? 100);

@@ -6,6 +6,8 @@ import { IncreaseVariableAction } from "./AutomationAction/IncreaseVariableActio
 import { IncreaseDonationGoalAction } from "./AutomationAction/IncreaseDonationGoalAction";
 import { RefreshDonationGoalAction } from "./AutomationAction/RefreshDonationGoalAction";
 import { RunReelAction } from "./AutomationAction/RunReelAction";
+import { MakePinnedMessageAction } from "./AutomationAction/MakePinnedMessageAction";
+import { ShoutoutAction } from "./AutomationAction/ShoutoutAction";
 
 export class AutomationActionController {
   public get actions(): (AutomationAction & Renderable)[] {
@@ -15,6 +17,8 @@ export class AutomationActionController {
       new IncreaseDonationGoalAction(),
       new RefreshDonationGoalAction(),
       new RunReelAction(),
+      new MakePinnedMessageAction(),
+      new ShoutoutAction(),
     ];
   }
 

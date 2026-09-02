@@ -20,7 +20,6 @@ import SecondaryButton from "../../../Button/SecondaryButton";
 import PrimaryButton from "../../../Button/PrimaryButton";
 import PaymentAlerts from "../../../../pages/Alerts/PaymentAlerts";
 import { DemoAlertController } from "../../../../pages/Alerts/DemoAlertController";
-import { DemoTokenStore } from "../../../../stores/TokenStore";
 import { useContext, useRef, useState } from "react";
 import { WidgetContext } from "../../../../types/Widget";
 import { reaction } from "mobx";
@@ -31,6 +30,7 @@ import { uploadBlob } from "../../../../utils";
 import { PresetsComponent } from "../../PresetsComponent";
 import { TriggersStoreContext } from "../../../../stores/triggers/TriggersStore";
 import { ElementsTab } from "../../../Element/ElementsTab";
+import { DemoTokenStore } from "../../../../stores/TokenStore";
 
 const SaveButtons = observer(() => {
   const widget = useContext(WidgetContext);
@@ -115,7 +115,13 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
       >
         <EditableString
           label={alert.property("name")}
-          onChange={(value) => alert.set("name", value)}
+          onChange={(value) => {
+            const property = alert.get("name");
+            if (!property) {
+              return;
+            }
+            property.value = value;
+          }}
         />
         <CloseOverlayButton />
       </Flex>
