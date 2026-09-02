@@ -12,6 +12,7 @@ import { emotesFromText } from "./emotes";
 // (protocol, client, version) below match what kick-js uses.
 const KICK_PUSHER_WEBSOCKET_URL =
   "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false";
+const RECONNECT_DELAY_MS = 1000;
 
 const EVENT_NAME = "KICK_CHAT_MESSAGE";
 
@@ -122,8 +123,23 @@ function startWebSocketClient(
   const channel = `chatrooms.${chatroomId}.v2`;
   console.log({ chatroomId }, "Starting Kick WebSocket connection");
   const websocketClient = new WebSocket(KICK_PUSHER_WEBSOCKET_URL);
+  let reconnecting = false;
+  websocketClients.add(websocketClient);
 
-  websocketClient.addEventListener("error", console.error);
+  // Reconnect on abnormal close/error. Guarded so error + close firing
+  // together only schedule one reconnect.
+  const scheduleReconnect = (): void => {
+    if (reconnecting) return;
+    reconnecting = true;
+    setTimeout(() => {
+      startWebSocketClient(odaToken, chatroomId, eventbus, emotesStore);
+    }, RECONNECT_DELAY_MS);
+  };
+
+  websocketClient.addEventListener("error", (err) => {
+    console.error("Kick WebSocket error:", err);
+    scheduleReconnect();
+  });
 
   websocketClient.addEventListener("open", () => {
     console.log(
@@ -138,12 +154,18 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("close", (event) => {
+    const wasRegistered = websocketClients.delete(websocketClient);
     if (event.code === 1000) return;
     reportError(
       odaToken,
       "Kick",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
+    if (!wasRegistered) return; // Closed by deregister — do not reconnect.
+    console.log(
+      `Kick WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
+    );
+    scheduleReconnect();
   });
 
   websocketClient.addEventListener("message", (data) => {
@@ -156,8 +178,6 @@ function startWebSocketClient(
     }
     handleFrame(frame, eventbus, emotesStore);
   });
-
-  websocketClients.add(websocketClient);
 
   return websocketClient;
 }

@@ -10,6 +10,7 @@ import {
 } from "@opendonationassistant/history-service";
 
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
+const RECONNECT_DELAY_MS = 1000;
 
 const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
@@ -249,9 +250,22 @@ function startWebSocketClient(
 ): WebSocket {
   console.log("Starting StreamElements Astro WebSocket connection");
   const websocketClient = new WebSocket(ASTRO_WEBSOCKET_URL);
+  let reconnecting = false;
+  activeSockets.set(seToken, websocketClient);
+
+  // Reconnect on abnormal close/error. Guarded so error + close firing
+  // together only schedule one reconnect.
+  const scheduleReconnect = (): void => {
+    if (reconnecting) return;
+    reconnecting = true;
+    setTimeout(() => {
+      startWebSocketClient(odaToken, recipientId, seToken, eventbus);
+    }, RECONNECT_DELAY_MS);
+  };
 
   websocketClient.addEventListener("error", (err) => {
     console.error("StreamElements WebSocket error:", err);
+    scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
@@ -264,17 +278,24 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("close", (event) => {
-    console.log("StreamElements Astro WebSocket closed");
-    activeSockets.delete(seToken);
+    // Only remove this socket — a reconnect may have already replaced it.
+    const wasRegistered = activeSockets.get(seToken) === websocketClient;
+    if (wasRegistered) {
+      activeSockets.delete(seToken);
+    }
     if (event.code === 1000) return;
     reportError(
       odaToken,
       "StreamElements",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
+    if (!wasRegistered) return; // Closed by deregister or replaced — do not reconnect.
+    console.log(
+      `StreamElements Astro WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
+    );
+    scheduleReconnect();
   });
 
-  activeSockets.set(seToken, websocketClient);
   return websocketClient;
 }
 
