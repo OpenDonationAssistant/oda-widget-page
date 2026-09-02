@@ -8,6 +8,7 @@ import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
+const RECONNECT_DELAY_MS = 1000;
 
 interface BadgeDef {
   type: string;
@@ -229,9 +230,24 @@ function startWebSocketClient(
   emotesStore: EmotesStore,
 ) {
   console.log({ twitchId: twitchId }, "Starting Twitch WebSocket connection");
-  let websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
+  const websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
+  let reconnecting = false;
+  websocketClients.add(websocketClient);
 
-  websocketClient.addEventListener("error", console.error);
+  // Reconnect on abnormal close/error. Guarded so error + close firing
+  // together only schedule one reconnect.
+  const scheduleReconnect = (): void => {
+    if (reconnecting) return;
+    reconnecting = true;
+    setTimeout(() => {
+      startWebSocketClient(odaToken, twitchId, token, eventbus, emotesStore);
+    }, RECONNECT_DELAY_MS);
+  };
+
+  websocketClient.addEventListener("error", (err) => {
+    console.error("Twitch WebSocket error:", err);
+    scheduleReconnect();
+  });
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + EVENTSUB_WEBSOCKET_URL);
@@ -239,12 +255,18 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("close", (event) => {
+    const wasRegistered = websocketClients.delete(websocketClient);
     if (event.code === 1000) return;
     reportError(
       odaToken,
       "Twitch",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
+    if (!wasRegistered) return; // Closed by deregister — do not reconnect.
+    console.log(
+      `Twitch WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
+    );
+    scheduleReconnect();
   });
 
   websocketClient.addEventListener("message", (data) => {
@@ -256,8 +278,6 @@ function startWebSocketClient(
       emotesStore,
     );
   });
-
-  websocketClients.add(websocketClient);
 
   return websocketClient;
 }

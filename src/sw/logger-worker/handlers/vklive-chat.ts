@@ -10,6 +10,7 @@ import { emotesFromText } from "./emotes";
 const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
 const VKLIVE_API_URL = "https://apidev.live.vkvideo.ru";
+const RECONNECT_DELAY_MS = 1000;
 
 const EVENT_NAME = "VKLIVE_CHAT_MESSAGE";
 
@@ -194,8 +195,24 @@ function startWebSocketClient(
 ): WebSocket {
   console.log({ channel }, "Starting VK Live WebSocket connection");
   const websocketClient = new WebSocket(VKLIVE_WEBSOCKET_URL);
+  let reconnecting = false;
+  websocketClients.add(websocketClient);
 
-  websocketClient.addEventListener("error", console.error);
+  // Reconnect on abnormal close/error. Guarded so error + close firing
+  // together only schedule one reconnect. Re-fetch tokens via
+  // startVKLiveClient since the connection token is short-lived.
+  const scheduleReconnect = (): void => {
+    if (reconnecting) return;
+    reconnecting = true;
+    setTimeout(() => {
+      startVKLiveClient(odaToken, eventbus, emotesStore);
+    }, RECONNECT_DELAY_MS);
+  };
+
+  websocketClient.addEventListener("error", (err) => {
+    console.error("VK Live WebSocket error:", err);
+    scheduleReconnect();
+  });
 
   websocketClient.addEventListener("open", () => {
     console.log("WebSocket connection opened to " + VKLIVE_WEBSOCKET_URL);
@@ -206,12 +223,18 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("close", (event) => {
+    const wasRegistered = websocketClients.delete(websocketClient);
     if (event.code === 1000) return;
     reportError(
       odaToken,
       "VKLive",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
+    if (!wasRegistered) return; // Closed by deregister — do not reconnect.
+    console.log(
+      `VK Live WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
+    );
+    scheduleReconnect();
   });
 
   websocketClient.addEventListener("message", (data) => {
@@ -229,8 +252,6 @@ function startWebSocketClient(
       ),
     );
   });
-
-  websocketClients.add(websocketClient);
 
   return websocketClient;
 }
