@@ -1,20 +1,8 @@
 import { ReactNode, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { WidgetData } from "./types/WidgetData";
-import { WidgetSettingsContext } from "./contexts/WidgetSettingsContext";
-import {
-  cleanupCommandListener,
-  publish,
-  setupCommandListener,
-  subscribe,
-  unsubscribe,
-} from "./socket";
-import { messageCallbackType } from "@stomp/stompjs";
+import { cleanupCommandListener, setupCommandListener } from "./socket";
 import { FontContext, FontStore } from "./stores/FontStore";
-import {
-  DefaultVariableStore,
-  VariableStoreContext,
-} from "./stores/VariableStore";
 import { getWorkerPort } from "./worker";
 
 const overflowHiddenForRootElement = (
@@ -60,33 +48,13 @@ export default function WidgetWrapper({ children }: { children: ReactNode }) {
     return <></>;
   }
 
-  const variables = new DefaultVariableStore();
-
   return (
     <>
       {overflowHiddenForRootElement}
       {fullHeight}
-      <WidgetSettingsContext.Provider
-        value={{
-          widgetId: widgetId,
-          settings: settings,
-          subscribe: (topic: string, onMessage: messageCallbackType) => {
-            subscribe(widgetId, topic, onMessage);
-          },
-          unsubscribe: (topic: string) => {
-            unsubscribe(widgetId, topic);
-          },
-          publish: (topic: string, payload: any) => {
-            publish(topic, payload);
-          },
-        }}
-      >
-        <VariableStoreContext.Provider value={variables}>
-          <FontContext.Provider value={new FontStore()}>
-            {children}
-          </FontContext.Provider>
-        </VariableStoreContext.Provider>
-      </WidgetSettingsContext.Provider>
+      <FontContext.Provider value={new FontStore()}>
+        {children}
+      </FontContext.Provider>
     </>
   );
 }

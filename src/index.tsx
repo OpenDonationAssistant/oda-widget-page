@@ -304,130 +304,130 @@ const router = createBrowserRouter([
     element: <Navigate to="/configuration/widgets" />,
   },
   {
-    path: "/configuration",
-    element: <ConfigurationPageTemplate />,
-    loader: widgetSettingsLoader,
+    element: <AuthLayout />,
     children: [
       {
-        path: "widgets",
-        element: <ConfigurationPage />,
+        path: "/configuration",
+        element: <ConfigurationPageTemplate />,
+        loader: widgetSettingsLoader,
+        children: [
+          {
+            path: "widgets",
+            element: <ConfigurationPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "payment-page",
+            element: <PaymentPageConfigPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "history-page",
+            element: <HistoryPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "automation-page",
+            element: <AutomationPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "guides",
+            element: <GuidesPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "integrations/*",
+            element: <IntegrationsPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "gateways",
+            element: <PaymentGatewaysConfiguration />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "account",
+            element: <AccountPage />,
+            loader: widgetSettingsLoader,
+          },
+        ],
+      },
+      {
+        path: "/payment-alerts/:widgetId",
+        element: <PaymentAlertsPage />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "payment-page",
-        element: <PaymentPageConfigPage />,
+        path: "/media/:widgetId",
+        element: <MediaWidget />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "history-page",
-        element: <HistoryPage />,
+        path: "/payments/:widgetId",
+        element: <HistoryWidgetPage />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "automation-page",
-        element: <AutomationPage />,
+        path: "/horizontal-events/:widgetId",
+        element: <HorizontalEventsPage />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "guides",
-        element: <GuidesPage />,
+        path: "/player-info/:widgetId",
+        element: (
+          <WidgetWrapper>
+            <PlayerInfo />
+          </WidgetWrapper>
+        ),
         loader: widgetSettingsLoader,
       },
       {
-        path: "integrations/*",
-        element: <IntegrationsPage />,
+        path: "/player-popup/:widgetId",
+        element: <PlayerPopupPage />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "gateways",
-        element: <PaymentGatewaysConfiguration />,
+        path: "/donaton/:widgetId",
+        element: <DonatonPage />,
         loader: widgetSettingsLoader,
       },
       {
-        path: "account",
-        element: <AccountPage />,
+        path: "/rutonychat/:widgetId",
+        element: <RutonyChatPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/player-control/:widgetId",
+        element: <PlayerControl />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/donaters-top-list/:widgetId",
+        element: <DonatersTopListPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/reel/:widgetId",
+        element: <ReelWidgetPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/roulette/:widgetId",
+        element: <RouletteWidgetPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/donation-timer/:widgetId",
+        element: <DonationTimerPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/donationgoal/:widgetId",
+        element: <DonationGoalPage />,
         loader: widgetSettingsLoader,
       },
     ],
-  },
-  {
-    path: "/payment-alerts/:widgetId",
-    element: <PaymentAlertsPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/twitch-alerts/:widgetId",
-    element: <TwitchAlertsPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/media/:widgetId",
-    element: <MediaWidget />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/payments/:widgetId",
-    element: <HistoryWidgetPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/horizontal-events/:widgetId",
-    element: <HorizontalEventsPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/player-info/:widgetId",
-    element: (
-      <WidgetWrapper>
-        <PlayerInfo />
-      </WidgetWrapper>
-    ),
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/player-popup/:widgetId",
-    element: <PlayerPopupPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/donaton/:widgetId",
-    element: <DonatonPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/rutonychat/:widgetId",
-    element: <RutonyChatPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/player-control/:widgetId",
-    element: <PlayerControl />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/donaters-top-list/:widgetId",
-    element: <DonatersTopListPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/reel/:widgetId",
-    element: <ReelWidgetPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/roulette/:widgetId",
-    element: <RouletteWidgetPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/donation-timer/:widgetId",
-    element: <DonationTimerPage />,
-    loader: widgetSettingsLoader,
-  },
-  {
-    path: "/donationgoal/:widgetId",
-    element: <DonationGoalPage />,
-    loader: widgetSettingsLoader,
   },
   {
     path: "/login",

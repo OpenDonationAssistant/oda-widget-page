@@ -38,9 +38,7 @@ import { PresetsComponent } from "./PresetsComponent";
 import DeleteWidgetModal from "./DeleteWidgetModal";
 import { ListItem } from "../List/List";
 import { log } from "../../logging";
-import { Preset } from "../../types/Preset";
 import { ElementsWidgetSettings } from "../Element/ElementsWidgetSettings";
-import { ElementsProperty } from "../Element/ElementsProperty";
 
 const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -118,7 +116,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
       owner: widget.ownerId,
       showcase: url ?? "",
       properties: properties,
-    });
+    };
     return presetStore.save(preset, widget.type);
   }
 

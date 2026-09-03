@@ -48,7 +48,7 @@ const ElementsItemComponent = observer(
 
     return (
       <CollapsibleListItem
-        first={
+        title={
           <Flex align="center" gap={6}>
             {advanced &&
               Array.from(Array(element.data.advancedLevel + 1).keys()).map(
@@ -70,7 +70,7 @@ const ElementsItemComponent = observer(
             />
           </Flex>
         }
-        second={
+        actions={
           <Flex align="center" justify="flex-end" gap={3}>
             <ModalStateContext.Provider value={deleteDialogState}>
               <Overlay>

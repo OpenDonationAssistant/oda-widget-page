@@ -10,12 +10,13 @@ import { ElementsWidgetSettings } from "../../Element/ElementsWidgetSettings";
 
 export class DonationGoalWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super();
-    this.addSection({
-      key: "goals",
-      title: "tab-donationgoal-goals",
-      properties: [new DonationGoalProperty()],
-    });
+    super([
+      {
+        key: "goals",
+        title: "tab-donationgoal-goals",
+        properties: [new DonationGoalProperty()],
+      },
+    ]);
   }
 
   public copy(): DonationGoalWidgetSettings {

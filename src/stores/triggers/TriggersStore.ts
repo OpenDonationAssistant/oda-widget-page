@@ -23,7 +23,7 @@ import {
   BOOSTY_FOLLOW_TRIGGER,
   BoostyFollowTrigger,
 } from "./BoostyFollowTrigger";
-import { TWITCH_RAID_TRIGGER, TwitchRaidTrigger } from "./TwitchRaidTrigger";
+import { TwitchSimpleTrigger } from "./TwitchSimpleTrigger";
 
 export class TriggersStore {
   private _types: TriggerType[] = [
@@ -33,7 +33,6 @@ export class TriggersStore {
     SYSTEM_TRIGGER,
     BOOSTY_SUBSCRIPTION_TRIGGER,
     BOOSTY_FOLLOW_TRIGGER,
-    TWITCH_RAID_TRIGGER,
     UNKNOWN_TRIGGER,
     {
       type: "TwitchChannelCheerEvent",
@@ -93,11 +92,8 @@ export class TriggersStore {
         additionalFilters.push(
           (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
         );
-        additionalFilters.push(
-          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
-        );
       }
-      if (a.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
+      if (t.type === RANDE_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
@@ -107,11 +103,8 @@ export class TriggersStore {
         additionalFilters.push(
           (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
         );
-        additionalFilters.push(
-          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
-        );
       }
-      if (a.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
+      if (t.type === LESS_THAN_DONATION_AMOUNT_TRIGGER.type) {
         additionalFilters.push(
           (t: TriggerType) => t.type !== FIXED_DONATION_AMOUNT_TRIGGER.type,
         );
@@ -120,9 +113,6 @@ export class TriggersStore {
         );
         additionalFilters.push(
           (t: TriggerType) => t.type !== BOOSTY_SUBSCRIPTION_TRIGGER.type,
-        );
-        additionalFilters.push(
-          (t: TriggerType) => t.type !== TWITCH_RAID_TRIGGER.type,
         );
       }
     });
@@ -153,8 +143,6 @@ export class TriggersStore {
         return new BoostySubscriptionTrigger();
       case BOOSTY_FOLLOW_TRIGGER.type:
         return new BoostyFollowTrigger();
-      case TWITCH_RAID_TRIGGER.type:
-        return new TwitchRaidTrigger();
       default:
         return new UnknownTrigger();
     }
@@ -189,8 +177,6 @@ export class TriggersStore {
         return new BoostySubscriptionTrigger();
       case BOOSTY_FOLLOW_TRIGGER.type:
         return new BoostyFollowTrigger();
-      case TWITCH_RAID_TRIGGER.type:
-        return new TwitchRaidTrigger();
       default:
         return new UnknownTrigger();
     }

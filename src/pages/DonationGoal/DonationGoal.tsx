@@ -3,7 +3,10 @@ import classes from "./DonationGoal.module.css";
 import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import {
+  VariableStoreContext,
+  useVariableStore,
+} from "../../stores/VariableStore";
 import { AbstractDonationGoalState } from "./DonationGoalState";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
@@ -16,18 +19,7 @@ export const DonationGoal = observer(
     state: AbstractDonationGoalState;
     settings: DonationGoalWidgetSettings;
   }) => {
-    const variables = useContext(VariableStoreContext);
-
-    const [innerBackgroundImage, setInnerBackgroundImage] =
-      useState<CSSProperties>({});
-    const [outerBackgroundImage, setOuterBackgroundImage] =
-      useState<CSSProperties>({});
-    const [titleBackgroundImage, setTitleBackgroundImage] =
-      useState<CSSProperties>({});
-    const [backgroundImage, setBackgroundImage] = useState<CSSProperties>({});
-
-    const backgroundColor = settings.backgroundColor.calcCss();
-    const progressBarBorderStyle = settings.outerBorderProperty.calcCss();
+    const variables = useVariableStore().variablesStore;
 
     const outerHeight = {
       ...{ minHeight: "50px" },
@@ -137,8 +129,7 @@ export const DonationGoal = observer(
             <>
               <div className={`${classes.goalitem}`}>
                 {settings.showTitle && (
-                  <AlignmentRenderer
-                    alignment={settings.titleTextAlign}>
+                  <AlignmentRenderer alignment={settings.titleTextAlign}>
                     <div
                       style={{
                         ...titleBorderStyle,
@@ -233,7 +224,7 @@ export const DonationGoal = observer(
               </div>
             </>
           ))}
-      </div>
+      </VariableScope>
     );
   },
 );

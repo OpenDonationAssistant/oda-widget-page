@@ -1,5 +1,9 @@
 import { makeAutoObservable } from "mobx";
-import { TriggerCause, Trigger, DonationTriggerCause } from "./AlertTriggerInterface";
+import {
+  TriggerCause,
+  Trigger,
+  DonationTriggerCause,
+} from "./AlertTriggerInterface";
 import { ReactNode } from "react";
 import { Select } from "antd";
 
@@ -22,12 +26,11 @@ export class SystemTrigger implements Trigger {
     makeAutoObservable(this);
   }
 
-<<<<<<< HEAD:src/stores/triggers/SystemTrigger.tsx
   priorityFor(event: TriggerCause): number {
     if (event.type !== "donation") {
       return -1;
     }
-    return (event as DonationTriggerCause).system  == this.system ? 0 : -1;
+    return (event as DonationTriggerCause).system == this.system ? 0 : -1;
   }
 
   isTriggered(event: DonationEvent): boolean {

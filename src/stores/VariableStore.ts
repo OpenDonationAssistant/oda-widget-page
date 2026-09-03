@@ -4,8 +4,10 @@ import {
 } from "@opendonationassistant/automation-service";
 import { Variable } from "../pages/Automation/AutomationState";
 import { makeAutoObservable } from "mobx";
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { log } from "../logging";
+import { useAuth } from "../contexts/AuthContext";
+import { ObjectWrapper } from "../utils";
 
 export interface LabelTemplate {
   value: string;
@@ -24,7 +26,6 @@ export interface TemplateSettings {
   variables: VariableDescription[];
   templates: LabelTemplate[];
 }
-import { useAuth } from "../contexts/AuthContext";
 
 export interface VariableStore {
   variables: Variable[];
@@ -93,8 +94,10 @@ class VariableStorage {
     return this._variables;
   }
 
-  public clear(tag: string){
-    this._variables = this._variables.filter(variable => !variable.tags.includes(tag));
+  public clear(tag: string) {
+    this._variables = this._variables.filter(
+      (variable) => !variable.tags.includes(tag),
+    );
   }
 
   public clone(): VariableStorage {
@@ -160,22 +163,26 @@ class DefaultTemplateProcessor implements TemplateProcessor {
 }
 
 class LocalVariableStore implements VariableStore {
+  private _token: string;
   private _storage: VariableStorage;
   private _templates: LabelTemplate[];
   private _descriptions: VariableDescription[];
   private _processor: DefaultTemplateProcessor;
 
   constructor(
+    token: string,
     storage?: VariableStorage,
     templates?: LabelTemplate[],
     descriptions?: VariableDescription[],
   ) {
+    this._token = token;
     this._storage = storage ?? new VariableStorage();
     this._templates = templates ?? [];
     this._descriptions = descriptions ?? [];
     this._processor = new DefaultTemplateProcessor(this._storage);
     makeAutoObservable(this);
   }
+
   getValue(
     name: string,
     defaultValue: string | number | Variable[] | Variable[][],
@@ -210,7 +217,7 @@ class LocalVariableStore implements VariableStore {
   public get variables(): Variable[] {
     return this._storage.variables;
   }
-  public clear(tag: string){
+  public clear(tag: string) {
     this._storage.clear(tag);
   }
 
@@ -218,60 +225,46 @@ class LocalVariableStore implements VariableStore {
     return this._processor.processTemplate(template);
   }
 
-  public load(): void {}
-  public clone(): VariableStore {
-    return new LocalVariableStore(this._storage.clone(), this._templates, [
-      ...this._descriptions,
-    ]);
-  }
-}
-
-export class DefaultVariableStore implements VariableStore {
-  private _storage: VariableStorage;
-  private _processor: TemplateProcessor;
-  private _token: string;
-
-  constructor(token: string, storage?: VariableStorage) {
-    this._storage = storage ?? new VariableStorage();
-    this._processor = new DefaultTemplateProcessor(this._storage);
-    this._token = token;
-    makeAutoObservable(this);
-    this.load();
-  }
-
-  private client() {
-    return DefaultApiFactory(
-      undefined,
-      process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
+  public load(): void {
+    listVariables({
+      baseURL: process.env.REACT_APP_AUTOMATION_SERVICE_URL,
+      headers: {
+        Authorization: `Bearer ${this._token}`,
+      },
+    }).then((response) =>
+      response.data.forEach((variable) => {
+        this._storage.addVariable({
+          name: variable.name,
+          tags: ["manual"],
+          type: "string",
+          value: variable.value,
+          id: variable.id,
+        });
+      }),
     );
   }
-
-  public load() {
-    this.client()
-      .listVariables({})
-      .then((response) =>
-        response.data.forEach((variable) => {
-          this._storage.addVariable({
-            name: variable.name,
-            tags: ["manual"],
-            type: "string",
-            value: variable.value,
-            id: variable.id,
-          });
-        }),
-      );
-    });
-  }
-
   public clone(): VariableStore {
-    return new DefaultVariableStore(this._storage.clone());
+    return new LocalVariableStore(
+      this._token,
+      this._storage.clone(),
+      this._templates,
+      [...this._descriptions],
+    );
   }
 }
+
+export const VariableStoreContext = createContext<ObjectWrapper<VariableStore>>(
+  new ObjectWrapper<VariableStore>(null),
+);
 
 export function useVariableStore() {
   const { accessToken } = useAuth();
-  const [variablesStore, setVariablesStore] = useState(
-    () => new DefaultVariableStore(accessToken ?? ""),
-  );
-  return { variablesStore };
+  const context = useContext(VariableStoreContext);
+  if (!context.value) {
+    if (!accessToken) {
+      throw new Error("useVariableStore must be used within an AuthProvider");
+    }
+    context.value = new LocalVariableStore(accessToken);
+  }
+  return { variablesStore: context.value };
 }
