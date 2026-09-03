@@ -21,6 +21,7 @@ export interface ChatWidgetV2Config {
   imgSize: number;
   authorFont: ChatWidgetV2FontConfig;
   messageFont: ChatWidgetV2FontConfig;
+  hiddenNicknames: Set<string>;
 }
 
 const MAX_MESSAGES = 50;
@@ -51,6 +52,7 @@ export class ChatWidgetV2Renderer {
   }
 
   addMessage(message: Message): void {
+    if (this.isHidden(message)) return;
     this._messages.push(message);
     while (this._messages.length > MAX_MESSAGES) {
       this._messages.shift();
@@ -78,10 +80,17 @@ export class ChatWidgetV2Renderer {
     this._container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     this._messages.forEach((message) => {
+      if (this.isHidden(message)) return;
       fragment.appendChild(this.createMessageElement(message));
     });
     this._container.appendChild(fragment);
     this._container.scrollTop = this._container.scrollHeight;
+  }
+
+  private isHidden(message: Message): boolean {
+    return this._config.hiddenNicknames.has(
+      message.chatter.nickname.toLowerCase(),
+    );
   }
 
   private createMessageElement(message: Message): HTMLElement {

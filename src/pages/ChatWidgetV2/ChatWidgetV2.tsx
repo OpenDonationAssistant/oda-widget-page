@@ -46,6 +46,7 @@ function settingsToConfig(settings: ChatWidgetSettings): ChatWidgetV2Config {
     imgSize: settings.authorFont.value.size,
     authorFont: fontToConfig(settings.authorFont),
     messageFont: fontToConfig(settings.messageFont),
+    hiddenNicknames: settings.hiddenNicknames,
   };
 }
 

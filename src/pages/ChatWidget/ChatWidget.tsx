@@ -36,6 +36,12 @@ export const ChatWidget = observer(
 
     const imgSize = settings.authorFont.value.size;
 
+    const hiddenNicknames = settings.hiddenNicknames;
+    const visibleMessages = store.messages.filter(
+      (message) =>
+        !hiddenNicknames.has(message.chatter.nickname.toLowerCase()),
+    );
+
     const bottomRef = useRef<HTMLDivElement | HTMLSpanElement>(null);
     useEffect(() => {
       console.log("scrollIntoView");
@@ -53,12 +59,12 @@ export const ChatWidget = observer(
         }}
       >
         {settings.isBlock &&
-          store.messages.map((message, i) => (
+          visibleMessages.map((message, i) => (
             <Flex
               key={i}
               gap={settings.lineGap}
               align="flex-start"
-              ref={i === store.messages.length - 1 ? bottomRef : undefined}
+              ref={i === visibleMessages.length - 1 ? bottomRef : undefined}
             >
               {message.badges.map((badge: { url: string }) => (
                 <img
@@ -102,8 +108,10 @@ export const ChatWidget = observer(
             </Flex>
           ))}
         {!settings.isBlock &&
-          store.messages.map((message, i) => (
-            <span ref={i === store.messages.length - 1 ? bottomRef : undefined}>
+          visibleMessages.map((message, i) => (
+            <span
+              ref={i === visibleMessages.length - 1 ? bottomRef : undefined}
+            >
               {message.badges.map((badge: { url: string }) => (
                 <img
                   id={badge.url}
