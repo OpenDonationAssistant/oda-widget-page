@@ -102,6 +102,7 @@ function handleWebSocketMessage(
     const client = message.result?.client;
     if (!client) {
       console.error("DonationAlerts Centrifugo auth reply missing client id");
+      reportError(odaToken, "DonationAlerts", "Centrifugo auth reply missing client id");
       return;
     }
     subscribeToChannel(daToken, channel, client)
@@ -118,9 +119,10 @@ function handleWebSocketMessage(
           }),
         );
       })
-      .catch((err) =>
-        console.error("Failed to subscribe to DonationAlerts channel:", err),
-      );
+      .catch((err) => {
+        console.error("Failed to subscribe to DonationAlerts channel:", err);
+        reportError(odaToken, "DonationAlerts", `failed to subscribe to channel: ${err}`);
+      });
     return;
   }
 
@@ -172,12 +174,13 @@ function handleDonation(
         `DonationAlerts donation persisted to history [${payment.amount_in_user_currency} RUB]`,
       ),
     )
-    .catch((err) =>
+    .catch((err) => {
       console.error(
         "Failed to persist DonationAlerts donation to history:",
         err,
-      ),
-    );
+      );
+      reportError(odaToken, "DonationAlerts", `failed to persist donation to history: ${err}`);
+    });
 }
 
 // ── WebSocket lifecycle ─────────────────────────────────────────────
@@ -197,6 +200,7 @@ function startWebSocketClient(
 
   socket.addEventListener("error", (err) => {
     console.error("DonationAlerts WebSocket error:", err);
+    reportError(odaToken, "DonationAlerts", `WebSocket error: ${err}`);
   });
 
   socket.addEventListener("open", () => {

@@ -80,9 +80,10 @@ function handleDonationCreated(
         `DonateX donation persisted to history [${donation.amountInRub} RUB]`,
       ),
     )
-    .catch((err) =>
-      console.error("Failed to persist DonateX donation to history:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to persist DonateX donation to history:", err);
+      reportError(odaToken, "DonateX", `failed to persist donation to history: ${err}`);
+    });
 }
 
 // ── SignalR connection lifecycle ────────────────────────────────────

@@ -91,12 +91,13 @@ function persistDonation(
         `UnofficialDonationAlerts donation persisted to history [${donation.username}]`,
       ),
     )
-    .catch((err) =>
+    .catch((err) => {
       console.error(
         "Failed to persist UnofficialDonationAlerts donation to history:",
         err,
-      ),
-    );
+      );
+      reportError(odaToken, "UnofficialDonationAlerts", `failed to persist donation to history: ${err}`);
+    });
 }
 
 // ── Donation handling ───────────────────────────────────────────────
@@ -107,6 +108,7 @@ function handleDonation(odaToken: string, recipientId: string, raw: string): voi
     donation = JSON.parse(raw);
   } catch (err) {
     console.error("Failed to parse UnofficialDonationAlerts donation:", err);
+    reportError(odaToken, "UnofficialDonationAlerts", `failed to parse donation: ${err}`);
     return;
   }
 

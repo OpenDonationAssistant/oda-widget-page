@@ -101,6 +101,7 @@ function handleWebSocketMessage(
     const client = message.result?.client;
     if (!client) {
       console.error("DonatePay Centrifugo auth reply missing client id");
+      reportError(odaToken, "DonatePay", "Centrifugo auth reply missing client id");
       return;
     }
     subscribeToChannel(dpToken, channel, client)
@@ -117,9 +118,10 @@ function handleWebSocketMessage(
           }),
         );
       })
-      .catch((err) =>
-        console.error("Failed to subscribe to DonatePay channel:", err),
-      );
+      .catch((err) => {
+        console.error("Failed to subscribe to DonatePay channel:", err);
+        reportError(odaToken, "DonatePay", `failed to subscribe to channel: ${err}`);
+      });
     return;
   }
 
@@ -176,9 +178,10 @@ function handleDonation(
         `DonatePay donation persisted to history [${payment.vars.sum} ${payment.vars.currency}]`,
       ),
     )
-    .catch((err) =>
-      console.error("Failed to persist DonatePay donation to history:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to persist DonatePay donation to history:", err);
+      reportError(odaToken, "DonatePay", `failed to persist donation to history: ${err}`);
+    });
 }
 
 // ── WebSocket lifecycle ─────────────────────────────────────────────
@@ -208,6 +211,7 @@ function startWebSocketClient(
 
   socket.addEventListener("error", (err) => {
     console.error("DonatePay WebSocket error:", err);
+    reportError(odaToken, "DonatePay", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
@@ -263,9 +267,10 @@ function startConnection(
     .then((centrifugoToken) => {
       startWebSocketClient(odaToken, recipientId, dpToken, settings, centrifugoToken);
     })
-    .catch((err) =>
-      console.error("Failed to get DonatePay socket token:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to get DonatePay socket token:", err);
+      reportError(odaToken, "DonatePay", `failed to get socket token: ${err}`);
+    });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────

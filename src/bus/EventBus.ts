@@ -141,41 +141,49 @@ export class DefaultEventBus implements EventBus {
     broadcast: (msg: unknown) => void,
     addMessageListener: MessageListenerRegistrar,
   ) {
-    this._broadcast = broadcast;
-    this._socket.onConnect = () => {
-      reportStarted(token, "ODA");
-      this._socket.subscribe(
-        `/topic/${recipientId}.events`,
-        (message) => {
-          this.push(this.convert(message.body));
-          message.ack();
-        },
-        {
-          id: uuidv7(),
-          durable: "false",
-          "auto-delete": "false",
-          ack: "client",
-          "x-queue-name": uuidv7(),
-          "x-message-ttl": defaultTtl,
-          "x-expires": defaultTtl,
-        },
-      );
-    };
-    this._socket.onStompError = (frame) => {
-      reportError(
-        token,
-        "ODA",
-        `stomp error: ${frame.headers.message ?? "unknown"}`,
-      );
-    };
-    this._socket.onWebSocketError = (evt) => {
-      reportError(token, "ODA", `websocket error: ${evt}`);
-    };
-    this._socket.onWebSocketClose = (evt) => {
-      reportError(token, "ODA", `websocket closed: ${evt.code} ${evt.reason}`);
-    };
     this._db = openLogDB();
-    this._socket.activate();
+    this._broadcast = broadcast;
+    try {
+      this._socket.onConnect = () => {
+        reportStarted(token, "ODA");
+        this._socket.subscribe(
+          `/topic/${recipientId}.events`,
+          (message) => {
+            this.push(this.convert(message.body));
+            message.ack();
+          },
+          {
+            id: uuidv7(),
+            durable: "false",
+            "auto-delete": "false",
+            ack: "client",
+            "x-queue-name": uuidv7(),
+            "x-message-ttl": defaultTtl,
+            "x-expires": defaultTtl,
+          },
+        );
+      };
+      this._socket.onStompError = (frame) => {
+        reportError(
+          token,
+          "ODA",
+          `stomp error: ${frame.headers.message ?? "unknown"}`,
+        );
+      };
+      this._socket.onWebSocketError = (evt) => {
+        reportError(token, "ODA", `websocket error: ${evt}`);
+      };
+      this._socket.onWebSocketClose = (evt) => {
+        reportError(
+          token,
+          "ODA",
+          `websocket closed: ${evt.code} ${evt.reason}`,
+        );
+      };
+      this._socket.activate();
+    } catch (e) {
+      reportError(token, "ODA", `websocket error: ${e}`);
+    }
     addMessageListener((event: WorkerMessageEvent) => {
       const data = event.data as Record<string, unknown> | undefined;
       if (!data) return;

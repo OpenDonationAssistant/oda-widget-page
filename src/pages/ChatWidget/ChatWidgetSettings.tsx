@@ -17,7 +17,7 @@ import { BorderProperty } from "../../components/ConfigurationPage/widgetpropert
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
-import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { AnimatedFontProperty, DEFAULT_FONT_PROPERTY_VALUE } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
 import { SELECTION_TYPE, SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
 
@@ -125,6 +125,39 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
       properties: [
         new AnimatedFontProperty({
           name: "authorFont",
+          value: {
+            ...DEFAULT_FONT_PROPERTY_VALUE,
+            ...{
+              family: "Balsamiq Sans",
+              size: 30,
+              shadows: [
+                {
+                  x: 2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: 0,
+                  y: 2,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: -2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: 0,
+                  y: -2,
+                  blur: 2,
+                  color: "#000000"
+                },
+              ]
+            }
+          }
         }),
         new ColorProperty({
           name: "authorBackgroundColor",
@@ -154,6 +187,39 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
       properties: [
         new AnimatedFontProperty({
           name: "messageFont",
+          value: {
+            ...DEFAULT_FONT_PROPERTY_VALUE,
+            ...{
+              family: "Balsamiq Sans",
+              size: 30,
+              shadows: [
+                {
+                  x: 2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: 0,
+                  y: 2,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: -2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000"
+                },
+                {
+                  x: 0,
+                  y: -2,
+                  blur: 2,
+                  color: "#000000"
+                },
+              ]
+            }
+          }
         }),
         new ColorProperty({
           name: "messageBackgroundColor",

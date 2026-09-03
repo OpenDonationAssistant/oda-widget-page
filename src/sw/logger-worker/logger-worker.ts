@@ -157,6 +157,67 @@ function deregisterDonationHandlers() {
   deregisterUnofficialDonationAlertsHandler();
 }
 
+// ── Per-handler reload ──────────────────────────────────────────────
+//
+// Maps the handler name reported by `reportError` (and shown in the
+// ConnectionErrorsPanel) to its register/deregister pair, so a single
+// failed handler can be restarted without tearing down the others.
+
+type HandlerPair = {
+  register: () => void;
+  deregister: () => void;
+};
+
+/** Restart a single handler by its reported name. */
+function reloadHandler(handler: string, token: string) {
+  const pairs: Record<string, HandlerPair> = {
+    Twitch: {
+      register: () => registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!),
+      deregister: deregisterTwitchChatHandler,
+    },
+    VKLive: {
+      register: () => registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!),
+      deregister: deregisterVKLiveChatHandler,
+    },
+    Kick: {
+      register: () => registerKickChatHandler(token, recipientId, eventbus!, emotesStore!),
+      deregister: deregisterKickChatHandler,
+    },
+    StreamElements: {
+      register: () => registerStreamElementsHandler(token, recipientId, eventbus!),
+      deregister: deregisterStreamElementsHandler,
+    },
+    DonationAlerts: {
+      register: () => registerDonationAlertsHandler(token, recipientId),
+      deregister: deregisterDonationAlertsHandler,
+    },
+    DonatePay: {
+      register: () => registerDonatePayHandler(token, recipientId),
+      deregister: deregisterDonatePayHandler,
+    },
+    "DonatePay.eu": {
+      register: () => registerDonatePayEuHandler(token, recipientId),
+      deregister: deregisterDonatePayEuHandler,
+    },
+    UnofficialDonationAlerts: {
+      register: () => registerUnofficialDonationAlertsHandler(token, recipientId),
+      deregister: deregisterUnofficialDonationAlertsHandler,
+    },
+    DonateX: {
+      register: () => registerDonateXHandler(token, recipientId),
+      deregister: deregisterDonateXHandler,
+    },
+  };
+
+  const pair = pairs[handler];
+  if (!pair) {
+    console.warn(`No handler registered for name "${handler}"`);
+    return;
+  }
+  pair.deregister();
+  pair.register();
+}
+
 // ── Message dispatch ────────────────────────────────────────────────
 
 addMessageListener((event: WorkerMessageEvent) => {
@@ -203,6 +264,13 @@ addMessageListener((event: WorkerMessageEvent) => {
   const info = (data.payload ?? data) as Record<string, unknown>;
   const token = String(info.token ?? "");
   if (!token || !eventbus || !emotesStore) return;
+
+  const handler = String(info.handler ?? "");
+  if (handler) {
+    // Restart only the failed handler.
+    reloadHandler(handler, token);
+    return;
+  }
 
   deregisterHandlers();
   registerHandlers(token, recipientId);

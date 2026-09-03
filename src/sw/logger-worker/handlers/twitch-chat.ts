@@ -246,6 +246,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("error", (err) => {
     console.error("Twitch WebSocket error:", err);
+    reportError(odaToken, "Twitch", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
