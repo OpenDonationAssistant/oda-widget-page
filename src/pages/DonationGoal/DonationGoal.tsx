@@ -1,15 +1,12 @@
-import { CSSProperties, useContext, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
-import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { observer } from "mobx-react-lite";
-import {
-  VariableStoreContext,
-  useVariableStore,
-} from "../../stores/VariableStore";
+import { useVariableStore } from "../../stores/VariableStore";
 import { AbstractDonationGoalState } from "./DonationGoalState";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import { AlignmentRenderer } from "../../components/Renderer/AlignmentRenderer";
+import { uuidv7 } from "uuidv7";
+import { VariableScope } from "../../components/ConfigurationPage/widgetsettings/VariableScope";
 
 export const DonationGoal = observer(
   ({
@@ -20,93 +17,6 @@ export const DonationGoal = observer(
     settings: DonationGoalWidgetSettings;
   }) => {
     const variables = useVariableStore().variablesStore;
-
-    const outerHeight = {
-      ...{ minHeight: "50px" },
-      ...settings.outerHeight.calcCss(),
-    };
-    const outerRoundingStyle = settings.outerRoundingProperty.calcCss();
-    const outerBoxShadowStyle = settings.outerBoxShadowProperty.calcCss();
-    useEffect(() => {
-      settings.outerImageProperty.calcCss().then(setOuterBackgroundImage);
-    }, [settings.outerImageProperty.value]);
-
-    const filledColor = settings.filledColorProperty.calcCss();
-    let filledTextAlign = "center";
-    switch (settings.filledTextAlign) {
-      case "left":
-        filledTextAlign = "flex-start";
-        break;
-      case "right":
-        filledTextAlign = "flex-end";
-        break;
-    }
-    let filledTextPlacement: CSSProperties = { gridRow: "2" };
-    switch (settings.filledTextPlacement) {
-      case "top":
-        filledTextPlacement = { gridRow: "1" };
-        break;
-      case "bottom":
-        filledTextPlacement = { gridRow: "3" };
-        break;
-    }
-    const filledTextStyle = { justifyContent: filledTextAlign };
-    const filledBorderStyle = settings.innerBorderProperty.calcCss();
-    const filledRoundingStyle = settings.innerRoundingProperty.calcCss();
-    const filledPaddingStyle = settings.innerPaddingProperty.calcCss();
-    const filledBoxShadowStyle = settings.innerBoxShadowProperty.calcCss();
-
-    useEffect(() => {
-      settings.innerImageProperty.calcCss().then(setInnerBackgroundImage);
-    }, [settings.innerImageProperty.value]);
-
-    function calcBarStyle(goal: Goal) {
-      const filment = Math.floor(
-        ((goal.accumulatedAmount?.major ?? 0) / goal.requiredAmount.major) *
-          100,
-      );
-      const style: CSSProperties = {
-        width: `${filment < 100 ? filment + "%" : "unset"}`,
-      };
-      const result = {
-        ...style,
-        ...filledBorderStyle,
-        ...filledRoundingStyle,
-        ...filledColor,
-        ...filledPaddingStyle,
-        ...filledBoxShadowStyle,
-        ...innerBackgroundImage,
-        zIndex: 1,
-      };
-      return result;
-    }
-
-    const widgetBorderStyle = settings.borderProperty.calcCss();
-    const widgetBackgroundColorStyle = settings.widgetBackgroundColor.calcCss();
-    const widgetPaddingStyle = settings.paddingProperty.calcCss();
-    const widgetRoundingStyle = settings.roundingProperty.calcCss();
-    const widgetBoxShadowStyle = settings.boxShadowProperty.calcCss();
-    const widgetMarginTopAndBottomStyle =
-      settings.boxShadowProperty.requiredHeight;
-    const widgetMarginLeftAndRightStyle =
-      settings.boxShadowProperty.requiredWidth;
-
-    const titleBorderStyle = settings.titleBorderProperty.calcCss();
-    const titlePaddingStyle = settings.titlePaddingProperty.calcCss();
-    const titleRoundingStyle = settings.titleRoundingProperty.calcCss();
-    const titleBoxShadowStyle = settings.titleBoxShadowProperty.calcCss();
-    const titleBackgroundColorStyle =
-      settings.titleBackgroundColorProperty.calcCss();
-    useEffect(() => {
-      settings.titleBackgroundImageProperty
-        .calcCss()
-        .then(setTitleBackgroundImage);
-    }, [settings.titleBackgroundImageProperty.value]);
-
-    const barPadding = settings.barPadding.calcCss();
-    useEffect(() => {
-      settings.backgroundImage.calcCss().then(setBackgroundImage);
-    }, [settings.backgroundImage.value]);
 
     const ids = settings.goalProperty.value.map((goal) => {
       return goal.id;
