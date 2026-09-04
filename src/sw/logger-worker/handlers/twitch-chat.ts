@@ -9,6 +9,9 @@ import { emotesFromText } from "./emotes";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 const RECONNECT_DELAY_MS = 1000;
+const SUBSCRIPTION_RETRY_DELAY_MS = 1000;
+const SUBSCRIPTION_MAX_ATTEMPTS = 5;
+const CLIENT_ID = "2f9aljaudj3678kp4gc9bj99tb7bev";
 
 interface BadgeDef {
   type: string;
@@ -20,12 +23,13 @@ interface BadgeDef {
 const badgeDefinitions = new Map<string, Map<string, BadgeDef>>();
 
 async function fetchBadgeDefinitions(
+  odaToken: string,
   token: string,
   broadcasterId: string,
 ): Promise<Map<string, BadgeDef>> {
   const headers = {
     Authorization: "Bearer " + token,
-    "Client-Id": "2f9aljaudj3678kp4gc9bj99tb7bev",
+    "Client-Id": CLIENT_ID,
   };
   const badgeMap = new Map<string, BadgeDef>();
   const endpoints = [
@@ -48,66 +52,216 @@ async function fetchBadgeDefinitions(
         }
       }
     } catch (error) {
-      console.error("Failed to fetch Twitch badges", error);
+      reportError(
+        odaToken,
+        "Twitch",
+        `Failed to fetch Twitch badges: ${error}`,
+      );
     }
   }
   return badgeMap;
 }
 
+// List existing channel.chat.message subscriptions for this broadcaster.
+async function listChatSubscriptions(
+  odaToken: string,
+  token: string,
+  twitchId: string,
+): Promise<any[]> {
+  const headers = {
+    Authorization: "Bearer " + token,
+    "Client-Id": CLIENT_ID,
+  };
+  try {
+    const response = await fetch(
+      "https://api.twitch.tv/helix/eventsub/subscriptions",
+      { headers },
+    );
+    if (response.status !== 200) return [];
+    const json = await response.json();
+    return (json.data ?? []).filter(
+      (sub: any) =>
+        sub.type === "channel.chat.message" &&
+        sub.condition?.broadcaster_user_id === twitchId,
+    );
+  } catch (error) {
+    reportError(
+      odaToken,
+      "Twitch",
+      `Failed to list existing Twitch subscriptions: ${error}`,
+    );
+    return [];
+  }
+}
+
+// Remove subscriptions left over from previous sessions so creating a fresh
+// one cannot fail with 409 Conflict (which would leave the new session unused
+// and cause Twitch to close it with code 4003).
+async function deleteStaleSubscriptions(
+  odaToken: string,
+  token: string,
+  twitchId: string,
+  currentSessionId: string,
+): Promise<void> {
+  const headers = {
+    Authorization: "Bearer " + token,
+    "Client-Id": CLIENT_ID,
+  };
+  const subscriptions = await listChatSubscriptions(odaToken, token, twitchId);
+  for (const sub of subscriptions) {
+    if (sub.transport?.session_id === currentSessionId) continue;
+    try {
+      await fetch(
+        `https://api.twitch.tv/helix/eventsub/subscriptions?id=${sub.id}`,
+        { method: "DELETE", headers },
+      );
+    } catch (error) {
+      reportError(
+        odaToken,
+        "Twitch",
+        `Failed to delete stale Twitch subscription: ${error}`,
+      );
+    }
+  }
+}
+
 async function registerEventSubListeners(
+  odaToken: string,
   websocketSessionID: string,
   token: string,
   twitchId: string,
-) {
-  // Register channel.chat.message
+): Promise<boolean> {
+  const headers = {
+    Authorization: "Bearer " + token,
+    "Client-Id": CLIENT_ID,
+    "Content-Type": "application/json",
+  };
+  const body = JSON.stringify({
+    type: "channel.chat.message",
+    version: "1",
+    condition: {
+      broadcaster_user_id: twitchId,
+      user_id: twitchId,
+    },
+    transport: {
+      method: "websocket",
+      session_id: websocketSessionID,
+    },
+  });
+
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Client-Id": "2f9aljaudj3678kp4gc9bj99tb7bev",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "channel.chat.message",
-        version: "1",
-        condition: {
-          broadcaster_user_id: twitchId,
-          user_id: twitchId,
-        },
-        transport: {
-          method: "websocket",
-          session_id: websocketSessionID,
-        },
-      }),
-    },
+    { method: "POST", headers, body },
   );
 
-  if (response.status != 202) {
-    let data = await response.json();
-    console.error(
-      "Failed to subscribe to channel.chat.message. API call returned status code " +
-        response.status,
+  // 409 Conflict: a subscription for the same broadcaster already exists,
+  // usually left over from a previous session. If it already belongs to this
+  // session we are done; otherwise remove stale ones and retry once.
+  if (response.status === 409) {
+    const existing = await listChatSubscriptions(odaToken, token, twitchId);
+    const alreadyOurs = existing.some(
+      (sub) => sub.transport?.session_id === websocketSessionID,
     );
-    console.error(data);
-  } else {
-    const data = await response.json();
-    console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
+    if (alreadyOurs) {
+      console.log(
+        `Subscription already exists for session ${websocketSessionID}`,
+      );
+      badgeDefinitions.set(
+        token,
+        await fetchBadgeDefinitions(odaToken, token, twitchId),
+      );
+      return true;
+    }
+    await deleteStaleSubscriptions(
+      odaToken,
+      token,
+      twitchId,
+      websocketSessionID,
+    );
+    response = await fetch(
+      "https://api.twitch.tv/helix/eventsub/subscriptions",
+      { method: "POST", headers, body },
+    );
   }
-  badgeDefinitions.set(token, await fetchBadgeDefinitions(token, twitchId));
+
+  if (response.status != 202) {
+    reportError(
+      odaToken,
+      "Twitch",
+      `Failed to subscribe to channel.chat.message. API call returned status code ${response.status}`,
+    );
+    return false;
+  }
+  const data = await response.json();
+  console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
+  badgeDefinitions.set(
+    token,
+    await fetchBadgeDefinitions(odaToken, token, twitchId),
+  );
+  return true;
 }
 
-function handleWebSocketMessage(
+// Keep retrying until the subscription is created. Twitch closes the socket
+// with 4003 if no subscription exists within 10 seconds of connecting, so a
+// transient failure must not leave the session unused.
+async function registerEventSubListenersWithRetry(
+  odaToken: string,
+  websocketSessionID: string,
   token: string,
   twitchId: string,
-  data: any,
-  eventbus: EventBus,
-  emotesStore: EmotesStore,
-) {
+): Promise<void> {
+  for (let attempt = 1; attempt <= SUBSCRIPTION_MAX_ATTEMPTS; attempt++) {
+    const ok = await registerEventSubListeners(
+      odaToken,
+      websocketSessionID,
+      token,
+      twitchId,
+    );
+    if (ok) return;
+    console.log(
+      `Retrying Twitch subscription creation (attempt ${attempt}/${SUBSCRIPTION_MAX_ATTEMPTS})`,
+    );
+    await new Promise<void>((resolve) =>
+      setTimeout(resolve, SUBSCRIPTION_RETRY_DELAY_MS),
+    );
+  }
+}
+
+interface TwitchConnection {
+  odaToken: string;
+  twitchId: string;
+  token: string;
+  eventbus: EventBus;
+  emotesStore: EmotesStore;
+  socket: WebSocket;
+}
+
+function handleWebSocketMessage(connection: TwitchConnection, data: any) {
   switch (data.metadata.message_type) {
     case "session_welcome":
-      registerEventSubListeners(data.payload.session.id, token, twitchId);
+      registerEventSubListenersWithRetry(
+        connection.odaToken,
+        data.payload.session.id,
+        connection.token,
+        connection.twitchId,
+      );
+      break;
+    case "session_reconnect":
+      // Twitch asks us to move to a new socket. Subscriptions carry over
+      // automatically, so the new connection must not re-subscribe.
+      const reconnectUrl = data.payload.session.reconnect_url;
+      if (reconnectUrl) {
+        console.log("Twitch requested session reconnect");
+        startWebSocketClient(
+          connection.odaToken,
+          connection.twitchId,
+          connection.token,
+          connection.eventbus,
+          connection.emotesStore,
+          reconnectUrl,
+        );
+        connection.socket.close(1000, "session_reconnect");
+      }
       break;
     case "notification":
       switch (data.metadata.subscription_type) {
@@ -115,12 +269,12 @@ function handleWebSocketMessage(
           console.log("data.payload.event", data.payload.event);
           const emotes = emotesFromText(
             data.payload.event.message?.text ?? "",
-            emotesStore,
+            connection.emotesStore,
           );
           emotes.push(
             ...(data.payload.event.message?.fragments ?? [])
-              .filter((fragment) => fragment.type === "emote")
-              .map((fragment) => {
+              .filter((fragment: any) => fragment.type === "emote")
+              .map((fragment: any) => {
                 const link = `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`;
                 return {
                   type: "twitch",
@@ -135,7 +289,9 @@ function handleWebSocketMessage(
           );
           const badges: BadgeDef[] = (data.payload.event.badges ?? [])
             .map((badge: { set_id: string; id: string }) =>
-              badgeDefinitions.get(token)?.get(`${badge.set_id}/${badge.id}`),
+              badgeDefinitions
+                .get(connection.token)
+                ?.get(`${badge.set_id}/${badge.id}`),
             )
             .filter((badge: BadgeDef | undefined): badge is BadgeDef =>
               Boolean(badge),
@@ -215,7 +371,9 @@ function handleWebSocketMessage(
               type: "string",
             },
           );
-          eventbus.push(new Event("TWITCH_CHAT_MESSAGE", variables));
+          connection.eventbus.push(
+            new Event("TWITCH_CHAT_MESSAGE", variables),
+          );
           break;
       }
       break;
@@ -228,35 +386,56 @@ function startWebSocketClient(
   token: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
-) {
-  console.log({ twitchId: twitchId }, "Starting Twitch WebSocket connection");
-  const websocketClient = new WebSocket(EVENTSUB_WEBSOCKET_URL);
+  url: string = EVENTSUB_WEBSOCKET_URL,
+): WebSocket {
+  console.log({ twitchId }, "Starting Twitch WebSocket connection");
+  const websocketClient = new WebSocket(url);
   let reconnecting = false;
+  let keepaliveTimer: ReturnType<typeof setTimeout> | undefined;
+  let keepaliveTimeoutSeconds = 10;
   websocketClients.add(websocketClient);
+
+  const clearKeepaliveTimer = (): void => {
+    if (keepaliveTimer !== undefined) {
+      clearTimeout(keepaliveTimer);
+      keepaliveTimer = undefined;
+    }
+  };
+
+  const resetKeepaliveTimer = (): void => {
+    clearKeepaliveTimer();
+    keepaliveTimer = setTimeout(() => {
+      console.log("Twitch WebSocket keepalive timeout, reconnecting");
+      reportError(odaToken, "Twitch", "WebSocket keepalive timeout");
+      websocketClient.close(1000, "keepalive timeout");
+      scheduleReconnect();
+    }, keepaliveTimeoutSeconds * 1000);
+  };
 
   // Reconnect on abnormal close/error. Guarded so error + close firing
   // together only schedule one reconnect.
   const scheduleReconnect = (): void => {
     if (reconnecting) return;
     reconnecting = true;
+    clearKeepaliveTimer();
     setTimeout(() => {
       startWebSocketClient(odaToken, twitchId, token, eventbus, emotesStore);
     }, RECONNECT_DELAY_MS);
   };
 
   websocketClient.addEventListener("error", (err) => {
-    console.error("Twitch WebSocket error:", err);
     reportError(odaToken, "Twitch", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log("WebSocket connection opened to " + EVENTSUB_WEBSOCKET_URL);
+    console.log("WebSocket connection opened to " + url);
     reportStarted(odaToken, "Twitch");
   });
 
   websocketClient.addEventListener("close", (event) => {
     const wasRegistered = websocketClients.delete(websocketClient);
+    clearKeepaliveTimer();
     if (event.code === 1000) return;
     reportError(
       odaToken,
@@ -271,12 +450,32 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("message", (data) => {
+    let message: any;
+    try {
+      message = JSON.parse(data.data);
+    } catch (error) {
+      reportError(
+        odaToken,
+        "Twitch",
+        `Failed to parse WebSocket message: ${error}`,
+      );
+      return;
+    }
+    if (message.metadata?.message_type === "session_welcome") {
+      keepaliveTimeoutSeconds =
+        message.payload?.session?.keepalive_timeout_seconds ?? 10;
+    }
+    resetKeepaliveTimer();
     handleWebSocketMessage(
-      token,
-      twitchId,
-      JSON.parse(data.data),
-      eventbus,
-      emotesStore,
+      {
+        odaToken,
+        twitchId,
+        token,
+        eventbus,
+        emotesStore,
+        socket: websocketClient,
+      },
+      message,
     );
   });
 
@@ -310,7 +509,7 @@ export function register(
             .then((response) =>
               startWebSocketClient(
                 odaToken,
-                token.settings.id,
+                String(token.settings.id),
                 response.data.token,
                 eventbus,
                 emotesStore,
@@ -319,8 +518,7 @@ export function register(
         });
     })
     .catch((err) => {
-      console.error("Failed to subscribe to Twitch", err);
-      reportError(odaToken, "Twitch", err);
+      reportError(odaToken, "Twitch", String(err));
     });
 }
 

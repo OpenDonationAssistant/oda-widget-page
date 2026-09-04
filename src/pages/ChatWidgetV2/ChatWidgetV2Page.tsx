@@ -4,9 +4,13 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
 import { ChatWidgetSettings } from "../ChatWidget/ChatWidgetSettings";
+import { forwardEmotesToCache, registerEmoteCacheWorker } from "../../emoteCacheWorker";
 
 export default function ChatWidgetV2Page() {
   const { settings } = useLoaderData() as WidgetData;
+
+  registerEmoteCacheWorker();
+  forwardEmotesToCache();
 
   return (
     <WidgetWrapper>

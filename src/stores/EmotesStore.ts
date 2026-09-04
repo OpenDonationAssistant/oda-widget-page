@@ -76,6 +76,8 @@ export interface EmoteItem {
 export interface EmotesStoreOptions {
   twitchAppID?: string;
   twitchAppSecret?: string;
+  /** Called with the loaded emote URLs after a successful load. */
+  onEmotesLoaded?: (urls: string[]) => void;
 }
 
 export interface EmotesStore {
@@ -147,9 +149,11 @@ async function sevenTVRequest(
 export class DefaultEmotesStore implements EmotesStore {
   private _emotes: Record<string, EmoteItem> = {};
   private _loading = false;
+  private readonly options?: EmotesStoreOptions;
 
   constructor(options?: EmotesStoreOptions) {
     makeAutoObservable(this);
+    this.options = options;
   }
 
   public async load(channelId: string): Promise<void> {
@@ -170,6 +174,9 @@ export class DefaultEmotesStore implements EmotesStore {
       }
 
       this._emotes = emotes;
+      this.options?.onEmotesLoaded?.(
+        Object.values(emotes).map((emote) => emote.link),
+      );
       log.debug({ count: Object.keys(this._emotes).length }, "loaded emotes");
     } catch (error) {
       log.error("Failed to load emotes", error);

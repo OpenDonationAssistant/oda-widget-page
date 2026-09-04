@@ -82,7 +82,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build-worker": "node scripts/build-worker.mjs development",
-    "prebuild": "node scripts/build-worker.mjs production",
+    "build-emote-cache-worker": "node scripts/build-emote-cache-worker.mjs development",
+    "prebuild": "node scripts/build-worker.mjs production && node scripts/build-emote-cache-worker.mjs production",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

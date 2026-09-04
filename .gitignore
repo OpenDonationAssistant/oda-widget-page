@@ -16,6 +16,8 @@
 
 # generated service worker (compiled from src/sw/logger-worker.ts)
 /public/logger-worker.js
+# generated emote cache service worker (compiled from src/sw/emote-cache-worker.ts)
+/public/emote-cache-worker.js
 .env.local
 .env.development.local
 .env.test.local

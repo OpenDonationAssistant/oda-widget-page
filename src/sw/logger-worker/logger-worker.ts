@@ -245,7 +245,9 @@ addMessageListener((event: WorkerMessageEvent) => {
     broadcast,
     addMessageListener,
   );
-  emotesStore = new DefaultEmotesStore();
+  emotesStore = new DefaultEmotesStore({
+    onEmotesLoaded: (urls) => broadcast({ type: "EMOTES_LOADED", urls }),
+  });
   emotesStore.load("");
 
   // One-time handlers — registered once, never duplicated on reload.
