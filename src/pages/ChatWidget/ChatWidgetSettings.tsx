@@ -17,9 +17,16 @@ import { BorderProperty } from "../../components/ConfigurationPage/widgetpropert
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { PaddingProperty } from "../../components/ConfigurationPage/widgetproperties/PaddingProperty";
 import { BoxShadowProperty } from "../../components/ConfigurationPage/widgetproperties/BoxShadowProperty";
-import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import {
+  AnimatedFontProperty,
+  DEFAULT_FONT_PROPERTY_VALUE,
+} from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
-import { SELECTION_TYPE, SingleChoiceProperty } from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
+import {
+  SELECTION_TYPE,
+  SingleChoiceProperty,
+} from "../../components/ConfigurationPage/widgetproperties/SingleChoiceProperty";
+import { TextProperty } from "../../components/ConfigurationPage/widgetproperties/TextProperty";
 
 export class ChatWidgetSettings extends AbstractWidgetSettings {
   private _totalWidth: WidthProperty = new WidthProperty({
@@ -66,6 +73,12 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
       key: "message-line",
       title: "Строка сообщения",
       properties: [
+        new TextProperty({
+          name: "hiddenNicknames",
+          value: "",
+          displayName: "Никнеймы для скрытия",
+          help: "Сообщения этих пользователей не будут отображаться. Каждый никнейм с новой строки.",
+        }),
         new SingleChoiceProperty({
           name: "layout",
           value: "vertical",
@@ -125,6 +138,39 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
       properties: [
         new AnimatedFontProperty({
           name: "authorFont",
+          value: {
+            ...DEFAULT_FONT_PROPERTY_VALUE,
+            ...{
+              family: "Balsamiq Sans",
+              size: 30,
+              shadows: [
+                {
+                  x: 2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: 0,
+                  y: 2,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: -2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: 0,
+                  y: -2,
+                  blur: 2,
+                  color: "#000000",
+                },
+              ],
+            },
+          },
         }),
         new ColorProperty({
           name: "authorBackgroundColor",
@@ -154,6 +200,39 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
       properties: [
         new AnimatedFontProperty({
           name: "messageFont",
+          value: {
+            ...DEFAULT_FONT_PROPERTY_VALUE,
+            ...{
+              family: "Balsamiq Sans",
+              size: 30,
+              shadows: [
+                {
+                  x: 2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: 0,
+                  y: 2,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: -2,
+                  y: 0,
+                  blur: 2,
+                  color: "#000000",
+                },
+                {
+                  x: 0,
+                  y: -2,
+                  blur: 2,
+                  color: "#000000",
+                },
+              ],
+            },
+          },
         }),
         new ColorProperty({
           name: "messageBackgroundColor",
@@ -178,7 +257,7 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
-  public get isBlock(){
+  public get isBlock() {
     return this.get("lineType")?.value === "separate-blocks";
   }
 
@@ -216,6 +295,16 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
 
   public get layout(): "vertical" | "horizontal" {
     return this.get("layout")?.value;
+  }
+
+  public get hiddenNicknames(): Set<string> {
+    const raw = (this.get("hiddenNicknames") as TextProperty)?.value ?? "";
+    return new Set(
+      raw
+        .split(/[\n,;]/)
+        .map((it) => it.trim().toLowerCase())
+        .filter((it) => it.length > 0),
+    );
   }
 
   public get alignment(): "left" | "center" | "right" {

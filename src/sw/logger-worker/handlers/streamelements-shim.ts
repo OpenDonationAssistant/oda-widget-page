@@ -135,9 +135,10 @@ function handleWebSocketMessage(
             }),
           );
         })
-        .catch((err) =>
-          console.error("Failed to get StreamElements channel:", err),
-        );
+        .catch((err) => {
+          console.error("Failed to get StreamElements channel:", err);
+          reportError(odaToken, "StreamElements", `failed to get channel: ${err}`);
+        });
       break;
     }
 
@@ -146,6 +147,7 @@ function handleWebSocketMessage(
         console.error(
           `StreamElements subscribe error: ${message.error} - ${message.data.message}`,
         );
+        reportError(odaToken, "StreamElements", `subscribe error: ${message.error} - ${message.data.message}`);
       } else {
         console.log(
           `StreamElements subscription success: ${message.data.message}`,
@@ -203,9 +205,10 @@ function handleTipEvent(
         `StreamElements tip persisted to history [${tip.amount} ${tip.currency}]`,
       ),
     )
-    .catch((err) =>
-      console.error("Failed to persist StreamElements tip to history:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to persist StreamElements tip to history:", err);
+      reportError(odaToken, "StreamElements", `failed to persist tip to history: ${err}`);
+    });
 
   // ── 2. Push a local event to the EventBus for real-time UI ───────
   const variables: Variable[] = [

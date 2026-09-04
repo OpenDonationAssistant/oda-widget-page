@@ -91,6 +91,7 @@ function handleChatMessage(
 }
 
 function handleFrame(
+  odaToken: string,
   frame: any,
   eventbus: EventBus,
   emotesStore: EmotesStore,
@@ -103,6 +104,7 @@ function handleFrame(
           data = JSON.parse(data);
         } catch (error) {
           console.error("Kick: failed to parse chat message data", error);
+          reportError(odaToken, "Kick", `failed to parse chat message data: ${error}`);
           return;
         }
       }
@@ -138,6 +140,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("error", (err) => {
     console.error("Kick WebSocket error:", err);
+    reportError(odaToken, "Kick", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
@@ -174,9 +177,10 @@ function startWebSocketClient(
       frame = JSON.parse(data.data);
     } catch (error) {
       console.error("Kick: failed to parse WebSocket message", error);
+      reportError(odaToken, "Kick", `failed to parse WebSocket message: ${error}`);
       return;
     }
-    handleFrame(frame, eventbus, emotesStore);
+    handleFrame(odaToken, frame, eventbus, emotesStore);
   });
 
   return websocketClient;

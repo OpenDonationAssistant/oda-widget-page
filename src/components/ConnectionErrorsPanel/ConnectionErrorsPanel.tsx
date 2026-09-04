@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Flex } from "antd";
+import { Button, Flex } from "antd";
 import classes from "./ConnectionErrorsPanel.module.css";
 import { DefaultWorkersStore, WorkersStore } from "../../stores/WorkersStore";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
+import { sendMessageToWorker } from "../../worker";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default observer(function ConnectionErrorsPanel() {
   const [store] = useState<WorkersStore>(() => new DefaultWorkersStore());
+  const { accessToken } = useAuth();
 
   useEffect(() => () => store.dispose(), [store]);
+
+  const restart = (handler: string) => {
+    sendMessageToWorker({ type: "Reload", handler, accessToken });
+  };
 
   return (
     <>
@@ -21,12 +28,21 @@ export default observer(function ConnectionErrorsPanel() {
                 <span>{error.handler}</span>
                 {error.message ? `: ${error.message}` : ""}
               </div>
-              <NotBorderedIconButton
-                onClick={() => store.remove(error.handler)}
-                title={`Remove ${error.handler} errors`}
-              >
-                <CloseIcon color="white" />
-              </NotBorderedIconButton>
+              <Flex align="center" gap={6}>
+                <Button
+                  size="small"
+                  onClick={() => restart(error.handler)}
+                  title={`Restart ${error.handler}`}
+                >
+                  Restart
+                </Button>
+                <NotBorderedIconButton
+                  onClick={() => store.remove(error.handler)}
+                  title={`Remove ${error.handler} errors`}
+                >
+                  <CloseIcon color="white" />
+                </NotBorderedIconButton>
+              </Flex>
             </Flex>
           ))}
         </Flex>

@@ -146,9 +146,10 @@ function handlePayment(
         `DonatePay.eu payment persisted to history [${payment.vars.sum} ${payment.vars.currency}]`,
       ),
     )
-    .catch((err) =>
-      console.error("Failed to persist DonatePay.eu payment to history:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to persist DonatePay.eu payment to history:", err);
+      reportError(odaToken, "DonatePay.eu", `failed to persist payment to history: ${err}`);
+    });
 }
 
 // ── WebSocket message handling ──────────────────────────────────────
@@ -179,9 +180,10 @@ function handleWebSocketMessage(
           }),
         );
       })
-      .catch((err) =>
-        console.error("Failed to get DonatePay.eu channel token:", err),
-      );
+      .catch((err) => {
+        console.error("Failed to get DonatePay.eu channel token:", err);
+        reportError(odaToken, "DonatePay.eu", `failed to get channel token: ${err}`);
+      });
   }
 
   if (
@@ -253,6 +255,7 @@ function startDonatePayEuClient(
 
       websocketClient.addEventListener("error", (err) => {
         console.error("DonatePay.eu WebSocket error:", err);
+        reportError(odaToken, "DonatePay.eu", `WebSocket error: ${err}`);
         scheduleReconnect();
       });
 
@@ -270,9 +273,14 @@ function startDonatePayEuClient(
         scheduleReconnect();
       });
     })
-    .catch((err) =>
-      console.error("Failed to start DonatePay.eu WebSocket connection:", err),
-    );
+    .catch((err) => {
+      console.error("Failed to start DonatePay.eu WebSocket connection:", err);
+      reportError(odaToken, "DonatePay.eu", `failed to start WebSocket connection: ${err}`);
+      // Retry connection after delay
+      setTimeout(() => {
+        startDonatePayEuClient(odaToken, recipientId, donatePayEuToken, settings);
+      }, RECONNECT_DELAY_MS);
+    });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────

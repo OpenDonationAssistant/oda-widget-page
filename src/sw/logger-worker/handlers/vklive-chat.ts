@@ -211,6 +211,7 @@ function startWebSocketClient(
 
   websocketClient.addEventListener("error", (err) => {
     console.error("VK Live WebSocket error:", err);
+    reportError(odaToken, "VKLive", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
@@ -277,6 +278,7 @@ async function startVKLiveClient(
     );
   } catch (error) {
     console.error("Failed to start VK Live chat client", error);
+    reportError(token, "VKLive", `failed to start chat client: ${error}`);
   }
 }
 
