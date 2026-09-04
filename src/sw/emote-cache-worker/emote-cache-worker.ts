@@ -40,22 +40,22 @@ async function trimCache(cache: Cache): Promise<void> {
   await Promise.all(keys.slice(0, overflow).map((key) => cache.delete(key)));
 }
 
-async function cacheEmote(request: Request, response: Response): Promise<void> {
+async function cacheEmote(url: string, response: Response): Promise<void> {
   const cache = await caches.open(EMOTE_CACHE_NAME);
-  await cache.put(request, response);
+  await cache.put(url, response);
   await trimCache(cache);
 }
 
 /** Cache-first strategy: serve from cache, fall back to the network. */
 async function cacheFirst(request: Request): Promise<Response> {
   const cache = await caches.open(EMOTE_CACHE_NAME);
-  const cached = await cache.match(request);
+  const cached = await cache.match(request.url);
   if (cached) return cached;
 
   const response = await fetch(request);
   if (isCacheableResponse(response)) {
     // Cache a clone; the original is returned to the caller.
-    await cacheEmote(request, response.clone());
+    await cacheEmote(request.url, response.clone());
   }
   return response;
 }

@@ -16,19 +16,17 @@ export function isEmoteCacheWorkerSupported(): boolean {
 }
 
 /** Register the emote cache service worker once the page has loaded. */
-export function registerEmoteCacheWorker(): void {
+export function registerEmoteCacheWorker(): Promise<void> {
   if (!isEmoteCacheWorkerSupported()) return;
-  window.addEventListener("load", () => {
-    console.log("Registering emote cache worker");
-    navigator.serviceWorker
-      .register(EMOTE_CACHE_WORKER_URL)
-      .then((registration) => {
-        console.log("Registered emote cache worker", registration);
-      })
-      .catch((error) => {
-        console.error("Failed to register emote cache worker", error);
-      });
-  });
+  console.log("Registering emote cache worker");
+  return navigator.serviceWorker
+    .register(EMOTE_CACHE_WORKER_URL)
+    .then((registration) => {
+      console.log("Registered emote cache worker", registration);
+    })
+    .catch((error) => {
+      console.error("Failed to register emote cache worker", error);
+    });
 }
 
 /**
