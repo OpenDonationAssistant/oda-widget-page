@@ -22,21 +22,34 @@ export class StreamCreditsStore {
     voters: [],
     timestamp: -1,
   };
+  private stateKey: string;
 
   constructor(widgetId: string) {
-    const stateKey = `3-stream-credits-state-${widgetId}`;
-    let data = localStorage.getItem(stateKey);
-    if (data) {
-      this._state = JSON.parse(data) as CreditsState;
-    }
+    this.stateKey = `stream-credits-state-${widgetId}`;
+    this.load();
     makeAutoObservable(this);
     onEvent((event) => this.listen(event));
     setInterval(() => {
-      localStorage.setItem(stateKey, JSON.stringify(this._state));
+      this.save();
     }, 10000);
   }
 
+  private load() {
+    let data = localStorage.getItem(this.stateKey);
+    if (data) {
+      this._state = JSON.parse(data) as CreditsState;
+    }
+  }
+
+  private save() {
+    localStorage.setItem(this.stateKey, JSON.stringify(this._state));
+  }
+
   private listen(event: Event) {
+    if (event.type === "TwitchStreamStarted") {
+      this.clear();
+      return;
+    }
     const state = this._state;
     if (
       event.type === "TWITCH_CHAT_MESSAGE" ||
@@ -79,6 +92,19 @@ export class StreamCreditsStore {
       }
     }
     state.timestamp = event.timestamp;
+  }
+
+  private clear() {
+    this._state = {
+      donaters: [],
+      newFollowers: [],
+      raiders: [],
+      gifters: [],
+      banned: [],
+      voters: [],
+      timestamp: -1,
+    };
+    this.save();
   }
 
   public get donaters() {
