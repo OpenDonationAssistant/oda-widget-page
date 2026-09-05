@@ -46,7 +46,7 @@ export class StreamCreditsStore {
   }
 
   private listen(event: Event) {
-    if (event.type === "TwitchStreamStarted") {
+    if (event.type === "TwitchStreamStartedEvent") {
       this.clear();
       return;
     }
