@@ -171,7 +171,7 @@ export class DefaultEventBus implements EventBus {
         );
       };
       this._socket.onWebSocketError = (evt) => {
-        reportError(token, "ODA", `websocket error: ${evt}`);
+        reportError(token, "ODA", `websocket error: ${JSON.stringify(evt)}`);
       };
       this._socket.onWebSocketClose = (evt) => {
         reportError(
