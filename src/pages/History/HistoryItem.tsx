@@ -17,10 +17,13 @@ import DonatePayIcon from "../../icons/DonatePayIcon";
 import ODAIcon from "../../icons/ODAIcon";
 import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import type { ReactNode } from "react";
 import { HistoryWidgetSettingsContenxt } from "./HistoryWidgetSettings";
 import KickIcon from "../../icons/KickIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
+import ArrowUp from "../../icons/ArrowUp";
+import ArrowDown from "../../icons/ArrowDown";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -119,40 +122,185 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
   );
 });
 
-export const HistoryItemComponent = observer(
-  ({ item }: { item: HistoryItem }) => {
-    let header;
-    console.log("item", item);
-    const settings = useContext(HistoryWidgetSettingsContenxt);
+function getGroupedHeader(
+  event: string,
+  system: string,
+  items: HistoryItem[],
+  settings: any,
+): ReactNode {
+  const count = items.length;
+  const nicknames = items.map((item) => item.nickname ?? "Аноним");
 
-    switch (item.event) {
+  switch (event) {
+    case "follow":
+      return (
+        <Flex align="center" gap={3}>
+          {system === "Twitch" && (
+            <TwitchIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "Kick" && (
+            <KickIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "VKLive" && <VKLiveIcon className={classes.icon} />}
+          {system === "Boosty" && <BoostyIcon className={classes.icon} />}
+          <span
+            className={classes.title}
+            style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+          >
+            <span>Новых фолловеров - {count}: </span>
+            <span className={`${classes.levelname}`}>
+              {nicknames.join(", ")}
+            </span>
+          </span>
+        </Flex>
+      );
+    case "raid": {
+      const totalViewers = items.reduce(
+        (sum, item) => sum + (item.count ?? 0),
+        0,
+      );
+      return (
+        <Flex align="center" gap={3}>
+          {system === "Twitch" && (
+            <TwitchIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "Kick" && (
+            <KickIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "VKLive" && <VKLiveIcon className={classes.icon} />}
+          <span
+            className={classes.title}
+            style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+          >
+            <span>Зарейдило {totalViewers} зрителей суммарно от </span>
+            <span
+              className={`${classes.levelname}`}
+              style={{ color: "var(--oda-primary-color)" }}
+            >
+              {nicknames.join(", ")}
+            </span>
+          </span>
+        </Flex>
+      );
+    }
+    case "subscription":
+      return (
+        <Flex align="center" gap={3}>
+          {system === "Twitch" && (
+            <TwitchIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "Kick" && (
+            <KickIcon
+              color="var(--oda-primary-color)"
+              className={classes.icon}
+            />
+          )}
+          {system === "VKLive" && <VKLiveIcon className={classes.icon} />}
+          {system === "Boosty" && <BoostyIcon className={classes.icon} />}
+          <span
+            className={classes.title}
+            style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
+          >
+            <span>Новых подписчиков - {count}: </span>
+            <span className={`${classes.levelname}`}>
+              {nicknames.join(", ")}
+            </span>
+          </span>
+        </Flex>
+      );
+    default:
+      return null;
+  }
+}
+
+export const GroupedHistoryItemComponent = observer(
+  ({ groupedItems }: { groupedItems: HistoryItem[] }) => {
+    const displayItem = groupedItems[0];
+    const settings = useContext(HistoryWidgetSettingsContenxt);
+    const [expanded, setExpanded] = useState(false);
+    const header = getGroupedHeader(
+      displayItem.event,
+      displayItem.system,
+      groupedItems,
+      settings,
+    );
+
+    return (
+      <Flex vertical gap={3}>
+        <Flex
+          vertical
+          className={`${classes.item} ${displayItem.active ? classes.active : ""}`}
+          justify="space-between"
+          onClick={() => setExpanded((old) => !old)}
+          style={{ cursor: "pointer" }}
+        >
+          <Flex justify="space-between" align="flex-start">
+            {header}
+            {expanded ? <ArrowUp /> : <ArrowDown />}
+          </Flex>
+        </Flex>
+        {expanded && (
+          <Flex vertical className={`full-width ${classes.groupeditems}`} gap={3}>
+            {groupedItems.map((item, index) => (
+              <SingleHistoryItemComponent key={index} displayItem={item} />
+            ))}
+          </Flex>
+        )}
+      </Flex>
+    );
+  },
+);
+
+export const SingleHistoryItemComponent = observer(
+  ({ displayItem }: { displayItem: HistoryItem }) => {
+    const settings = useContext(HistoryWidgetSettingsContenxt);
+    let header;
+
+    switch (displayItem.event) {
       case "subscription-gift":
         header = (
           <Flex align="center" gap={3}>
-            {item.system === "Twitch" && (
+            {displayItem.system === "Twitch" && (
               <TwitchIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "Kick" && (
+            {displayItem.system === "Kick" && (
               <KickIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "VKLive" && (
+            {displayItem.system === "VKLive" && (
               <VKLiveIcon className={classes.icon} />
             )}
-            {item.system === "Boosty" && (
+            {displayItem.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
             )}
             <span
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{item.nickname ?? "Аноним"} подарил подписку </span>
-              <span className={`${classes.levelname}`}>{item.levelName}</span>
+              <span>{displayItem.nickname ?? "Аноним"} подарил подписку </span>
+              <span className={`${classes.levelname}`}>
+                {displayItem.levelName}
+              </span>
             </span>
           </Flex>
         );
@@ -160,36 +308,38 @@ export const HistoryItemComponent = observer(
       case "subscription":
         header = (
           <Flex align="center" gap={3}>
-            {item.system === "Twitch" && (
+            {displayItem.system === "Twitch" && (
               <TwitchIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "Kick" && (
+            {displayItem.system === "Kick" && (
               <KickIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "VKLive" && (
+            {displayItem.system === "VKLive" && (
               <VKLiveIcon className={classes.icon} />
             )}
-            {item.system === "Boosty" && (
+            {displayItem.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
             )}
             <span
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{item.nickname ?? "Аноним"} купил подписку </span>
-              <span className={`${classes.levelname}`}>{item.levelName}</span>
+              <span>{displayItem.nickname ?? "Аноним"} купил подписку </span>
+              <span className={`${classes.levelname}`}>
+                {displayItem.levelName}
+              </span>
             </span>
           </Flex>
         );
         break;
       case "payment":
-        if (item.system === "MemeAlerts") {
+        if (displayItem.system === "MemeAlerts") {
           header = (
             <Flex align="center" gap={3}>
               <MemeAlertsIcon
@@ -200,8 +350,10 @@ export const HistoryItemComponent = observer(
                 className={classes.title}
                 style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
               >
-                <span> {item.nickname ?? "Аноним"} купил </span>
-                <span className={`${classes.memecount}`}>{item.count}</span>
+                <span> {displayItem.nickname ?? "Аноним"} купил </span>
+                <span className={`${classes.memecount}`}>
+                  {displayItem.count}
+                </span>
                 <span> мемкоинов</span>
               </span>
             </Flex>
@@ -212,43 +364,43 @@ export const HistoryItemComponent = observer(
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              {item.system === "DonatePay" && (
+              {displayItem.system === "DonatePay" && (
                 <DonatePayIcon
                   color="var(--oda-primary-color)"
                   className={`${classes.icon}`}
                 />
               )}
-              {item.system === "DonatePay.eu" && (
+              {displayItem.system === "DonatePay.eu" && (
                 <DonatePayIcon
                   color="var(--oda-primary-color)"
                   className={`${classes.icon}`}
                 />
               )}
-              {item.system === "DonateX" && (
+              {displayItem.system === "DonateX" && (
                 <DonateXIcon
                   color="var(--oda-primary-color)"
                   className={`${classes.icon}`}
                 />
               )}
-              {item.system === "DonationAlerts" && (
+              {displayItem.system === "DonationAlerts" && (
                 <DonationAlertsIcon
                   color="var(--oda-primary-color)"
                   className={`${classes.icon}`}
                 />
               )}
-              {item.system === "ODA" && (
+              {displayItem.system === "ODA" && (
                 <ODAIcon
                   color="var(--oda-primary-color)"
                   className={`${classes.icon}`}
                 />
               )}
               <span className={`${classes.amount}`}>
-                {item.amount?.major}
+                {displayItem.amount?.major}
                 {`\u20BD`}
               </span>
               <span className={`${classes.from}`}>от</span>
               <span className={`${classes.nickname}`}>
-                {item.nickname ?? "Аноним"}
+                {displayItem.nickname ?? "Аноним"}
               </span>
             </span>
           );
@@ -257,29 +409,29 @@ export const HistoryItemComponent = observer(
       case "follow":
         header = (
           <Flex align="center" gap={3}>
-            {item.system === "Twitch" && (
+            {displayItem.system === "Twitch" && (
               <TwitchIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "Kick" && (
+            {displayItem.system === "Kick" && (
               <KickIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "VKLive" && (
+            {displayItem.system === "VKLive" && (
               <VKLiveIcon className={classes.icon} />
             )}
-            {item.system === "Boosty" && (
+            {displayItem.system === "Boosty" && (
               <BoostyIcon className={classes.icon} />
             )}
             <span
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{item.nickname ?? "Аноним"} зафолловился</span>
+              <span>{displayItem.nickname ?? "Аноним"} зафолловился</span>
             </span>
           </Flex>
         );
@@ -287,19 +439,19 @@ export const HistoryItemComponent = observer(
       case "raid":
         header = (
           <Flex align="center" gap={3}>
-            {item.system === "Twitch" && (
+            {displayItem.system === "Twitch" && (
               <TwitchIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "Kick" && (
+            {displayItem.system === "Kick" && (
               <KickIcon
                 color="var(--oda-primary-color)"
                 className={classes.icon}
               />
             )}
-            {item.system === "VKLive" && (
+            {displayItem.system === "VKLive" && (
               <VKLiveIcon className={classes.icon} />
             )}
             <span
@@ -309,7 +461,7 @@ export const HistoryItemComponent = observer(
               <span>
                 Рейд от{" "}
                 <span style={{ color: "var(--oda-primary-color)" }}>
-                  {item.nickname ?? "Аноним"}
+                  {displayItem.nickname ?? "Аноним"}
                 </span>
               </span>
             </span>
@@ -323,37 +475,48 @@ export const HistoryItemComponent = observer(
     return (
       <Flex
         vertical
-        className={`${classes.item} ${item.active ? classes.active : ""}`}
+        className={`${classes.item} ${displayItem.active ? classes.active : ""}`}
         justify="space-between"
       >
         <Flex wrap justify="space-between">
           {header}
           <Flex gap={6}>
-            {item.rouletteResults && item.rouletteResults.length > 0 && (
-              <Flex align="center" className={`${classes.goals}`} gap={6}>
-                <ReelIcon />
-                <div
-                  className={`${classes.rouletteresult}`}
-                  style={{ fontSize: `${settings.reelFontSize.value}px` }}
-                >
-                  {item.rouletteResults?.map((result) => result.title)}
-                </div>
-              </Flex>
-            )}
+            {displayItem.rouletteResults &&
+              displayItem.rouletteResults.length > 0 && (
+                <Flex align="center" className={`${classes.goals}`} gap={6}>
+                  <ReelIcon />
+                  <div
+                    className={`${classes.rouletteresult}`}
+                    style={{ fontSize: `${settings.reelFontSize.value}px` }}
+                  >
+                    {displayItem.rouletteResults?.map((result) => result.title)}
+                  </div>
+                </Flex>
+              )}
             {settings.showGoalsProperty.value &&
-              item.goals &&
-              item.goals.length > 0 && (
+              displayItem.goals &&
+              displayItem.goals.length > 0 && (
                 <Flex align="center" className={`${classes.goals}`} gap={6}>
                   <DonationGoalIcon />
                   <div style={{ fontSize: `${settings.goalFontSize.value}px` }}>
-                    {item.goals?.map((goal) => goal.goalTitle)}
+                    {displayItem.goals?.map((goal) => goal.goalTitle)}
                   </div>
                 </Flex>
               )}
           </Flex>
         </Flex>
-        <Description item={item} />
+        <Description item={displayItem} />
       </Flex>
     );
+  },
+);
+
+export const HistoryItemComponent = observer(
+  ({ groupedItems }: { groupedItems: HistoryItem[] }) => {
+    if (groupedItems.length > 1) {
+      return <GroupedHistoryItemComponent groupedItems={groupedItems} />;
+    } else {
+      return <SingleHistoryItemComponent displayItem={groupedItems[0]} />;
+    }
   },
 );

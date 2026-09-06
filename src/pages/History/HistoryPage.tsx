@@ -19,6 +19,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import {
   DefaultHistoryStore,
+  HistoryItem,
   HistoryStore,
   HistoryStoreContext,
 } from "./HistoryStore";
@@ -46,32 +47,107 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const dateFormat = "DD/MM/YYYY HH:mm";
 
+const GROUPABLE_COMBINATIONS: { event: string; system: string }[] = [
+  { event: "follow", system: "Boosty" },
+  { event: "follow", system: "Twitch" },
+  { event: "follow", system: "Kick" },
+  { event: "follow", system: "VKLive" },
+  { event: "raid", system: "Twitch" },
+  { event: "subscription", system: "Twitch" },
+  { event: "subscription", system: "VKLive" },
+];
+
+function isGroupable(item: HistoryItem): boolean {
+  return GROUPABLE_COMBINATIONS.some(
+    (combo) => combo.event === item.event && combo.system === item.system,
+  );
+}
+
+interface HistoryItemGroup {
+  type: "single" | "group";
+  items: HistoryItem[];
+}
+
+function groupConsecutiveItems(items: HistoryItem[]): HistoryItemGroup[] {
+  const groups: HistoryItemGroup[] = [];
+  let i = 0;
+
+  while (i < items.length) {
+    const currentItem = items[i];
+
+    if (!isGroupable(currentItem)) {
+      groups.push({ type: "single", items: [currentItem] });
+      i++;
+      continue;
+    }
+
+    const groupItems: HistoryItem[] = [currentItem];
+    let j = i + 1;
+
+    while (j < items.length) {
+      const nextItem = items[j];
+      if (
+        isGroupable(nextItem) &&
+        nextItem.event === currentItem.event &&
+        nextItem.system === currentItem.system
+      ) {
+        groupItems.push(nextItem);
+        j++;
+      } else {
+        break;
+      }
+    }
+
+    groups.push({
+      type: groupItems.length > 1 ? "group" : "single",
+      items: groupItems,
+    });
+    i = j;
+  }
+
+  return groups;
+}
+
 const HistoryItemList = observer(({}: {}) => {
   const historyStore = useContext(HistoryStoreContext);
   const settings = new HistoryWidgetSettings();
   settings.set("showRequests", true);
   settings.set("showGoals", true);
 
+  const groups = groupConsecutiveItems(historyStore?.items ?? []);
+
   return (
     <HistoryWidgetSettingsContenxt.Provider value={settings}>
       <Flex vertical gap={3}>
-        {historyStore?.items.map((item, index) => (
-          <>
-            {index === 0 && item.date === historyStore?.today && (
-              <div className={`${classes.historyday}`}>
-                Сегодня ({item.date})
-              </div>
-            )}
-            {index === 0 && item.date !== historyStore?.today && (
-              <div className={`${classes.historyday}`}>{item.date}</div>
-            )}
-            {index !== 0 &&
-              item.date !== historyStore?.items.at(index - 1)?.date && (
-                <div className={`${classes.historyday}`}>{item.date}</div>
+        {groups.map((group, groupIndex) => {
+          const isFirstItem = groupIndex === 0;
+          const firstGroupItem = group.items[0];
+          const firstGroupItemDate = firstGroupItem.date;
+          const prevGroup = groups[groupIndex - 1];
+          const prevGroupFirstItemDate = prevGroup?.items[0]?.date;
+
+          return (
+            <div key={`group-${groupIndex}`}>
+              {isFirstItem && firstGroupItemDate === historyStore?.today && (
+                <div className={`${classes.historyday}`}>
+                  Сегодня ({firstGroupItemDate})
+                </div>
               )}
-            <HistoryItemComponent key={index} item={item} />
-          </>
-        ))}
+              {isFirstItem && firstGroupItemDate !== historyStore?.today && (
+                <div className={`${classes.historyday}`}>
+                  {firstGroupItemDate}
+                </div>
+              )}
+              {!isFirstItem &&
+                firstGroupItemDate !== prevGroupFirstItemDate && (
+                  <div className={`${classes.historyday}`}>
+                    {firstGroupItemDate}
+                  </div>
+                )}
+              <HistoryItemComponent groupedItems={group.items} />
+            </div>
+          );
+        })}
         {historyStore?.isRefreshing && <Spin />}
         {!historyStore?.isRefreshing && historyStore?.hasNext() && (
           <Flex
