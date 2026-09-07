@@ -371,9 +371,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
               type: "string",
             },
           );
-          connection.eventbus.push(
-            new Event("TWITCH_CHAT_MESSAGE", variables),
-          );
+          connection.eventbus.push(new Event("TWITCH_CHAT_MESSAGE", variables));
           break;
       }
       break;
@@ -404,12 +402,13 @@ function startWebSocketClient(
 
   const resetKeepaliveTimer = (): void => {
     clearKeepaliveTimer();
-    keepaliveTimer = setTimeout(() => {
-      console.log("Twitch WebSocket keepalive timeout, reconnecting");
-      reportError(odaToken, "Twitch", "WebSocket keepalive timeout");
-      websocketClient.close(1000, "keepalive timeout");
-      scheduleReconnect();
-    }, keepaliveTimeoutSeconds * 1000);
+    keepaliveTimer = setTimeout(
+      () => {
+        websocketClient.close(1000, "keepalive timeout");
+        scheduleReconnect();
+      },
+      keepaliveTimeoutSeconds * 2 * 1000,
+    );
   };
 
   // Reconnect on abnormal close/error. Guarded so error + close firing
@@ -530,3 +529,4 @@ export function deregister(): void {
   });
   connectedTokens = [];
 }
+

@@ -161,10 +161,6 @@ function getGroupedHeader(
         </Flex>
       );
     case "raid": {
-      const totalViewers = items.reduce(
-        (sum, item) => sum + (item.count ?? 0),
-        0,
-      );
       return (
         <Flex align="center" gap={3}>
           {system === "Twitch" && (
@@ -184,7 +180,7 @@ function getGroupedHeader(
             className={classes.title}
             style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
           >
-            <span>Зарейдило {totalViewers} зрителей суммарно от </span>
+            <span>Зарейдили </span>
             <span
               className={`${classes.levelname}`}
               style={{ color: "var(--oda-primary-color)" }}
@@ -255,7 +251,11 @@ export const GroupedHistoryItemComponent = observer(
           </Flex>
         </Flex>
         {expanded && (
-          <Flex vertical className={`full-width ${classes.groupeditems}`} gap={3}>
+          <Flex
+            vertical
+            className={`full-width ${classes.groupeditems}`}
+            gap={3}
+          >
             {groupedItems.map((item, index) => (
               <SingleHistoryItemComponent key={index} displayItem={item} />
             ))}
