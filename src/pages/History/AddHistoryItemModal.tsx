@@ -97,7 +97,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       )}
       {compact && (
         <BorderedIconButton onClick={() => (showModal.show = true)}>
-          <AddIcon color="var(--oda-color-1000)" />
+          <AddIcon color="var(--oda-primary-color)" />
         </BorderedIconButton>
       )}
       <ModalStateContext.Provider value={showModal}>

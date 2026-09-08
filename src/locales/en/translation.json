@@ -39,6 +39,8 @@
   "button-find": "Filter",
   "button-export": "Export",
   "button-import": "Import",
+  "button-export-emotes": "Export chat",
+  "button-import-emotes": "Import chat",
   "button-upload": "Upload",
   "button-upload-video": "Upload video",
   "button-upload-audio": "Upload",

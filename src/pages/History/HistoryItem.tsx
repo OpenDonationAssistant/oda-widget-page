@@ -240,7 +240,7 @@ export const GroupedHistoryItemComponent = observer(
       <Flex vertical gap={3}>
         <Flex
           vertical
-          className={`${classes.item} ${displayItem.active ? classes.active : ""}`}
+          className={`${classes.item} ${classes.groupeditem} ${displayItem.active ? classes.active : ""}`}
           justify="space-between"
           onClick={() => setExpanded((old) => !old)}
           style={{ cursor: "pointer" }}
@@ -475,7 +475,7 @@ export const SingleHistoryItemComponent = observer(
     return (
       <Flex
         vertical
-        className={`${classes.item} ${displayItem.active ? classes.active : ""}`}
+        className={`${classes.item} ${classes.singleitem} ${displayItem.active ? classes.active : ""}`}
         justify="space-between"
       >
         <Flex wrap justify="space-between">

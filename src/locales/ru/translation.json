@@ -48,6 +48,8 @@
   "button-find": "Фильтр",
   "button-export": "Экспорт",
   "button-import": "Импорт",
+  "button-export-emotes": "Экспорт чата",
+  "button-import-emotes": "Импорт чата",
   "button-upload": "Загрузить",
   "button-upload-video": "Загрузить видео",
   "button-upload-audio": "Загрузить",

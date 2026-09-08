@@ -76,6 +76,7 @@ import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 import { ApiPage } from "./pages/Api/ApiPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import ChatWidgetV2Page from "./pages/ChatWidgetV2/ChatWidgetV2Page";
+import { forwardEmotesToCache, registerEmoteCacheWorker } from "./emoteCacheWorker";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -490,3 +491,6 @@ if (rootElement) {
     </ErrorStoreContext.Provider>,
   );
 }
+
+registerEmoteCacheWorker();
+forwardEmotesToCache();

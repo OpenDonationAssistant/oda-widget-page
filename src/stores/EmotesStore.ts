@@ -2,7 +2,14 @@ import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { createContext } from "react";
 
-export type EmoteType = "twitch" | "bttv" | "ffz" | "7tv" | "vklive" | "kick" | null;
+export type EmoteType =
+  | "twitch"
+  | "bttv"
+  | "ffz"
+  | "7tv"
+  | "vklive"
+  | "kick"
+  | null;
 
 export const SEVENTV_URL = "https://7tv.io/v3/gql";
 export const SEVENTV_QUERY = `
@@ -174,19 +181,21 @@ export class DefaultEmotesStore implements EmotesStore {
       }
 
       this._emotes = emotes;
-      this.options?.onEmotesLoaded?.(
-        Object.values(emotes).map((emote) => emote.link),
-      );
+      const urls = Object.values(emotes).map((emote) => emote.link);
+      console.log({ urls }, "loaded emotes");
+      this.options?.onEmotesLoaded?.(urls);
       log.debug({ count: Object.keys(this._emotes).length }, "loaded emotes");
     } catch (error) {
-      log.error("Failed to load emotes", error);
+      log.error({ error }, "Failed to load emotes", error);
     } finally {
       this._loading = false;
     }
   }
 
   private async fetchGlobalEmotes(): Promise<SevenTVEmote[]> {
-    const json = await sevenTVRequest(SEVENTV_QUERY, { format: [SEVENTV_FORMAT] });
+    const json = await sevenTVRequest(SEVENTV_QUERY, {
+      format: [SEVENTV_FORMAT],
+    });
     return json.data?.namedEmoteSet?.emotes ?? [];
   }
 
@@ -196,7 +205,8 @@ export class DefaultEmotesStore implements EmotesStore {
       format: [SEVENTV_FORMAT],
     });
     return (
-      json.data?.userByConnection?.emote_sets?.flatMap((set) => set.emotes) ?? []
+      json.data?.userByConnection?.emote_sets?.flatMap((set) => set.emotes) ??
+      []
     );
   }
 
