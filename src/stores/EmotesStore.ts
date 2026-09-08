@@ -90,14 +90,14 @@ export interface EmotesStoreOptions {
 export interface EmotesStore {
   emotes: Record<string, EmoteItem>;
   loading: boolean;
-  load(channelId: string): void;
+  load(channelId: string): Promise<void>;
   getEmote(code: string): EmoteItem | undefined;
 }
 
 export class DemoEmotesStore implements EmotesStore {
   emotes = {};
   loading = false;
-  load = () => {};
+  load = async () => {};
   getEmote = () => undefined;
 }
 
@@ -163,14 +163,12 @@ export class DefaultEmotesStore implements EmotesStore {
     this.options = options;
   }
 
-  public async load(channelId: string): Promise<void> {
+  public async load(channelId?: string): Promise<void> {
     this._loading = true;
     try {
-      const tasks: Promise<SevenTVEmote[]>[] = [this.fetchGlobalEmotes()];
-
-      if (channelId) {
-        tasks.push(this.fetchChannelEmotes(channelId));
-      }
+      const tasks: Promise<SevenTVEmote[]>[] = channelId
+        ? [this.fetchChannelEmotes(channelId)]
+        : [this.fetchGlobalEmotes()];
 
       const sources = await Promise.all(tasks);
 
@@ -182,7 +180,7 @@ export class DefaultEmotesStore implements EmotesStore {
 
       this._emotes = emotes;
       const urls = Object.values(emotes).map((emote) => emote.link);
-      console.log({ urls }, "loaded emotes");
+      console.log({ channelId, urls }, "loaded emotes");
       this.options?.onEmotesLoaded?.(urls);
       log.debug({ count: Object.keys(this._emotes).length }, "loaded emotes");
     } catch (error) {

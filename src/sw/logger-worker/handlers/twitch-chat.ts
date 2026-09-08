@@ -505,15 +505,17 @@ export function register(
           connectedTokens.push(token.id);
           recipientService
             .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) =>
-              startWebSocketClient(
-                odaToken,
-                String(token.settings.id),
-                response.data.token,
-                eventbus,
-                emotesStore,
-              ),
-            );
+            .then((response) => {
+              emotesStore.load(String(token.settings.id)).then(() => {
+                startWebSocketClient(
+                  odaToken,
+                  String(token.settings.id),
+                  response.data.token,
+                  eventbus,
+                  emotesStore,
+                );
+              });
+            });
         });
     })
     .catch((err) => {
@@ -529,4 +531,3 @@ export function deregister(): void {
   });
   connectedTokens = [];
 }
-

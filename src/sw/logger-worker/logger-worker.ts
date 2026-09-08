@@ -266,7 +266,7 @@ addMessageListener((event: WorkerMessageEvent) => {
       broadcast({ type: "EMOTES_LOADED", urls });
     },
   });
-  emotesStore.load("");
+  emotesStore.load();
 
   // One-time handlers — registered once, never duplicated on reload.
   registerLogHandler(recipientId, addMessageListener);
