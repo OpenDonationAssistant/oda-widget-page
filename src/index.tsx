@@ -42,6 +42,7 @@ import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
+import CommandsRewardsPage from "./pages/CommandsRewards/CommandsRewardsPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/Button/UtilityButton";
@@ -160,6 +161,9 @@ function detectPage(path: string): Page {
   }
   if (path.endsWith("automation-page")) {
     return Page.AUTOMATION;
+  }
+  if (path.endsWith("commands-rewards-page")) {
+    return Page.COMMANDSREWARDS;
   }
   if (path.endsWith("gateways")) {
     return Page.GATEWAYS;
@@ -329,6 +333,11 @@ const router = createBrowserRouter([
           {
             path: "automation-page",
             element: <AutomationPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "commands-rewards-page",
+            element: <CommandsRewardsPage />,
             loader: widgetSettingsLoader,
           },
           {

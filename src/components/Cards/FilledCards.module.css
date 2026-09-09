@@ -1,0 +1,10 @@
+.deletebutton {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: #231717;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
