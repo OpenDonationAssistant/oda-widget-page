@@ -39,7 +39,9 @@ export class WordBlacklistStore {
       headers: {
         Authorization: `Bearer ${this._token}`,
       },
-      body: this._words,
+      body: {
+        words: this._words,
+      },
     }).then((response) => {
       if (response.error) {
         log.error(response.error, "failed to save word blacklist");
@@ -81,4 +83,3 @@ export function useWordBlacklistStore() {
   }
   return { store: context.value };
 }
-
