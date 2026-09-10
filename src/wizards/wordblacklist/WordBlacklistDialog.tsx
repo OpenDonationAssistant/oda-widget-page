@@ -8,7 +8,10 @@ import {
   Title,
   Overlay,
 } from "../../components/Overlay/Overlay";
-import { BorderedIconButton } from "../../components/IconButton/IconButton";
+import {
+  BorderedIconButton,
+  NotBorderedIconButton,
+} from "../../components/IconButton/IconButton";
 import AddIcon from "../../icons/AddIcon";
 import CloseIcon from "../../icons/CloseIcon";
 import PrimaryButton from "../../components/Button/PrimaryButton";
@@ -38,45 +41,47 @@ const WordBlacklistDialogInner = observer(() => {
   return (
     <Dialog>
       <Title>Черный список слов</Title>
-      <Flex className={classes.inputRow}>
-        <input
-          className={classes.input}
-          placeholder="Введите слово..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <BorderedIconButton onClick={handleAdd}>
-          <AddIcon color="var(--oda-primary-color)" />
-        </BorderedIconButton>
-      </Flex>
-      <Flex className={classes.wordList}>
-        {store.words.map((word) => (
-          <Flex
-            key={word}
-            className={classes.wordItem}
-            justify="space-between"
-            align="center"
+      <Flex gap={12} vertical>
+        <Flex align="center" className={classes.inputRow}>
+          <input
+            className={classes.input}
+            placeholder="Введите слово..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <NotBorderedIconButton onClick={handleAdd}>
+            <AddIcon color="var(--oda-primary-color)" />
+          </NotBorderedIconButton>
+        </Flex>
+        <Flex className={classes.wordList}>
+          {store.words.map((word) => (
+            <Flex
+              key={word}
+              className={classes.wordItem}
+              justify="space-between"
+              align="center"
+            >
+              <span>{word}</span>
+              <BorderedIconButton onClick={() => store.removeWord(word)}>
+                <CloseIcon color="#FF8888" />
+              </BorderedIconButton>
+            </Flex>
+          ))}
+        </Flex>
+        <Flex gap={6} justify="flex-end">
+          <SecondaryButton onClick={() => (dialogState.show = false)}>
+            Отменить
+          </SecondaryButton>
+          <PrimaryButton
+            onClick={() => {
+              store.save();
+              dialogState.show = false;
+            }}
           >
-            <span>{word}</span>
-            <BorderedIconButton onClick={() => store.removeWord(word)}>
-              <CloseIcon color="var(--oda-color-950)" />
-            </BorderedIconButton>
-          </Flex>
-        ))}
-      </Flex>
-      <Flex gap={6} justify="flex-end">
-        <SecondaryButton onClick={() => (dialogState.show = false)}>
-          Отменить
-        </SecondaryButton>
-        <PrimaryButton
-          onClick={() => {
-            store.save();
-            dialogState.show = false;
-          }}
-        >
-          Сохранить
-        </PrimaryButton>
+            Сохранить
+          </PrimaryButton>
+        </Flex>
       </Flex>
     </Dialog>
   );
@@ -106,3 +111,4 @@ export default function WordBlacklistDialog() {
     </ModalStateContext.Provider>
   );
 }
+
