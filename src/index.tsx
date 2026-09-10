@@ -77,6 +77,7 @@ import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 import { ApiPage } from "./pages/Api/ApiPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import ChatWidgetV2Page from "./pages/ChatWidgetV2/ChatWidgetV2Page";
+import EmoteWallWidgetPage from "./pages/EmoteWall/EmoteWallWidgetPage";
 import { forwardEmotesToCache, registerEmoteCacheWorker } from "./emoteCacheWorker";
 
 const errorStore = new ErrorStore();
@@ -474,6 +475,11 @@ const router = createBrowserRouter([
       {
         path: "/chat/:widgetId",
         element: <ChatWidgetV2Page />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/emote-wall/:widgetId",
+        element: <EmoteWallWidgetPage />,
         loader: widgetSettingsLoader,
       },
     ],

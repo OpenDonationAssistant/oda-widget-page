@@ -9,6 +9,7 @@ import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { PremoderationProperty } from "./PremoderationProperty";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { WordBlacklistProperty } from "../../widgetproperties/WordBlacklistProperty";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   private _alerts: PaymentAlertsProperty;
@@ -32,6 +33,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
               value: true,
               displayName: "Паузить медиаплеер",
             }),
+            new WordBlacklistProperty({}),
           ],
         },
       ],

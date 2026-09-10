@@ -99,8 +99,22 @@ export const ChatWidget = observer(
                       <TextRenderer
                         font={settings.messageFont}
                         className={classes.inlined}
-                        text={part.text ?? ""}
+                        text={part.text}
                       />
+                    );
+                  }
+                  if (part.type === "url") {
+                    return (
+                      <span
+                        className={classes.inlined}
+                        style={{
+                          color: "#3ea6ff",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {part.domain}
+                      </span>
                     );
                   }
                 })}

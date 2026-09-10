@@ -150,9 +150,12 @@ export class ChatWidgetV2Renderer {
 
   private createPartElement(part: MessagePart): HTMLElement {
     if (part.type === "emote") {
-      return this.createEmoteImage(part.url ?? "");
+      return this.createEmoteImage(part.url);
     }
-    return this.createTextElement(part.text ?? "", this._config.messageFont);
+    if (part.type === "url") {
+      return this.createUrlElement(part.domain, part.href);
+    }
+    return this.createTextElement(part.text, this._config.messageFont);
   }
 
   private createBadgeImage(url: string): HTMLImageElement {
@@ -185,6 +188,18 @@ export class ChatWidgetV2Renderer {
     el.style.display = "inline";
     el.textContent = text;
     this.applyFontStyle(el, font, colorOverride);
+    return el;
+  }
+
+  private createUrlElement(domain: string, href: string): HTMLElement {
+    const el = document.createElement("span");
+    el.style.display = "inline";
+    el.textContent = domain;
+    el.style.color = "#3ea6ff";
+    el.style.textDecoration = "underline";
+    el.style.cursor = "pointer";
+    this.applyFontStyle(el, this._config.messageFont);
+    el.style.color = "#3ea6ff";
     return el;
   }
 

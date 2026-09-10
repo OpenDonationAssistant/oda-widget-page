@@ -36,6 +36,7 @@ import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSetti
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
 import { CustomWidgetSettings } from "../pages/CustomWidget/CustomWidgetSettings";
 import { ChatWidgetSettings } from "../pages/ChatWidget/ChatWidgetSettings";
+import { EmoteWallWidgetSettings } from "../pages/EmoteWall/EmoteWallWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -235,7 +236,17 @@ export const WIDGET_TYPES = [
     description:
       "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick",
     create: () => new ChatWidgetSettings(),
-  }
+  },
+  {
+    name: "emote-wall",
+    title: "Стена эмоций",
+    icon: <span className="material-symbols-sharp">sentiment_very_satisfied</span>,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Виджет, отображающий летящие эмоции из чата поверх стрима",
+    create: () => new EmoteWallWidgetSettings(),
+  },
 ];
 
 interface SavedProperty {
