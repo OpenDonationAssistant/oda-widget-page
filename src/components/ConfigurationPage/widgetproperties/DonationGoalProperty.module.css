@@ -3,6 +3,11 @@
   font-weight: 900;
 }
 
+.modedescription {
+  font-size: 18px;
+  color: var(--oda-color-550);
+}
+
 .goalcontainer {
   position: relative;
   padding-left: 18px;
