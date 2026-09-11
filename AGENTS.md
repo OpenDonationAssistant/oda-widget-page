@@ -1,79 +1,114 @@
-# AGENTS.md
+# PROJECT KNOWLEDGE BASE
 
-Open Donation Assistant (ODA) "widget page" — a React 18 SPA serving both a streamer
-configuration dashboard (`/configuration/*`) and live streamer widgets (`/{widgetType}/:widgetId`).
-Note: the npm package name is `oda-console`; the repo/dir is `oda-widget-page`.
+**Generated:** 2026-09-11 10:17 UTC
+**Commit:** e91e29c
+**Branch:** master
 
-## Commands
+## OVERVIEW
+ODA Widgets (`oda-console`) — React 18 + TypeScript SPA for configuring and rendering streaming widgets (alerts, chat, donation goals, etc.). Built with Create React App (react-scripts 5), MobX state, Ant Design 5, i18next, STOMP/WebSocket realtime, and two web workers (SharedWorker logger + ServiceWorker emote cache).
 
-- `npm start` — dev server on **port 3001** (`PORT` is set in `.env.development`, not the CRA default 3000).
-- `npm run build` — runs the `prebuild` hook (bundles the service worker, see below) then `react-scripts build`.
-- `npm run build-worker` — rebuild `public/logger-worker.js` from `src/sw/` in development mode.
-- `npm test` — Jest via `react-scripts test` (watch mode by default; use `CI=true npm test` for one-shot).
-- `npm run storybook` — Storybook on port 6006; `npm run build-storybook` for a static build.
-- `npx playwright test` — Playwright (no npm script; config in `playwright.config.ts`, tests in `tests/`).
+## STRUCTURE
+```
+oda-widget-page/
+├── src/                  # all application code (535 files)
+│   ├── pages/            # 29 widget feature modules (one dir per widget)
+│   ├── components/       # shared UI + ConfigurationPage (property editors)
+│   ├── stores/           # global MobX stores
+│   ├── icons/            # hand-rolled SVG icon components
+│   ├── sw/               # worker sources (logger-worker, emote-cache-worker)
+│   ├── logic/            # playlist, voice controllers
+│   ├── types/            # domain types (Preset, WidgetData, Widget)
+│   ├── locales/          # i18n (en, ru)
+│   └── index.tsx         # main entry: router, providers, bootstrap
+├── scripts/              # esbuild worker bundlers (prebuild step)
+├── public/               # static + GENERATED worker bundles (gitignored)
+├── tests/                # Playwright e2e (boilerplate only)
+├── .storybook/           # Storybook 10 config
+└── Dockerfile            # node:20 build → httpd:2.4-alpine serve
+```
 
-There are **no `lint` or `typecheck` scripts**. `eslint.config.js` is a flat config that only applies
-Storybook's recommended rules and ignores `src/videoplayer.js`. Real type checking is
-`npx tsc --noEmit` — the build does *not* fail on type errors (see below).
+## WHERE TO LOOK
+| Task | Location | Notes |
+|------|----------|-------|
+| Add a new widget | `src/pages/<WidgetName>/` | Follow `<Name>Widget.tsx` + `<Name>WidgetPage.tsx` + `<Name>WidgetSettings.tsx` + `<Name>Store.ts(x)` pattern |
+| Add a property editor | `src/components/ConfigurationPage/widgetproperties/` | One file per widget setting input |
+| Add widget settings UI | `src/components/ConfigurationPage/widgetsettings/` | Per-widget settings panels |
+| Global state | `src/stores/` | MobX `makeAutoObservable` classes + React contexts |
+| Realtime events | `src/sw/logger-worker/handlers/` | Per-platform chat/donation handlers |
+| Emote caching | `src/sw/emote-cache-worker/` | ServiceWorker, 7TV cache-first |
+| Routing / bootstrap | `src/index.tsx` | `createBrowserRouter`, all routes defined here |
+| Env endpoints | `.env.*` | `REACT_APP_<SERVICE>_API_ENDPOINT` naming |
+| Worker rebuild | `npm run build-worker` / `build-emote-cache-worker` | esbuild IIFE, env inlined via `define` |
 
-## Env & build quirks
+## CODE MAP
+| Symbol | Type | Location | Refs | Role |
+|--------|------|----------|------|------|
+| `createBrowserRouter` | call | `src/index.tsx` | — | Route table (config + ~26 widget routes) |
+| `widgetSettingsLoader` | fn | `src/index.tsx` | all routes | Auth + widget settings fetch per route |
+| `WidgetWrapper` | component | `src/WidgetWrapper.tsx` | widget routes | Socket subscribe/publish shell for embedded widgets |
+| `auth()` / `separateWidgetAuth()` | fn | `src/auth.ts` | loaders | OAuth session, token in localStorage |
+| `sendMessageToWorker` | fn | `src/worker.ts` | many | SharedWorker port singleton |
+| `registerEmoteCacheWorker` | fn | `src/emoteCacheWorker.ts` | index.tsx | SW registration + emote forwarding |
+| `DefaultEventBus` | class | `src/bus/EventBus.ts` | widgets | Event pub/sub |
+| `DefaultAppStore` | class | `src/stores/AppStore.ts` | index.tsx | Global app state |
+| `DefaultWidgetStore` | class | `src/stores/WidgetStore.ts` | index.tsx | Widget settings state |
+| `DefaultEmotesStore` | class | `src/stores/EmotesStore.ts` | widgets | 7TV emote fetching |
+| `FontStore` | class | `src/stores/FontStore.ts` | index.tsx | Font loading/context |
+| `ErrorStore` | class | `src/stores/ErrorStore.ts` | index.tsx | Global error hub |
+| `register()` (handlers) | fn | `src/sw/logger-worker/handlers/*` | logger-worker.ts | Per-platform event registration |
+| `buildOtelPayload` | fn | `src/sw/logger-worker/otel-payload.ts` | worker | OpenTelemetry log payloads |
 
-- All config flows through CRA-style `REACT_APP_*` variables. Backend endpoints are prefixed per
-  microservice, e.g. `REACT_APP_WIDGET_API_ENDPOINT`, `REACT_APP_CONFIG_API_ENDPOINT`,
-  `REACT_APP_WS_ENDPOINT` (STOMP WebSocket). Most values are supplied per environment via `.env*`
-  files and are not committed defaults.
-- `.env` sets `TSC_COMPILE_ON_ERROR=true`, `ESLINT_NO_DEV_ERRORS=true`, `DISABLE_REACT_ERROR_OVERLAY=true`
-  — so `npm run build` **tolerates TS/lint errors** and the dev error overlay is suppressed.
-  `tsconfig.json` has `strict: true`, but you must run `npx tsc --noEmit` yourself to catch type errors.
-- `.npmrc`: `legacy-peer-deps=true` (required — react-scripts 5 + React 18 + Storybook 10 have
-  conflicting peers) and `@opendonationassistant:registry=https://npm.pkg.github.com` (private packages;
-  needs a GitHub Packages token — `gpr_token` build arg in the Dockerfile, `GPR_TOKEN` secret in CI).
+## CONVENTIONS
+- **Widget folder pattern** (canonical, see `src/pages/AuctionWidget/README.md`): `<Name>Widget.tsx` (OBS/embed), `<Name>WidgetPage.tsx` (router entry, default export), `<Name>WidgetSettings.tsx`, `<Name>Store.ts(x)`, `<Name>State.ts`, `<Name>Demo*.ts` (mock variants), `<Name>.module.css`.
+- **Stores**: MobX `makeAutoObservable(this)`, `_`-prefixed private members, getters for observed state. Interface + `Default*` impl + `Demo*` impl + React context per store.
+- **Env vars**: `REACT_APP_<SERVICE>_API_ENDPOINT` SCREAMING_SNAKE_CASE, read via `process.env.REACT_APP_*`.
+- **CSS**: CSS Modules (`*.module.css`) colocated; global CSS at `src/` root (`ant.css`, `index.css`, `newstyle.css`).
+- **Formatting**: double quotes, no semicolons (manual — no Prettier config).
+- **Test utils**: co-located `<Component>.test-utils.tsx` factories, consumed by adjacent `*.stories.tsx`.
+- **Workers**: sources in `src/sw/`, bundled by `scripts/*.mjs` esbuild to `public/*.js` (gitignored). `prebuild` runs before every `npm run build`.
 
-## Service worker (non-obvious build step)
+## ANTI-PATTERNS (THIS PROJECT)
+- **Do NOT commit generated worker bundles** — `public/logger-worker.js` / `public/emote-cache-worker.js` are gitignored build outputs.
+- **Do NOT add new plain-CSS siblings** — use CSS Modules; legacy plain CSS exists in `components/ConfigurationPage/css/` and per-page.
+- **Do NOT write stores as `.tsx` without JSX** — prefer `.ts`; existing `.tsx` stores are legacy.
+- **Do NOT add `any` liberally** — `strict: true` is on; existing `any` usage is debt.
+- **Do NOT rely on `.env.systemd`** — CRA only loads `.env`, `.env.development`, `.env.test`, `.env.production`.
+- **Do NOT add routes with inconsistent URL casing** — existing routes mix kebab and non-hyphenated paths; keep new ones kebab-case.
+- **Do NOT touch the `window.onerror`/`onunhandledrejection` block in `index.tsx` casually** — it is commented out; changing it requires understanding the global error recovery design.
 
-The service worker in `src/sw/logger-worker/` is **not built by react-scripts**.
-`scripts/build-worker.mjs` (esbuild) bundles `src/sw/logger-worker/logger-worker.ts` into
-`public/logger-worker.js`, inlining only `REACT_APP_*` env vars at build time. That output file is
-gitignored. The `prebuild` hook runs it for production. If you edit `src/sw/` code or add a
-`REACT_APP_*` var used inside the worker, run `npm run build-worker` (dev) or `npm run build`
-to regenerate before testing.
+## UNIQUE STYLES
+- Dual ESLint: legacy `eslintConfig` in package.json (CRA) + flat `eslint.config.js` (Storybook plugin only).
+- `browserslist` relaxed to "last 1" Chrome/Firefox/Safari.
+- Private npm registry: `@opendonationassistant/*` from GitHub Packages (`.npmrc`, `legacy-peer-deps=true`).
+- Two realtime stacks: modern `@stomp/stompjs` (active) + legacy `socket.io-client` (unused).
+- `var` used in `src/socket.ts` (deviation).
+- Known typo: `alertWidgetCommans` in `src/config.ts`.
 
-## Architecture
+## COMMANDS
+```bash
+npm start                    # dev server, PORT=3001 (set in .env.development, not CRA default 3000)
+npm run build-worker         # rebuild logger SharedWorker (dev)
+npm run build-emote-cache-worker  # rebuild emote-cache SW (dev)
+npm run build                # prebuild (workers) + react-scripts build → build/
+npm test                     # Jest (CRA) watch mode; CI=true npm test for one-shot
+npm run storybook            # Storybook dev, port 6006
+npx playwright test          # e2e (tests/example.spec.ts only)
+npx tsc --noEmit             # the REAL typecheck — build tolerates TS errors
+```
 
-- Entry: `src/index.tsx` — a single `createBrowserRouter` defining every route.
-- `src/pages/` — one folder per feature/widget (26 pages). Widget routes are `/{type}/:widgetId`;
-  the dashboard is under `/configuration/*`.
-- `src/components/` — shared components plus `ConfigurationPage/` (Header/Toolbar).
-- `src/stores/` — state management is **MobX** (`mobx` + `mobx-react-lite`), not Redux/Context.
-- `src/bus/EventBus.ts` — central event bus; persists events to IndexedDB and relays via STOMP.
-  Used by the service worker handlers.
-- `src/sw/logger-worker/handlers/` — chat/donation provider shims (Twitch, VK Live, Kick,
-  StreamElements, DonationAlerts, DonatePay/DonatePay-EU/DonateX). Donation handlers register only
-  when the `SW_DONATIONS` feature flag is enabled (`src/shared/features.ts`).
-- `src/socket.ts` — STOMP-over-WebSocket (`@stomp/stompjs`) for realtime widget commands
-  (`/topic/commands`, e.g. reload).
-- Styling: Ant Design 5 (dark theme), Bootstrap 5, plus global CSS
-  (`index.css`, `ant.css`, `ant-override.css`, `newstyle.css`).
-- i18n: `i18next` + `react-i18next`, fallback language `ru`; most UI strings are Russian.
-  Locale JSON lives in `src/locales/`.
+## AUTH
+OTP-exchange + refresh-token flow (`src/auth.ts`, `src/pages/Login/Login.tsx`). Tokens in `localStorage`: `access-token`, `refresh-token`, per-widget `{widgetId}-access-token`. `?separateSession` query param gives a widget an isolated auth session. Worker learns the user via `USER_AUTHORIZED` postMessage.
 
-## Auth
-
-OTP-exchange + refresh-token flow (`src/auth.ts`, `src/pages/Login/Login.tsx`). Tokens live in
-`localStorage`: `access-token`, `refresh-token`, and per-widget `{widgetId}-access-token`. A
-`?separateSession` query param gives a widget an isolated auth session. The service worker learns
-the logged-in user via a `USER_AUTHORIZED` `postMessage`.
-
-## Deploy / CI
-
-- Docker: multi-stage — `node:20` builds, `httpd:2.4-alpine` serves `build/`. `httpd.conf` rewrites
-  all non-file paths to `index.html` (SPA).
-- CI (`.github/workflows/docker-image.yml`) triggers on push to **`master`** (not `main`): builds and
-  pushes `ghcr.io/opendonationassistant/oda-widget-page:{RUN_NUMBER}`, then tags git with the run number.
-- The default branch is `master`.
-
-## Testing reality check
-
-There are effectively no real tests. `tests/example.spec.ts` is the untouched Playwright scaffold
-(hits `playwright.dev`). `npm test` is the stock CRA Jest setup. Don't assume meaningful coverage exists.
+## NOTES
+- **No `lint` or `typecheck` scripts exist.** `eslint.config.js` is flat config applying only Storybook rules. `.env` sets `TSC_COMPILE_ON_ERROR=true` / `ESLINT_NO_DEV_ERRORS=true` / `DISABLE_REACT_ERROR_OVERLAY=true` — `npm run build` tolerates TS/lint errors; run `npx tsc --noEmit` yourself.
+- `npm run build` does NOT regenerate workers — only `prebuild` does. A raw `react-scripts build` ships stale workers. If you edit `src/sw/` or add a `REACT_APP_*` var used in a worker, run `npm run build-worker` (dev) or `npm run build`.
+- `EventBus` (`src/bus/EventBus.ts`) persists events to IndexedDB and relays via STOMP.
+- i18n fallback language is `ru`; most UI strings are Russian. Locale JSON in `src/locales/`.
+- Donation handlers in `src/sw/logger-worker/handlers/` register only when the `SW_DONATIONS` feature flag is enabled (`src/shared/features.ts`).
+- `eslint.config.js` references `src/videoplayer.js` in `globalIgnores` — file does not exist (stale).
+- `src/stories/` is CRA boilerplate, not real app code.
+- `AuctionWidgetPage.tsx` imports a demo store (commented-out real store) — production risk.
+- `CommandsStore.ts` / `RewardsStore.ts` `load()`/`save()` are empty stubs — feature non-functional.
+- CI (`.github/workflows/docker-image.yml`) runs NO tests — Docker build + push to GHCR only. Triggers on push to `master` (not `main`).
+- Image tag = GitHub RUN_NUMBER (monotonic integer), also pushed as git tag.
+- `.npmrc`: `legacy-peer-deps=true` (required — react-scripts 5 + React 18 + Storybook 10 have conflicting peers) + `@opendonationassistant` registry from GitHub Packages (needs `gpr_token` build arg / `GPR_TOKEN` secret).
