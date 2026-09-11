@@ -20,6 +20,7 @@ enum Page {
   HISTORY,
   AUTOMATION,
   COMMANDSREWARDS,
+  LOYALTY,
   GUIDES,
   INTEGRATIONS,
   BOTS,
@@ -64,6 +65,27 @@ const allButtons: Section[] = [
   //   ),
   //   label: "menu-commands-rewards",
   // },
+  {
+    page: Page.LOYALTY,
+    url: "/configuration/loyalty-page",
+    active: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-800)", marginRight: "3px" }}
+      >
+        loyalty
+      </span>
+    ),
+    nonactive: (
+      <span
+        className="material-symbols-sharp"
+        style={{ color: "var(--oda-color-500)", marginRight: "3px" }}
+      >
+        loyalty
+      </span>
+    ),
+    label: "menu-loyalty",
+  },
   {
     page: Page.HISTORY,
     url: "/configuration/history-page",
