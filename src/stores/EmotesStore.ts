@@ -170,7 +170,10 @@ export class DefaultEmotesStore implements EmotesStore {
         ? [this.fetchChannelEmotes(channelId)]
         : [this.fetchGlobalEmotes()];
 
-      const sources = await Promise.all(tasks);
+      const sources = await Promise.all(tasks).catch((error) => {
+        log.error({ error }, "Failed to load emotes", error);
+        return [];
+      });
 
       const emotes: Record<string, EmoteItem> = {};
       for (const emote of sources.flat()) {
