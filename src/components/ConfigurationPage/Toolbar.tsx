@@ -19,6 +19,7 @@ enum Page {
   PAYMENTPAGE,
   HISTORY,
   AUTOMATION,
+  COMMANDSREWARDS,
   GUIDES,
   INTEGRATIONS,
   BOTS,
@@ -42,6 +43,27 @@ const allButtons: Section[] = [
     nonactive: <WidgetsIcon color="var(--oda-color-500)" />,
     label: "menu-widgets",
   },
+  // {
+  //   page: Page.COMMANDSREWARDS,
+  //   url: "/configuration/commands-rewards-page",
+  //   active: (
+  //     <span
+  //       className="material-symbols-sharp"
+  //       style={{ color: "var(--oda-color-800)", marginRight: "3px" }}
+  //     >
+  //       workspace_premium
+  //     </span>
+  //   ),
+  //   nonactive: (
+  //     <span
+  //       className="material-symbols-sharp"
+  //       style={{ color: "var(--oda-color-500)", marginRight: "3px" }}
+  //     >
+  //       workspace_premium
+  //     </span>
+  //   ),
+  //   label: "menu-commands-rewards",
+  // },
   {
     page: Page.HISTORY,
     url: "/configuration/history-page",

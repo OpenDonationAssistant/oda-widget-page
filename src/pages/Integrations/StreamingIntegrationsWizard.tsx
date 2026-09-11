@@ -1,3 +1,4 @@
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import {
   Card,
@@ -11,9 +12,12 @@ import {
   Wizard,
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
-import { useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import { uuidv7 } from "uuidv7";
+import { Input } from "antd";
+import { TokenStore, TokenStoreContext } from "../../stores/TokenStore";
+import classes from "./IntegrationsWizard.module.css";
 
 export const ChooseStreamingPlatformComponent = observer(() => {
   const continuation = useContext(ContinuationContext);
@@ -51,6 +55,15 @@ export const ChooseStreamingPlatformComponent = observer(() => {
     </CardList>
   );
 });
+// <Card
+//   selected={selection.id === "youtube"}
+//   onClick={() => {
+//     selection.id = "youtube";
+//     continuation.canContinue = true;
+//   }}
+// >
+//   <CardTitle>YouTube</CardTitle>
+// </Card>
 
 function base64urlEncode(buffer: Uint8Array) {
   return btoa(String.fromCharCode(...buffer))
@@ -117,14 +130,187 @@ function openSSO(platform: string) {
   }
 }
 
+class YouTubeWizardStore {
+  private _handle: string = "";
+  private _apiKey: string = "";
+  private _resolvedChannelId: string | null = null;
+  private _resolvedChannelTitle: string | null = null;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  public get handle() {
+    return this._handle;
+  }
+  public set handle(value: string) {
+    this._handle = value;
+  }
+
+  public get apiKey() {
+    return this._apiKey;
+  }
+  public set apiKey(value: string) {
+    this._apiKey = value;
+  }
+
+  public get resolvedChannelId() {
+    return this._resolvedChannelId;
+  }
+  public set resolvedChannelId(value: string | null) {
+    this._resolvedChannelId = value;
+  }
+
+  public get resolvedChannelTitle() {
+    return this._resolvedChannelTitle;
+  }
+  public set resolvedChannelTitle(value: string | null) {
+    this._resolvedChannelTitle = value;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// YouTube wizard step components
+// ---------------------------------------------------------------------------
+
+export const YouTubeHandleInputComponent = observer(() => {
+  const wizardStore = useContext(YouTubeWizardStoreContext);
+
+  return (
+    <div className={`${classes.content}`}>
+      <div className={`${classes.instruction}`}>
+        Укажите хэндл (handle) вашего YouTube-канала. Это часть URL вашего
+        канала после <code>@</code>, например{" "}
+        <code style={{ userSelect: "text" }}>@MyChannel</code>.
+        <br />
+        <br />
+        Хэндл будет использован для автоматического поиска вашего канала в
+        YouTube.
+      </div>
+      <Input
+        placeholder="@handle канала"
+        value={wizardStore.handle}
+        onChange={(e) => (wizardStore.handle = e.target.value)}
+        style={{ marginTop: 12 }}
+      />
+    </div>
+  );
+});
+
+export const YouTubeApiKeyInputComponent = observer(() => {
+  const wizardStore = useContext(YouTubeWizardStoreContext);
+
+  return (
+    <div className={`${classes.content}`}>
+      <div className={`${classes.instruction}`}>
+        Для подключения YouTube необходим ключ API Google (Google API Key).
+        <br />
+        <br />
+        Чтобы получить ключ API:
+        <br />
+        <br />
+        1. Откройте{" "}
+        <a
+          href="https://console.cloud.google.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Google Cloud Console
+        </a>{" "}
+        и войдите в свой аккаунт Google.
+        <br />
+        <br />
+        2. Создайте новый проект (или выберите существующий): нажмите{" "}
+        <b>SELECT PROJECT</b> → <b>New Project</b>, введите название и нажмите{" "}
+        <b>CREATE</b>.
+        <br />
+        <br />
+        3. В левом меню перейдите в <b>APIs &amp; Services</b> → <b>Library</b>.
+        Найдите <b>YouTube Data API v3</b> и нажмите <b>ENABLE</b>.
+        <br />
+        <br />
+        4. Перейдите в <b>APIs &amp; Services</b> → <b>Credentials</b>. Нажмите{" "}
+        <b>CREATE CREDENTIALS</b> → <b>API key</b>. Скопируйте сгенерированный
+        ключ.
+        <br />
+        <br />
+        5. Вставьте скопированный ключ в поле ниже.
+      </div>
+      <Input
+        placeholder="Google API Key"
+        value={wizardStore.apiKey}
+        onChange={(e) => (wizardStore.apiKey = e.target.value)}
+        style={{ marginTop: 12 }}
+      />
+    </div>
+  );
+});
+
+export const YouTubeSuccessComponent = observer(() => {
+  const wizardStore = useContext(YouTubeWizardStoreContext);
+
+  return (
+    <div className={`${classes.content}`}>
+      <div className={`${classes.instruction}`}>
+        YouTube-канал успешно подключён!
+        <br />
+        <br />
+        Канал: {wizardStore.resolvedChannelTitle} (
+        {wizardStore.resolvedChannelId})
+        <br />
+        Хэндл: {wizardStore.handle}
+      </div>
+    </div>
+  );
+});
+
+// ---------------------------------------------------------------------------
+// YouTube wizard store context
+// ---------------------------------------------------------------------------
+
+const YouTubeWizardStoreContext = createContext(new YouTubeWizardStore());
+
+// ---------------------------------------------------------------------------
+// Channel handle → channel ID resolver (YouTube Data API v3)
+// ---------------------------------------------------------------------------
+
+async function resolveYouTubeChannel(
+  apiKey: string,
+  handle: string,
+): Promise<{ channelId: string; title: string } | null> {
+  const cleanHandle = handle.replace(/^@/, "");
+  const url =
+    `https://www.googleapis.com/youtube/v3/search` +
+    `?part=snippet&type=channel&q=${encodeURIComponent(cleanHandle)}` +
+    `&key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(url);
+  if (!response.ok) return null;
+  const json = await response.json();
+  const item = json.items?.[0];
+  if (!item?.id?.channelId) return null;
+  return {
+    channelId: item.id.channelId,
+    title: item.snippet?.title ?? cleanHandle,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Main streaming integrations wizard
+// ---------------------------------------------------------------------------
+
 export const StreamingIntegrationsWizard = observer(() => {
   const [continuation] = useState<Continuation>(() => new Continuation());
   const selection = useContext(SelectedIndexContext);
+  const tokenStore = useContext(TokenStoreContext);
+  const [wizardStore] = useState<YouTubeWizardStore>(
+    () => new YouTubeWizardStore(),
+  );
 
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     () =>
       new WizardConfigurationStore({
         steps: [
+          // Step 1 — platform chooser
           {
             title: "Добавить платформу",
             subtitle:
@@ -134,22 +320,111 @@ export const StreamingIntegrationsWizard = observer(() => {
               if (selection.id === null) {
                 return Promise.resolve(false);
               }
+              if (selection.id === "youtube") {
+                return Promise.resolve(true);
+              }
               return openSSO(selection.id);
             },
+          },
+          // Step 2 — YouTube channel handle
+          {
+            title: "Добавить YouTube",
+            subtitle: "Укажите хэндл вашего YouTube-канала",
+            content: <YouTubeHandleInputComponent />,
+            condition: () => Promise.resolve(selection.id === "youtube"),
+            handler: () => {
+              if (!wizardStore.handle) return Promise.resolve(false);
+              return Promise.resolve(true);
+            },
+          },
+          // Step 3 — YouTube API key
+          {
+            title: "Добавить YouTube",
+            subtitle: "Введите Google API Key",
+            content: <YouTubeApiKeyInputComponent />,
+            condition: () => Promise.resolve(selection.id === "youtube"),
+            handler: async () => {
+              if (!wizardStore.apiKey) return false;
+              const result = await resolveYouTubeChannel(
+                wizardStore.apiKey,
+                wizardStore.handle,
+              );
+              if (!result) {
+                return false;
+              }
+              runInAction(() => {
+                wizardStore.resolvedChannelId = result.channelId;
+                wizardStore.resolvedChannelTitle = result.title;
+              });
+              tokenStore?.addToken("GoogleApiKey", wizardStore.apiKey, {
+                channelId: result.channelId,
+                name: result.title,
+                handle: wizardStore.handle,
+              } as unknown as { [key: string]: object });
+              continuation.canContinue = true;
+              return true;
+            },
+          },
+          // Step 4 — success (information step)
+          {
+            title: "Добавить YouTube",
+            subtitle: "YouTube-канал подключён",
+            content: <YouTubeSuccessComponent />,
+            condition: () => Promise.resolve(selection.id === "youtube"),
+            isInformation: true,
           },
         ],
         dynamicStepAmount: true,
         reset: () => {
           selection.id = null;
           continuation.canContinue = false;
+          wizardStore.handle = "";
+          wizardStore.apiKey = "";
+          wizardStore.resolvedChannelId = null;
+          wizardStore.resolvedChannelTitle = null;
         },
         continuationContext: continuation,
       }),
   );
+
+  // Enable "Next" while typing the channel handle (YouTube step)
+  useEffect(() => {
+    const dispose = reaction(
+      () => wizardStore.handle,
+      (handle) => {
+        if (
+          selection.id === "youtube" &&
+          wizardStore.resolvedChannelId === null
+        ) {
+          continuation.canContinue = handle.length > 0;
+        }
+      },
+    );
+    return dispose;
+  }, [wizardStore, continuation, selection.id]);
+
+  // Enable "Next" while typing the API key (YouTube step)
+  useEffect(() => {
+    const dispose = reaction(
+      () => wizardStore.apiKey,
+      (apiKey) => {
+        if (
+          selection.id === "youtube" &&
+          wizardStore.resolvedChannelId === null
+        ) {
+          continuation.canContinue = apiKey.length > 0;
+        }
+      },
+    );
+    return dispose;
+  }, [wizardStore, continuation, selection.id]);
+
   return (
-    <ContinuationContext.Provider value={continuation}>
-      <Wizard configurationStore={wizardConfiguration} />
-      <CardButton onClick={() => wizardConfiguration.next()} />
-    </ContinuationContext.Provider>
+    <YouTubeWizardStoreContext.Provider value={wizardStore}>
+      <ContinuationContext.Provider value={continuation}>
+        <Wizard configurationStore={wizardConfiguration} />
+        <CardButton onClick={() => wizardConfiguration.next()} />
+      </ContinuationContext.Provider>
+    </YouTubeWizardStoreContext.Provider>
   );
 });

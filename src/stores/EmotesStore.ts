@@ -2,7 +2,14 @@ import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { createContext } from "react";
 
-export type EmoteType = "twitch" | "bttv" | "ffz" | "7tv" | "vklive" | "kick" | null;
+export type EmoteType =
+  | "twitch"
+  | "bttv"
+  | "ffz"
+  | "7tv"
+  | "vklive"
+  | "kick"
+  | null;
 
 export const SEVENTV_URL = "https://7tv.io/v3/gql";
 export const SEVENTV_QUERY = `
@@ -83,14 +90,14 @@ export interface EmotesStoreOptions {
 export interface EmotesStore {
   emotes: Record<string, EmoteItem>;
   loading: boolean;
-  load(channelId: string): void;
+  load(channelId: string): Promise<void>;
   getEmote(code: string): EmoteItem | undefined;
 }
 
 export class DemoEmotesStore implements EmotesStore {
   emotes = {};
   loading = false;
-  load = () => {};
+  load = async () => {};
   getEmote = () => undefined;
 }
 
@@ -156,16 +163,17 @@ export class DefaultEmotesStore implements EmotesStore {
     this.options = options;
   }
 
-  public async load(channelId: string): Promise<void> {
+  public async load(channelId?: string): Promise<void> {
     this._loading = true;
     try {
-      const tasks: Promise<SevenTVEmote[]>[] = [this.fetchGlobalEmotes()];
+      const tasks: Promise<SevenTVEmote[]>[] = channelId
+        ? [this.fetchChannelEmotes(channelId)]
+        : [this.fetchGlobalEmotes()];
 
-      if (channelId) {
-        tasks.push(this.fetchChannelEmotes(channelId));
-      }
-
-      const sources = await Promise.all(tasks);
+      const sources = await Promise.all(tasks).catch((error) => {
+        log.error({ error }, "Failed to load emotes", error);
+        return [];
+      });
 
       const emotes: Record<string, EmoteItem> = {};
       for (const emote of sources.flat()) {
@@ -174,19 +182,21 @@ export class DefaultEmotesStore implements EmotesStore {
       }
 
       this._emotes = emotes;
-      this.options?.onEmotesLoaded?.(
-        Object.values(emotes).map((emote) => emote.link),
-      );
+      const urls = Object.values(emotes).map((emote) => emote.link);
+      console.log({ channelId, urls }, "loaded emotes");
+      this.options?.onEmotesLoaded?.(urls);
       log.debug({ count: Object.keys(this._emotes).length }, "loaded emotes");
     } catch (error) {
-      log.error("Failed to load emotes", error);
+      log.error({ error }, "Failed to load emotes", error);
     } finally {
       this._loading = false;
     }
   }
 
   private async fetchGlobalEmotes(): Promise<SevenTVEmote[]> {
-    const json = await sevenTVRequest(SEVENTV_QUERY, { format: [SEVENTV_FORMAT] });
+    const json = await sevenTVRequest(SEVENTV_QUERY, {
+      format: [SEVENTV_FORMAT],
+    });
     return json.data?.namedEmoteSet?.emotes ?? [];
   }
 
@@ -196,7 +206,8 @@ export class DefaultEmotesStore implements EmotesStore {
       format: [SEVENTV_FORMAT],
     });
     return (
-      json.data?.userByConnection?.emote_sets?.flatMap((set) => set.emotes) ?? []
+      json.data?.userByConnection?.emote_sets?.flatMap((set) => set.emotes) ??
+      []
     );
   }
 

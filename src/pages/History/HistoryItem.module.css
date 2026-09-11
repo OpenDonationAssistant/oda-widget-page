@@ -1,8 +1,15 @@
 .item {
-  min-height: 100px;
   background-color: var(--oda-color-150);
   border-radius: 16px;
   padding: 12px 15px;
+}
+
+.singleitem {
+  min-height: 100px;
+}
+
+.groupeditem {
+  min-height: 30px;
 }
 
 .active {
@@ -101,4 +108,9 @@
 
 .nickname {
   margin-left: 3px;
+}
+
+.groupeditems {
+  padding-left: 9px;
+  padding-right: 9px;
 }

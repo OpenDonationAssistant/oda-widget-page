@@ -18,7 +18,6 @@ import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { NewFeature } from "../../components/Experimental/Experimental";
 
 export class IntegrationWizardStore {
   private _system:
@@ -94,11 +93,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
         onClick={() => (context.system = "unofficialdonationalerts")}
       >
         <Flex className="full-width" vertical justify="flex-start">
-          <NewFeature show={true}>
-            <CardTitle>
-              Boosty и DonationAlerts через неофициальный api
-            </CardTitle>
-          </NewFeature>
+          <CardTitle>Boosty и DonationAlerts через неофициальный api</CardTitle>
           <div className={`${classes.description}`}>
             Делает полноценную интеграцию - учитывает донаты с сайта
             DonationAlerts в таких виджетах как "Топ донатеры", "Таймер до конца
@@ -159,9 +154,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
       >
         <Flex className="full-width" vertical justify="flex-start">
           <CardTitle>
-            <NewFeature show={true}>
-              <span>Tribute</span>
-            </NewFeature>
+            <span>Tribute</span>
           </CardTitle>
           <div className={`${classes.description}`}>
             Позволяет учитывать донаты с Tribute в таких виджетах как "Топ

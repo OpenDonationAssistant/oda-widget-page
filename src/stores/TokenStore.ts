@@ -14,7 +14,11 @@ export interface Token {
 
 export interface TokenStore {
   tokens: Token[];
-  addToken: (system: string, token: string) => void;
+  addToken: (
+    system: string,
+    token: string,
+    settings?: { [key: string]: object },
+  ) => void;
   deleteToken: (tokenId: string) => void;
   updateToken: (token: Token) => void;
   toggleToken: (tokenId: string, enabled: boolean) => void;
@@ -22,7 +26,11 @@ export interface TokenStore {
 
 export class DemoTokenStore implements TokenStore {
   tokens = [];
-  addToken = () => {};
+  addToken = (
+    _system: string,
+    _token: string,
+    _settings?: { [key: string]: object },
+  ) => {};
   deleteToken = () => {};
   updateToken = () => {};
   toggleToken = () => {};
@@ -86,14 +94,18 @@ export class DefaultTokenStore implements TokenStore {
       .then(() => this.load());
   }
 
-  public addToken(system: string, token: string) {
+  public addToken(
+    system: string,
+    token: string,
+    settings?: { [key: string]: object },
+  ) {
     this.client()
       .setToken({
         id: uuidv7(),
         token: token,
         type: "accessToken",
         system: system,
-        settings: {},
+        settings: settings ?? {},
       })
       .then(() => this.load());
   }

@@ -42,6 +42,7 @@ import RutonyChatPage from "./pages/RutonyChat/RutonyChatPage";
 import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
+import CommandsRewardsPage from "./pages/CommandsRewards/CommandsRewardsPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/Button/UtilityButton";
@@ -76,6 +77,8 @@ import CustomWidgetPage from "./pages/CustomWidget/CustomWidgetPage";
 import { ApiPage } from "./pages/Api/ApiPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import ChatWidgetV2Page from "./pages/ChatWidgetV2/ChatWidgetV2Page";
+import EmoteWallWidgetPage from "./pages/EmoteWall/EmoteWallWidgetPage";
+import { forwardEmotesToCache, registerEmoteCacheWorker } from "./emoteCacheWorker";
 
 const errorStore = new ErrorStore();
 initGlobalErrorStore(errorStore);
@@ -159,6 +162,9 @@ function detectPage(path: string): Page {
   }
   if (path.endsWith("automation-page")) {
     return Page.AUTOMATION;
+  }
+  if (path.endsWith("commands-rewards-page")) {
+    return Page.COMMANDSREWARDS;
   }
   if (path.endsWith("gateways")) {
     return Page.GATEWAYS;
@@ -331,6 +337,11 @@ const router = createBrowserRouter([
             loader: widgetSettingsLoader,
           },
           {
+            path: "commands-rewards-page",
+            element: <CommandsRewardsPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
             path: "guides",
             element: <GuidesPage />,
             loader: widgetSettingsLoader,
@@ -426,6 +437,21 @@ const router = createBrowserRouter([
         element: <DonationGoalPage />,
         loader: widgetSettingsLoader,
       },
+      {
+        path: "/stream-credits/:widgetId",
+        element: <StreamCreditsWidgetPage />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/chat/:widgetId",
+        element: <ChatWidgetV2Page />,
+        loader: widgetSettingsLoader,
+      },
+      {
+        path: "/emote-wall/:widgetId",
+        element: <EmoteWallWidgetPage />,
+        loader: widgetSettingsLoader,
+      },
     ],
   },
   {
@@ -450,3 +476,6 @@ if (rootElement) {
     </ErrorStoreContext.Provider>,
   );
 }
+
+registerEmoteCacheWorker();
+forwardEmotesToCache();

@@ -37,6 +37,10 @@ import {
   register as registerVKLiveChatHandler,
   deregister as deregisterVKLiveChatHandler,
 } from "./handlers/vklive-chat";
+import {
+  register as registerYouTubeChatHandler,
+  deregister as deregisterYouTubeChatHandler,
+} from "./handlers/youtube-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { register as registerWorkerStatusHandler } from "./worker-status";
 import {
@@ -121,6 +125,7 @@ function registerCoreHandlers(token: string, recipientId: string) {
   registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerKickChatHandler(token, recipientId, eventbus!, emotesStore!);
+  registerYouTubeChatHandler(token, recipientId, eventbus!, emotesStore!);
   registerWidgetsHandler(token, recipientId, addMessageListener);
 }
 
@@ -146,6 +151,7 @@ function deregisterCoreHandlers() {
   deregisterKickChatHandler();
   deregisterTwitchChatHandler();
   deregisterVKLiveChatHandler();
+  deregisterYouTubeChatHandler();
 }
 
 function deregisterDonationHandlers() {
@@ -172,19 +178,28 @@ type HandlerPair = {
 function reloadHandler(handler: string, token: string) {
   const pairs: Record<string, HandlerPair> = {
     Twitch: {
-      register: () => registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!),
+      register: () =>
+        registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!),
       deregister: deregisterTwitchChatHandler,
     },
     VKLive: {
-      register: () => registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!),
+      register: () =>
+        registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!),
       deregister: deregisterVKLiveChatHandler,
     },
     Kick: {
-      register: () => registerKickChatHandler(token, recipientId, eventbus!, emotesStore!),
+      register: () =>
+        registerKickChatHandler(token, recipientId, eventbus!, emotesStore!),
       deregister: deregisterKickChatHandler,
     },
+    Youtube: {
+      register: () =>
+        registerYouTubeChatHandler(token, recipientId, eventbus!, emotesStore!),
+      deregister: deregisterYouTubeChatHandler,
+    },
     StreamElements: {
-      register: () => registerStreamElementsHandler(token, recipientId, eventbus!),
+      register: () =>
+        registerStreamElementsHandler(token, recipientId, eventbus!),
       deregister: deregisterStreamElementsHandler,
     },
     DonationAlerts: {
@@ -200,7 +215,8 @@ function reloadHandler(handler: string, token: string) {
       deregister: deregisterDonatePayEuHandler,
     },
     UnofficialDonationAlerts: {
-      register: () => registerUnofficialDonationAlertsHandler(token, recipientId),
+      register: () =>
+        registerUnofficialDonationAlertsHandler(token, recipientId),
       deregister: deregisterUnofficialDonationAlertsHandler,
     },
     DonateX: {
@@ -246,9 +262,11 @@ addMessageListener((event: WorkerMessageEvent) => {
     addMessageListener,
   );
   emotesStore = new DefaultEmotesStore({
-    onEmotesLoaded: (urls) => broadcast({ type: "EMOTES_LOADED", urls }),
+    onEmotesLoaded: (urls) => {
+      broadcast({ type: "EMOTES_LOADED", urls });
+    },
   });
-  emotesStore.load("");
+  emotesStore.load();
 
   // One-time handlers — registered once, never duplicated on reload.
   registerLogHandler(recipientId, addMessageListener);

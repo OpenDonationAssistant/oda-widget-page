@@ -22,11 +22,54 @@ export interface Badge {
   url: string;
 }
 
-export interface MessagePart {
-  type: "string" | "emote";
-  text?: string;
-  url?: string;
+export type MessagePart = StringPart | EmotePart | UrlPart;
+
+interface StringPart {
+  type: "string";
+  text: string;
 }
+
+interface EmotePart {
+  type: "emote";
+  text: string;
+  url: string;
+}
+
+interface UrlPart {
+  type: "url";
+  href: string;
+  domain: string;
+}
+
+const URL_REGEX = /https?:\/\/[^\s]+/gi;
+
+const extractDomain = (url: string): string => {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+};
+
+const splitTextByUrls = (text: string): MessagePart[] => {
+  const parts: MessagePart[] = [];
+  let lastIndex = 0;
+
+  for (const match of text.matchAll(URL_REGEX)) {
+    const matchIndex = match.index!;
+    if (matchIndex > lastIndex) {
+      parts.push({ type: "string", text: text.slice(lastIndex, matchIndex) });
+    }
+    parts.push({ type: "url", href: match[0], domain: extractDomain(match[0]) });
+    lastIndex = matchIndex + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push({ type: "string", text: text.slice(lastIndex) });
+  }
+
+  return parts;
+};
 
 const PLATFORM_BADGES: Record<string, Badge> = {
   KICK_CHAT_MESSAGE: {
@@ -56,17 +99,21 @@ export function eventToMessage(event: Event): Message {
       }) ?? [];
 
   let index = 0;
-  const parts: MessagePart[] = [];
+  const rawParts: MessagePart[] = [];
   emotes.forEach((emote: any) => {
-    parts.push({ type: "string", text: text.slice(index, emote.start) });
-    parts.push({
+    rawParts.push({ type: "string", text: text.slice(index, emote.start) });
+    rawParts.push({
       type: "emote",
       text: emote.name,
       url: emote.urls?.["1"],
     });
     index = emote.end;
   });
-  parts.push({ type: "string", text: text.slice(index) });
+  rawParts.push({ type: "string", text: text.slice(index) });
+
+  const parts = rawParts.flatMap((part) =>
+    part.type === "string" ? splitTextByUrls(part.text) : part,
+  );
 
   let badges =
     event

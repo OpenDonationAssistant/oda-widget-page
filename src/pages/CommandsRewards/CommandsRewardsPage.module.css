@@ -1,0 +1,25 @@
+.container {
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.item {
+  background-color: var(--oda-color-150);
+  border-radius: 6px;
+  margin-bottom: 5px;
+  padding: 19px 24px;
+  align-items: center;
+  min-height: 72px;
+}
+
+.deletebutton {
+  width: 48px !important;
+  height: 48px !important;
+  background-color: #231717;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
