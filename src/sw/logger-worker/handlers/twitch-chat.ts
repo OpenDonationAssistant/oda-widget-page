@@ -282,21 +282,26 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
             data.payload.event.message?.text ?? "",
             connection.emotesStore,
           );
-          emotes.push(
-            ...(data.payload.event.message?.fragments ?? [])
-              .filter((fragment: any) => fragment.type === "emote")
-              .map((fragment: any) => {
-                const link = `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`;
-                return {
+          let index = 0;
+          (data.payload.event.message?.fragments ?? []).forEach(
+            (fragment: any) => {
+              if (fragment.type === "emote") {
+                emotes.push({
                   type: "twitch",
                   name: fragment.text,
                   id: fragment.emote.id,
                   gif: false,
-                  urls: { "1": link, "2": link, "4": link },
-                  start: 0,
-                  end: 0,
-                };
-              }),
+                  urls: {
+                    "1": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`,
+                    "2": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/2.0`,
+                    "4": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/4.0`,
+                  },
+                  start: index,
+                  end: index + fragment.text.length,
+                });
+              }
+              index += fragment.text.length;
+            },
           );
           const badges: BadgeDef[] = (data.payload.event.badges ?? [])
             .map((badge: { set_id: string; id: string }) =>

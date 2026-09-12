@@ -85,8 +85,8 @@ export interface Emotes {
   id: string;
   gif: false;
   urls: any;
-  start: 0;
-  end: 0;
+  start: number;
+  end: number;
 }
 
 export interface Variable {

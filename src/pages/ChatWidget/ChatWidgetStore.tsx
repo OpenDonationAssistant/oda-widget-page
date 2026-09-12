@@ -60,7 +60,11 @@ const splitTextByUrls = (text: string): MessagePart[] => {
     if (matchIndex > lastIndex) {
       parts.push({ type: "string", text: text.slice(lastIndex, matchIndex) });
     }
-    parts.push({ type: "url", href: match[0], domain: extractDomain(match[0]) });
+    parts.push({
+      type: "url",
+      href: match[0],
+      domain: extractDomain(match[0]),
+    });
     lastIndex = matchIndex + match[0].length;
   }
 
@@ -88,15 +92,11 @@ const PLATFORM_BADGES: Record<string, Badge> = {
 
 export function eventToMessage(event: Event): Message {
   const text: string = event.get("message_text") ?? "";
+  console.log({ text }, "Initial text");
   let lastIndex = 0;
-  const emotes =
-    event
-      .get("emotes")
-      ?.map((it: any) => {
-        const index = text.indexOf(it.name, lastIndex);
-        lastIndex = index + 1;
-        return { ...it, ...{ start: index, end: index + it.name.length } };
-      }) ?? [];
+  const emotes = (event.get("emotes") ?? []).sort(
+    (a: any, b: any) => a.start - b.start,
+  );
 
   let index = 0;
   const rawParts: MessagePart[] = [];
@@ -110,20 +110,20 @@ export function eventToMessage(event: Event): Message {
     index = emote.end;
   });
   rawParts.push({ type: "string", text: text.slice(index) });
+  console.log({ emotes, rawParts }, "Raw Parts");
 
   const parts = rawParts.flatMap((part) =>
     part.type === "string" ? splitTextByUrls(part.text) : part,
   );
+  console.log({ parts }, "Final Parts");
 
   let badges =
-    event
-      .get("badges")
-      ?.map((it: any) => {
-        return {
-          name: it.name,
-          url: it.url,
-        };
-      }) ?? [];
+    event.get("badges")?.map((it: any) => {
+      return {
+        name: it.name,
+        url: it.url,
+      };
+    }) ?? [];
 
   const platformBadge = PLATFORM_BADGES[event.type];
   if (platformBadge) {
