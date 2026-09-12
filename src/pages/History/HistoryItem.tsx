@@ -496,12 +496,26 @@ export const SingleHistoryItemComponent = observer(
             {settings.showGoalsProperty.value &&
               displayItem.goals &&
               displayItem.goals.length > 0 && (
-                <Flex align="center" className={`${classes.goals}`} gap={6}>
-                  <DonationGoalIcon />
-                  <div style={{ fontSize: `${settings.goalFontSize.value}px` }}>
-                    {displayItem.goals?.map((goal) => goal.goalTitle)}
-                  </div>
-                </Flex>
+                <>
+                  {displayItem.goals
+                    ?.map((it: any) => it.goalTitle)
+                    .map((title: any) => (
+                      <Flex
+                        align="center"
+                        className={`${classes.goals}`}
+                        gap={6}
+                      >
+                        <DonationGoalIcon />
+                        <div
+                          style={{
+                            fontSize: `${settings.goalFontSize.value}px`,
+                          }}
+                        >
+                          {title}
+                        </div>
+                      </Flex>
+                    ))}
+                </>
               )}
           </Flex>
         </Flex>
