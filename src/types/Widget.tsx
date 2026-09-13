@@ -36,12 +36,9 @@ import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSetti
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
 import { CustomWidgetSettings } from "../pages/CustomWidget/CustomWidgetSettings";
 import { ChatWidgetSettings } from "../pages/ChatWidget/ChatWidgetSettings";
-<<<<<<< HEAD
 import { SocialsWidgetSettings } from "../pages/Socials/SocialsWidgetSettings";
 import { MarqueeWidgetSettings } from "../pages/Marquee/MarqueeWidgetSettings";
-=======
 import { EmoteWallWidgetSettings } from "../pages/EmoteWall/EmoteWallWidgetSettings";
->>>>>>> master
 
 export const WIDGET_TYPES = [
   {
