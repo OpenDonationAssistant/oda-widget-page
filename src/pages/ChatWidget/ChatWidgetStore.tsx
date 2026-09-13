@@ -92,8 +92,6 @@ const PLATFORM_BADGES: Record<string, Badge> = {
 
 export function eventToMessage(event: Event): Message {
   const text: string = event.get("message_text") ?? "";
-  console.log({ text }, "Initial text");
-  let lastIndex = 0;
   const emotes = (event.get("emotes") ?? []).sort(
     (a: any, b: any) => a.start - b.start,
   );
@@ -110,12 +108,10 @@ export function eventToMessage(event: Event): Message {
     index = emote.end;
   });
   rawParts.push({ type: "string", text: text.slice(index) });
-  console.log({ emotes, rawParts }, "Raw Parts");
 
   const parts = rawParts.flatMap((part) =>
     part.type === "string" ? splitTextByUrls(part.text) : part,
   );
-  console.log({ parts }, "Final Parts");
 
   let badges =
     event.get("badges")?.map((it: any) => {
@@ -201,7 +197,6 @@ export class DefaultChatWidgetStore implements ChatWidgetStore {
   private _size = 50;
   constructor({}: {}) {
     onWorkerMessage((data) => {
-      console.log(data);
       if (
         data._type === "TWITCH_CHAT_MESSAGE" ||
         data._type === "VKLIVE_CHAT_MESSAGE" ||

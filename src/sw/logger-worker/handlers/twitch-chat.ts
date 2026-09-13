@@ -277,7 +277,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
     case "notification":
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
-          console.log("data.payload.event", data.payload.event);
+          // console.log("data.payload.event", data.payload.event);
           const emotes = emotesFromText(
             data.payload.event.message?.text ?? "",
             connection.emotesStore,

@@ -27,7 +27,6 @@ export function emotesFromText(
     .map((word) => emotesStore.getEmote(word))
     .filter((emote): emote is EmoteItem => Boolean(emote))
     .map(emoteToEventEmote);
-  console.log({ emotes }, "Found emotes");
   let lastIndex = 0;
   const mappedEmotes = emotes.map((it) => {
     const index = text.indexOf(it.name, lastIndex);
