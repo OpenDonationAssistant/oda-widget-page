@@ -170,10 +170,15 @@ export class DefaultEmotesStore implements EmotesStore {
         ? [this.fetchChannelEmotes(channelId)]
         : [this.fetchGlobalEmotes()];
 
-      const sources = await Promise.all(tasks).catch((error) => {
-        log.error({ error }, "Failed to load emotes", error);
-        return [];
-      });
+      const sources = await Promise.all(tasks)
+        .then((results) => {
+          console.log({ results }, "loaded emotes");
+          return results;
+        })
+        .catch((error) => {
+          log.error({ error }, "Failed to load emotes", error);
+          return [];
+        });
 
       const emotes: Record<string, EmoteItem> = {};
       for (const emote of sources.flat()) {
@@ -185,7 +190,10 @@ export class DefaultEmotesStore implements EmotesStore {
       const urls = Object.values(emotes).map((emote) => emote.link);
       console.log({ channelId, urls }, "loaded emotes");
       this.options?.onEmotesLoaded?.(urls);
-      log.debug({ count: Object.keys(this._emotes).length }, "loaded emotes");
+      log.debug(
+        { count: Object.keys(this._emotes).length },
+        "total loaded emotes",
+      );
     } catch (error) {
       log.error({ error }, "Failed to load emotes", error);
     } finally {
@@ -226,7 +234,9 @@ export class DefaultEmotesStore implements EmotesStore {
   }
 
   public getEmote(code: string): EmoteItem | undefined {
-    return this._emotes[code];
+    const found = this._emotes[code];
+    console.log({ code, found }, "getEmote");
+    return found;
   }
 
   public get emotes(): Record<string, EmoteItem> {

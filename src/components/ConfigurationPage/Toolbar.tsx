@@ -199,18 +199,20 @@ export default function Toolbar({ page }: { page: Page }) {
   return (
     <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
-        <button
-          key={button.label}
-          className={`${style.button} ${
-            page === button.page ? "selected" : "inactive"
-          }`}
-          onClick={() => navigate(button.url)}
-        >
-          {page === button.page ? button.active : button.nonactive}
-          <span className={`${classes.toolbarbuttontitle}`}>
-            {t(button.label)}
-          </span>
-        </button>
+        <NewFeature show={button.page === Page.WIDGETS} key={button.label}>
+          <button
+            key={button.label}
+            className={`${style.button} ${
+              page === button.page ? "selected" : "inactive"
+            }`}
+            onClick={() => navigate(button.url)}
+          >
+            {page === button.page ? button.active : button.nonactive}
+            <span className={`${classes.toolbarbuttontitle}`}>
+              {t(button.label)}
+            </span>
+          </button>
+        </NewFeature>
       ))}
       <NewsComponent />
     </div>

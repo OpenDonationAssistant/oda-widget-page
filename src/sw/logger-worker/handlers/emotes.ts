@@ -27,12 +27,12 @@ export function emotesFromText(
     .map((word) => emotesStore.getEmote(word))
     .filter((emote): emote is EmoteItem => Boolean(emote))
     .map(emoteToEventEmote);
+  console.log({ emotes }, "Found emotes");
   let lastIndex = 0;
-  return (
-    emotes.map((it) => {
-      const index = text.indexOf(it.name, lastIndex);
-      lastIndex = index + 1;
-      return { ...it, ...{ start: index, end: index + it.name.length } };
-    }) ?? []
-  );
+  const mappedEmotes = emotes.map((it) => {
+    const index = text.indexOf(it.name, lastIndex);
+    lastIndex = index + 1;
+    return { ...it, ...{ start: index, end: index + it.name.length } };
+  });
+  return mappedEmotes ?? [];
 }
