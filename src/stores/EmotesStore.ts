@@ -183,10 +183,12 @@ export class DefaultEmotesStore implements EmotesStore {
       const emotes: Record<string, EmoteItem> = {};
       for (const emote of sources.flat()) {
         const item = this.toItem(emote);
-        if (item) emotes[item.code] = item;
+        if (item) {
+          emotes[item.code] = item;
+          this._emotes[item.code] = item;
+        }
       }
 
-      this._emotes = emotes;
       const urls = Object.values(emotes).map((emote) => emote.link);
       console.log({ channelId, urls }, "loaded emotes");
       this.options?.onEmotesLoaded?.(urls);
