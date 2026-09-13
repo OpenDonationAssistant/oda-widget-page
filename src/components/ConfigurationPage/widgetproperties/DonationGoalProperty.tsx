@@ -3,7 +3,7 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./DonationGoalProperty.module.css";
 import { log } from "../../../logging";
 import { uuidv7 } from "uuidv7";
-import { Flex } from "antd";
+import { Flex, Segmented } from "antd";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
@@ -14,8 +14,8 @@ import ArrowDown from "../../../icons/ArrowDown";
 import CloseIcon from "../../../icons/CloseIcon";
 import { BorderedIconButton } from "../../IconButton/IconButton";
 import { TextPropertyRawComponent } from "./TextProperty";
-import { LightLabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import { AddListItemButton, List, ListItem } from "../../List/List";
+import { useTranslation } from "react-i18next";
 
 export interface Amount {
   major: number;
@@ -26,9 +26,9 @@ export interface Goal {
   id: string;
   briefDescription: string;
   fullDescription: string;
-  default: boolean;
   requiredAmount: Amount;
   accumulatedAmount: Amount;
+  mode: "choose" | "default" | "all";
 }
 
 const ItemComponent = observer(
@@ -42,9 +42,46 @@ const ItemComponent = observer(
     index: number;
   }) => {
     const paymentPageConfig = useContext(PaymentPageConfigContext);
+    const { t } = useTranslation();
 
     return (
       <div key={index} className={`${classes.goalcontainer}`}>
+        <LabeledContainer displayName="widget-goal-mode">
+          <Flex vertical className="full-width">
+            <Segmented
+              className="full-width"
+              value={goal.mode}
+              options={[
+                { label: t("widget-goal-mode-choose"), value: "choose" },
+                { label: t("widget-goal-mode-default"), value: "default" },
+                { label: t("widget-goal-mode-all"), value: "all" },
+              ]}
+              onChange={(value: "choose" | "default" | "all") => {
+                const updated = toJS(goal);
+                updated.mode = value;
+                property.updateGoal(updated, index);
+              }}
+            />
+            {goal.mode === "choose" && (
+              <div className={classes.modedescription}>
+                Чтобы донат засчитался в этой цели, донатер должен выбрать эту
+                цель на странице доната
+              </div>
+            )}
+            {goal.mode === "default" && (
+              <div className={classes.modedescription}>
+                Цель выбрана по умолчанию и донат засчитается в неё, если
+                донатер не выбрал другую
+              </div>
+            )}
+            {goal.mode === "all" && (
+              <div className={classes.modedescription}>
+                Все донаты всегда засчитываются в этой цели сбора, даже если
+                существуют другие цели. Не отображается на странице доната.
+              </div>
+            )}
+          </Flex>
+        </LabeledContainer>
         <div className="settings-item">
           <TextPropertyRawComponent
             displayName="widget-goal-title"
@@ -109,17 +146,6 @@ const ItemComponent = observer(
             />
           </LabeledContainer>
         </Flex>
-        <div className="settings-item">
-          <LightLabeledSwitchComponent
-            value={goal.default}
-            onChange={() => {
-              const updated = toJS(goal);
-              updated.default = !updated.default;
-              property.updateGoal(updated, index);
-            }}
-            label="widget-goal-default"
-          />
-        </div>
       </div>
     );
   },
@@ -210,7 +236,9 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
 
   updateGoal(goal: Goal, index: number) {
     const updated = (this.value as Goal[]).map((it) => {
-      it.default = false;
+      if (it.mode === "default") {
+        it.mode = "choose";
+      }
       return it;
     });
     updated.splice(index, 1, goal);
@@ -223,7 +251,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
       id: uuidv7(),
       briefDescription: "Название",
       fullDescription: "",
-      default: false,
+      mode: "all",
       requiredAmount: { major: 100, currency: "RUB" },
       accumulatedAmount: { major: 0, currency: "RUB" },
     });

@@ -15,6 +15,7 @@ import {
 import { log } from "../../logging";
 import { WidgetData } from "../../types/WidgetData";
 import { useLoaderData } from "react-router";
+import { NewFeature } from "../Experimental/Experimental";
 
 export class AddWidgetWizardStore {
   private _type: string | null = null;
@@ -105,13 +106,19 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
         .filter((type) => type.category === category)
         .map((type) => (
           <Card
+            key={type.name}
             selected={wizardStore.type === type.name}
             onClick={() => {
               wizardStore.type =
                 wizardStore.type === type.name ? null : type.name;
             }}
           >
-            <WidgetPreviewComponent widget={type} />
+            <NewFeature
+              show={type.name === "chat" || type.name === "emote-wall"}
+              key={type.name}
+            >
+              <WidgetPreviewComponent widget={type} />
+            </NewFeature>
           </Card>
         ))}
     </CardList>

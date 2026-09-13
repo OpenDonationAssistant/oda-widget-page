@@ -22,9 +22,16 @@ export function emotesFromText(
   text: string,
   emotesStore: EmotesStore,
 ): Emotes[] {
-  return text
+  const emotes = text
     .split(/[^\p{L}\p{N}]+/u)
     .map((word) => emotesStore.getEmote(word))
     .filter((emote): emote is EmoteItem => Boolean(emote))
     .map(emoteToEventEmote);
+  let lastIndex = 0;
+  const mappedEmotes = emotes.map((it) => {
+    const index = text.indexOf(it.name, lastIndex);
+    lastIndex = index + 1;
+    return { ...it, ...{ start: index, end: index + it.name.length } };
+  });
+  return mappedEmotes ?? [];
 }

@@ -20,6 +20,7 @@ enum Page {
   HISTORY,
   AUTOMATION,
   COMMANDSREWARDS,
+  LOYALTY,
   GUIDES,
   INTEGRATIONS,
   BOTS,
@@ -63,6 +64,27 @@ const allButtons: Section[] = [
   //     </span>
   //   ),
   //   label: "menu-commands-rewards",
+  // },
+  // {
+  //   page: Page.LOYALTY,
+  //   url: "/configuration/loyalty-page",
+  //   active: (
+  //     <span
+  //       className="material-symbols-sharp"
+  //       style={{ color: "var(--oda-color-800)", marginRight: "3px" }}
+  //     >
+  //       loyalty
+  //     </span>
+  //   ),
+  //   nonactive: (
+  //     <span
+  //       className="material-symbols-sharp"
+  //       style={{ color: "var(--oda-color-500)", marginRight: "3px" }}
+  //     >
+  //       loyalty
+  //     </span>
+  //   ),
+  //   label: "menu-loyalty",
   // },
   {
     page: Page.HISTORY,
@@ -177,18 +199,20 @@ export default function Toolbar({ page }: { page: Page }) {
   return (
     <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
-        <button
-          key={button.label}
-          className={`${style.button} ${
-            page === button.page ? "selected" : "inactive"
-          }`}
-          onClick={() => navigate(button.url)}
-        >
-          {page === button.page ? button.active : button.nonactive}
-          <span className={`${classes.toolbarbuttontitle}`}>
-            {t(button.label)}
-          </span>
-        </button>
+        <NewFeature show={button.page === Page.WIDGETS} key={button.label}>
+          <button
+            key={button.label}
+            className={`${style.button} ${
+              page === button.page ? "selected" : "inactive"
+            }`}
+            onClick={() => navigate(button.url)}
+          >
+            {page === button.page ? button.active : button.nonactive}
+            <span className={`${classes.toolbarbuttontitle}`}>
+              {t(button.label)}
+            </span>
+          </button>
+        </NewFeature>
       ))}
       <NewsComponent />
     </div>

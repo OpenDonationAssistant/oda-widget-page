@@ -1,0 +1,24 @@
+.tabcontainer {
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.settingitem {
+  background-color: var(--oda-color-150);
+  border-radius: 6px;
+  padding: 12px 24px;
+  min-height: 56px;
+}
+
+.settinglabel {
+  font-size: 16px;
+}
+
+.search {
+  max-width: 320px;
+}
+
+.platformfilter {
+  min-width: 200px;
+}

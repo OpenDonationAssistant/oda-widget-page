@@ -43,6 +43,7 @@ import Login from "./pages/Login/Login";
 import PaymentAlertsPage from "./pages/Alerts/PaymentAlertsPage";
 import AutomationPage from "./pages/Automation/AutomationPage";
 import CommandsRewardsPage from "./pages/CommandsRewards/CommandsRewardsPage";
+import LoyaltyPage from "./pages/Loyalty/LoyaltyPage";
 import { GuidesPage } from "./pages/Guides/GuidesPage";
 import { IntegrationsPage } from "./pages/Integrations/IntegrationsPage";
 import UtilityButton from "./components/Button/UtilityButton";
@@ -156,6 +157,9 @@ if (state) {
 function detectPage(path: string): Page {
   if (path.endsWith("payment-page")) {
     return Page.PAYMENTPAGE;
+  }
+  if (path.endsWith("loyalty-page")) {
+    return Page.LOYALTY;
   }
   if (path.endsWith("history-page")) {
     return Page.HISTORY;
@@ -339,6 +343,11 @@ const router = createBrowserRouter([
           {
             path: "commands-rewards-page",
             element: <CommandsRewardsPage />,
+            loader: widgetSettingsLoader,
+          },
+          {
+            path: "loyalty-page",
+            element: <LoyaltyPage />,
             loader: widgetSettingsLoader,
           },
           {

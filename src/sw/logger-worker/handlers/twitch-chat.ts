@@ -130,7 +130,7 @@ async function registerEventSubListeners(
   websocketSessionID: string,
   token: string,
   twitchId: string,
-): Promise<boolean> {
+): Promise<"ok" | "retryable" | "fatal"> {
   const headers = {
     Authorization: "Bearer " + token,
     "Client-Id": CLIENT_ID,
@@ -170,7 +170,7 @@ async function registerEventSubListeners(
         token,
         await fetchBadgeDefinitions(odaToken, token, twitchId),
       );
-      return true;
+      return "ok";
     }
     await deleteStaleSubscriptions(
       odaToken,
@@ -184,13 +184,16 @@ async function registerEventSubListeners(
     );
   }
 
+  if (response.status === 401) {
+    return "fatal";
+  }
   if (response.status != 202) {
     reportError(
       odaToken,
       "Twitch",
       `Failed to subscribe to channel.chat.message. API call returned status code ${response.status}`,
     );
-    return false;
+    return "retryable";
   }
   const data = await response.json();
   console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
@@ -198,7 +201,7 @@ async function registerEventSubListeners(
     token,
     await fetchBadgeDefinitions(odaToken, token, twitchId),
   );
-  return true;
+  return "ok";
 }
 
 // Keep retrying until the subscription is created. Twitch closes the socket
@@ -209,15 +212,22 @@ async function registerEventSubListenersWithRetry(
   websocketSessionID: string,
   token: string,
   twitchId: string,
+  socket: WebSocket,
 ): Promise<void> {
   for (let attempt = 1; attempt <= SUBSCRIPTION_MAX_ATTEMPTS; attempt++) {
-    const ok = await registerEventSubListeners(
+    const result = await registerEventSubListeners(
       odaToken,
       websocketSessionID,
       token,
       twitchId,
     );
-    if (ok) return;
+    if (result === "ok") return;
+    if (result === "fatal") {
+      // Auth failure — retrying cannot help. The error was already reported;
+      // close cleanly so the close handler does not schedule a reconnect.
+      socket.close(1000, "subscription failed");
+      return;
+    }
     console.log(
       `Retrying Twitch subscription creation (attempt ${attempt}/${SUBSCRIPTION_MAX_ATTEMPTS})`,
     );
@@ -244,6 +254,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
         data.payload.session.id,
         connection.token,
         connection.twitchId,
+        connection.socket,
       );
       break;
     case "session_reconnect":
@@ -266,26 +277,31 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
     case "notification":
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
-          console.log("data.payload.event", data.payload.event);
+          // console.log("data.payload.event", data.payload.event);
           const emotes = emotesFromText(
             data.payload.event.message?.text ?? "",
             connection.emotesStore,
           );
-          emotes.push(
-            ...(data.payload.event.message?.fragments ?? [])
-              .filter((fragment: any) => fragment.type === "emote")
-              .map((fragment: any) => {
-                const link = `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`;
-                return {
+          let index = 0;
+          (data.payload.event.message?.fragments ?? []).forEach(
+            (fragment: any) => {
+              if (fragment.type === "emote") {
+                emotes.push({
                   type: "twitch",
                   name: fragment.text,
                   id: fragment.emote.id,
                   gif: false,
-                  urls: { "1": link, "2": link, "4": link },
-                  start: 0,
-                  end: 0,
-                };
-              }),
+                  urls: {
+                    "1": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/1.0`,
+                    "2": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/2.0`,
+                    "4": `https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emote.id}/default/dark/4.0`,
+                  },
+                  start: index,
+                  end: index + fragment.text.length,
+                });
+              }
+              index += fragment.text.length;
+            },
           );
           const badges: BadgeDef[] = (data.payload.event.badges ?? [])
             .map((badge: { set_id: string; id: string }) =>

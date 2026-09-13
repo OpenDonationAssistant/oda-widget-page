@@ -266,17 +266,19 @@ export const WIDGET_TYPES = [
     category: "onscreen",
     preview: "",
     description:
-      "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick",
+      "Виджет, отображающий общий чат с площадок Twitch, VKLive, Kick. Усиленно кеширует смайлы при включении.",
     create: () => new ChatWidgetSettings(),
   },
   {
     name: "emote-wall",
     title: "Стена эмоций",
-    icon: <span className="material-symbols-sharp">sentiment_very_satisfied</span>,
+    icon: (
+      <span className="material-symbols-sharp">sentiment_very_satisfied</span>
+    ),
     category: "onscreen",
     preview: "",
     description:
-      "Виджет, отображающий летящие эмоции из чата поверх стрима",
+      "Виджет, отображающий летящие эмоции из чата поверх стрима. Поддерживает как смайлы платформ (Twitch, VKLive, Kick), так и  7tv.",
     create: () => new EmoteWallWidgetSettings(),
   },
 ];

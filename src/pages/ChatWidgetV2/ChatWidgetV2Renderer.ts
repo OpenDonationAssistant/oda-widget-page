@@ -172,7 +172,6 @@ export class ChatWidgetV2Renderer {
   private createImage(url: string): HTMLImageElement {
     const img = document.createElement("img");
     img.src = url;
-    img.width = this._config.imgSize;
     img.height = this._config.imgSize;
     img.style.display = "inline";
     img.style.verticalAlign = "text-bottom";
