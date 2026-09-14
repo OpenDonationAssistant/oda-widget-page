@@ -18,6 +18,32 @@ const MAX_BATCH_SIZE = 10;
 let logQueue: LogRecord[] = [];
 let currentRecipientId = "unknown";
 
+// ── Publishing ─────────────────────────────────────────────────────
+
+function stringify(value: unknown): string {
+  if (value instanceof Error) return value.message;
+  if (value === undefined) return "undefined";
+  try {
+    return JSON.stringify(value) ?? String(value);
+  } catch {
+    return String(value);
+  }
+}
+
+/**
+ * Publish a log record through the OTEL log queue. Worker handlers use this
+ * instead of `console.*` so their diagnostics reach the same log sink as the
+ * main thread (which sends `{ type: "LOG", log }` messages).
+ */
+export function log(level: string, ...args: unknown[]): void {
+  console.log(level, ...args);
+  logQueue.push({
+    level,
+    messages: args.map(stringify).join(";"),
+    ts: Date.now(),
+  });
+}
+
 // ── Flusher ─────────────────────────────────────────────────────────
 
 async function flushQueue(): Promise<void> {

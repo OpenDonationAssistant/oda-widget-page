@@ -5,6 +5,7 @@ import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
+import { log } from "./log";
 import { emotesFromText } from "./emotes";
 import type { TokenDto } from "../systems";
 
@@ -164,7 +165,7 @@ async function registerEventSubListeners(
       (sub) => sub.transport?.session_id === websocketSessionID,
     );
     if (alreadyOurs) {
-      console.log(
+      log("INFO",
         `Subscription already exists for session ${websocketSessionID}`,
       );
       badgeDefinitions.set(
@@ -197,7 +198,7 @@ async function registerEventSubListeners(
     return "retryable";
   }
   const data = await response.json();
-  console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
+  log("INFO", `Subscribed to channel.chat.message [${data.data[0].id}]`);
   badgeDefinitions.set(
     token,
     await fetchBadgeDefinitions(odaToken, token, twitchId),
@@ -229,7 +230,7 @@ async function registerEventSubListenersWithRetry(
       socket.close(1000, "subscription failed");
       return;
     }
-    console.log(
+    log("INFO",
       `Retrying Twitch subscription creation (attempt ${attempt}/${SUBSCRIPTION_MAX_ATTEMPTS})`,
     );
     await new Promise<void>((resolve) =>
@@ -263,7 +264,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
       // automatically, so the new connection must not re-subscribe.
       const reconnectUrl = data.payload.session.reconnect_url;
       if (reconnectUrl) {
-        console.log("Twitch requested session reconnect");
+        log("INFO", "Twitch requested session reconnect");
         startWebSocketClient(
           connection.odaToken,
           connection.twitchId,
@@ -278,7 +279,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
     case "notification":
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
-          // console.log("data.payload.event", data.payload.event);
+          // log("INFO", "data.payload.event", data.payload.event);
           const emotes = emotesFromText(
             data.payload.event.message?.text ?? "",
             connection.emotesStore,
@@ -403,7 +404,7 @@ function startWebSocketClient(
   emotesStore: EmotesStore,
   url: string = EVENTSUB_WEBSOCKET_URL,
 ): WebSocket {
-  console.log({ twitchId }, "Starting Twitch WebSocket connection");
+  log("INFO", { twitchId }, "Starting Twitch WebSocket connection");
   const websocketClient = new WebSocket(url);
   let reconnecting = false;
   let keepaliveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -445,7 +446,7 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log("WebSocket connection opened to " + url);
+    log("INFO", "WebSocket connection opened to " + url);
     reportStarted(odaToken, "Twitch");
   });
 
@@ -459,7 +460,7 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       `Twitch WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -519,7 +520,7 @@ export function register(
     .filter((token) => token.system === "Twitch")
     .filter((token) => !connectedTokens.includes(token.id))
     .forEach((token) => {
-      console.log(`add handler for ${token.id}`);
+      log("INFO", `add handler for ${token.id}`);
       connectedTokens.push(token.id);
       recipientService
         .getAccessToken({ tokenId: token.id }, auth)

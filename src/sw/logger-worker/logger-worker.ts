@@ -54,6 +54,7 @@ import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
 import { availableTokens, hasLinkedToken, type TokenDto } from "./systems";
 import type { MessageListener, WorkerMessageEvent } from "./messaging";
+import { log } from "./handlers/log";
 
 /** Shared worker scope — cast from the generic `self`. */
 const swScope = self as unknown as SharedWorkerGlobalScope;
@@ -203,7 +204,7 @@ function registerCoreHandlers(
   ];
   for (const [handler, register] of registrations) {
     if (!hasSystem(handler)) {
-      console.log(`[worker] skipping ${handler} — no linked token`);
+      log("INFO", `[worker] skipping ${handler} — no linked token`);
       continue;
     }
     expectedHandlers.add(handler);
@@ -244,7 +245,7 @@ function registerDonationHandlers(
   ];
   for (const [handler, register] of registrations) {
     if (!hasSystem(handler)) {
-      console.log(`[worker] skipping ${handler} — no linked token`);
+      log("INFO", `[worker] skipping ${handler} — no linked token`);
       continue;
     }
     expectedHandlers.add(handler);
@@ -366,7 +367,7 @@ async function reloadHandler(handler: string, token: string) {
 
   const pair = pairs[handler];
   if (!pair) {
-    console.warn(`No handler registered for name "${handler}"`);
+    log("WARN", `No handler registered for name "${handler}"`);
     return;
   }
   pair.deregister();
@@ -379,7 +380,7 @@ addMessageListener((event: WorkerMessageEvent) => {
   if (connected) return;
   connected = true;
 
-  console.log("main worker received USER_AUTHORIZED");
+  log("INFO", "main worker received USER_AUTHORIZED");
   broadcastProgress("starting", 0, "Starting worker...");
 
   const info = (data.payload ?? data) as Record<string, unknown>;
@@ -389,7 +390,7 @@ addMessageListener((event: WorkerMessageEvent) => {
 
   const features = (info.features ?? []) as Feature[];
   donationsEnabled = isFeatureEnabled(features, SW_DONATIONS_FEATURE);
-  console.log(
+  log("INFO",
     `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
   );
 
@@ -421,7 +422,7 @@ addMessageListener((event: WorkerMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
   if (!data || data.type !== "Reload") return;
 
-  console.log("main worker received Reload");
+  log("INFO", "main worker received Reload");
 
   const info = (data.payload ?? data) as Record<string, unknown>;
   const token = String(info.token ?? "");

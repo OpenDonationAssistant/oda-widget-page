@@ -7,6 +7,7 @@ import {
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const DONATEX_HUB_URL = "https://donatex.gg/api/public-donations-hub";
 
@@ -39,7 +40,7 @@ function handleDonationCreated(
   settings: DonateXTokenSettings,
   donation: DonateXDonation,
 ): void {
-  console.log(
+  log("INFO",
     `DonateX donation: ${donation.amountInRub} RUB from ${donation.username}`,
   );
 
@@ -75,12 +76,12 @@ function handleDonationCreated(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `DonateX donation persisted to history [${donation.amountInRub} RUB]`,
       ),
     )
     .catch((err) => {
-      console.error("Failed to persist DonateX donation to history:", err);
+      log("ERROR", "Failed to persist DonateX donation to history:", err);
       reportError(odaToken, "DonateX", `failed to persist donation to history: ${err}`);
     });
 }
@@ -93,7 +94,7 @@ function startDonateXConnection(
   dxToken: string,
   settings: DonateXTokenSettings,
 ): void {
-  console.log("Starting DonateX SignalR connection");
+  log("INFO", "Starting DonateX SignalR connection");
   const connection = new HubConnectionBuilder()
     .withUrl(`${DONATEX_HUB_URL}?access_token=${encodeURIComponent(dxToken)}`)
     .withAutomaticReconnect()
@@ -108,11 +109,11 @@ function startDonateXConnection(
   connection
     .start()
     .then(() => {
-      console.log("DonateX SignalR connection started");
+      log("INFO", "DonateX SignalR connection started");
       reportStarted(odaToken, "DonateX");
     })
     .catch((err) => {
-      console.error("Failed to start DonateX SignalR connection:", err);
+      log("ERROR", "Failed to start DonateX SignalR connection:", err);
       reportError(odaToken, "DonateX", `failed to start connection: ${err}`);
     });
 
@@ -138,7 +139,7 @@ export function register(
     .filter((t) => t.enabled)
     .filter((t) => !connectedTokens.includes(t.id))
     .forEach((t) => {
-      console.log(`add donatex handler for ${t.id}`);
+      log("INFO", `add donatex handler for ${t.id}`);
       connectedTokens.push(t.id);
 
       startDonateXConnection(

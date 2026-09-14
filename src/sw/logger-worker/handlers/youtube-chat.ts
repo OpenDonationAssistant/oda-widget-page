@@ -7,6 +7,7 @@ import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
 import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3";
 const RECONNECT_DELAY_MS = 1000;
@@ -290,7 +291,7 @@ export function register(
     .filter((token) => token.system === "GoogleApiKey")
     .filter((token) => !connectedTokens.includes(token.id))
     .forEach((token) => {
-      console.log(`add youtube handler for ${token.id}`);
+      log("INFO", `add youtube handler for ${token.id}`);
       connectedTokens.push(token.id);
       recipientService
         .getAccessToken({ tokenId: token.id }, auth)
@@ -321,7 +322,7 @@ export function register(
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove youtube-listener");
+  log("INFO", { connected: connectedTokens }, "remove youtube-listener");
   clients.forEach((client) => client.stop());
   clients.clear();
   connectedTokens = [];

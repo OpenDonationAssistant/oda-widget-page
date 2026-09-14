@@ -7,6 +7,7 @@ import { reportError, reportStarted } from "../worker-status";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { emotesFromText } from "./emotes";
 import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 // Kick uses Pusher for its chat websocket. The app key and query params
 // (protocol, client, version) below match what kick-js uses.
@@ -99,7 +100,7 @@ function handleFrame(
         try {
           data = JSON.parse(data);
         } catch (error) {
-          console.error("Kick: failed to parse chat message data", error);
+          log("ERROR", "Kick: failed to parse chat message data", error);
           reportError(odaToken, "Kick", `failed to parse chat message data: ${error}`);
           return;
         }
@@ -108,7 +109,7 @@ function handleFrame(
       break;
     }
     default:
-      console.log("Kick: unsupported event type", frame.event);
+      log("INFO", "Kick: unsupported event type", frame.event);
   }
 }
 
@@ -119,7 +120,7 @@ function startWebSocketClient(
   emotesStore: EmotesStore,
 ): WebSocket {
   const channel = `chatrooms.${chatroomId}.v2`;
-  console.log({ chatroomId }, "Starting Kick WebSocket connection");
+  log("INFO", { chatroomId }, "Starting Kick WebSocket connection");
   const websocketClient = new WebSocket(KICK_PUSHER_WEBSOCKET_URL);
   let reconnecting = false;
   websocketClients.add(websocketClient);
@@ -135,13 +136,13 @@ function startWebSocketClient(
   };
 
   websocketClient.addEventListener("error", (err) => {
-    console.error("Kick WebSocket error:", err);
+    log("ERROR", "Kick WebSocket error:", err);
     reportError(odaToken, "Kick", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log(
+    log("INFO",
       "Kick WebSocket connection opened to " + KICK_PUSHER_WEBSOCKET_URL,
     );
     reportStarted(odaToken, "Kick");
@@ -161,7 +162,7 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       `Kick WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -172,7 +173,7 @@ function startWebSocketClient(
     try {
       frame = JSON.parse(data.data);
     } catch (error) {
-      console.error("Kick: failed to parse WebSocket message", error);
+      log("ERROR", "Kick: failed to parse WebSocket message", error);
       reportError(odaToken, "Kick", `failed to parse WebSocket message: ${error}`);
       return;
     }
@@ -196,13 +197,13 @@ async function startKickClient(
       body: { tokenId },
     });
     if (error || !data?.chatroom?.id) {
-      console.error("Failed to get Kick channel info", { data, error });
+      log("ERROR", "Failed to get Kick channel info", { data, error });
       reportError(odaToken, "Kick", error?.message ?? "Failed to get Kick channel info");
       return;
     }
     startWebSocketClient(odaToken, data.chatroom.id, eventbus, emotesStore);
   } catch (error) {
-    console.error("Failed to start Kick chat client", error);
+    log("ERROR", "Failed to start Kick chat client", error);
     reportError(odaToken, "Kick", String(error));
   }
 }
@@ -223,14 +224,14 @@ export function register(
     .filter((token) => token.system === "Kick")
     .filter((token) => !connectedTokens.includes(token.id))
     .forEach((token) => {
-      console.log(`add kick-chat handler for ${token.id}`);
+      log("INFO", `add kick-chat handler for ${token.id}`);
       connectedTokens.push(token.id);
       startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove kick-chat listener");
+  log("INFO", { connected: connectedTokens }, "remove kick-chat listener");
   websocketClients.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);

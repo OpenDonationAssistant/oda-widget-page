@@ -7,6 +7,7 @@ import {
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
 import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const DONATIONALERTS_API_URL = "https://api.oda.digital/donationalerts";
 const CENTRIFUGO_WEBSOCKET_URL =
@@ -100,13 +101,13 @@ function handleWebSocketMessage(
   if (message.id === 1) {
     const client = message.result?.client;
     if (!client) {
-      console.error("DonationAlerts Centrifugo auth reply missing client id");
+      log("ERROR", "DonationAlerts Centrifugo auth reply missing client id");
       reportError(odaToken, "DonationAlerts", "Centrifugo auth reply missing client id");
       return;
     }
     subscribeToChannel(daToken, channel, client)
       .then((channelToken) => {
-        console.log(`DonationAlerts subscribed to channel ${channel}`);
+        log("INFO", `DonationAlerts subscribed to channel ${channel}`);
         socket.send(
           JSON.stringify({
             params: {
@@ -119,7 +120,7 @@ function handleWebSocketMessage(
         );
       })
       .catch((err) => {
-        console.error("Failed to subscribe to DonationAlerts channel:", err);
+        log("ERROR", "Failed to subscribe to DonationAlerts channel:", err);
         reportError(odaToken, "DonationAlerts", `failed to subscribe to channel: ${err}`);
       });
     return;
@@ -136,7 +137,7 @@ function handleDonation(
   settings: DonationAlertsSettings,
   payment: DonationAlertsPayment,
 ): void {
-  console.log(
+  log("INFO",
     `DonationAlerts donation: ${payment.amount_in_user_currency} RUB from ${payment.username}`,
   );
 
@@ -169,12 +170,12 @@ function handleDonation(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `DonationAlerts donation persisted to history [${payment.amount_in_user_currency} RUB]`,
       ),
     )
     .catch((err) => {
-      console.error(
+      log("ERROR",
         "Failed to persist DonationAlerts donation to history:",
         err,
       );
@@ -192,18 +193,18 @@ function startWebSocketClient(
   userId: string,
   centrifugoToken: string,
 ): void {
-  console.log("Starting DonationAlerts Centrifugo WebSocket connection");
+  log("INFO", "Starting DonationAlerts Centrifugo WebSocket connection");
   const socket = new WebSocket(CENTRIFUGO_WEBSOCKET_URL);
   const channel = `$alerts:donation_${userId}`;
   activeSockets.add(socket);
 
   socket.addEventListener("error", (err) => {
-    console.error("DonationAlerts WebSocket error:", err);
+    log("ERROR", "DonationAlerts WebSocket error:", err);
     reportError(odaToken, "DonationAlerts", `WebSocket error: ${err}`);
   });
 
   socket.addEventListener("open", () => {
-    console.log("DonationAlerts Centrifugo WebSocket opened");
+    log("INFO", "DonationAlerts Centrifugo WebSocket opened");
     reportStarted(odaToken, "DonationAlerts");
     socket.send(
       JSON.stringify({
@@ -237,7 +238,7 @@ function startWebSocketClient(
       );
     }
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       "DonationAlerts Centrifugo WebSocket closed. Reconnection attempt in 1s",
     );
     setTimeout(() => {
@@ -264,7 +265,7 @@ function startConnection(
       );
     })
     .catch((err) => {
-      console.error(
+      log("ERROR",
         "Failed to get DonationAlerts socket connection info:",
         err,
       );
@@ -288,7 +289,7 @@ export function register(
     .filter((t) => t.enabled)
     .filter((t) => !connectedTokens.includes(t.id))
     .forEach((t) => {
-      console.log(`add donationalerts handler for ${t.id}`);
+      log("INFO", `add donationalerts handler for ${t.id}`);
       connectedTokens.push(t.id);
 
       startConnection(
@@ -301,7 +302,7 @@ export function register(
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove donationalerts listener");
+  log("INFO", { connected: connectedTokens }, "remove donationalerts listener");
   activeSockets.forEach((socket) => {
     activeSockets.delete(socket);
     socket.close(1000, "deregistered");

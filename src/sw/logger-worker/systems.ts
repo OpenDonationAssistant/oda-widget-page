@@ -4,6 +4,7 @@ import {
   DefaultApiFactory as RecipientService,
   type TokenControllerTokenDto,
 } from "@opendonationassistant/oda-recipient-service-client";
+import { log } from "./handlers/log";
 
 // Endpoint comes from the build-time environment, with a fallback to the
 // production gateway (same pattern as the chat/donation handlers).
@@ -48,7 +49,7 @@ export async function availableTokens(
     });
     return response.data;
   } catch (error) {
-    console.error("Failed to list recipient tokens", error);
+    log("ERROR", "Failed to list recipient tokens", error);
     return null;
   }
 }

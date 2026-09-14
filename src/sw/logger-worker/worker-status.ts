@@ -7,6 +7,7 @@
 // to clients that send a `GetWorkersStatus` message.
 import { addWarning, clearWarnings } from "@opendonationassistant/news-service";
 import type { MessageListenerRegistrar, WorkerMessageEvent } from "./messaging";
+import { log } from "./handlers/log";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -44,7 +45,7 @@ export function reportStarted(token: string, handler: string): void {
     },
     body: { components: [handler] },
   });
-  console.log(`[worker-status] ${handler} started`);
+  log("INFO", `[worker-status] ${handler} started`);
 }
 
 export function reportError(
@@ -72,12 +73,12 @@ export function reportError(
       component: handler,
     },
   });
-  console.error(`[worker-status] ${handler} error: ${message}`);
+  log("ERROR", `[worker-status] ${handler} error: ${message}`);
 }
 
 export function removeStatuses(handler: string): void {
   statuses.delete(handler);
-  console.log(`[worker-status] ${handler} status removed`);
+  log("INFO", `[worker-status] ${handler} status removed`);
 }
 
 export function getStatuses(): Map<string, WorkerStatusMessage> {
