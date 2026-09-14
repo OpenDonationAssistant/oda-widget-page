@@ -1,3 +1,23 @@
 .container {
   position: relative;
 }
+
+.child {
+  position: absolute;
+}
+
+.editable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.editable:hover {
+  outline: 1px dashed rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.dragging {
+  cursor: grabbing;
+  outline: 1px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+}

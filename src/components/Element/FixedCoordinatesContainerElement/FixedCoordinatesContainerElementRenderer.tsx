@@ -1,5 +1,12 @@
 import { observer } from "mobx-react-lite";
-import { CSSProperties, ReactNode, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   calcAnimation,
   calcAnimationDuration,
@@ -19,18 +26,103 @@ import {
 } from "./FixedCoordinatesContainerElement";
 import classes from "./FixedCoordinatesContainerElementRenderer.module.css";
 
+export function calculateDraggedPosition({
+  start,
+  pointerStart,
+  pointer,
+  scale,
+}: {
+  start: ElementPosition;
+  pointerStart: { x: number; y: number };
+  pointer: { x: number; y: number };
+  scale: number;
+}): ElementPosition {
+  const safeScale = scale === 0 ? 1 : scale;
+  return {
+    x: Math.round(start.x + (pointer.x - pointerStart.x) / safeScale),
+    y: Math.round(start.y + (pointer.y - pointerStart.y) / safeScale),
+  };
+}
+
 export const FixedCoordinatesChild = ({
   position,
+  editable = false,
+  onMove,
   children,
 }: {
   position?: ElementPosition;
+  editable?: boolean;
+  onMove?: (position: ElementPosition) => void;
   children: ReactNode;
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const dragStart = useRef<{
+    position: ElementPosition;
+    pointer: { x: number; y: number };
+    scale: number;
+  } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const containerScale = (): number => {
+    const container = ref.current?.parentElement;
+    if (!container || container.offsetWidth === 0) {
+      return 1;
+    }
+    return container.getBoundingClientRect().width / container.offsetWidth;
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!editable || !onMove) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    ref.current?.setPointerCapture(event.pointerId);
+    dragStart.current = {
+      position: position ?? { x: 0, y: 0 },
+      pointer: { x: event.clientX, y: event.clientY },
+      scale: containerScale(),
+    };
+    setDragging(true);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragStart.current;
+    if (!start || !onMove) {
+      return;
+    }
+    onMove(
+      calculateDraggedPosition({
+        start: start.position,
+        pointerStart: start.pointer,
+        pointer: { x: event.clientX, y: event.clientY },
+        scale: start.scale,
+      }),
+    );
+  };
+
+  const finishDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) {
+      return;
+    }
+    dragStart.current = null;
+    setDragging(false);
+    if (ref.current?.hasPointerCapture(event.pointerId)) {
+      ref.current.releasePointerCapture(event.pointerId);
+    }
+  };
+
   return (
     <div
-      className={classes.child}
+      ref={ref}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={finishDrag}
+      onPointerCancel={finishDrag}
+      className={`${classes.child} ${editable ? classes.editable : ""} ${
+        dragging ? classes.dragging : ""
+      }`}
       style={{
-        position: "absolute",
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
       }}

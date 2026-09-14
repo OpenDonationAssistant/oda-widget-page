@@ -7,6 +7,7 @@ import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { VariableDescription } from "../../../stores/VariableStore";
 import { DonationGoal } from "../../../pages/DonationGoal/DonationGoal";
 import { ElementsWidgetSettings } from "../../Element/ElementsWidgetSettings";
+import { ElementEditingContext } from "../../Element/ElementEditingContext";
 
 export class DonationGoalWidgetSettings extends ElementsWidgetSettings {
   constructor() {
@@ -76,9 +77,11 @@ export class DonationGoalWidgetSettings extends ElementsWidgetSettings {
   // <DonationGoal settings={this} state={new DemoDonationGoalState(this)} />
   public demo() {
     return (
-      <Flex className="full-width" vertical justify="center">
-        <DonationGoal settings={this} />
-      </Flex>
+      <ElementEditingContext.Provider value={true}>
+        <Flex className="full-width" vertical justify="center">
+          <DonationGoal settings={this} />
+        </Flex>
+      </ElementEditingContext.Provider>
     );
   }
 

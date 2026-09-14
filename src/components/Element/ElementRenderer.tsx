@@ -6,6 +6,7 @@ import {
   FixedCoordinatesChild,
   FixedCoordinatesContainerElementRenderer,
 } from "./FixedCoordinatesContainerElement/FixedCoordinatesContainerElementRenderer";
+import { useElementEditing } from "./ElementEditingContext";
 import { Element } from "./Element";
 import { MarqueeElementRenderer } from "./MarqueeElement/MarqueeElementRenderer";
 import { SlideShowElementRenderer } from "./SlideShowElement/SlideShowElementRenderer";
@@ -20,6 +21,7 @@ import { AnimationsElementRenderer } from "./AnimationsElement/AnimationsElement
 
 export const ElementRenderer = observer(
   ({ element }: { element: Element<any> }) => {
+    const editable = useElementEditing();
     if (element.data.enabled === false) {
       return <></>;
     }
@@ -47,6 +49,13 @@ export const ElementRenderer = observer(
             <FixedCoordinatesChild
               key={child.data.id}
               position={element.data.settings.positions?.[child.data.id]}
+              editable={editable}
+              onMove={(position) => {
+                if (!element.data.settings.positions) {
+                  element.data.settings.positions = {};
+                }
+                element.data.settings.positions[child.data.id] = position;
+              }}
             >
               <ElementRenderer element={child} />
             </FixedCoordinatesChild>
