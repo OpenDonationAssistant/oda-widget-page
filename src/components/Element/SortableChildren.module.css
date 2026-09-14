@@ -1,0 +1,18 @@
+.flatChild {
+  display: contents;
+}
+
+.stackChild {
+  min-width: 0;
+}
+
+.dragging > * {
+  opacity: 0.4;
+}
+
+.indicator {
+  position: absolute;
+  background: var(--oda-primary-color, #ffffff);
+  pointer-events: none;
+  z-index: 10;
+}

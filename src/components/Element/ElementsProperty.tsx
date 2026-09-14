@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { runInAction } from "mobx";
 import { DefaultWidgetProperty } from "../ConfigurationPage/widgetproperties/WidgetProperty";
 import { Element, ElementContainer, ElementData } from "./Element";
 import { ElementDescription, ElementFactory } from "./ElementFactory";
@@ -129,6 +130,39 @@ export class ElementsProperty
       return;
     }
     this.swap(secondScope, firstScope);
+  }
+
+  public moveElement(id: string, targetId: string) {
+    runInAction(() => {
+      if (id === targetId) {
+        return;
+      }
+      const element = this.value.find((it) => it.id === id);
+      const target = this.value.find((it) => it.id === targetId);
+      if (
+        !element ||
+        !target ||
+        element.containerId !== target.containerId
+      ) {
+        return;
+      }
+      const siblings = this.value
+        .filter((it) => it.containerId === element.containerId)
+        .sort((a, b) => a.order - b.order);
+      const targetIndex = siblings.findIndex((it) => it.id === targetId);
+      if (targetIndex === -1) {
+        return;
+      }
+      let currentIndex = siblings.findIndex((it) => it.id === id);
+      while (currentIndex < targetIndex) {
+        this.moveDown(id);
+        currentIndex++;
+      }
+      while (currentIndex > targetIndex) {
+        this.moveUp(id);
+        currentIndex--;
+      }
+    });
   }
 
   public addElement({

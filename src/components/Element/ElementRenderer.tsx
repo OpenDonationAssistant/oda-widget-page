@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { LabelElementRenderer } from "./LabelElement/LabelElementRenderer";
 import { MediaElementRenderer } from "./MediaElement/MediaElementRenderer";
 import { ContainerElementRenderer } from "./ContainerElement/ContainerElementRenderer";
+import { SortableChildren } from "./SortableChildren";
 import {
   FixedCoordinatesChild,
   FixedCoordinatesContainerElementRenderer,
@@ -33,10 +34,20 @@ export const ElementRenderer = observer(
     }
     if (element.data.type === "container") {
       return (
-        <ContainerElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
+        <ContainerElementRenderer
+          settings={element.data.settings}
+          style={editable ? { position: "relative", cursor: "grab" } : undefined}
+        >
+          {editable ? (
+            <SortableChildren
+              element={element}
+              renderChild={(child) => <ElementRenderer element={child} />}
+            />
+          ) : (
+            element.children.map((child) => (
+              <ElementRenderer key={child.data.id} element={child} />
+            ))
+          )}
         </ContainerElementRenderer>
       );
     }

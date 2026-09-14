@@ -14,6 +14,7 @@ export interface ElementContainer {
   deleteElement({ id }: { id: string }): void;
   moveDown(id: string): void;
   moveUp(id: string): void;
+  moveElement(id: string, targetId: string): void;
   elements: Element<any>[];
   apply(preset: Preset): void;
 }
@@ -63,6 +64,10 @@ export class Element<Type> {
 
   public moveUp() {
     this._container?.moveUp(this.data.id);
+  }
+
+  public moveElement(targetId: string) {
+    this._container?.moveElement(this.data.id, targetId);
   }
 
   markup(): ReactNode {
