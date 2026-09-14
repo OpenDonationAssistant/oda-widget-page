@@ -1,13 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { LabelElementSettings } from "./LabelElement";
-import { VariableStoreContext } from "../../../stores/VariableStore";
-import { CSSProperties, useContext } from "react";
+import { useVariableStore } from "../../../stores/VariableStore";
+import { CSSProperties } from "react";
 import { TextRenderer } from "../../Renderer/TextRenderer";
 import { ContainerElementRenderer } from "../ContainerElement/ContainerElementRenderer";
+import { AnimatedFontProperty } from "../../ConfigurationPage/widgetproperties/AnimatedFontProperty";
 
 export const LabelElementRenderer = observer(
   ({ settings }: { settings: LabelElementSettings }) => {
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
     const dynamicText = variables.processTemplate(settings.value);
     const text = dynamicText.text;
     const textLen = text.trim().length;

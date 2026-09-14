@@ -1,5 +1,9 @@
 import { AnimationsElement, DEFAULT_ANIMATIONS_ELEMENT_SETTINGS } from "./AnimationsElement/AnimationsElement";
 import { ContainerElement, DEFAULT_CONTAINER_ELEMENT_SETTINGS } from "./ContainerElement/ContainerElement";
+import {
+  FixedCoordinatesContainerElement,
+  defaultFixedCoordinatesContainerElementSettings,
+} from "./FixedCoordinatesContainerElement/FixedCoordinatesContainerElement";
 import { Element, ElementContainer, ElementData } from "./Element";
 import { DEFAULT_LABEL_ELEMENT_SETTINGS, LabelElement } from "./LabelElement/LabelElement";
 import { DEFAULT_MARQUEE_ELEMENT_SETTINGS, MarqueeElement } from "./MarqueeElement/MarqueeElement";
@@ -41,6 +45,12 @@ export class ElementFactory {
         name: "Контейнер",
         advanced: false,
         settings: DEFAULT_CONTAINER_ELEMENT_SETTINGS
+      },
+      {
+        type: "fixed-coordinates-container",
+        name: "Контейнер (координаты)",
+        advanced: false,
+        settings: defaultFixedCoordinatesContainerElementSettings(),
       },
       {
         type: "marquee",
@@ -118,6 +128,9 @@ export class ElementFactory {
     }
     if (data.type === "container") {
       return new ContainerElement(data, container);
+    }
+    if (data.type === "fixed-coordinates-container") {
+      return new FixedCoordinatesContainerElement(data, container);
     }
     if (data.type === "marquee") {
       return new MarqueeElement(data, container);

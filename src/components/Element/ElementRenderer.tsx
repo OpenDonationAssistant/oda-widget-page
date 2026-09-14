@@ -2,6 +2,10 @@ import { observer } from "mobx-react-lite";
 import { LabelElementRenderer } from "./LabelElement/LabelElementRenderer";
 import { MediaElementRenderer } from "./MediaElement/MediaElementRenderer";
 import { ContainerElementRenderer } from "./ContainerElement/ContainerElementRenderer";
+import {
+  FixedCoordinatesChild,
+  FixedCoordinatesContainerElementRenderer,
+} from "./FixedCoordinatesContainerElement/FixedCoordinatesContainerElementRenderer";
 import { Element } from "./Element";
 import { MarqueeElementRenderer } from "./MarqueeElement/MarqueeElementRenderer";
 import { SlideShowElementRenderer } from "./SlideShowElement/SlideShowElementRenderer";
@@ -32,6 +36,22 @@ export const ElementRenderer = observer(
             <ElementRenderer key={child.data.id} element={child} />
           ))}
         </ContainerElementRenderer>
+      );
+    }
+    if (element.data.type === "fixed-coordinates-container") {
+      return (
+        <FixedCoordinatesContainerElementRenderer
+          settings={element.data.settings}
+        >
+          {element.children.map((child) => (
+            <FixedCoordinatesChild
+              key={child.data.id}
+              position={element.data.settings.positions?.[child.data.id]}
+            >
+              <ElementRenderer element={child} />
+            </FixedCoordinatesChild>
+          ))}
+        </FixedCoordinatesContainerElementRenderer>
       );
     }
     if (element.data.type === "marquee") {

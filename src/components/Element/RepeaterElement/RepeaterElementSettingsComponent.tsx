@@ -6,8 +6,7 @@ import { RepeaterElementSettings } from "./RepeaterElement";
 import { ElementList } from "../ContainerElement/ContainerElementSettingsComponent";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { Flex, Select } from "antd";
-import { VariableStoreContext } from "../../../stores/VariableStore";
-import { VariableScope } from "../../ConfigurationPage/widgetsettings/VariableScope";
+import { useVariableStore } from "../../../stores/VariableStore";
 import { log } from "../../../logging";
 
 export const RepeaterElementSettingsComponent = observer(
@@ -21,7 +20,7 @@ export const RepeaterElementSettingsComponent = observer(
     container: ElementContainer;
   }) => {
     const advanced = useContext(AdvancedSettingsStoreContext).enabled;
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
 
     if (!advanced) {
       return <></>;

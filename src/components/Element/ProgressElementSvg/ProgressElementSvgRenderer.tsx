@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { ProgressElementSvgSettings } from "./ProgressElementSvgSettings";
 import ProgressBar from "progressbar.js";
-import { useContext, useEffect, useRef, useState } from "react";
-import { VariableStoreContext } from "../../../stores/VariableStore";
+import { useEffect, useRef, useState } from "react";
+import { useVariableStore } from "../../../stores/VariableStore";
 import { log } from "../../../logging";
 
 export const ProgressElementSvgRenderer = observer(
   ({ settings }: { settings: ProgressElementSvgSettings }) => {
     const ref = useRef<HTMLDivElement | null>(null);
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
     const required = variables.getValue("required", 0) as number;
     const collected = variables.getValue("collected", 0) as number;
     const [progressBar, setProgressBar] = useState<any>(null);

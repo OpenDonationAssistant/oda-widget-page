@@ -1,7 +1,5 @@
 import { observer } from "mobx-react-lite";
 import { CSSProperties, ReactNode, useEffect, useState } from "react";
-import { ContainerElementSettings } from "./ContainerElement";
-import classes from "./ContainerElementRenderer.module.css";
 import {
   calcAnimation,
   calcAnimationDuration,
@@ -15,55 +13,41 @@ import {
   calcWidth,
   resolveUri,
 } from "../elementVisualStyles";
+import {
+  ElementPosition,
+  FixedCoordinatesContainerElementSettings,
+} from "./FixedCoordinatesContainerElement";
+import classes from "./FixedCoordinatesContainerElementRenderer.module.css";
 
-function calcDirection(value: "row" | "column" | "stack"): CSSProperties {
-  if (value === "stack") {
-    return {
-      display: "grid",
-    };
-  }
-  return {
-    display: "flex",
-    flexDirection: value,
-  };
-}
+export const FixedCoordinatesChild = ({
+  position,
+  children,
+}: {
+  position?: ElementPosition;
+  children: ReactNode;
+}) => {
+  return (
+    <div
+      className={classes.child}
+      style={{
+        position: "absolute",
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
-function calcGap(value: number): CSSProperties {
-  return { gap: `${value}px` };
-}
-
-function calcJustify(value: "top" | "center" | "bottom"): CSSProperties {
-  switch (value) {
-    case "top":
-      return { justifyContent: "flex-start" };
-    case "center":
-      return { justifyContent: "center" };
-    case "bottom":
-      return { justifyContent: "flex-end" };
-  }
-}
-
-function calcAlignment(alignment: string): CSSProperties {
-  switch (alignment) {
-    case "left":
-      return { alignItems: "flex-start" };
-    case "center":
-      return { alignItems: "center" };
-    case "right":
-      return { alignItems: "flex-end" };
-    default:
-      return { alignItems: "flex-start" };
-  }
-}
-
-export const ContainerElementRenderer = observer(
+export const FixedCoordinatesContainerElementRenderer = observer(
   ({
     children,
     settings,
     style,
   }: {
     children: ReactNode | ReactNode[];
-    settings: ContainerElementSettings;
+    settings: FixedCoordinatesContainerElementSettings;
     style?: CSSProperties;
   }) => {
     const [loading, setLoading] = useState<boolean>(true);
@@ -96,17 +80,15 @@ export const ContainerElementRenderer = observer(
               ...calcBackgroundColor(settings.backgroundColor),
               ...calcWidth(settings.width),
               ...calcHeight(settings.height),
-              ...calcDirection(settings.direction),
-              ...calcGap(settings.gap),
-              ...calcJustify(settings.justify),
               ...calcAnimationDuration(settings.animation),
               ...calcRotation(settings.rotation),
               ...imageStyle,
               ...{ overflow: "hidden" },
               ...(style ?? {}),
-              ...calcAlignment(settings.align),
             }}
-            className={`${calcAnimation(settings.animation)} ${classes.container}`}
+            className={`${calcAnimation(settings.animation)} ${
+              classes.container
+            }`}
           >
             {children}
           </div>

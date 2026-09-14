@@ -1,6 +1,10 @@
 import { CSSProperties, FC, ReactNode } from "react";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import {
+  VariableStore,
+  VariableStoreContext,
+} from "../../stores/VariableStore";
 import type { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { ObjectWrapper } from "../../utils";
 
 /* ──────────────────────────────────────────────
    Goal factories
@@ -9,7 +13,7 @@ import type { Goal } from "../../components/ConfigurationPage/widgetproperties/D
 export function createMockGoal(overrides?: Partial<Goal>): Goal {
   return {
     id: "goal-1",
-    default: true,
+    mode: "default",
     briefDescription: "Test Goal",
     fullDescription: "Long description of the goal",
     accumulatedAmount: { major: 50, currency: "RUB" },
@@ -185,13 +189,7 @@ export function createMockSettings(
 export const MockVariableStoreProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => (
-  <VariableStoreContext.Provider
-    value={{
-      variables: [],
-      processTemplate: (t: string) => t,
-      load: () => {},
-    }}
-  >
+  <VariableStoreContext.Provider value={new ObjectWrapper<VariableStore>(null)}>
     {children}
   </VariableStoreContext.Provider>
 );

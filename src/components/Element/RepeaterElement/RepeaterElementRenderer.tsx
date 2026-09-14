@@ -1,9 +1,14 @@
 import { observer } from "mobx-react-lite";
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import { RepeaterElementSettings } from "./RepeaterElement";
-import { VariableStoreContext } from "../../../stores/VariableStore";
+import {
+  VariableStore,
+  VariableStoreContext,
+  useVariableStore,
+} from "../../../stores/VariableStore";
 import { Variable } from "../../../pages/Automation/AutomationState";
 import { VariableScope } from "../../ConfigurationPage/widgetsettings/VariableScope";
+import { ObjectWrapper } from "../../../utils";
 
 export const RepeaterElementRenderer = observer(
   ({
@@ -13,7 +18,7 @@ export const RepeaterElementRenderer = observer(
     children: ReactNode;
     settings: RepeaterElementSettings;
   }) => {
-    const scope = useContext(VariableStoreContext);
+    const scope = useVariableStore().variablesStore;
 
     const targetVariable = scope.variables.find(
       (variable) => variable.name === settings.target,
@@ -43,7 +48,9 @@ export const RepeaterElementRenderer = observer(
 
           return (
             <div key={index}>
-              <VariableStoreContext.Provider value={newScope}>
+              <VariableStoreContext.Provider
+                value={new ObjectWrapper<VariableStore>(newScope)}
+              >
                 {children}
               </VariableStoreContext.Provider>
             </div>

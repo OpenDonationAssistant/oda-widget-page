@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { ProgressElementSettings } from "./ProgressElement";
-import { CSSProperties, useContext, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import classes from "./ProgressElementRenderer.module.css";
 import {
   Border,
@@ -17,7 +17,7 @@ import {
 import { HeightPropertyValue } from "../../ConfigurationPage/widgetproperties/HeightProperty";
 import { ImagePropertyValue } from "../../ConfigurationPage/widgetproperties/BackgroundImageProperty";
 import { fullUri } from "../../../utils";
-import { VariableStoreContext } from "../../../stores/VariableStore";
+import { useVariableStore } from "../../../stores/VariableStore";
 
 function createBorderRule(border: Border) {
   return `${border.width}px ${border.type} ${border.color}`;
@@ -173,7 +173,7 @@ function calcBarStyle(required: number, collected: number) {
 
 export const ProgressElementRenderer = observer(
   ({ settings }: { settings: ProgressElementSettings }) => {
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
     const required = variables.getValue("required", 0) as number;
     const collected = variables.getValue("collected", 0) as number;
 

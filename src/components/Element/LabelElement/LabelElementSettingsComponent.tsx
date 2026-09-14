@@ -26,7 +26,7 @@ import { AnimationPropertyComponent } from "../../ConfigurationPage/widgetproper
 import { BoxShadowPropertyComponent } from "../../ConfigurationPage/widgetproperties/BoxShadowProperty";
 import SecondaryButton from "../../Button/SecondaryButton";
 import PrimaryButton from "../../Button/PrimaryButton";
-import { VariableStoreContext } from "../../../stores/VariableStore";
+import { useVariableStore } from "../../../stores/VariableStore";
 
 function mapType(type: string) {
   switch (type) {
@@ -47,7 +47,7 @@ const LabelTemplatesOverlay = observer(() => {
     () => new ModalState(parentModalState),
   );
 
-  const variables = useContext(VariableStoreContext);
+  const variables = useVariableStore().variablesStore;
 
   return (
     <ModalStateContext.Provider value={templatesModalState}>

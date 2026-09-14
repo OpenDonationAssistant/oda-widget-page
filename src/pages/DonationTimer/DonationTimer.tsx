@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { HistoryStore } from "../History/HistoryStore";
 import { observer } from "mobx-react-lite";
 import { reaction, toJS } from "mobx";
 import { log } from "../../logging";
 import { ElementRenderer } from "../../components/Element/ElementRenderer";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import { useVariableStore } from "../../stores/VariableStore";
 import { uuidv7 } from "uuidv7";
 import { Variable } from "../Automation/AutomationState";
 
@@ -18,7 +18,7 @@ export const DonationTimer = observer(
     store: HistoryStore;
   }) => {
     const [lastDonationTime, setLastDonationTime] = useState<Date | null>(null);
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
 
     useEffect(() => {
       setLastDonationTime(new Date());

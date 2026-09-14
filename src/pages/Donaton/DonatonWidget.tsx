@@ -1,14 +1,14 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { log } from "../../logging";
 import { DonatonWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/donaton/DonatonWidgetSettings";
 import { observer } from "mobx-react-lite";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import { useVariableStore } from "../../stores/VariableStore";
 import { uuidv7 } from "uuidv7";
 import { ElementRenderer } from "../../components/Element/ElementRenderer";
 
 export const DonatonWidget = observer(
   ({ settings }: { settings: DonatonWidgetSettings }) => {
-    const variables = useContext(VariableStoreContext);
+    const variables = useVariableStore().variablesStore;
 
     // TODO: or ahooks?
     useEffect(() => {
@@ -26,6 +26,7 @@ export const DonatonWidget = observer(
             type: "string",
             value: "00:00:00",
             id: uuidv7(),
+            tags: [],
           });
           return;
         }
@@ -40,6 +41,7 @@ export const DonatonWidget = observer(
             minutes < 10 ? "0" + minutes : minutes
           }:${seconds < 10 ? "0" + seconds : seconds}`,
           id: uuidv7(),
+          tags: [],
         });
       }, 1000);
       return () => clearInterval(intervalId);
