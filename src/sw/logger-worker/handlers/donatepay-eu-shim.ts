@@ -1,19 +1,18 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
+import type { TokenDto } from "../systems";
 
 const DONATEPAY_EU_WEBSOCKET_URL =
   "wss://centrifugo.donatepay.eu:443/connection/websocket";
 const DONATEPAY_EU_API_URL = "https://donatepay.eu";
 const RECONNECT_DELAY_MS = 5000;
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
@@ -285,31 +284,30 @@ function startDonatePayEuClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string, recipientId: string): void {
+export function register(
+  token: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+): void {
   console.log({ connected: connectedTokens }, "add donatepay-eu-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "DonatePay.eu")
-        .filter((t) => t.enabled)
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add donatepay-eu handler for ${t.id}`);
-          connectedTokens.push(t.id);
+  if (!tokens) {
+    reportError(token, "DonatePay.eu", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "DonatePay.eu")
+    .filter((t) => t.enabled)
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      console.log(`add donatepay-eu handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startDonatePayEuClient(
-            token,
-            recipientId,
-            t.token,
-            t.settings as unknown as DonatePayEuSettings,
-          );
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to DonatePay.eu", err);
-      reportError(token,"DonatePay.eu", err);
+      startDonatePayEuClient(
+        token,
+        recipientId,
+        t.token,
+        t.settings as unknown as DonatePayEuSettings,
+      );
     });
 }
 

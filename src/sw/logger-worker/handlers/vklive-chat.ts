@@ -6,6 +6,7 @@ import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
 
 const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
@@ -292,28 +293,27 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add vklive-listener");
+  if (!tokens) {
+    reportError(odaToken, "VKLive", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "VKLive")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) =>
-              startVKLiveClient(response.data.token, eventbus, emotesStore),
-            );
+  tokens
+    .filter((token) => token.system === "VKLive")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      console.log(`add handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) =>
+          startVKLiveClient(response.data.token, eventbus, emotesStore),
+        )
+        .catch((err) => {
+          reportError(odaToken, "VKLive", String(err));
         });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to VKLive", err);
-      reportError(odaToken, "VKLive", err);
     });
 }
 

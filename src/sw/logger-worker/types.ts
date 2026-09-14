@@ -1,4 +1,5 @@
 import type { Feature } from "../../shared/features";
+import type { WorkerStatusMessage } from "./worker-status";
 
 /** Messages the main thread sends to the service worker. */
 export interface LogRecord {
@@ -15,6 +16,25 @@ export interface UserAuthorizedPayload {
 export type WorkerIncomingMessage =
   | { type: "LOG"; log: LogRecord }
   | { type: "USER_AUTHORIZED"; recipientId: string; features: Feature[] };
+
+export type WorkerProgressStage =
+  | "starting"
+  | "eventbus"
+  | "emotes"
+  | "handlers"
+  | "ready";
+
+export interface WorkerProgressMessage {
+  type: "WORKER_PROGRESS";
+  stage: WorkerProgressStage;
+  percent: number;
+  label: string;
+}
+
+export interface WorkerStatusChangedMessage {
+  type: "WORKER_STATUS_CHANGED";
+  status: WorkerStatusMessage;
+}
 
 /** OTEL-compliant log attribute. */
 export interface OtelAttribute {

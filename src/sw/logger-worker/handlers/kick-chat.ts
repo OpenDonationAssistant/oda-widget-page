@@ -1,12 +1,12 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { getChannelInfo } from "@opendonationassistant/kick-service";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { reportError, reportStarted } from "../worker-status";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
 
 // Kick uses Pusher for its chat websocket. The app key and query params
 // (protocol, client, version) below match what kick-js uses.
@@ -18,12 +18,8 @@ const EVENT_NAME = "KICK_CHAT_MESSAGE";
 
 // Endpoints come from the build-time environment (.env.development /
 // .env.production), with a fallback to the production gateway.
-const RECIPIENT_API_ENDPOINT =
-  process.env.REACT_APP_RECIPIENT_API_ENDPOINT ?? "https://api.oda.digital";
 const KICK_API_ENDPOINT =
   process.env.REACT_APP_API_ENDPOINT ?? "https://api.oda.digital";
-
-const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
 
 let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
@@ -216,25 +212,20 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add kick-chat listener");
+  if (!tokens) {
+    reportError(odaToken, "Kick", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      console.log({ tokens }, "kick list tokens response");
-      tokens.data
-        .filter((token) => token.system === "Kick")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add kick-chat handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to Kick", err);
-      reportError(odaToken, "Kick", err);
+  tokens
+    .filter((token) => token.system === "Kick")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      console.log(`add kick-chat handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
     });
 }
 

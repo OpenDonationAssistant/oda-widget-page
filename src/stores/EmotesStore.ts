@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { createContext } from "react";
+import { EmoteResponseCache, IndexedDbEmoteCache } from "./emoteCache";
 
 export type EmoteType =
   | "twitch"
@@ -85,7 +86,15 @@ export interface EmotesStoreOptions {
   twitchAppSecret?: string;
   /** Called with the loaded emote URLs after a successful load. */
   onEmotesLoaded?: (urls: string[]) => void;
+  /**
+   * Persistence used to save successful responses and fall back to them when a
+   * later request fails. Defaults to an IndexedDB-backed cache.
+   */
+  cache?: EmoteResponseCache<SevenTVEmote>;
 }
+
+const GLOBAL_CACHE_KEY = "global";
+const channelCacheKey = (channelId: string) => `channel:${channelId}`;
 
 export interface EmotesStore {
   emotes: Record<string, EmoteItem>;
@@ -114,7 +123,7 @@ interface SevenTVEmoteData {
   owner?: { display_name: string } | null;
 }
 
-interface SevenTVEmote {
+export interface SevenTVEmote {
   id: string;
   name: string;
   flags?: number;
@@ -157,50 +166,72 @@ export class DefaultEmotesStore implements EmotesStore {
   private _emotes: Record<string, EmoteItem> = {};
   private _loading = false;
   private readonly options?: EmotesStoreOptions;
+  private readonly _cache: EmoteResponseCache<SevenTVEmote>;
 
   constructor(options?: EmotesStoreOptions) {
-    makeAutoObservable(this);
+    makeAutoObservable<DefaultEmotesStore, "_cache">(this, { _cache: false });
     this.options = options;
+    this._cache = options?.cache ?? new IndexedDbEmoteCache<SevenTVEmote>();
   }
 
   public async load(channelId?: string): Promise<void> {
     this._loading = true;
+    const key = channelId ? channelCacheKey(channelId) : GLOBAL_CACHE_KEY;
     try {
-      const tasks: Promise<SevenTVEmote[]>[] = channelId
-        ? [this.fetchChannelEmotes(channelId)]
-        : [this.fetchGlobalEmotes()];
+      const source = await this.loadFromApi(key, channelId);
+      if (!source) return;
 
-      const sources = await Promise.all(tasks)
-        .then((results) => {
-          console.log({ results }, "loaded emotes");
-          return results;
-        })
-        .catch((error) => {
-          log.error({ error }, "Failed to load emotes", error);
-          return [];
-        });
-
-      const emotes: Record<string, EmoteItem> = {};
-      for (const emote of sources.flat()) {
-        const item = this.toItem(emote);
-        if (item) {
-          emotes[item.code] = item;
-          this._emotes[item.code] = item;
-        }
-      }
-
-      const urls = Object.values(emotes).map((emote) => emote.link);
-      console.log({ channelId, urls }, "loaded emotes");
-      this.options?.onEmotesLoaded?.(urls);
-      log.debug(
-        { count: Object.keys(this._emotes).length },
-        "total loaded emotes",
-      );
+      await this._cache.write(key, source);
+      this.applyEmotes(source, channelId);
     } catch (error) {
-      log.error({ error }, "Failed to load emotes", error);
+      log.error({ error, channelId }, "Failed to load emotes", error);
     } finally {
       this._loading = false;
     }
+  }
+
+  /**
+   * Fetches the requested emote set. When the request fails, falls back to the
+   * last saved response for `key` so widgets keep rendering emotes offline.
+   */
+  private async loadFromApi(
+    key: string,
+    channelId?: string,
+  ): Promise<SevenTVEmote[] | undefined> {
+    try {
+      return channelId
+        ? await this.fetchChannelEmotes(channelId)
+        : await this.fetchGlobalEmotes();
+    } catch (error) {
+      log.error({ error, channelId }, "Failed to load emotes from 7TV", error);
+      const cached = await this._cache.read(key);
+      if (cached) {
+        log.warn(
+          { key, count: cached.length },
+          "Using cached emote response after load failure",
+        );
+      }
+      return cached;
+    }
+  }
+
+  private applyEmotes(source: SevenTVEmote[], channelId?: string): void {
+    const emotes: Record<string, EmoteItem> = {};
+    for (const emote of source) {
+      const item = this.toItem(emote);
+      if (item) {
+        emotes[item.code] = item;
+        this._emotes[item.code] = item;
+      }
+    }
+
+    const urls = Object.values(emotes).map((emote) => emote.link);
+    console.log({ channelId, urls }, "loaded emotes");
+    this.options?.onEmotesLoaded?.(urls);
+    log.debug(
+      { count: Object.keys(this._emotes).length },
+      "total loaded emotes",
+    );
   }
 
   private async fetchGlobalEmotes(): Promise<SevenTVEmote[]> {

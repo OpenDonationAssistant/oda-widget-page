@@ -6,6 +6,7 @@ import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
 
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3";
 const RECONNECT_DELAY_MS = 1000;
@@ -278,47 +279,44 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add youtube-listener");
+  if (!tokens) {
+    reportError(odaToken, HANDLER_NAME, "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "GoogleApiKey")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add youtube handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) => {
-              const channelId = String(token.settings?.["channelId"] ?? "");
-              if (!channelId) {
-                reportError(
-                  odaToken,
-                  HANDLER_NAME,
-                  "GoogleApiKey token is missing a channelId setting",
-                );
-                return;
-              }
-              clients.add(
-                startYoutubeChat(
-                  odaToken,
-                  channelId,
-                  response.data.token,
-                  eventbus,
-                  emotesStore,
-                ),
-              );
-            })
-            .catch((err) => {
-              reportError(odaToken, HANDLER_NAME, String(err));
-            });
+  tokens
+    .filter((token) => token.system === "GoogleApiKey")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      console.log(`add youtube handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) => {
+          const channelId = String(token.settings?.["channelId"] ?? "");
+          if (!channelId) {
+            reportError(
+              odaToken,
+              HANDLER_NAME,
+              "GoogleApiKey token is missing a channelId setting",
+            );
+            return;
+          }
+          clients.add(
+            startYoutubeChat(
+              odaToken,
+              channelId,
+              response.data.token,
+              eventbus,
+              emotesStore,
+            ),
+          );
+        })
+        .catch((err) => {
+          reportError(odaToken, HANDLER_NAME, String(err));
         });
-    })
-    .catch((err) => {
-      reportError(odaToken, HANDLER_NAME, String(err));
     });
 }
 

@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { reportError, reportStarted } from "../worker-status";
@@ -8,11 +7,11 @@ import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
+import type { TokenDto } from "../systems";
 
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 const RECONNECT_DELAY_MS = 1000;
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 
 // ── StreamElements WebSocket message types ──────────────────────────
@@ -304,25 +303,24 @@ function startWebSocketClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, recipientId: string, eventbus: EventBus): void {
-  console.log({ connected: connectedTokens }, "add streamelements-listener");
-  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "StreamElements")
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add streamelements handler for ${t.id}`);
-          connectedTokens.push(t.id);
+export function register(
+  odaToken: string,
+  recipientId: string,
+  eventbus: EventBus,
+  tokens: TokenDto[] | null,
+): void {
+  if (!tokens) {
+    reportError(odaToken, "StreamElements", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "StreamElements")
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      console.log(`add streamelements handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startWebSocketClient(odaToken, recipientId, t.token, eventbus);
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to StreamElements", err);
-      reportError(odaToken, "StreamElements", err);
+      startWebSocketClient(odaToken, recipientId, t.token, eventbus);
     });
 }
 

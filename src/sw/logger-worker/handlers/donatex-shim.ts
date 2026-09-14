@@ -1,16 +1,15 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
+import type { TokenDto } from "../systems";
 
 const DONATEX_HUB_URL = "https://donatex.gg/api/public-donations-hub";
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 const activeConnections = new Set<HubConnection>();
 
@@ -125,38 +124,33 @@ function startDonateXConnection(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, recipientId: string): void {
-  console.log({ connected: connectedTokens }, "add donatex-listener");
-  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "DonateX")
-        .filter((t) => t.enabled)
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add donatex handler for ${t.id}`);
-          connectedTokens.push(t.id);
+export function register(
+  odaToken: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+): void {
+  if (!tokens) {
+    reportError(odaToken, "DonateX", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "DonateX")
+    .filter((t) => t.enabled)
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      console.log(`add donatex handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startDonateXConnection(
-            odaToken,
-            recipientId,
-            t.token,
-            // Generated API types model settings as a generic record; the
-            // shape is known for DonateX tokens so cast through unknown.
-            t.settings as unknown as DonateXTokenSettings,
-          );
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to DonateX", err);
-      reportError(odaToken, "DonateX", err);
+      startDonateXConnection(
+        odaToken,
+        recipientId,
+        t.token,
+        t.settings as unknown as DonateXTokenSettings,
+      );
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove donatex listener");
   activeConnections.forEach((connection) => {
     activeConnections.delete(connection);
     void connection.stop();

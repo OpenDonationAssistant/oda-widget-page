@@ -17,12 +17,26 @@ export interface WorkerStatusMessage {
 
 const statuses = new Map<string, WorkerStatusMessage>();
 
+type StatusChangeListener = (message: WorkerStatusMessage) => void;
+const statusListeners = new Set<StatusChangeListener>();
+
+export function onStatusChange(listener: StatusChangeListener): () => void {
+  statusListeners.add(listener);
+  return () => {
+    statusListeners.delete(listener);
+  };
+}
+
 export function reportStarted(token: string, handler: string): void {
-  statuses.set(handler, {
+  const message: WorkerStatusMessage = {
     type: "HandlerStarted",
     handler,
     timestamp: Date.now(),
-  });
+  };
+  statuses.set(handler, message);
+  for (const listener of statusListeners) {
+    listener(message);
+  }
   clearWarnings({
     baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
     headers: {
@@ -38,12 +52,16 @@ export function reportError(
   handler: string,
   message: string,
 ): void {
-  statuses.set(handler, {
+  const statusMessage: WorkerStatusMessage = {
     type: "HandlerError",
     handler,
     message,
     timestamp: Date.now(),
-  });
+  };
+  statuses.set(handler, statusMessage);
+  for (const listener of statusListeners) {
+    listener(statusMessage);
+  }
   addWarning({
     baseURL: "https://api.oda.digital",
     headers: {

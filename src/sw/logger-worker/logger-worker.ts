@@ -43,43 +43,33 @@ import {
 } from "./handlers/youtube-chat";
 import { register as registerWidgetsHandler } from "./handlers/widgets";
 import { register as registerWorkerStatusHandler } from "./worker-status";
+import { onStatusChange } from "./worker-status";
 import {
   isFeatureEnabled,
   SW_DONATIONS_FEATURE,
   type Feature,
 } from "../../shared/features";
+import type { WorkerProgressStage } from "./types";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
-import type {
-  MessageListener,
-  MessageListenerRegistrar,
-  WorkerMessageEvent,
-} from "./messaging";
+import { availableTokens, hasLinkedToken, type TokenDto } from "./systems";
+import type { MessageListener, WorkerMessageEvent } from "./messaging";
 
 /** Shared worker scope — cast from the generic `self`. */
 const swScope = self as unknown as SharedWorkerGlobalScope;
 
-// ── Port management ─────────────────────────────────────────────────
-//
-// Every client that constructs `new SharedWorker(...)` with the same URL
-// and name connects to this scope. We keep the ports in a Set so events
-// can be broadcast to all connected clients (the SharedWorker equivalent
-// of `clients.matchAll()`).
-
 const ports = new Set<MessagePort>();
-const messageListeners = new Set<MessageListener>();
-
 function broadcast(msg: unknown) {
   for (const port of ports) {
     try {
       port.postMessage(msg);
     } catch {
-      // Port is dead (tab closed) — drop it.
       ports.delete(port);
     }
   }
 }
 
+const messageListeners = new Set<MessageListener>();
 function addMessageListener(listener: MessageListener) {
   messageListeners.add(listener);
 }
@@ -107,36 +97,159 @@ let donationsEnabled = false;
 const tokens = new Map<String, String>();
 let eventbus: DefaultEventBus | null = null;
 let emotesStore: DefaultEmotesStore | null = null;
+let currentTokens: TokenDto[] | null = null;
+
+const startedHandlers = new Set<string>();
+const erroredHandlers = new Set<string>();
+const expectedHandlers = new Set<string>();
+
+function broadcastProgress(
+  stage: WorkerProgressStage,
+  percent: number,
+  label: string,
+) {
+  broadcast({ type: "WORKER_PROGRESS", stage, percent, label });
+}
+
+function resolvedHandlerCount(): number {
+  return new Set([...startedHandlers, ...erroredHandlers]).size;
+}
+
+function checkHandlersReady() {
+  if (expectedHandlers.size === 0) return;
+  if (resolvedHandlerCount() >= expectedHandlers.size) {
+    broadcastProgress("ready", 100, "Ready");
+  }
+}
 
 /**
  * Register handlers that can be deregistered and re-registered with a
  * (possibly new) token. Event bus and emotes store are reused, so the
  * handlers keep feeding events into the same bus after a reload.
+ *
+ * A handler is only registered — and only waited on for status updates —
+ * when the recipient has a linked token for its system.
  */
-function registerHandlers(token: string, recipientId: string) {
-  registerCoreHandlers(token, recipientId);
+async function registerHandlers(token: string, recipientId: string) {
+  expectedHandlers.clear();
+  startedHandlers.clear();
+  erroredHandlers.clear();
+
+  currentTokens = await availableTokens(token);
+  const hasSystem = (handler: string) => hasLinkedToken(currentTokens, handler);
+
+  expectedHandlers.add("ODA");
+  registerCoreHandlers(token, recipientId, currentTokens, hasSystem);
   if (donationsEnabled) {
-    registerDonationHandlers(token, recipientId);
+    registerDonationHandlers(token, recipientId, currentTokens, hasSystem);
   }
 }
 
-/** Chat and widget handlers — always registered. */
-function registerCoreHandlers(token: string, recipientId: string) {
-  registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!);
-  registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!);
-  registerKickChatHandler(token, recipientId, eventbus!, emotesStore!);
-  registerYouTubeChatHandler(token, recipientId, eventbus!, emotesStore!);
+/**
+ * Chat handlers (gated on a linked token) plus the widgets handler, which is
+ * always registered.
+ */
+function registerCoreHandlers(
+  token: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+  hasSystem: (handler: string) => boolean,
+) {
+  const registrations: Array<[string, () => void]> = [
+    [
+      "Twitch",
+      () =>
+        registerTwitchChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          tokens,
+        ),
+    ],
+    [
+      "VKLive",
+      () =>
+        registerVKLiveChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          tokens,
+        ),
+    ],
+    [
+      "Kick",
+      () =>
+        registerKickChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          tokens,
+        ),
+    ],
+    [
+      "Youtube",
+      () =>
+        registerYouTubeChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          tokens,
+        ),
+    ],
+  ];
+  for (const [handler, register] of registrations) {
+    if (!hasSystem(handler)) {
+      console.log(`[worker] skipping ${handler} — no linked token`);
+      continue;
+    }
+    expectedHandlers.add(handler);
+    register();
+  }
   registerWidgetsHandler(token, recipientId, addMessageListener);
 }
 
-/** Donation handlers — only registered when SW_DONATIONS is enabled. */
-function registerDonationHandlers(token: string, recipientId: string) {
-  registerStreamElementsHandler(token, recipientId, eventbus!);
-  registerDonationAlertsHandler(token, recipientId);
-  registerDonatePayHandler(token, recipientId);
-  registerDonatePayEuHandler(token, recipientId);
-  registerUnofficialDonationAlertsHandler(token, recipientId);
-  registerDonateXHandler(token, recipientId);
+/**
+ * Donation handlers — only registered when SW_DONATIONS is enabled and the
+ * system has a linked token.
+ */
+function registerDonationHandlers(
+  token: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+  hasSystem: (handler: string) => boolean,
+) {
+  const registrations: Array<[string, () => void]> = [
+    [
+      "StreamElements",
+      () => registerStreamElementsHandler(token, recipientId, eventbus!, tokens),
+    ],
+    [
+      "DonationAlerts",
+      () => registerDonationAlertsHandler(token, recipientId, tokens),
+    ],
+    ["DonatePay", () => registerDonatePayHandler(token, recipientId, tokens)],
+    [
+      "DonatePay.eu",
+      () => registerDonatePayEuHandler(token, recipientId, tokens),
+    ],
+    [
+      "UnofficialDonationAlerts",
+      () => registerUnofficialDonationAlertsHandler(token, recipientId, tokens),
+    ],
+    ["DonateX", () => registerDonateXHandler(token, recipientId, tokens)],
+  ];
+  for (const [handler, register] of registrations) {
+    if (!hasSystem(handler)) {
+      console.log(`[worker] skipping ${handler} — no linked token`);
+      continue;
+    }
+    expectedHandlers.add(handler);
+    register();
+  }
 }
 
 /** Deregister all handlers that support it. */
@@ -175,52 +288,78 @@ type HandlerPair = {
 };
 
 /** Restart a single handler by its reported name. */
-function reloadHandler(handler: string, token: string) {
+async function reloadHandler(handler: string, token: string) {
+  const freshTokens = await availableTokens(token);
+  currentTokens = freshTokens;
   const pairs: Record<string, HandlerPair> = {
     Twitch: {
       register: () =>
-        registerTwitchChatHandler(token, recipientId, eventbus!, emotesStore!),
+        registerTwitchChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          freshTokens,
+        ),
       deregister: deregisterTwitchChatHandler,
     },
     VKLive: {
       register: () =>
-        registerVKLiveChatHandler(token, recipientId, eventbus!, emotesStore!),
+        registerVKLiveChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          freshTokens,
+        ),
       deregister: deregisterVKLiveChatHandler,
     },
     Kick: {
       register: () =>
-        registerKickChatHandler(token, recipientId, eventbus!, emotesStore!),
+        registerKickChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          freshTokens,
+        ),
       deregister: deregisterKickChatHandler,
     },
     Youtube: {
       register: () =>
-        registerYouTubeChatHandler(token, recipientId, eventbus!, emotesStore!),
+        registerYouTubeChatHandler(
+          token,
+          recipientId,
+          eventbus!,
+          emotesStore!,
+          freshTokens,
+        ),
       deregister: deregisterYouTubeChatHandler,
     },
     StreamElements: {
       register: () =>
-        registerStreamElementsHandler(token, recipientId, eventbus!),
+        registerStreamElementsHandler(token, recipientId, eventbus!, freshTokens),
       deregister: deregisterStreamElementsHandler,
     },
     DonationAlerts: {
-      register: () => registerDonationAlertsHandler(token, recipientId),
+      register: () => registerDonationAlertsHandler(token, recipientId, freshTokens),
       deregister: deregisterDonationAlertsHandler,
     },
     DonatePay: {
-      register: () => registerDonatePayHandler(token, recipientId),
+      register: () => registerDonatePayHandler(token, recipientId, freshTokens),
       deregister: deregisterDonatePayHandler,
     },
     "DonatePay.eu": {
-      register: () => registerDonatePayEuHandler(token, recipientId),
+      register: () => registerDonatePayEuHandler(token, recipientId, freshTokens),
       deregister: deregisterDonatePayEuHandler,
     },
     UnofficialDonationAlerts: {
       register: () =>
-        registerUnofficialDonationAlertsHandler(token, recipientId),
+        registerUnofficialDonationAlertsHandler(token, recipientId, freshTokens),
       deregister: deregisterUnofficialDonationAlertsHandler,
     },
     DonateX: {
-      register: () => registerDonateXHandler(token, recipientId),
+      register: () => registerDonateXHandler(token, recipientId, freshTokens),
       deregister: deregisterDonateXHandler,
     },
   };
@@ -234,8 +373,6 @@ function reloadHandler(handler: string, token: string) {
   pair.register();
 }
 
-// ── Message dispatch ────────────────────────────────────────────────
-
 addMessageListener((event: WorkerMessageEvent) => {
   const data = event.data as Record<string, unknown> | undefined;
   if (!data || data.type !== "USER_AUTHORIZED") return;
@@ -243,6 +380,7 @@ addMessageListener((event: WorkerMessageEvent) => {
   connected = true;
 
   console.log("main worker received USER_AUTHORIZED");
+  broadcastProgress("starting", 0, "Starting worker...");
 
   const info = (data.payload ?? data) as Record<string, unknown>;
   recipientId = String(info.recipientId ?? "unknown");
@@ -255,6 +393,7 @@ addMessageListener((event: WorkerMessageEvent) => {
     `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
   );
 
+  broadcastProgress("eventbus", 20, "Connecting to event bus...");
   eventbus = new DefaultEventBus(
     token,
     recipientId,
@@ -266,12 +405,15 @@ addMessageListener((event: WorkerMessageEvent) => {
       broadcast({ type: "EMOTES_LOADED", urls });
     },
   });
+
+  broadcastProgress("emotes", 40, "Loading emotes...");
   emotesStore.load();
 
   // One-time handlers — registered once, never duplicated on reload.
   registerLogHandler(recipientId, addMessageListener);
   registerWorkerStatusHandler(addMessageListener);
 
+  broadcastProgress("handlers", 60, "Connecting to platforms...");
   registerHandlers(token, recipientId);
 });
 
@@ -288,10 +430,43 @@ addMessageListener((event: WorkerMessageEvent) => {
   const handler = String(info.handler ?? "");
   if (handler) {
     // Restart only the failed handler.
-    reloadHandler(handler, token);
+    void reloadHandler(handler, token);
     return;
   }
 
   deregisterHandlers();
   registerHandlers(token, recipientId);
+});
+
+// ── Handler readiness tracking ──────────────────────────────────────
+//
+// Each chat/donation handler calls reportStarted() on successful
+// connection. We listen for those events and track progress toward the
+// "ready" state where all expected handlers are connected.
+
+onStatusChange((message) => {
+  broadcast({ type: "WORKER_STATUS_CHANGED", status: message });
+
+  if (message.type === "HandlerStarted") {
+    if (startedHandlers.has(message.handler)) return;
+    startedHandlers.add(message.handler);
+  } else if (message.type === "HandlerError") {
+    if (erroredHandlers.has(message.handler)) return;
+    erroredHandlers.add(message.handler);
+  } else {
+    return;
+  }
+
+  const handlerCount = resolvedHandlerCount();
+  const totalExpected = expectedHandlers.size || 1;
+  const percent = Math.min(
+    60 + Math.round((handlerCount / totalExpected) * 38),
+    98,
+  );
+  broadcastProgress(
+    "handlers",
+    percent,
+    `Connecting to platforms... (${handlerCount}/${totalExpected})`,
+  );
+  checkHandlersReady();
 });

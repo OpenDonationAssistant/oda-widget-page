@@ -6,6 +6,7 @@ import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 const RECONNECT_DELAY_MS = 1000;
@@ -507,40 +508,39 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add twitch-listener");
+  if (!tokens) {
+    reportError(odaToken, "Twitch", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "Twitch")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) => {
-              emotesStore.load(String(token.settings.id)).then(() => {
-                startWebSocketClient(
-                  odaToken,
-                  String(token.settings.id),
-                  response.data.token,
-                  eventbus,
-                  emotesStore,
-                );
-              });
-            });
+  tokens
+    .filter((token) => token.system === "Twitch")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      console.log(`add handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) => {
+          emotesStore.load(String(token.settings.id)).then(() => {
+            startWebSocketClient(
+              odaToken,
+              String(token.settings.id),
+              response.data.token,
+              eventbus,
+              emotesStore,
+            );
+          });
+        })
+        .catch((err) => {
+          reportError(odaToken, "Twitch", String(err));
         });
-    })
-    .catch((err) => {
-      reportError(odaToken, "Twitch", String(err));
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove twitch-listener");
   websocketClients.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);
