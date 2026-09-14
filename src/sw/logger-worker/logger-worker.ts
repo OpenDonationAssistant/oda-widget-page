@@ -380,7 +380,6 @@ addMessageListener((event: WorkerMessageEvent) => {
   if (connected) return;
   connected = true;
 
-  log("INFO", "main worker received USER_AUTHORIZED");
   broadcastProgress("starting", 0, "Starting worker...");
 
   const info = (data.payload ?? data) as Record<string, unknown>;
@@ -390,6 +389,14 @@ addMessageListener((event: WorkerMessageEvent) => {
 
   const features = (info.features ?? []) as Feature[];
   donationsEnabled = isFeatureEnabled(features, SW_DONATIONS_FEATURE);
+
+  // One-time handlers — registered once, never duplicated on reload.
+  // The log handler must be registered before any log() call so the SW_LOGS
+  // feature gate is applied to bootstrap diagnostics too.
+  registerLogHandler(recipientId, addMessageListener, features);
+  registerWorkerStatusHandler(addMessageListener);
+
+  log("INFO", "main worker received USER_AUTHORIZED");
   log("INFO",
     `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
   );
@@ -409,10 +416,6 @@ addMessageListener((event: WorkerMessageEvent) => {
 
   broadcastProgress("emotes", 40, "Loading emotes...");
   emotesStore.load();
-
-  // One-time handlers — registered once, never duplicated on reload.
-  registerLogHandler(recipientId, addMessageListener);
-  registerWorkerStatusHandler(addMessageListener);
 
   broadcastProgress("handlers", 60, "Connecting to platforms...");
   registerHandlers(token, recipientId);

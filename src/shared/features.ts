@@ -7,6 +7,9 @@ export interface Feature {
 /** Feature flag that gates donation handling to the service worker. */
 export const SW_DONATIONS_FEATURE = "SW_DONATIONS";
 
+/** Feature flag that gates worker log publishing to the OTEL log sink. */
+export const SW_LOGS_FEATURE = "SW_LOGS";
+
 /** True when the given feature is present and toggled on. */
 export function isFeatureEnabled(features: Feature[], name: string): boolean {
   return features.some((f) => f.name === name && f.state === "ENABLED");

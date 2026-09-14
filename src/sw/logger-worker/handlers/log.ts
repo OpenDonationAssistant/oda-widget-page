@@ -6,6 +6,11 @@ import type {
   MessageListenerRegistrar,
   WorkerMessageEvent,
 } from "../messaging";
+import {
+  isFeatureEnabled,
+  SW_LOGS_FEATURE,
+  type Feature,
+} from "../../../shared/features";
 
 // ── Configuration ───────────────────────────────────────────────────
 
@@ -17,6 +22,7 @@ const MAX_BATCH_SIZE = 10;
 
 let logQueue: LogRecord[] = [];
 let currentRecipientId = "unknown";
+let logsEnabled = false;
 
 // ── Publishing ─────────────────────────────────────────────────────
 
@@ -34,8 +40,12 @@ function stringify(value: unknown): string {
  * Publish a log record through the OTEL log queue. Worker handlers use this
  * instead of `console.*` so their diagnostics reach the same log sink as the
  * main thread (which sends `{ type: "LOG", log }` messages).
+ *
+ * Gated by the SW_LOGS feature flag on the recipient — when disabled, records
+ * are dropped and nothing is published.
  */
 export function log(level: string, ...args: unknown[]): void {
+  if (!logsEnabled) return;
   console.log(level, ...args);
   logQueue.push({
     level,
@@ -65,8 +75,10 @@ setInterval(flushQueue, BATCH_INTERVAL_MS);
 export function register(
   recipientId: string,
   addMessageListener: MessageListenerRegistrar,
+  features: Feature[],
 ): void {
   currentRecipientId = recipientId;
+  logsEnabled = isFeatureEnabled(features, SW_LOGS_FEATURE);
   addMessageListener((event: WorkerMessageEvent) => {
     const data = event.data as Record<string, unknown> | undefined;
     if (!data) return;
