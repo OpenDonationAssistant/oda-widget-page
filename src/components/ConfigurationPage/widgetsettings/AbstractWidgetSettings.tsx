@@ -1,12 +1,38 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode, createContext, useState } from "react";
 import { log } from "../../../logging";
 import { WidgetProperty } from "../widgetproperties/WidgetProperty";
-import { Tabs as AntTabs } from "antd";
+import { Tabs as AntTabs, TabsProps } from "antd";
 import { Trans } from "react-i18next";
 import { computed, makeObservable, observable, toJS } from "mobx";
+import { observer } from "mobx-react-lite";
 import classes from "./AbstractWidgetSettings.module.css";
 import { VariableDescription } from "../../../stores/VariableStore";
 import { VariableScope } from "./VariableScope";
+import { useElementSelection } from "../../Element/ElementSelectionContext";
+
+const SettingsTabs = observer(({ items }: { items: TabsProps["items"] }) => {
+  const selection = useElementSelection();
+  const [localKey, setLocalKey] = useState<string | undefined>(items?.[0]?.key);
+
+  if (!selection) {
+    return (
+      <AntTabs className={`${classes.settings}`} type="card" items={items} />
+    );
+  }
+
+  return (
+    <AntTabs
+      className={`${classes.settings}`}
+      type="card"
+      items={items}
+      activeKey={selection.section ?? localKey ?? items?.[0]?.key}
+      onChange={(key) => {
+        setLocalKey(key);
+        selection.setSection(key);
+      }}
+    />
+  );
+});
 
 export interface SettingsSection {
   key: string;
@@ -96,22 +122,14 @@ export class AbstractWidgetSettings {
     return {
       label: <Trans i18nKey={section.title} />,
       key: section.key,
-      children: section.properties.map((prop) => (
-        <div key={prop.name} className="settings-item">
-          {prop.markup()}
-        </div>
-      )),
+      children: section.properties.map((prop) => prop.markup()),
     };
   };
 
   public markup(): ReactNode {
     return (
       <VariableScope descriptions={this.variables}>
-        <AntTabs
-          className={`${classes.settings}`}
-          type="card"
-          items={this._sections.map(this.tabPaneGenerator)}
-        />
+        <SettingsTabs items={this._sections.map(this.tabPaneGenerator)} />
       </VariableScope>
     );
   }

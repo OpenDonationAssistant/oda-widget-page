@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { Element, ElementContainer } from "./Element";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
   ModalState,
   ModalStateContext,
@@ -20,6 +20,10 @@ import { SmallEditableString } from "../RenamableLabel/EditableString";
 import { BorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import { ElementDescription } from "./ElementFactory";
+import {
+  ELEMENTS_SECTION_KEY,
+  useElementSelection,
+} from "./ElementSelectionContext";
 import { log } from "../../logging";
 
 class AddElementDialogState {
@@ -45,10 +49,27 @@ const ElementsItemComponent = observer(
       () => new ModalState(parentModalState),
     );
     const advanced = useContext(AdvancedSettingsStoreContext).enabled;
+    const selection = useElementSelection();
+    const opened = selection ? selection.id === element.data.id : undefined;
+    const itemRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (opened) {
+        itemRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, [opened]);
 
     return (
-      <CollapsibleListItem
-        title={
+      <div ref={itemRef}>
+        <CollapsibleListItem
+          opened={opened}
+          onToggle={() =>
+            selection?.toggle(element.data.id, ELEMENTS_SECTION_KEY)
+          }
+          title={
           <Flex align="center" gap={6}>
             {advanced &&
               Array.from(Array(element.data.advancedLevel + 1).keys()).map(
@@ -121,7 +142,8 @@ const ElementsItemComponent = observer(
         }
       >
         {element.markup()}
-      </CollapsibleListItem>
+        </CollapsibleListItem>
+      </div>
     );
   },
 );

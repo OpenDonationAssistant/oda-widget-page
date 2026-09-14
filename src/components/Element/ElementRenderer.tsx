@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 import { LabelElementRenderer } from "./LabelElement/LabelElementRenderer";
 import { MediaElementRenderer } from "./MediaElement/MediaElementRenderer";
 import { ContainerElementRenderer } from "./ContainerElement/ContainerElementRenderer";
@@ -8,6 +9,12 @@ import {
   FixedCoordinatesContainerElementRenderer,
 } from "./FixedCoordinatesContainerElement/FixedCoordinatesContainerElementRenderer";
 import { useElementEditing } from "./ElementEditingContext";
+import {
+  ELEMENTS_SECTION_KEY,
+  ElementSelectionStore,
+  useElementSelection,
+} from "./ElementSelectionContext";
+import { ElementClickTarget } from "./ElementClickTarget";
 import { Element } from "./Element";
 import { MarqueeElementRenderer } from "./MarqueeElement/MarqueeElementRenderer";
 import { SlideShowElementRenderer } from "./SlideShowElement/SlideShowElementRenderer";
@@ -20,124 +27,146 @@ import { WheelElementRenderer } from "./WheelElement/WheelElementRenderer";
 import { ReelElementRenderer } from "./ReelElement/ReelElementRenderer";
 import { AnimationsElementRenderer } from "./AnimationsElement/AnimationsElementRenderer";
 
+function renderElementContent(
+  element: Element<any>,
+  editable: boolean,
+  selection: ElementSelectionStore | null,
+): ReactNode {
+  if (element.data.enabled === false) {
+    return <></>;
+  }
+  if (element.data.type === "label") {
+    return <LabelElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "media") {
+    return <MediaElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "container") {
+    return (
+      <ContainerElementRenderer
+        settings={element.data.settings}
+        style={editable ? { position: "relative", cursor: "grab" } : undefined}
+      >
+        {editable ? (
+          <SortableChildren
+            element={element}
+            renderChild={(child) => <ElementRenderer element={child} />}
+          />
+        ) : (
+          element.children.map((child) => (
+            <ElementRenderer key={child.data.id} element={child} />
+          ))
+        )}
+      </ContainerElementRenderer>
+    );
+  }
+  if (element.data.type === "fixed-coordinates-container") {
+    return (
+      <FixedCoordinatesContainerElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <FixedCoordinatesChild
+            key={child.data.id}
+            position={element.data.settings.positions?.[child.data.id]}
+            editable={editable}
+            selectable={editable && selection !== null}
+            onSelect={() =>
+              selection?.select(child.data.id, ELEMENTS_SECTION_KEY)
+            }
+            onMove={(position) => {
+              if (!element.data.settings.positions) {
+                element.data.settings.positions = {};
+              }
+              const positions = element.data.settings.positions;
+              positions[child.data.id] = {
+                ...positions[child.data.id],
+                ...position,
+              };
+            }}
+          >
+            <ElementRenderer element={child} />
+          </FixedCoordinatesChild>
+        ))}
+      </FixedCoordinatesContainerElementRenderer>
+    );
+  }
+  if (element.data.type === "marquee") {
+    return (
+      <MarqueeElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <ElementRenderer key={child.data.id} element={child} />
+        ))}
+      </MarqueeElementRenderer>
+    );
+  }
+  if (element.data.type === "slideshow") {
+    return (
+      <SlideShowElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <ElementRenderer key={child.data.id} element={child} />
+        ))}
+      </SlideShowElementRenderer>
+    );
+  }
+  if (element.data.type === "qrcode") {
+    return <QRElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "repeater") {
+    return (
+      <RepeaterElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <ElementRenderer key={child.data.id} element={child} />
+        ))}
+      </RepeaterElementRenderer>
+    );
+  }
+  if (element.data.type === "timed") {
+    return (
+      <TimedElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <ElementRenderer key={child.data.id} element={child} />
+        ))}
+      </TimedElementRenderer>
+    );
+  }
+  if (element.data.type === "progress") {
+    return <ProgressElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "progress-svg") {
+    return <ProgressElementSvgRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "wheel") {
+    return <WheelElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "reel") {
+    return <ReelElementRenderer settings={element.data.settings} />;
+  }
+  if (element.data.type === "animations") {
+    return (
+      <AnimationsElementRenderer settings={element.data.settings}>
+        {element.children.map((child) => (
+          <ElementRenderer key={child.data.id} element={child} />
+        ))}
+      </AnimationsElementRenderer>
+    );
+  }
+  return <></>;
+}
+
 export const ElementRenderer = observer(
   ({ element }: { element: Element<any> }) => {
     const editable = useElementEditing();
-    if (element.data.enabled === false) {
-      return <></>;
+    const selection = useElementSelection();
+    const content = renderElementContent(element, editable, selection);
+    if (!editable || !selection) {
+      return content;
     }
-    if (element.data.type === "label") {
-      return <LabelElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "media") {
-      return <MediaElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "container") {
-      return (
-        <ContainerElementRenderer
-          settings={element.data.settings}
-          style={editable ? { position: "relative", cursor: "grab" } : undefined}
-        >
-          {editable ? (
-            <SortableChildren
-              element={element}
-              renderChild={(child) => <ElementRenderer element={child} />}
-            />
-          ) : (
-            element.children.map((child) => (
-              <ElementRenderer key={child.data.id} element={child} />
-            ))
-          )}
-        </ContainerElementRenderer>
-      );
-    }
-    if (element.data.type === "fixed-coordinates-container") {
-      return (
-        <FixedCoordinatesContainerElementRenderer
-          settings={element.data.settings}
-        >
-          {element.children.map((child) => (
-            <FixedCoordinatesChild
-              key={child.data.id}
-              position={element.data.settings.positions?.[child.data.id]}
-              editable={editable}
-              onMove={(position) => {
-                if (!element.data.settings.positions) {
-                  element.data.settings.positions = {};
-                }
-                const positions = element.data.settings.positions;
-                positions[child.data.id] = {
-                  ...positions[child.data.id],
-                  ...position,
-                };
-              }}
-            >
-              <ElementRenderer element={child} />
-            </FixedCoordinatesChild>
-          ))}
-        </FixedCoordinatesContainerElementRenderer>
-      );
-    }
-    if (element.data.type === "marquee") {
-      return (
-        <MarqueeElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
-        </MarqueeElementRenderer>
-      );
-    }
-    if (element.data.type === "slideshow") {
-      return (
-        <SlideShowElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
-        </SlideShowElementRenderer>
-      );
-    }
-    if (element.data.type === "qrcode") {
-      return <QRElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "repeater") {
-      return (
-        <RepeaterElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
-        </RepeaterElementRenderer>
-      );
-    }
-    if (element.data.type === "timed") {
-      return (
-        <TimedElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
-        </TimedElementRenderer>
-      );
-    }
-    if (element.data.type === "progress") {
-      return <ProgressElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "progress-svg") {
-      return <ProgressElementSvgRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "wheel") {
-      return <WheelElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "reel") {
-      return <ReelElementRenderer settings={element.data.settings} />;
-    }
-    if (element.data.type === "animations") {
-      return (
-        <AnimationsElementRenderer settings={element.data.settings}>
-          {element.children.map((child) => (
-            <ElementRenderer key={child.data.id} element={child} />
-          ))}
-        </AnimationsElementRenderer>
-      );
-    }
-    return <></>;
+    return (
+      <ElementClickTarget
+        selected={selection.id === element.data.id}
+        onSelect={() => selection.select(element.data.id, ELEMENTS_SECTION_KEY)}
+      >
+        {content}
+      </ElementClickTarget>
+    );
   },
 );

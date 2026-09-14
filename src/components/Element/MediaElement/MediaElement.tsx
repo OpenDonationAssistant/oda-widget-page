@@ -40,7 +40,10 @@ import { Trans } from "react-i18next";
 import SecondaryButton from "../../Button/SecondaryButton";
 import { fullUri, handleFileUpload } from "../../../utils";
 import SubActionButton from "../../Button/SubActionButton";
-import { ColorPropertyValue, DEFAULT_COLOR_PROPERTY_VALUE } from "../../ConfigurationPage/widgetproperties/ColorProperty";
+import {
+  ColorPropertyValue,
+  DEFAULT_COLOR_PROPERTY_VALUE,
+} from "../../ConfigurationPage/widgetproperties/ColorProperty";
 import { ColorPropertyComponent } from "../../ConfigurationPage/widgetproperties/ColorPropertyComponent";
 
 export interface MediaElementSettings {
@@ -135,7 +138,12 @@ const MediaElementSettingsComponent = observer(
                 )}
                 {data.settings.type === "video" && (
                   <div className={`${classes.video}`}>
-                    <video src={url} className={`${classes.video}`} controls muted />
+                    <video
+                      src={url}
+                      className={`${classes.video}`}
+                      controls
+                      muted
+                    />
                   </div>
                 )}
                 <Flex vertical gap={6}>
@@ -194,7 +202,7 @@ const MediaElementSettingsComponent = observer(
           <WidthPropertyComponent property={data.settings.width} />
           <HeightPropertyComponent property={data.settings.height} />
           <BorderPropertyComponent
-            help="Рамка"
+            help="Рамка вокруг содержимого"
             value={data.settings.border}
             displayName="Граница"
           />

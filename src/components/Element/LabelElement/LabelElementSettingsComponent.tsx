@@ -267,7 +267,7 @@ export const LabelElementSettingsComponent = observer(
         <WidthPropertyComponent property={data.settings.width} />
         <HeightPropertyComponent property={data.settings.height} />
         <BorderPropertyComponent
-          help="Рамка"
+          help="Рамкa вокруг надписи"
           value={data.settings.border}
           displayName="Граница"
         />

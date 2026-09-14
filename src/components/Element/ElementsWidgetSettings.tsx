@@ -7,12 +7,13 @@ import { ElementFactory } from "./ElementFactory";
 import { Preset } from "../../types/Preset";
 import { ReactNode } from "react";
 import { ElementsWidget } from "./ElementsWidget";
+import { ELEMENTS_SECTION_KEY } from "./ElementSelectionContext";
 
 export class ElementsWidgetSettings extends AbstractWidgetSettings {
   constructor(sections?: SettingsSection[]) {
     super({ sections: sections ?? [] });
     this.addSection({
-      key: "elements",
+      key: ELEMENTS_SECTION_KEY,
       title: "Внешний вид",
       properties: [
         new ElementsProperty({

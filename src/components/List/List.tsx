@@ -11,12 +11,21 @@ export const CollapsibleListItem = ({
   title,
   actions,
   children,
+  opened: openedProp,
+  onToggle,
 }: {
   title: ReactNode;
   actions: ReactNode;
   children: ReactNode;
+  opened?: boolean;
+  onToggle?: () => void;
 }) => {
-  const [opened, setOpened] = useState<boolean>(false);
+  const [openedState, setOpenedState] = useState<boolean>(false);
+  const opened = openedProp ?? openedState;
+  const toggle = () => {
+    setOpenedState((value) => !value);
+    onToggle?.();
+  };
   return (
     <Flex vertical className={`${classes.collapsible}`}>
       <ListItem
@@ -27,7 +36,7 @@ export const CollapsibleListItem = ({
             {opened ? <ArrowUp /> : <ArrowDown />}
           </Flex>
         }
-        onClick={() => setOpened(!opened)}
+        onClick={toggle}
       />
       {opened && <div className={`${classes.listitemcontent}`}>{children}</div>}
     </Flex>

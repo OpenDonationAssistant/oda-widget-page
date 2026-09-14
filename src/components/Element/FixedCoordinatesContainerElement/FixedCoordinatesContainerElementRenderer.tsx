@@ -26,6 +26,8 @@ import {
 } from "./FixedCoordinatesContainerElement";
 import classes from "./FixedCoordinatesContainerElementRenderer.module.css";
 
+const TAP_MOVEMENT_THRESHOLD = 4;
+
 export function calculateDraggedPosition({
   start,
   pointerStart,
@@ -47,11 +49,15 @@ export function calculateDraggedPosition({
 export const FixedCoordinatesChild = ({
   position,
   editable = false,
+  selectable = false,
+  onSelect,
   onMove,
   children,
 }: {
   position?: ElementPosition;
   editable?: boolean;
+  selectable?: boolean;
+  onSelect?: () => void;
   onMove?: (position: ElementPosition) => void;
   children: ReactNode;
 }) => {
@@ -102,13 +108,26 @@ export const FixedCoordinatesChild = ({
   };
 
   const finishDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragStart.current) {
+    const start = dragStart.current;
+    if (!start) {
       return;
     }
     dragStart.current = null;
     setDragging(false);
     if (ref.current?.hasPointerCapture(event.pointerId)) {
       ref.current.releasePointerCapture(event.pointerId);
+    }
+    const moved =
+      Math.hypot(
+        event.clientX - start.pointer.x,
+        event.clientY - start.pointer.y,
+      ) > TAP_MOVEMENT_THRESHOLD;
+    if (!moved && selectable) {
+      const native = event.nativeEvent as PointerEvent & {
+        __odaElementSelected?: boolean;
+      };
+      native.__odaElementSelected = true;
+      onSelect?.();
     }
   };
 

@@ -1,0 +1,8 @@
+.clickTarget {
+  display: contents;
+}
+
+.selected > * {
+  outline: 2px solid var(--oda-primary-color, #ffffff)!important;
+  outline-offset: 2px;
+}

@@ -14,14 +14,29 @@ interface DragState {
   container: HTMLElement;
 }
 
+function firstMeasurable(node: HTMLElement): HTMLElement | null {
+  const rect = node.getBoundingClientRect();
+  if (rect.width > 0 || rect.height > 0) {
+    return node;
+  }
+  for (const child of Array.from(node.children)) {
+    if (child instanceof HTMLElement) {
+      const measurable = firstMeasurable(child);
+      if (measurable) {
+        return measurable;
+      }
+    }
+  }
+  return null;
+}
+
 function calculateIndicator(
   direction: ReorderDirection,
   container: HTMLElement,
   node: HTMLElement,
 ): CSSProperties {
   const containerRect = container.getBoundingClientRect();
-  const anchor =
-    node.firstElementChild instanceof HTMLElement ? node.firstElementChild : node;
+  const anchor = firstMeasurable(node) ?? node;
   const rect = anchor.getBoundingClientRect();
   const offsetLeft = rect.left - containerRect.left - container.clientLeft;
   const offsetTop = rect.top - containerRect.top - container.clientTop;

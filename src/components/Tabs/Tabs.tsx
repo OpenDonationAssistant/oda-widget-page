@@ -9,9 +9,7 @@ export default function Tabs({ sections }: { sections: SettingsSection[] }) {
     return {
       label: t(section.title),
       key: section.key,
-      children: section.properties.map((prop) => (
-        <div className="settings-item">{prop.markup()}</div>
-      )),
+      children: section.properties.map((prop) => prop.markup()),
     };
   };
 

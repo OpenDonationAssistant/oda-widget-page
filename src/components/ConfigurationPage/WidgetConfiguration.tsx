@@ -39,6 +39,10 @@ import DeleteWidgetModal from "./DeleteWidgetModal";
 import { ListItem } from "../List/List";
 import { log } from "../../logging";
 import { ElementsWidgetSettings } from "../Element/ElementsWidgetSettings";
+import {
+  ElementSelectionContext,
+  ElementSelectionStore,
+} from "../Element/ElementSelectionContext";
 
 const SaveButtons = observer(({ widget }: { widget: Widget }) => {
   const { t } = useTranslation();
@@ -98,6 +102,9 @@ const WidgetSettingsWindow = observer(
 const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
   const preview = useRef<HTMLElement | null>(null);
   const presetStore = useContext(PresetStoreContext);
+  const [elementSelection] = useState(() => new ElementSelectionStore());
+  const elementSelectionEnabled =
+    widget.config instanceof ElementsWidgetSettings;
 
   async function savePreset(): Promise<string | void> {
     if (!preview.current) {
@@ -150,7 +157,10 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
             </Flex>
           </Flex>
         </Title>
-        <WidgetContext.Provider value={widget}>
+        <ElementSelectionContext.Provider
+          value={elementSelectionEnabled ? elementSelection : null}
+        >
+          <WidgetContext.Provider value={widget}>
           <div
             className={`${classes.configcontainer} ${widget.config.hasDemo() ? classes.bigcontainer : classes.smallcontainer}`}
           >
@@ -188,6 +198,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
             {!widget.config.hasDemo() && <SaveButtons widget={widget} />}
           </div>
         </WidgetContext.Provider>
+        </ElementSelectionContext.Provider>
       </WidgetSettingsWindow>
     </Overlay>
   );

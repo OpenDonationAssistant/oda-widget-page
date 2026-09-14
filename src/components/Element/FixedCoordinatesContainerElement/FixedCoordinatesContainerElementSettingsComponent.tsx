@@ -117,7 +117,7 @@ export const FixedCoordinatesContainerElementSettingsComponent = observer(
         <WidthPropertyComponent property={data.settings.width} />
         <HeightPropertyComponent property={data.settings.height} />
         <BorderPropertyComponent
-          help="Рамка"
+          help="Рамка вокруг всего содержимого"
           value={data.settings.border}
           displayName="Граница"
         />
