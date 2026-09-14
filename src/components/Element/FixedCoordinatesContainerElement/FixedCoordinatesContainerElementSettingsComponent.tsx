@@ -31,24 +31,28 @@ const ChildCoordinates = ({
   onChange: (position: ElementPosition) => void;
 }) => {
   return (
-    <Flex vertical gap={6} className={classes.coordinatesrow}>
+    <Flex align="end" gap={9} className={classes.coordinatesrow}>
       <div className={classes.childname}>{name}</div>
-      <Flex gap={9} wrap>
-        <LabeledContainer displayName="X">
-          <InputNumber
-            value={position.x}
-            addon="px"
-            onChange={(x) => onChange({ ...position, x })}
-          />
-        </LabeledContainer>
-        <LabeledContainer displayName="Y">
-          <InputNumber
-            value={position.y}
-            addon="px"
-            onChange={(y) => onChange({ ...position, y })}
-          />
-        </LabeledContainer>
-      </Flex>
+      <LabeledContainer displayName="X">
+        <InputNumber
+          value={position.x}
+          addon="px"
+          onChange={(x) => onChange({ ...position, x })}
+        />
+      </LabeledContainer>
+      <LabeledContainer displayName="Y">
+        <InputNumber
+          value={position.y}
+          addon="px"
+          onChange={(y) => onChange({ ...position, y })}
+        />
+      </LabeledContainer>
+      <LabeledContainer displayName="Высота">
+        <InputNumber
+          value={position.zIndex ?? 0}
+          onChange={(zIndex) => onChange({ ...position, zIndex })}
+        />
+      </LabeledContainer>
     </Flex>
   );
 };
@@ -74,7 +78,7 @@ export const FixedCoordinatesContainerElementSettingsComponent = observer(
         />
         {advanced && nested.length > 0 && (
           <LabeledContainer displayName="Координаты элементов">
-            <Flex vertical gap={9} className="full-width">
+            <Flex gap={9} wrap className="full-width">
               {nested.map((child) => (
                 <ChildCoordinates
                   key={child.data.id}

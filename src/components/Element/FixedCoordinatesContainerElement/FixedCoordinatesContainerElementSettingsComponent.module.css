@@ -7,4 +7,5 @@
 .childname {
   font-size: 16px;
   color: var(--oda-color-1000);
+  white-space: nowrap;
 }

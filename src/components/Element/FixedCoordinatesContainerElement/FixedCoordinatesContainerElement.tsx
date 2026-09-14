@@ -29,6 +29,7 @@ import { FixedCoordinatesContainerElementSettingsComponent } from "./FixedCoordi
 export interface ElementPosition {
   x: number;
   y: number;
+  zIndex?: number;
 }
 
 export interface FixedCoordinatesContainerElementSettings {

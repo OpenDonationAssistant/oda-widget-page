@@ -65,7 +65,11 @@ export const ElementRenderer = observer(
                 if (!element.data.settings.positions) {
                   element.data.settings.positions = {};
                 }
-                element.data.settings.positions[child.data.id] = position;
+                const positions = element.data.settings.positions;
+                positions[child.data.id] = {
+                  ...positions[child.data.id],
+                  ...position,
+                };
               }}
             >
               <ElementRenderer element={child} />

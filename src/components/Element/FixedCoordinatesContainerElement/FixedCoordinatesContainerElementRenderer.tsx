@@ -123,6 +123,7 @@ export const FixedCoordinatesChild = ({
         dragging ? classes.dragging : ""
       }`}
       style={{
+        zIndex: position?.zIndex,
         left: `${position?.x ?? 0}px`,
         top: `${position?.y ?? 0}px`,
       }}
