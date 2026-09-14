@@ -264,7 +264,7 @@ export const HistoryComponent = observer(
         if (!Array.isArray(data.entries)) {
           throw new Error("Invalid emote cache file");
         }
-        await importEmoteCache(data.entries);
+        await importEmoteCache(data);
       } catch (error) {
         log.error(error, "Failed to import emote cache");
       }

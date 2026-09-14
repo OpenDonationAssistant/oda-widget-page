@@ -90,3 +90,82 @@ export class IndexedDbEmoteCache<T> implements EmoteResponseCache<T> {
     }
   }
 }
+
+/** Serialized emote response record for export/import. */
+export interface EmoteResponseExport {
+  key: string;
+  items: unknown[];
+  savedAt: number;
+}
+
+function isEmoteResponseItem(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Record<string, unknown>;
+  return typeof item.id === "string" && typeof item.name === "string";
+}
+
+/**
+ * Keep only records/items that match the persisted emote response shape.
+ * Imported files are untrusted, so anything malformed is dropped here rather
+ * than letting it corrupt the store or break the store's mapping logic.
+ */
+export function sanitizeEmoteResponses(
+  records: unknown,
+): EmoteResponseExport[] {
+  if (!Array.isArray(records)) return [];
+  const out: EmoteResponseExport[] = [];
+  for (const record of records) {
+    if (!record || typeof record !== "object") continue;
+    const candidate = record as Record<string, unknown>;
+    if (
+      typeof candidate.key !== "string" ||
+      typeof candidate.savedAt !== "number"
+    ) {
+      continue;
+    }
+    if (!Array.isArray(candidate.items)) continue;
+    out.push({
+      key: candidate.key,
+      savedAt: candidate.savedAt,
+      items: candidate.items.filter(isEmoteResponseItem),
+    });
+  }
+  return out;
+}
+
+/** Read every persisted emote response record (for export). */
+export async function exportEmoteResponses(): Promise<EmoteResponseExport[]> {
+  if (!isIndexedDbAvailable()) return [];
+  try {
+    const db = await openDb();
+    const records = await requestToPromise<CachedEmotes<unknown>[]>(
+      db.transaction(STORE, "readonly").objectStore(STORE).getAll(),
+    );
+    return records.map(({ key, items, savedAt }) => ({ key, items, savedAt }));
+  } catch (error) {
+    log.warn({ error }, "Failed to export emote responses");
+    return [];
+  }
+}
+
+/** Restore previously exported emote response records (for import). */
+export async function importEmoteResponses(
+  records: EmoteResponseExport[],
+): Promise<void> {
+  if (!isIndexedDbAvailable() || records.length === 0) return;
+  try {
+    const db = await openDb();
+    const tx = db.transaction(STORE, "readwrite");
+    const store = tx.objectStore(STORE);
+    for (const record of records) {
+      store.put(record);
+    }
+    await new Promise<void>((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  } catch (error) {
+    log.warn({ error }, "Failed to import emote responses");
+  }
+}
