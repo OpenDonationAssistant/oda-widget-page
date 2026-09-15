@@ -2,6 +2,7 @@
 
 import { DefaultApiFactory as WidgetService } from "@opendonationassistant/oda-widget-service-client";
 import type { WidgetDto } from "@opendonationassistant/oda-widget-service-client";
+import { reportError, reportStarted } from "../worker-status";
 import type {
   MessageListenerRegistrar,
   WorkerMessageEvent,
@@ -36,11 +37,17 @@ export function register(
   const service = WidgetService(undefined, WIDGET_API_ENDPOINT);
 
   const loadWidgets = () =>
-    service.list(auth).then((response) => {
-      widgets = response.data
-        .filter((w) => !w.deleted)
-        .sort((a, b) => a.sortOrder - b.sortOrder);
-    });
+    service
+      .list(auth)
+      .then((response) => {
+        widgets = response.data
+          .filter((w) => !w.deleted)
+          .sort((a, b) => a.sortOrder - b.sortOrder);
+        reportStarted(token, "ODA");
+      })
+      .catch((error) => {
+        reportError(token, "ODA", `failed to load widgets: ${error}`);
+      });
 
   loadWidgets();
 

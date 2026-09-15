@@ -478,14 +478,20 @@ onStatusChange((message) => {
 
   const handlerCount = resolvedHandlerCount();
   const totalExpected = expectedHandlers.size || 1;
+  const resolved = new Set([...startedHandlers, ...erroredHandlers]);
+  const leftHandlers = [...expectedHandlers].filter(
+    (handler) => !resolved.has(handler),
+  );
   const percent = Math.min(
     60 + Math.round((handlerCount / totalExpected) * 38),
     98,
   );
+  const leftLabel =
+    leftHandlers.length > 0 ? `, left: ${leftHandlers.join(", ")}` : "";
   broadcastProgress(
     "handlers",
     percent,
-    `Connecting to platforms... (${handlerCount}/${totalExpected})`,
+    `Connecting to platforms... (${handlerCount}/${totalExpected}${leftLabel})`,
   );
   checkHandlersReady();
 });
