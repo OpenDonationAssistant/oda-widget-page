@@ -14,6 +14,7 @@ const RECONNECT_DELAY_MS = 1000;
 const SUBSCRIPTION_RETRY_DELAY_MS = 1000;
 const SUBSCRIPTION_MAX_ATTEMPTS = 5;
 const CLIENT_ID = "2f9aljaudj3678kp4gc9bj99tb7bev";
+const API_TIMEOUT_MS = 15000;
 
 interface BadgeDef {
   type: string;
@@ -40,7 +41,10 @@ async function fetchBadgeDefinitions(
   ];
   for (const url of endpoints) {
     try {
-      const response = await fetch(url, { headers });
+      const response = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      });
       if (response.status !== 200) continue;
       const json = await response.json();
       for (const set of json.data ?? []) {
@@ -77,7 +81,7 @@ async function listChatSubscriptions(
   try {
     const response = await fetch(
       "https://api.twitch.tv/helix/eventsub/subscriptions",
-      { headers },
+      { headers, signal: AbortSignal.timeout(API_TIMEOUT_MS) },
     );
     if (response.status !== 200) return [];
     const json = await response.json();
@@ -115,7 +119,11 @@ async function deleteStaleSubscriptions(
     try {
       await fetch(
         `https://api.twitch.tv/helix/eventsub/subscriptions?id=${sub.id}`,
-        { method: "DELETE", headers },
+        {
+          method: "DELETE",
+          headers,
+          signal: AbortSignal.timeout(API_TIMEOUT_MS),
+        },
       );
     } catch (error) {
       reportError(
@@ -153,7 +161,12 @@ async function registerEventSubListeners(
 
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
-    { method: "POST", headers, body },
+    {
+      method: "POST",
+      headers,
+      body,
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
+    },
   );
 
   // 409 Conflict: a subscription for the same broadcaster already exists,
@@ -165,7 +178,8 @@ async function registerEventSubListeners(
       (sub) => sub.transport?.session_id === websocketSessionID,
     );
     if (alreadyOurs) {
-      log("INFO",
+      log(
+        "INFO",
         `Subscription already exists for session ${websocketSessionID}`,
       );
       badgeDefinitions.set(
@@ -182,7 +196,12 @@ async function registerEventSubListeners(
     );
     response = await fetch(
       "https://api.twitch.tv/helix/eventsub/subscriptions",
-      { method: "POST", headers, body },
+      {
+        method: "POST",
+        headers,
+        body,
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      },
     );
   }
 
@@ -230,7 +249,8 @@ async function registerEventSubListenersWithRetry(
       socket.close(1000, "subscription failed");
       return;
     }
-    log("INFO",
+    log(
+      "INFO",
       `Retrying Twitch subscription creation (attempt ${attempt}/${SUBSCRIPTION_MAX_ATTEMPTS})`,
     );
     await new Promise<void>((resolve) =>
@@ -460,7 +480,8 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    log("INFO",
+    log(
+      "INFO",
       `Twitch WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -525,15 +546,14 @@ export function register(
       recipientService
         .getAccessToken({ tokenId: token.id }, auth)
         .then((response) => {
-          emotesStore.load(String(token.settings.id)).then(() => {
-            startWebSocketClient(
-              odaToken,
-              String(token.settings.id),
-              response.data.token,
-              eventbus,
-              emotesStore,
-            );
-          });
+          startWebSocketClient(
+            odaToken,
+            String(token.settings.id),
+            response.data.token,
+            eventbus,
+            emotesStore,
+          );
+          emotesStore.load(String(token.settings.id));
         })
         .catch((err) => {
           reportError(odaToken, "Twitch", String(err));

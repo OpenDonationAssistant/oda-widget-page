@@ -13,6 +13,9 @@ const RECIPIENT_API_ENDPOINT =
 
 const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
 
+/** How long to wait for the token list before falling back to "unknown". */
+const TOKEN_LIST_TIMEOUT_MS = 10000;
+
 /** A recipient token as returned by the recipient-service list endpoint. */
 export type TokenDto = TokenControllerTokenDto;
 
@@ -46,6 +49,7 @@ export async function availableTokens(
   try {
     const response = await recipientService.listTokens({
       headers: { Authorization: `Bearer ${odaToken}` },
+      timeout: TOKEN_LIST_TIMEOUT_MS,
     });
     return response.data;
   } catch (error) {

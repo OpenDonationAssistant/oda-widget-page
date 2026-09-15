@@ -12,6 +12,7 @@ import { log } from "./log";
 
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 const RECONNECT_DELAY_MS = 1000;
+const API_TIMEOUT_MS = 15000;
 
 let connectedTokens: string[] = [];
 
@@ -77,6 +78,7 @@ async function getChannelId(jwtToken: string): Promise<string> {
         Authorization: `Bearer ${jwtToken}`,
         Accept: "application/json",
       },
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
     },
   );
   if (!response.ok) {

@@ -153,6 +153,7 @@ async function sevenTVRequest(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
+    signal: AbortSignal.timeout(15000),
   });
   if (!response.ok) {
     throw new Error(

@@ -49,7 +49,7 @@ import {
   SW_DONATIONS_FEATURE,
   type Feature,
 } from "../../shared/features";
-import type { WorkerProgressStage } from "./types";
+import type { WorkerProgressMessage, WorkerProgressStage } from "./types";
 import { DefaultEventBus } from "../../bus/EventBus";
 import { DefaultEmotesStore } from "../../stores/EmotesStore";
 import { availableTokens, hasLinkedToken, type TokenDto } from "./systems";
@@ -100,6 +100,14 @@ let eventbus: DefaultEventBus | null = null;
 let emotesStore: DefaultEmotesStore | null = null;
 let currentTokens: TokenDto[] | null = null;
 
+/** Latest boot progress — answered to `GetWorkerProgress` queries. */
+let currentProgress: WorkerProgressMessage = {
+  type: "WORKER_PROGRESS",
+  stage: "starting",
+  percent: 0,
+  label: "Starting...",
+};
+
 const startedHandlers = new Set<string>();
 const erroredHandlers = new Set<string>();
 const expectedHandlers = new Set<string>();
@@ -109,7 +117,8 @@ function broadcastProgress(
   percent: number,
   label: string,
 ) {
-  broadcast({ type: "WORKER_PROGRESS", stage, percent, label });
+  currentProgress = { type: "WORKER_PROGRESS", stage, percent, label };
+  broadcast(currentProgress);
 }
 
 function resolvedHandlerCount(): number {
@@ -440,6 +449,12 @@ addMessageListener((event: WorkerMessageEvent) => {
 
   deregisterHandlers();
   registerHandlers(token, recipientId);
+});
+
+addMessageListener((event: WorkerMessageEvent) => {
+  const data = event.data as Record<string, unknown> | undefined;
+  if (!data || data.type !== "GetWorkerProgress") return;
+  event.port.postMessage(currentProgress);
 });
 
 // ── Handler readiness tracking ──────────────────────────────────────

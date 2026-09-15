@@ -17,6 +17,7 @@ import {
 const OTEL_ENDPOINT = "https://api.oda.digital/logs";
 const BATCH_INTERVAL_MS = 2000;
 const MAX_BATCH_SIZE = 10;
+const FLUSH_TIMEOUT_MS = 5000;
 
 // ── State ──────────────────────────────────────────────────────────
 
@@ -66,6 +67,7 @@ async function flushQueue(): Promise<void> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buildOtelPayload(currentRecipientId, batch)),
       keepalive: true,
+      signal: AbortSignal.timeout(FLUSH_TIMEOUT_MS),
     });
   } catch {}
 }

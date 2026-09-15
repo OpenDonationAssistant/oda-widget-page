@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { onWorkerMessage } from "../../worker"
+import { onWorkerMessage, sendMessageToWorker } from "../../worker"
 import type { WorkerProgressMessage } from "../../sw/logger-worker/types"
 import type { WorkerStatusMessage } from "../../sw/logger-worker/worker-status"
 
@@ -18,6 +18,7 @@ export interface WorkerProgress {
 
 const ERROR_VISIBLE_MS = 60000
 
+// Placeholder only — replaced by the worker's answer to GetWorkerProgress.
 const INITIAL: WorkerProgress = {
   stage: "starting",
   percent: 0,
@@ -66,6 +67,8 @@ export function useWorkerProgress(handlers: string[]): WorkerProgress {
       }
 
     })
+    // Ask the worker for its current progress instead of assuming "starting".
+    sendMessageToWorker({ type: "GetWorkerProgress" })
     return unsubscribe
   }, [handlersKey])
 

@@ -14,6 +14,7 @@ const CENTRIFUGO_WEBSOCKET_URL =
   "wss://centrifugo.donationalerts.com/connection/websocket";
 const CENTRIFUGO_SUBSCRIBE_URL =
   "https://www.donationalerts.com/api/v1/centrifuge/subscribe";
+const API_TIMEOUT_MS = 15000;
 
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
@@ -61,6 +62,7 @@ async function getSocketConnectionInfo(
 ): Promise<{ userId: string; centrifugoToken: string }> {
   const response = await axios.get(DONATIONALERTS_API_URL, {
     headers: { Authorization: `Bearer ${daToken}` },
+    timeout: API_TIMEOUT_MS,
   });
   return {
     userId: response.data.data.id,
@@ -80,7 +82,10 @@ async function subscribeToChannel(
   const response = await axios.post(
     CENTRIFUGO_SUBSCRIBE_URL,
     { channels: [channel], client },
-    { headers: { Authorization: `Bearer ${daToken}` } },
+    {
+      headers: { Authorization: `Bearer ${daToken}` },
+      timeout: API_TIMEOUT_MS,
+    },
   );
   return response.data.channels[0].token;
 }

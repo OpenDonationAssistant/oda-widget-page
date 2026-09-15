@@ -16,6 +16,8 @@
 const EMOTE_CACHE_NAME = "emote-cache-v1";
 const EMOTE_CACHE_PREFIX = "emote-cache-";
 const MAX_CACHE_ENTRIES = 5000;
+const FETCH_TIMEOUT_MS = 30000;
+const PRECACHE_TIMEOUT_MS = 10000;
 
 /** Hosts that serve emote images. Extend when new emote providers are added. */
 const EMOTE_CDN_HOSTS = new Set(["cdn.7tv.app"]);
@@ -89,7 +91,9 @@ async function cacheFirst(request: Request): Promise<Response> {
   const cached = await cache.match(request.url);
   if (cached) return cached;
 
-  const response = await fetch(request);
+  const response = await fetch(request, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (isCacheableResponse(response)) {
     // Cache a clone; the original is returned to the caller.
     await cacheEmote(request.url, response.clone());
@@ -119,7 +123,9 @@ async function cacheUrls(urls: string[]): Promise<void> {
         return;
       }
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          signal: AbortSignal.timeout(PRECACHE_TIMEOUT_MS),
+        });
         if (isCacheableResponse(response)) {
           console.log({ url }, "Pre-caching emote");
           await cache.put(url, response);

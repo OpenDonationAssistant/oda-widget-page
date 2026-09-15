@@ -13,6 +13,7 @@ const DONATEPAY_EU_WEBSOCKET_URL =
   "wss://centrifugo.donatepay.eu:443/connection/websocket";
 const DONATEPAY_EU_API_URL = "https://donatepay.eu";
 const RECONNECT_DELAY_MS = 5000;
+const API_TIMEOUT_MS = 15000;
 
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
@@ -69,6 +70,7 @@ function hashString(str: string): number {
 async function getUserId(accessToken: string): Promise<string> {
   const response = await axios.get(
     `${DONATEPAY_EU_API_URL}/api/v1/user?access_token=${accessToken}`,
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.data.id as string;
 }
@@ -78,6 +80,7 @@ async function getConnectionToken(accessToken: string): Promise<string> {
   const response = await axios.post(
     `${DONATEPAY_EU_API_URL}/api/v2/socket/token`,
     { access_token: accessToken },
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.token as string;
 }
@@ -95,6 +98,7 @@ async function getChannelToken(
       channels: [channel],
       client: clientId,
     },
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.channels[0].token as string;
 }

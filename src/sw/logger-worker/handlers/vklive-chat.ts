@@ -13,6 +13,7 @@ const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
 const VKLIVE_API_URL = "https://apidev.live.vkvideo.ru";
 const RECONNECT_DELAY_MS = 1000;
+const API_TIMEOUT_MS = 15000;
 
 const EVENT_NAME = "VKLIVE_CHAT_MESSAGE";
 
@@ -22,6 +23,7 @@ async function getJson(url: string, token: string): Promise<any> {
     headers: {
       Authorization: "Bearer " + token,
     },
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
   });
   if (!response.ok) {
     log("ERROR",
