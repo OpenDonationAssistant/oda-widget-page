@@ -6,10 +6,13 @@ import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3";
 const RECONNECT_DELAY_MS = 1000;
 const MAX_RESULTS = 500;
+const API_TIMEOUT_MS = 15000;
 
 const EVENT_NAME = "YOUTUBE_CHAT_MESSAGE";
 const HANDLER_NAME = "Youtube";
@@ -32,7 +35,9 @@ async function findLiveVideoId(
   const url =
     `${YOUTUBE_API_URL}/search?part=id&type=video&eventType=live` +
     `&channelId=${encodeURIComponent(channelId)}&key=${encodeURIComponent(apiKey)}`;
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  });
   if (!response.ok) return null;
   const json = await response.json();
   return json.items?.[0]?.id?.videoId ?? null;
@@ -46,7 +51,9 @@ async function getLiveChatId(
   const url =
     `${YOUTUBE_API_URL}/videos?part=liveStreamingDetails` +
     `&id=${encodeURIComponent(videoId)}&key=${encodeURIComponent(apiKey)}`;
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  });
   if (!response.ok) return null;
   const json = await response.json();
   return json.items?.[0]?.liveStreamingDetails?.activeLiveChatId ?? null;
@@ -196,7 +203,18 @@ function startYoutubeChat(
       `&key=${encodeURIComponent(apiKey)}`;
     if (pageToken) url += `&pageToken=${encodeURIComponent(pageToken)}`;
     abortController = new AbortController();
-    const response = await fetch(url, { signal: abortController.signal });
+    // Timeout only the initial connection — the stream itself is long-lived
+    // and is cancelled manually via stop().
+    const timeoutId = setTimeout(
+      () => abortController?.abort(),
+      API_TIMEOUT_MS,
+    );
+    let response: Response;
+    try {
+      response = await fetch(url, { signal: abortController.signal });
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (!response.ok) {
       const body = await response.json().catch(() => null);
       const reason =
@@ -278,52 +296,49 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add youtube-listener");
+  if (!tokens) {
+    reportError(odaToken, HANDLER_NAME, "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "GoogleApiKey")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add youtube handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) => {
-              const channelId = String(token.settings?.["channelId"] ?? "");
-              if (!channelId) {
-                reportError(
-                  odaToken,
-                  HANDLER_NAME,
-                  "GoogleApiKey token is missing a channelId setting",
-                );
-                return;
-              }
-              clients.add(
-                startYoutubeChat(
-                  odaToken,
-                  channelId,
-                  response.data.token,
-                  eventbus,
-                  emotesStore,
-                ),
-              );
-            })
-            .catch((err) => {
-              reportError(odaToken, HANDLER_NAME, String(err));
-            });
+  tokens
+    .filter((token) => token.system === "GoogleApiKey")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      log("INFO", `add youtube handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) => {
+          const channelId = String(token.settings?.["channelId"] ?? "");
+          if (!channelId) {
+            reportError(
+              odaToken,
+              HANDLER_NAME,
+              "GoogleApiKey token is missing a channelId setting",
+            );
+            return;
+          }
+          clients.add(
+            startYoutubeChat(
+              odaToken,
+              channelId,
+              response.data.token,
+              eventbus,
+              emotesStore,
+            ),
+          );
+        })
+        .catch((err) => {
+          reportError(odaToken, HANDLER_NAME, String(err));
         });
-    })
-    .catch((err) => {
-      reportError(odaToken, HANDLER_NAME, String(err));
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove youtube-listener");
+  log("INFO", { connected: connectedTokens }, "remove youtube-listener");
   clients.forEach((client) => client.stop());
   clients.clear();
   connectedTokens = [];

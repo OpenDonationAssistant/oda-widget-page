@@ -1,16 +1,16 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { connect } from "socket.io-client";
 import { reportError, reportStarted } from "../worker-status";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const DONATIONALERTS_SOCKET_URL = "wss://socket.donationalerts.com/";
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 const activeSockets = new Set<SocketIOClient.Socket>();
 
@@ -87,12 +87,12 @@ function persistDonation(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `UnofficialDonationAlerts donation persisted to history [${donation.username}]`,
       ),
     )
     .catch((err) => {
-      console.error(
+      log("ERROR",
         "Failed to persist UnofficialDonationAlerts donation to history:",
         err,
       );
@@ -107,7 +107,7 @@ function handleDonation(odaToken: string, recipientId: string, raw: string): voi
   try {
     donation = JSON.parse(raw);
   } catch (err) {
-    console.error("Failed to parse UnofficialDonationAlerts donation:", err);
+    log("ERROR", "Failed to parse UnofficialDonationAlerts donation:", err);
     reportError(odaToken, "UnofficialDonationAlerts", `failed to parse donation: ${err}`);
     return;
   }
@@ -167,7 +167,7 @@ function startSocketClient(
   recipientId: string,
   daToken: string,
 ): void {
-  console.log("Starting UnofficialDonationAlerts socket.io connection");
+  log("INFO", "Starting UnofficialDonationAlerts socket.io connection");
   const socket = connect(DONATIONALERTS_SOCKET_URL, {
     reconnection: true,
     reconnectionDelayMax: 5000,
@@ -176,7 +176,7 @@ function startSocketClient(
   activeSockets.add(socket);
 
   socket.on("connect", () => {
-    console.log("UnofficialDonationAlerts socket connected");
+    log("INFO", "UnofficialDonationAlerts socket connected");
     reportStarted(odaToken, "UnofficialDonationAlerts");
     socket.emit("add-user", {
       token: daToken,
@@ -185,7 +185,7 @@ function startSocketClient(
   });
 
   socket.on("connect_error", (msg: string) => {
-    console.error("UnofficialDonationAlerts connection_error:", msg);
+    log("ERROR", "UnofficialDonationAlerts connection_error:", msg);
     reportError(odaToken, "UnofficialDonationAlerts", `connect_error: ${msg}`);
   });
 
@@ -199,7 +199,7 @@ function startSocketClient(
   });
 
   socket.on("reconnect", () => {
-    console.log("UnofficialDonationAlerts socket reconnected");
+    log("INFO", "UnofficialDonationAlerts socket reconnected");
   });
 
   socket.on("donation", (msg: string) => {
@@ -209,34 +209,37 @@ function startSocketClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, recipientId: string): void {
-  console.log(
+export function register(
+  odaToken: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+): void {
+  log("INFO",
     { connected: connectedTokens },
     "add unofficial-donationalerts-listener",
   );
-  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "UnofficialDonationAlerts")
-        .filter((t) => t.enabled)
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add unofficial-donationalerts handler for ${t.id}`);
-          connectedTokens.push(t.id);
+  if (!tokens) {
+    reportError(
+      odaToken,
+      "UnofficialDonationAlerts",
+      "Failed to fetch recipient tokens",
+    );
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "UnofficialDonationAlerts")
+    .filter((t) => t.enabled)
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      log("INFO", `add unofficial-donationalerts handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startSocketClient(odaToken, recipientId, t.token);
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to UnofficialDonationAlerts", err);
-      reportError(odaToken, "UnofficialDonationAlerts", err);
+      startSocketClient(odaToken, recipientId, t.token);
     });
 }
 
 export function deregister(): void {
-  console.log(
+  log("INFO",
     { connected: connectedTokens },
     "remove unofficial-donationalerts listener",
   );

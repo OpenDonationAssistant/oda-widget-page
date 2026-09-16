@@ -6,11 +6,14 @@ import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const VKLIVE_WEBSOCKET_URL =
   "wss://pubsub-dev.live.vkvideo.ru/connection/websocket?cf_protocol_version=v2";
 const VKLIVE_API_URL = "https://apidev.live.vkvideo.ru";
 const RECONNECT_DELAY_MS = 1000;
+const API_TIMEOUT_MS = 15000;
 
 const EVENT_NAME = "VKLIVE_CHAT_MESSAGE";
 
@@ -20,9 +23,10 @@ async function getJson(url: string, token: string): Promise<any> {
     headers: {
       Authorization: "Bearer " + token,
     },
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
   });
   if (!response.ok) {
-    console.error(
+    log("ERROR",
       "VK Live API call failed with status code " +
         response.status +
         ": " +
@@ -73,7 +77,7 @@ function handleChatMessage(
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
-  console.debug({ message }, "VK Live chat message");
+  log("DEBUG", { message }, "VK Live chat message");
   const emotes = emotesFromText(messageText(message), emotesStore);
   emotes.push(
     ...(message.parts ?? [])
@@ -153,9 +157,9 @@ function handleChatData(
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
-  console.log({ data }, "VKLive chat data");
+  log("INFO", { data }, "VKLive chat data");
   const message = data?.data?.chat_message;
-  console.log({ message }, "VK Live chat message");
+  log("INFO", { message }, "VK Live chat message");
   if (!message) return;
   handleChatMessage(message, eventbus, emotesStore);
 }
@@ -168,7 +172,7 @@ function handleFrame(
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): void {
-  console.log({ frame }, "VK Live WebSocket frame");
+  log("INFO", { frame }, "VK Live WebSocket frame");
   if (frame.id === 1 && frame.connect) {
     websocketClient.send(
       JSON.stringify({
@@ -177,7 +181,7 @@ function handleFrame(
       }),
     );
   } else if (frame.id === 2 && frame.subscribe) {
-    console.log(`Subscribed to VK Live channel [${channel}]`);
+    log("INFO", `Subscribed to VK Live channel [${channel}]`);
   } else if (frame.push) {
     handleChatData(frame.push.pub?.data, eventbus, emotesStore);
   } else if (Object.keys(frame).length === 0) {
@@ -193,7 +197,7 @@ function startWebSocketClient(
   eventbus: EventBus,
   emotesStore: EmotesStore,
 ): WebSocket {
-  console.log({ channel }, "Starting VK Live WebSocket connection");
+  log("INFO", { channel }, "Starting VK Live WebSocket connection");
   const websocketClient = new WebSocket(VKLIVE_WEBSOCKET_URL);
   let reconnecting = false;
   websocketClients.add(websocketClient);
@@ -210,13 +214,13 @@ function startWebSocketClient(
   };
 
   websocketClient.addEventListener("error", (err) => {
-    console.error("VK Live WebSocket error:", err);
+    log("ERROR", "VK Live WebSocket error:", err);
     reportError(odaToken, "VKLive", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log("WebSocket connection opened to " + VKLIVE_WEBSOCKET_URL);
+    log("INFO", "WebSocket connection opened to " + VKLIVE_WEBSOCKET_URL);
     reportStarted(odaToken, "VKLive");
     websocketClient.send(
       JSON.stringify({ id: 1, connect: { token: connectionToken } }),
@@ -232,7 +236,7 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       `VK Live WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -277,7 +281,7 @@ async function startVKLiveClient(
       emotesStore,
     );
   } catch (error) {
-    console.error("Failed to start VK Live chat client", error);
+    log("ERROR", "Failed to start VK Live chat client", error);
     reportError(token, "VKLive", `failed to start chat client: ${error}`);
   }
 }
@@ -292,33 +296,32 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add vklive-listener");
+  if (!tokens) {
+    reportError(odaToken, "VKLive", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "VKLive")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) =>
-              startVKLiveClient(response.data.token, eventbus, emotesStore),
-            );
+  tokens
+    .filter((token) => token.system === "VKLive")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      log("INFO", `add handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) =>
+          startVKLiveClient(response.data.token, eventbus, emotesStore),
+        )
+        .catch((err) => {
+          reportError(odaToken, "VKLive", String(err));
         });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to VKLive", err);
-      reportError(odaToken, "VKLive", err);
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove vklive-listener");
+  log("INFO", { connected: connectedTokens }, "remove vklive-listener");
   websocketClients.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);

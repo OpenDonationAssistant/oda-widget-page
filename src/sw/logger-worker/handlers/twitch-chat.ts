@@ -5,13 +5,16 @@ import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { reportError, reportStarted } from "../worker-status";
+import { log } from "./log";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
 
 const EVENTSUB_WEBSOCKET_URL = "wss://eventsub.wss.twitch.tv/ws";
 const RECONNECT_DELAY_MS = 1000;
 const SUBSCRIPTION_RETRY_DELAY_MS = 1000;
 const SUBSCRIPTION_MAX_ATTEMPTS = 5;
 const CLIENT_ID = "2f9aljaudj3678kp4gc9bj99tb7bev";
+const API_TIMEOUT_MS = 15000;
 
 interface BadgeDef {
   type: string;
@@ -38,7 +41,10 @@ async function fetchBadgeDefinitions(
   ];
   for (const url of endpoints) {
     try {
-      const response = await fetch(url, { headers });
+      const response = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      });
       if (response.status !== 200) continue;
       const json = await response.json();
       for (const set of json.data ?? []) {
@@ -75,7 +81,7 @@ async function listChatSubscriptions(
   try {
     const response = await fetch(
       "https://api.twitch.tv/helix/eventsub/subscriptions",
-      { headers },
+      { headers, signal: AbortSignal.timeout(API_TIMEOUT_MS) },
     );
     if (response.status !== 200) return [];
     const json = await response.json();
@@ -113,7 +119,11 @@ async function deleteStaleSubscriptions(
     try {
       await fetch(
         `https://api.twitch.tv/helix/eventsub/subscriptions?id=${sub.id}`,
-        { method: "DELETE", headers },
+        {
+          method: "DELETE",
+          headers,
+          signal: AbortSignal.timeout(API_TIMEOUT_MS),
+        },
       );
     } catch (error) {
       reportError(
@@ -151,7 +161,12 @@ async function registerEventSubListeners(
 
   let response = await fetch(
     "https://api.twitch.tv/helix/eventsub/subscriptions",
-    { method: "POST", headers, body },
+    {
+      method: "POST",
+      headers,
+      body,
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
+    },
   );
 
   // 409 Conflict: a subscription for the same broadcaster already exists,
@@ -163,7 +178,8 @@ async function registerEventSubListeners(
       (sub) => sub.transport?.session_id === websocketSessionID,
     );
     if (alreadyOurs) {
-      console.log(
+      log(
+        "INFO",
         `Subscription already exists for session ${websocketSessionID}`,
       );
       badgeDefinitions.set(
@@ -180,23 +196,27 @@ async function registerEventSubListeners(
     );
     response = await fetch(
       "https://api.twitch.tv/helix/eventsub/subscriptions",
-      { method: "POST", headers, body },
+      {
+        method: "POST",
+        headers,
+        body,
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      },
     );
   }
 
-  if (response.status === 401) {
-    return "fatal";
-  }
   if (response.status != 202) {
     reportError(
       odaToken,
       "Twitch",
       `Failed to subscribe to channel.chat.message. API call returned status code ${response.status}`,
     );
-    return "retryable";
+    return response.status === 401 || response.status === 429
+      ? "fatal"
+      : "retryable";
   }
   const data = await response.json();
-  console.log(`Subscribed to channel.chat.message [${data.data[0].id}]`);
+  log("INFO", `Subscribed to channel.chat.message [${data.data[0].id}]`);
   badgeDefinitions.set(
     token,
     await fetchBadgeDefinitions(odaToken, token, twitchId),
@@ -223,12 +243,14 @@ async function registerEventSubListenersWithRetry(
     );
     if (result === "ok") return;
     if (result === "fatal") {
-      // Auth failure — retrying cannot help. The error was already reported;
-      // close cleanly so the close handler does not schedule a reconnect.
+      // Non-retryable failure (auth, connection limit) — retrying cannot
+      // help. The error was already reported; close cleanly so the close
+      // handler does not schedule a reconnect.
       socket.close(1000, "subscription failed");
       return;
     }
-    console.log(
+    log(
+      "INFO",
       `Retrying Twitch subscription creation (attempt ${attempt}/${SUBSCRIPTION_MAX_ATTEMPTS})`,
     );
     await new Promise<void>((resolve) =>
@@ -262,7 +284,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
       // automatically, so the new connection must not re-subscribe.
       const reconnectUrl = data.payload.session.reconnect_url;
       if (reconnectUrl) {
-        console.log("Twitch requested session reconnect");
+        log("INFO", "Twitch requested session reconnect");
         startWebSocketClient(
           connection.odaToken,
           connection.twitchId,
@@ -277,7 +299,7 @@ function handleWebSocketMessage(connection: TwitchConnection, data: any) {
     case "notification":
       switch (data.metadata.subscription_type) {
         case "channel.chat.message":
-          // console.log("data.payload.event", data.payload.event);
+          // log("INFO", "data.payload.event", data.payload.event);
           const emotes = emotesFromText(
             data.payload.event.message?.text ?? "",
             connection.emotesStore,
@@ -402,7 +424,7 @@ function startWebSocketClient(
   emotesStore: EmotesStore,
   url: string = EVENTSUB_WEBSOCKET_URL,
 ): WebSocket {
-  console.log({ twitchId }, "Starting Twitch WebSocket connection");
+  log("INFO", { twitchId }, "Starting Twitch WebSocket connection");
   const websocketClient = new WebSocket(url);
   let reconnecting = false;
   let keepaliveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -444,7 +466,7 @@ function startWebSocketClient(
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log("WebSocket connection opened to " + url);
+    log("INFO", "WebSocket connection opened to " + url);
     reportStarted(odaToken, "Twitch");
   });
 
@@ -458,7 +480,8 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log(
+      "INFO",
       `Twitch WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -507,40 +530,38 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add twitch-listener");
+  if (!tokens) {
+    reportError(odaToken, "Twitch", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((token) => token.system === "Twitch")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          recipientService
-            .getAccessToken({ tokenId: token.id }, auth)
-            .then((response) => {
-              emotesStore.load(String(token.settings.id)).then(() => {
-                startWebSocketClient(
-                  odaToken,
-                  String(token.settings.id),
-                  response.data.token,
-                  eventbus,
-                  emotesStore,
-                );
-              });
-            });
+  tokens
+    .filter((token) => token.system === "Twitch")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      log("INFO", `add handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      recipientService
+        .getAccessToken({ tokenId: token.id }, auth)
+        .then((response) => {
+          startWebSocketClient(
+            odaToken,
+            String(token.settings.id),
+            response.data.token,
+            eventbus,
+            emotesStore,
+          );
+          emotesStore.load(String(token.settings.id));
+        })
+        .catch((err) => {
+          reportError(odaToken, "Twitch", String(err));
         });
-    })
-    .catch((err) => {
-      reportError(odaToken, "Twitch", String(err));
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove twitch-listener");
   websocketClients.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);

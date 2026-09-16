@@ -7,6 +7,7 @@
 // to clients that send a `GetWorkersStatus` message.
 import { addWarning, clearWarnings } from "@opendonationassistant/news-service";
 import type { MessageListenerRegistrar, WorkerMessageEvent } from "./messaging";
+import { log } from "./handlers/log";
 
 export interface WorkerStatusMessage {
   type: "HandlerStarted" | "HandlerError";
@@ -17,12 +18,26 @@ export interface WorkerStatusMessage {
 
 const statuses = new Map<string, WorkerStatusMessage>();
 
+type StatusChangeListener = (message: WorkerStatusMessage) => void;
+const statusListeners = new Set<StatusChangeListener>();
+
+export function onStatusChange(listener: StatusChangeListener): () => void {
+  statusListeners.add(listener);
+  return () => {
+    statusListeners.delete(listener);
+  };
+}
+
 export function reportStarted(token: string, handler: string): void {
-  statuses.set(handler, {
+  const message: WorkerStatusMessage = {
     type: "HandlerStarted",
     handler,
     timestamp: Date.now(),
-  });
+  };
+  statuses.set(handler, message);
+  for (const listener of statusListeners) {
+    listener(message);
+  }
   clearWarnings({
     baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
     headers: {
@@ -30,7 +45,7 @@ export function reportStarted(token: string, handler: string): void {
     },
     body: { components: [handler] },
   });
-  console.log(`[worker-status] ${handler} started`);
+  log("INFO", `[worker-status] ${handler} started`);
 }
 
 export function reportError(
@@ -38,12 +53,16 @@ export function reportError(
   handler: string,
   message: string,
 ): void {
-  statuses.set(handler, {
+  const statusMessage: WorkerStatusMessage = {
     type: "HandlerError",
     handler,
     message,
     timestamp: Date.now(),
-  });
+  };
+  statuses.set(handler, statusMessage);
+  for (const listener of statusListeners) {
+    listener(statusMessage);
+  }
   addWarning({
     baseURL: "https://api.oda.digital",
     headers: {
@@ -54,12 +73,12 @@ export function reportError(
       component: handler,
     },
   });
-  console.error(`[worker-status] ${handler} error: ${message}`);
+  log("ERROR", `[worker-status] ${handler} error: ${message}`);
 }
 
 export function removeStatuses(handler: string): void {
   statuses.delete(handler);
-  console.log(`[worker-status] ${handler} status removed`);
+  log("INFO", `[worker-status] ${handler} status removed`);
 }
 
 export function getStatuses(): Map<string, WorkerStatusMessage> {

@@ -14,6 +14,9 @@ import {
   ColorPropertyTarget,
 } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
+import { useWorkerProgress } from "./useWorkerProgress";
+import { WorkerProgressBar } from "./WorkerProgressBar";
+import styles from "./WorkerProgressBar.module.css";
 
 function fontToConfig(font: AnimatedFontProperty): ChatWidgetV2FontConfig {
   const color =
@@ -70,6 +73,8 @@ export const ChatWidgetV2 = observer(
     const rendererRef = useRef<ChatWidgetV2Renderer | null>(null);
     const fonts = useContext(FontContext);
     const config = settingsToConfig(settings);
+    const progress = useWorkerProgress([]);
+    const isLoading = progress.stage !== "ready";
 
     useEffect(() => {
       const container = containerRef.current;
@@ -121,12 +126,31 @@ export const ChatWidgetV2 = observer(
 
     return (
       <div
-        ref={containerRef}
         style={{
+          position: "relative",
           ...settings.widthProperty.calcCss(),
           ...settings.heightProperty.calcCss(),
         }}
-      />
+      >
+        {isLoading && <WorkerProgressBar progress={progress} />}
+        {progress.handlerErrors.length > 0 && (
+          <div className={styles.errors}>
+            {progress.handlerErrors.map((error) => (
+              <div key={error.handler} className={styles.error}>
+                <span className={styles.errorHandler}>{error.handler}:</span>
+                {error.message}
+              </div>
+            ))}
+          </div>
+        )}
+        <div
+          ref={containerRef}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      </div>
     );
   },
 );

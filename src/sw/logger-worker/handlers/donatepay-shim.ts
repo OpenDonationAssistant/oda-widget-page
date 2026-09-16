@@ -1,19 +1,20 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const DONATEPAY_SOCKET_TOKEN_URL = "https://donatepay.ru/api/v2/socket/token";
 const CENTRIFUGO_WEBSOCKET_URL =
   "wss://centrifugo.donatepay.ru:443/connection/websocket";
 const RECONNECT_DELAY_MS = 1000;
+const API_TIMEOUT_MS = 15000;
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
@@ -61,9 +62,13 @@ interface DonatePayMessage {
  * Exchange the DonatePay access token for a Centrifugo connection token.
  */
 async function getCentrifugoToken(dpToken: string): Promise<string> {
-  const response = await axios.post(DONATEPAY_SOCKET_TOKEN_URL, {
-    access_token: dpToken,
-  });
+  const response = await axios.post(
+    DONATEPAY_SOCKET_TOKEN_URL,
+    {
+      access_token: dpToken,
+    },
+    { timeout: API_TIMEOUT_MS },
+  );
   return response.data.token;
 }
 
@@ -76,11 +81,15 @@ async function subscribeToChannel(
   channel: string,
   client: string,
 ): Promise<string> {
-  const response = await axios.post(DONATEPAY_SOCKET_TOKEN_URL, {
-    access_token: dpToken,
-    channels: [channel],
-    client,
-  });
+  const response = await axios.post(
+    DONATEPAY_SOCKET_TOKEN_URL,
+    {
+      access_token: dpToken,
+      channels: [channel],
+      client,
+    },
+    { timeout: API_TIMEOUT_MS },
+  );
   return response.data.channels[0].token;
 }
 
@@ -100,13 +109,13 @@ function handleWebSocketMessage(
   if (message.id === 1) {
     const client = message.result?.client;
     if (!client) {
-      console.error("DonatePay Centrifugo auth reply missing client id");
+      log("ERROR", "DonatePay Centrifugo auth reply missing client id");
       reportError(odaToken, "DonatePay", "Centrifugo auth reply missing client id");
       return;
     }
     subscribeToChannel(dpToken, channel, client)
       .then((channelToken) => {
-        console.log(`DonatePay subscribed to channel ${channel}`);
+        log("INFO", `DonatePay subscribed to channel ${channel}`);
         socket.send(
           JSON.stringify({
             params: {
@@ -119,7 +128,7 @@ function handleWebSocketMessage(
         );
       })
       .catch((err) => {
-        console.error("Failed to subscribe to DonatePay channel:", err);
+        log("ERROR", "Failed to subscribe to DonatePay channel:", err);
         reportError(odaToken, "DonatePay", `failed to subscribe to channel: ${err}`);
       });
     return;
@@ -139,7 +148,7 @@ function handleDonation(
   settings: DonatePaySettings,
   payment: DonatePayPayment,
 ): void {
-  console.log(
+  log("INFO",
     `DonatePay donation: ${payment.vars.sum} ${payment.vars.currency} from ${payment.vars.name}`,
   );
 
@@ -174,12 +183,12 @@ function handleDonation(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `DonatePay donation persisted to history [${payment.vars.sum} ${payment.vars.currency}]`,
       ),
     )
     .catch((err) => {
-      console.error("Failed to persist DonatePay donation to history:", err);
+      log("ERROR", "Failed to persist DonatePay donation to history:", err);
       reportError(odaToken, "DonatePay", `failed to persist donation to history: ${err}`);
     });
 }
@@ -193,7 +202,7 @@ function startWebSocketClient(
   settings: DonatePaySettings,
   centrifugoToken: string,
 ): void {
-  console.log("Starting DonatePay Centrifugo WebSocket connection");
+  log("INFO", "Starting DonatePay Centrifugo WebSocket connection");
   const socket = new WebSocket(CENTRIFUGO_WEBSOCKET_URL);
   const channel = `$public:${settings.id}`;
   let reconnecting = false;
@@ -210,13 +219,13 @@ function startWebSocketClient(
   };
 
   socket.addEventListener("error", (err) => {
-    console.error("DonatePay WebSocket error:", err);
+    log("ERROR", "DonatePay WebSocket error:", err);
     reportError(odaToken, "DonatePay", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
   socket.addEventListener("open", () => {
-    console.log("DonatePay Centrifugo WebSocket opened");
+    log("INFO", "DonatePay Centrifugo WebSocket opened");
     reportStarted(odaToken, "DonatePay");
     socket.send(
       JSON.stringify({
@@ -250,7 +259,7 @@ function startWebSocketClient(
       );
     }
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       "DonatePay Centrifugo WebSocket closed. Reconnection attempt in 1s",
     );
     scheduleReconnect();
@@ -268,43 +277,42 @@ function startConnection(
       startWebSocketClient(odaToken, recipientId, dpToken, settings, centrifugoToken);
     })
     .catch((err) => {
-      console.error("Failed to get DonatePay socket token:", err);
+      log("ERROR", "Failed to get DonatePay socket token:", err);
       reportError(odaToken, "DonatePay", `failed to get socket token: ${err}`);
     });
 }
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, recipientId: string): void {
-  console.log({ connected: connectedTokens }, "add donatepay-listener");
-  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "DonatePay")
-        .filter((t) => t.enabled)
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add donatepay handler for ${t.id}`);
-          connectedTokens.push(t.id);
+export function register(
+  odaToken: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+): void {
+  log("INFO", { connected: connectedTokens }, "add donatepay-listener");
+  if (!tokens) {
+    reportError(odaToken, "DonatePay", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "DonatePay")
+    .filter((t) => t.enabled)
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      log("INFO", `add donatepay handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startConnection(
-            odaToken,
-            recipientId,
-            t.token,
-            t.settings as unknown as DonatePaySettings,
-          );
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to DonatePay", err);
-      reportError(odaToken, "DonatePay", err);
+      startConnection(
+        odaToken,
+        recipientId,
+        t.token,
+        t.settings as unknown as DonatePaySettings,
+      );
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove donatepay listener");
+  log("INFO", { connected: connectedTokens }, "remove donatepay listener");
   activeSockets.forEach((socket) => {
     activeSockets.delete(socket);
     socket.close(1000, "deregistered");

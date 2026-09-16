@@ -1,12 +1,13 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { getChannelInfo } from "@opendonationassistant/kick-service";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { reportError, reportStarted } from "../worker-status";
 import { EmotesStore } from "../../../stores/EmotesStore";
 import { emotesFromText } from "./emotes";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 // Kick uses Pusher for its chat websocket. The app key and query params
 // (protocol, client, version) below match what kick-js uses.
@@ -18,12 +19,8 @@ const EVENT_NAME = "KICK_CHAT_MESSAGE";
 
 // Endpoints come from the build-time environment (.env.development /
 // .env.production), with a fallback to the production gateway.
-const RECIPIENT_API_ENDPOINT =
-  process.env.REACT_APP_RECIPIENT_API_ENDPOINT ?? "https://api.oda.digital";
 const KICK_API_ENDPOINT =
   process.env.REACT_APP_API_ENDPOINT ?? "https://api.oda.digital";
-
-const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
 
 let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
@@ -103,7 +100,7 @@ function handleFrame(
         try {
           data = JSON.parse(data);
         } catch (error) {
-          console.error("Kick: failed to parse chat message data", error);
+          log("ERROR", "Kick: failed to parse chat message data", error);
           reportError(odaToken, "Kick", `failed to parse chat message data: ${error}`);
           return;
         }
@@ -112,7 +109,7 @@ function handleFrame(
       break;
     }
     default:
-      console.log("Kick: unsupported event type", frame.event);
+      log("INFO", "Kick: unsupported event type", frame.event);
   }
 }
 
@@ -123,7 +120,7 @@ function startWebSocketClient(
   emotesStore: EmotesStore,
 ): WebSocket {
   const channel = `chatrooms.${chatroomId}.v2`;
-  console.log({ chatroomId }, "Starting Kick WebSocket connection");
+  log("INFO", { chatroomId }, "Starting Kick WebSocket connection");
   const websocketClient = new WebSocket(KICK_PUSHER_WEBSOCKET_URL);
   let reconnecting = false;
   websocketClients.add(websocketClient);
@@ -139,13 +136,13 @@ function startWebSocketClient(
   };
 
   websocketClient.addEventListener("error", (err) => {
-    console.error("Kick WebSocket error:", err);
+    log("ERROR", "Kick WebSocket error:", err);
     reportError(odaToken, "Kick", `WebSocket error: ${err}`);
     scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log(
+    log("INFO",
       "Kick WebSocket connection opened to " + KICK_PUSHER_WEBSOCKET_URL,
     );
     reportStarted(odaToken, "Kick");
@@ -165,7 +162,7 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
-    console.log(
+    log("INFO",
       `Kick WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -176,7 +173,7 @@ function startWebSocketClient(
     try {
       frame = JSON.parse(data.data);
     } catch (error) {
-      console.error("Kick: failed to parse WebSocket message", error);
+      log("ERROR", "Kick: failed to parse WebSocket message", error);
       reportError(odaToken, "Kick", `failed to parse WebSocket message: ${error}`);
       return;
     }
@@ -200,13 +197,13 @@ async function startKickClient(
       body: { tokenId },
     });
     if (error || !data?.chatroom?.id) {
-      console.error("Failed to get Kick channel info", { data, error });
+      log("ERROR", "Failed to get Kick channel info", { data, error });
       reportError(odaToken, "Kick", error?.message ?? "Failed to get Kick channel info");
       return;
     }
     startWebSocketClient(odaToken, data.chatroom.id, eventbus, emotesStore);
   } catch (error) {
-    console.error("Failed to start Kick chat client", error);
+    log("ERROR", "Failed to start Kick chat client", error);
     reportError(odaToken, "Kick", String(error));
   }
 }
@@ -216,30 +213,25 @@ export function register(
   recipientId: string,
   eventbus: EventBus,
   emotesStore: EmotesStore,
+  tokens: TokenDto[] | null,
 ): void {
-  console.log({ connected: connectedTokens }, "add kick-chat listener");
+  if (!tokens) {
+    reportError(odaToken, "Kick", "Failed to fetch recipient tokens");
+    return;
+  }
   const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      console.log({ tokens }, "kick list tokens response");
-      tokens.data
-        .filter((token) => token.system === "Kick")
-        .filter((token) => !connectedTokens.includes(token.id))
-        .forEach((token) => {
-          console.log(`add kick-chat handler for ${token.id}`);
-          connectedTokens.push(token.id);
-          startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to Kick", err);
-      reportError(odaToken, "Kick", err);
+  tokens
+    .filter((token) => token.system === "Kick")
+    .filter((token) => !connectedTokens.includes(token.id))
+    .forEach((token) => {
+      log("INFO", `add kick-chat handler for ${token.id}`);
+      connectedTokens.push(token.id);
+      startKickClient(odaToken, token.id, auth.headers, eventbus, emotesStore);
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove kick-chat listener");
+  log("INFO", { connected: connectedTokens }, "remove kick-chat listener");
   websocketClients.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
     websocketClients.delete(websocketClient);

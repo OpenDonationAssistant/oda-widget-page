@@ -8,6 +8,12 @@
  */
 
 import { onWorkerMessage } from "./worker";
+import {
+  EmoteResponseExport,
+  exportEmoteResponses,
+  importEmoteResponses,
+  sanitizeEmoteResponses,
+} from "./stores/emoteCache";
 
 const EMOTE_CACHE_WORKER_URL = `${process.env.PUBLIC_URL || ""}/emote-cache-worker.js`;
 
@@ -22,6 +28,8 @@ export interface EmoteCacheEntry {
 /** Shape of the exported emote cache file. */
 export interface EmoteCacheExport {
   entries: EmoteCacheEntry[];
+  /** Persisted emote response lists (the emote list table). */
+  emotes: EmoteResponseExport[];
 }
 
 export function isEmoteCacheWorkerSupported(): boolean {
@@ -87,7 +95,7 @@ export async function exportEmoteCache(): Promise<EmoteCacheExport | null> {
   const controller = registration.active;
   if (!controller) return null;
 
-  return new Promise((resolve, reject) => {
+  const result = await new Promise<EmoteCacheExport>((resolve, reject) => {
     const timeout = setTimeout(() => {
       navigator.serviceWorker.removeEventListener("message", onMessage);
       reject(new Error("Timed out waiting for emote cache export"));
@@ -106,21 +114,28 @@ export async function exportEmoteCache(): Promise<EmoteCacheExport | null> {
     navigator.serviceWorker.addEventListener("message", onMessage);
     controller.postMessage({ type: "EXPORT_CACHE" });
   });
+
+  const emotes = await exportEmoteResponses();
+  return { entries: result.entries, emotes };
 }
 
 /**
  * Ask the service worker to restore previously exported entries into the
- * emote cache. No-op when service workers are unsupported or the list is
- * empty.
+ * emote cache and write the exported emote response lists back to the
+ * IndexedDB table. No-op when the payload is empty.
  */
 export async function importEmoteCache(
-  entries: EmoteCacheEntry[],
+  data: EmoteCacheExport,
 ): Promise<void> {
-  if (!isEmoteCacheWorkerSupported() || entries.length === 0) return;
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    registration.active?.postMessage({ type: "IMPORT_CACHE", entries });
-  } catch (error) {
-    console.error("Failed to send emotes to cache worker", error);
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+  if (isEmoteCacheWorkerSupported() && entries.length > 0) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      registration.active?.postMessage({ type: "IMPORT_CACHE", entries });
+    } catch (error) {
+      console.error("Failed to send emotes to cache worker", error);
+    }
   }
+
+  await importEmoteResponses(sanitizeEmoteResponses(data.emotes));
 }

@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { reportError, reportStarted } from "../worker-status";
@@ -8,11 +7,13 @@ import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 const RECONNECT_DELAY_MS = 1000;
+const API_TIMEOUT_MS = 15000;
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 
 // ── StreamElements WebSocket message types ──────────────────────────
@@ -77,6 +78,7 @@ async function getChannelId(jwtToken: string): Promise<string> {
         Authorization: `Bearer ${jwtToken}`,
         Accept: "application/json",
       },
+      signal: AbortSignal.timeout(API_TIMEOUT_MS),
     },
   );
   if (!response.ok) {
@@ -112,14 +114,14 @@ function handleWebSocketMessage(
 
   switch (message.type) {
     case "welcome": {
-      console.log(
+      log("INFO",
         `StreamElements Astro connected [client_id: ${message.data.client_id}]`,
       );
 
       // Fetch channel ID and subscribe to tips
       getChannelId(seToken)
         .then((channelId) => {
-          console.log(`Subscribing to channel.tips for room ${channelId}`);
+          log("INFO", `Subscribing to channel.tips for room ${channelId}`);
           const ws = getActiveWebSocket(seToken);
           if (!ws) return;
           ws.send(
@@ -136,7 +138,7 @@ function handleWebSocketMessage(
           );
         })
         .catch((err) => {
-          console.error("Failed to get StreamElements channel:", err);
+          log("ERROR", "Failed to get StreamElements channel:", err);
           reportError(odaToken, "StreamElements", `failed to get channel: ${err}`);
         });
       break;
@@ -144,12 +146,12 @@ function handleWebSocketMessage(
 
     case "response": {
       if (message.error) {
-        console.error(
+        log("ERROR",
           `StreamElements subscribe error: ${message.error} - ${message.data.message}`,
         );
         reportError(odaToken, "StreamElements", `subscribe error: ${message.error} - ${message.data.message}`);
       } else {
-        console.log(
+        log("INFO",
           `StreamElements subscription success: ${message.data.message}`,
         );
       }
@@ -164,7 +166,7 @@ function handleWebSocketMessage(
     }
 
     case "reconnect": {
-      console.log("StreamElements requesting reconnect");
+      log("INFO", "StreamElements requesting reconnect");
       break;
     }
   }
@@ -177,7 +179,7 @@ function handleTipEvent(
   eventbus: EventBus,
 ): void {
   const tip = event.data.donation;
-  console.log(
+  log("INFO",
     `StreamElements tip: ${tip.amount} ${tip.currency} from ${tip.user.username}`,
   );
 
@@ -201,12 +203,12 @@ function handleTipEvent(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `StreamElements tip persisted to history [${tip.amount} ${tip.currency}]`,
       ),
     )
     .catch((err) => {
-      console.error("Failed to persist StreamElements tip to history:", err);
+      log("ERROR", "Failed to persist StreamElements tip to history:", err);
       reportError(odaToken, "StreamElements", `failed to persist tip to history: ${err}`);
     });
 
@@ -251,7 +253,7 @@ function startWebSocketClient(
   seToken: string,
   eventbus: EventBus,
 ): WebSocket {
-  console.log("Starting StreamElements Astro WebSocket connection");
+  log("INFO", "Starting StreamElements Astro WebSocket connection");
   const websocketClient = new WebSocket(ASTRO_WEBSOCKET_URL);
   let reconnecting = false;
   activeSockets.set(seToken, websocketClient);
@@ -267,12 +269,12 @@ function startWebSocketClient(
   };
 
   websocketClient.addEventListener("error", (err) => {
-    console.error("StreamElements WebSocket error:", err);
+    log("ERROR", "StreamElements WebSocket error:", err);
     scheduleReconnect();
   });
 
   websocketClient.addEventListener("open", () => {
-    console.log("StreamElements Astro WebSocket opened");
+    log("INFO", "StreamElements Astro WebSocket opened");
     reportStarted(odaToken, "StreamElements");
   });
 
@@ -293,7 +295,7 @@ function startWebSocketClient(
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
     if (!wasRegistered) return; // Closed by deregister or replaced — do not reconnect.
-    console.log(
+    log("INFO",
       `StreamElements Astro WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
     );
     scheduleReconnect();
@@ -304,30 +306,29 @@ function startWebSocketClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(odaToken: string, recipientId: string, eventbus: EventBus): void {
-  console.log({ connected: connectedTokens }, "add streamelements-listener");
-  const auth = { headers: { Authorization: `Bearer ${odaToken}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "StreamElements")
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add streamelements handler for ${t.id}`);
-          connectedTokens.push(t.id);
+export function register(
+  odaToken: string,
+  recipientId: string,
+  eventbus: EventBus,
+  tokens: TokenDto[] | null,
+): void {
+  if (!tokens) {
+    reportError(odaToken, "StreamElements", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "StreamElements")
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      log("INFO", `add streamelements handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startWebSocketClient(odaToken, recipientId, t.token, eventbus);
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to StreamElements", err);
-      reportError(odaToken, "StreamElements", err);
+      startWebSocketClient(odaToken, recipientId, t.token, eventbus);
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove streamelements listener");
+  log("INFO", { connected: connectedTokens }, "remove streamelements listener");
   activeSockets.forEach((websocketClient) => {
     websocketClient.close(1000, "deregistered");
   });

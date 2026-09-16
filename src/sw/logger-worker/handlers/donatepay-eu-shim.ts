@@ -1,19 +1,20 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
 import {
   AddHistoryItemApiAddHistoryItemCommand,
   addHistoryItem,
 } from "@opendonationassistant/history-service";
 import { reportError, reportStarted } from "../worker-status";
 import axios from "axios";
+import type { TokenDto } from "../systems";
+import { log } from "./log";
 
 const DONATEPAY_EU_WEBSOCKET_URL =
   "wss://centrifugo.donatepay.eu:443/connection/websocket";
 const DONATEPAY_EU_API_URL = "https://donatepay.eu";
 const RECONNECT_DELAY_MS = 5000;
+const API_TIMEOUT_MS = 15000;
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
@@ -69,6 +70,7 @@ function hashString(str: string): number {
 async function getUserId(accessToken: string): Promise<string> {
   const response = await axios.get(
     `${DONATEPAY_EU_API_URL}/api/v1/user?access_token=${accessToken}`,
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.data.id as string;
 }
@@ -78,6 +80,7 @@ async function getConnectionToken(accessToken: string): Promise<string> {
   const response = await axios.post(
     `${DONATEPAY_EU_API_URL}/api/v2/socket/token`,
     { access_token: accessToken },
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.token as string;
 }
@@ -95,6 +98,7 @@ async function getChannelToken(
       channels: [channel],
       client: clientId,
     },
+    { timeout: API_TIMEOUT_MS },
   );
   return response.data.channels[0].token as string;
 }
@@ -107,7 +111,7 @@ function handlePayment(
   payment: DonatePayEuNotification,
   settings: DonatePayEuSettings,
 ): void {
-  console.log(
+  log("INFO",
     `DonatePay.eu payment: ${payment.vars.sum} ${payment.vars.currency} from ${payment.vars.name}`,
   );
 
@@ -142,12 +146,12 @@ function handlePayment(
     },
   })
     .then(() =>
-      console.log(
+      log("INFO",
         `DonatePay.eu payment persisted to history [${payment.vars.sum} ${payment.vars.currency}]`,
       ),
     )
     .catch((err) => {
-      console.error("Failed to persist DonatePay.eu payment to history:", err);
+      log("ERROR", "Failed to persist DonatePay.eu payment to history:", err);
       reportError(odaToken, "DonatePay.eu", `failed to persist payment to history: ${err}`);
     });
 }
@@ -167,7 +171,7 @@ function handleWebSocketMessage(
 
   // Connection acknowledged — exchange the client id for a channel token
   if (message.id === 1) {
-    console.log("DonatePay.eu getting Centrifugo channel token");
+    log("INFO", "DonatePay.eu getting Centrifugo channel token");
     const clientId = message.result?.client;
     if (!clientId) return;
     getChannelToken(donatePayEuToken, channel, clientId)
@@ -181,7 +185,7 @@ function handleWebSocketMessage(
         );
       })
       .catch((err) => {
-        console.error("Failed to get DonatePay.eu channel token:", err);
+        log("ERROR", "Failed to get DonatePay.eu channel token:", err);
         reportError(odaToken, "DonatePay.eu", `failed to get channel token: ${err}`);
       });
   }
@@ -202,7 +206,7 @@ function startDonatePayEuClient(
   donatePayEuToken: string,
   settings: DonatePayEuSettings,
 ): void {
-  console.log("Starting DonatePay.eu WebSocket connection");
+  log("INFO", "Starting DonatePay.eu WebSocket connection");
 
   getUserId(donatePayEuToken)
     .then((id) =>
@@ -221,7 +225,7 @@ function startDonatePayEuClient(
       const scheduleReconnect = () => {
         if (reconnectScheduled) return;
         reconnectScheduled = true;
-        console.log(
+        log("INFO",
           `DonatePay.eu WebSocket disconnected — reconnecting in ${RECONNECT_DELAY_MS}ms`,
         );
         setTimeout(() => {
@@ -231,7 +235,7 @@ function startDonatePayEuClient(
       };
 
       websocketClient.addEventListener("open", () => {
-        console.log("DonatePay.eu WebSocket opened");
+        log("INFO", "DonatePay.eu WebSocket opened");
         reportStarted(odaToken, "DonatePay.eu");
         websocketClient.send(
           JSON.stringify({
@@ -254,14 +258,14 @@ function startDonatePayEuClient(
       });
 
       websocketClient.addEventListener("error", (err) => {
-        console.error("DonatePay.eu WebSocket error:", err);
+        log("ERROR", "DonatePay.eu WebSocket error:", err);
         reportError(odaToken, "DonatePay.eu", `WebSocket error: ${err}`);
         scheduleReconnect();
       });
 
       websocketClient.addEventListener("close", (event) => {
         const wasRegistered = activeSockets.delete(websocketClient);
-        console.log("DonatePay.eu WebSocket closed");
+        log("INFO", "DonatePay.eu WebSocket closed");
         if (event.code !== 1000) {
           reportError(
             odaToken,
@@ -274,7 +278,7 @@ function startDonatePayEuClient(
       });
     })
     .catch((err) => {
-      console.error("Failed to start DonatePay.eu WebSocket connection:", err);
+      log("ERROR", "Failed to start DonatePay.eu WebSocket connection:", err);
       reportError(odaToken, "DonatePay.eu", `failed to start WebSocket connection: ${err}`);
       // Retry connection after delay
       setTimeout(() => {
@@ -285,36 +289,35 @@ function startDonatePayEuClient(
 
 // ── Registration (called from logger-worker) ────────────────────────
 
-export function register(token: string, recipientId: string): void {
-  console.log({ connected: connectedTokens }, "add donatepay-eu-listener");
-  const auth = { headers: { Authorization: `Bearer ${token}` } };
-  recipientService
-    .listTokens(auth)
-    .then((tokens) => {
-      tokens.data
-        .filter((t) => t.system === "DonatePay.eu")
-        .filter((t) => t.enabled)
-        .filter((t) => !connectedTokens.includes(t.id))
-        .forEach((t) => {
-          console.log(`add donatepay-eu handler for ${t.id}`);
-          connectedTokens.push(t.id);
+export function register(
+  token: string,
+  recipientId: string,
+  tokens: TokenDto[] | null,
+): void {
+  log("INFO", { connected: connectedTokens }, "add donatepay-eu-listener");
+  if (!tokens) {
+    reportError(token, "DonatePay.eu", "Failed to fetch recipient tokens");
+    return;
+  }
+  tokens
+    .filter((t) => t.system === "DonatePay.eu")
+    .filter((t) => t.enabled)
+    .filter((t) => !connectedTokens.includes(t.id))
+    .forEach((t) => {
+      log("INFO", `add donatepay-eu handler for ${t.id}`);
+      connectedTokens.push(t.id);
 
-          startDonatePayEuClient(
-            token,
-            recipientId,
-            t.token,
-            t.settings as unknown as DonatePayEuSettings,
-          );
-        });
-    })
-    .catch((err) => {
-      console.error("Failed to subscribe to DonatePay.eu", err);
-      reportError(token,"DonatePay.eu", err);
+      startDonatePayEuClient(
+        token,
+        recipientId,
+        t.token,
+        t.settings as unknown as DonatePayEuSettings,
+      );
     });
 }
 
 export function deregister(): void {
-  console.log({ connected: connectedTokens }, "remove donatepay-eu listener");
+  log("INFO", { connected: connectedTokens }, "remove donatepay-eu listener");
   activeSockets.forEach((websocketClient) => {
     activeSockets.delete(websocketClient);
     websocketClient.close(1000, "deregistered");
