@@ -205,16 +205,15 @@ async function registerEventSubListeners(
     );
   }
 
-  if (response.status === 401) {
-    return "fatal";
-  }
   if (response.status != 202) {
     reportError(
       odaToken,
       "Twitch",
       `Failed to subscribe to channel.chat.message. API call returned status code ${response.status}`,
     );
-    return "retryable";
+    return response.status === 401 || response.status === 429
+      ? "fatal"
+      : "retryable";
   }
   const data = await response.json();
   log("INFO", `Subscribed to channel.chat.message [${data.data[0].id}]`);
@@ -244,8 +243,9 @@ async function registerEventSubListenersWithRetry(
     );
     if (result === "ok") return;
     if (result === "fatal") {
-      // Auth failure — retrying cannot help. The error was already reported;
-      // close cleanly so the close handler does not schedule a reconnect.
+      // Non-retryable failure (auth, connection limit) — retrying cannot
+      // help. The error was already reported; close cleanly so the close
+      // handler does not schedule a reconnect.
       socket.close(1000, "subscription failed");
       return;
     }
