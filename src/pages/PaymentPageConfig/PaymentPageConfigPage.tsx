@@ -87,11 +87,14 @@ export default function PaymentPageConfigPage() {
   const handleBackUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      const url = `${process.env.REACT_APP_CDN_ENDPOINT}/back-${recipientId}.jpg?random=${Date.now()}`;
       executionStore.fn = () => {
         dialogState.show = true;
-        return uploadBlob(file, `back-${recipientId}.jpg`, true).then(() =>
-          setBackUrl(url),
+        return uploadBlob(file, `back-${recipientId}.jpg`, true, {
+          convertToWebp: false,
+        }).then((result) =>
+          setBackUrl(
+            `${process.env.REACT_APP_CDN_ENDPOINT}/${result.name}?random=${Date.now()}`,
+          ),
         );
       };
       executionStore.callback = () => {
@@ -105,11 +108,14 @@ export default function PaymentPageConfigPage() {
     if (e.target.files) {
       const file = e.target.files[0];
       console.log(file);
-      const url = `${process.env.REACT_APP_CDN_ENDPOINT}/logo-${recipientId}.png?random=${Date.now()}`;
       executionStore.fn = () => {
         dialogState.show = true;
-        return uploadBlob(file, `logo-${recipientId}.png`, true).then(() =>
-          setImageUrl(url),
+        return uploadBlob(file, `logo-${recipientId}.png`, true, {
+          convertToWebp: false,
+        }).then((result) =>
+          setImageUrl(
+            `${process.env.REACT_APP_CDN_ENDPOINT}/${result.name}?random=${Date.now()}`,
+          ),
         );
       };
       executionStore.callback = () => {
