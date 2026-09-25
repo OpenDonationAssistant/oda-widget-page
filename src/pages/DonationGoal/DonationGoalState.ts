@@ -1,14 +1,17 @@
-import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { produce } from "immer";
-import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
+import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
+import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
 import { log as parent } from "../../logging";
 import { subscribe } from "../../socket";
-import { toJS } from "mobx";
 import { VariableStore } from "../../stores/VariableStore";
 
 export interface AbstractDonationGoalState {
   goals: Goal[];
+}
+
+export interface DonationGoalTopics {
+  goal: string;
 }
 
 export class DonationGoalState implements AbstractDonationGoalState {
@@ -16,34 +19,31 @@ export class DonationGoalState implements AbstractDonationGoalState {
     module: "components.DonationGoal.DonationGoalState",
   });
   private _widgetId: string;
-  private _conf: any;
+  private _topics: DonationGoalTopics;
   private _goals: Goal[] = [];
   private _variables: VariableStore;
 
   constructor({
     widgetId,
-    conf,
-    paymentPageConfig,
-    variables
+    topics,
+    settings,
+    variables,
   }: {
     widgetId: string;
-    conf: any;
-    paymentPageConfig: PaymentPageConfig;
+    topics: DonationGoalTopics;
+    settings: DonationGoalWidgetSettings;
     variables: VariableStore;
   }) {
     this._widgetId = widgetId;
-    this._conf = conf;
-    this._goals = paymentPageConfig.goals;
+    this._topics = topics;
+    this._goals = settings.goalProperty.value ?? [];
     this._variables = variables;
     makeAutoObservable(this);
-    document.addEventListener("paymentPageUpdated", () => {
-      this._goals = paymentPageConfig.goals;
-    });
     this.listen();
   }
 
   private listen() {
-    subscribe(this._widgetId, this._conf.topic.goal, (message) => {
+    subscribe(this._widgetId, this._topics.goal, (message) => {
       const updatedGoal = JSON.parse(message.body) as any;
       this._log.debug({ goalCommand: updatedGoal }, "received goals command");
       this._goals = produce(toJS(this._goals), (draft) => {
