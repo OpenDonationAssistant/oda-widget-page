@@ -1,4 +1,9 @@
-import { Client, messageCallbackType } from "@stomp/stompjs";
+import {
+  Client,
+  messageCallbackType,
+  ReconnectionTimeMode,
+  TickerStrategy,
+} from "@stomp/stompjs";
 import { log } from "./logging";
 
 export interface ListenerOptions {
@@ -21,7 +26,19 @@ const socket = new Client({
   //   passcode: localStorage.getItem("access-token") ?? ""
   // },
   reconnectDelay: 500,
+  maxReconnectDelay: 30000,
+  reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+  heartbeatIncoming: 10000,
+  heartbeatOutgoing: 10000,
+  heartbeatStrategy: TickerStrategy.Worker,
 });
+
+socket.onWebSocketClose = (evt) => {
+  log.warn({ code: evt.code, reason: evt.reason }, "ODA socket closed");
+};
+socket.onWebSocketError = () => {
+  log.warn("ODA socket error");
+};
 
 var listeners: Listener[] = [];
 socket.activate();
@@ -69,11 +86,13 @@ function subscribe(
 
 function unsubscribe(id: string, topic: string) {
   log.info(`Deleting subscription ${id} with topic ${topic}`);
-  socket.unsubscribe(`${id}-${topic}`);
+  socket.unsubscribe(`${topic}-${id}`);
   const existingListenerIndex = listeners.findIndex(
     (listener) => listener.id === id && listener.topic === topic,
   );
-  listeners.splice(existingListenerIndex, 1);
+  if (existingListenerIndex >= 0) {
+    listeners.splice(existingListenerIndex, 1);
+  }
 }
 
 function setupCommandListener(widgetId: string, reloadFn: Function) {

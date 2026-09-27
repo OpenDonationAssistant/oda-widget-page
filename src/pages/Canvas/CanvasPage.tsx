@@ -1,5 +1,5 @@
 import WidgetWrapper from "../../WidgetWrapper";
-import { CanvasWidget } from "./CanvasWidget";
+import { ElementsWidget } from "../../components/Element/ElementsWidget";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
@@ -10,7 +10,7 @@ export default function CanvasPage() {
 
   return (
     <WidgetWrapper>
-      <CanvasWidget
+      <ElementsWidget
         settings={Widget.configFromJson(settings) as CanvasWidgetSettings}
       />
     </WidgetWrapper>

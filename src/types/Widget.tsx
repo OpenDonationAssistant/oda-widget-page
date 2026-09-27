@@ -26,11 +26,15 @@ import InfoIcon from "../icons/InfoIcon";
 import ClockIcon from "../icons/widgets/ClockIcon";
 import HourglassIcon from "../icons/widgets/HourglassIcon";
 import ReelIcon from "../icons/ReelIcon";
+import DiceIcon from "../icons/DiceIcon";
 import VideoIcon from "../icons/widgets/VideoIcon";
 import IntegrationIcon from "../icons/IntegrationIcon";
 import EventFeedIcon from "../icons/widgets/EventFeedIcon";
 import RouletteIcon from "../icons/widgets/RouletteIcon";
+import TwitchIcon from "../icons/TwitchIcon";
+import PollsIcon from "../icons/PollsIcon";
 import { ReelWidgetSettings } from "../pages/Reel/ReelWidgetSettings";
+import { DiceWidgetSettings } from "../pages/Dice/DiceWidgetSettings";
 import { StreamCreditsWidgetSettings } from "../pages/StreamCredits/StreamCreditsWidgetSettings";
 import { AuctionWidgetSettings } from "../pages/AuctionWidget/AuctionWidgetSettings";
 import { CanvasWidgetSettings } from "../components/ConfigurationPage/widgetsettings/canvas/CanvasWidgetSettings";
@@ -39,6 +43,8 @@ import { ChatWidgetSettings } from "../pages/ChatWidget/ChatWidgetSettings";
 import { SocialsWidgetSettings } from "../pages/Socials/SocialsWidgetSettings";
 import { MarqueeWidgetSettings } from "../pages/Marquee/MarqueeWidgetSettings";
 import { EmoteWallWidgetSettings } from "../pages/EmoteWall/EmoteWallWidgetSettings";
+import { TwitchPredictionsWidgetSettings } from "../pages/TwitchPredictions/TwitchPredictionsWidgetSettings";
+import { TwitchPollsWidgetSettings } from "../pages/TwitchPolls/TwitchPollsWidgetSettings";
 
 export const WIDGET_TYPES = [
   {
@@ -141,6 +147,16 @@ export const WIDGET_TYPES = [
     description:
       "Позволяет создать рулетку с призами. За поддержку рулетка будет прокручиваться, рандомно выбирая слоты",
     create: () => new ReelWidgetSettings(),
+  },
+  {
+    name: "dice",
+    title: "Кубик",
+    icon: <DiceIcon />,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Бросает кубик на экране и показывает выпавшее значение (от 1 до 6).",
+    create: () => new DiceWidgetSettings(),
   },
   {
     name: "player-popup",
@@ -277,6 +293,26 @@ export const WIDGET_TYPES = [
     description:
       "Виджет, отображающий летящие эмоции из чата поверх стрима. Поддерживает как смайлы платформ (Twitch, VKLive, Kick), так и  7tv.",
     create: () => new EmoteWallWidgetSettings(),
+  },
+  {
+    name: "twitch-predictions",
+    title: "Прогнозы Twitch",
+    icon: <TwitchIcon />,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Показывает прогнозы (Channel Points Predictions) Twitch: варианты, проценты, суммы ставок и результат.",
+    create: () => new TwitchPredictionsWidgetSettings(),
+  },
+  {
+    name: "twitch-polls",
+    title: "Опросы Twitch",
+    icon: <PollsIcon />,
+    category: "onscreen",
+    preview: "",
+    description:
+      "Показывает опросы Twitch в реальном времени: варианты, проценты, количество голосов и победивший вариант.",
+    create: () => new TwitchPollsWidgetSettings(),
   },
 ];
 

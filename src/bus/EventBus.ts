@@ -1,6 +1,6 @@
 import { uuidv7 } from "uuidv7";
 import { log } from "../logging";
-import { Client } from "@stomp/stompjs";
+import { Client, ReconnectionTimeMode, TickerStrategy } from "@stomp/stompjs";
 import { reportError, reportStarted } from "../sw/logger-worker/worker-status";
 import { deregister as deregisterDonationalerts } from "../sw/logger-worker/handlers/donationalerts-shim";
 import { deregister as deregisterDonatepayEu } from "../sw/logger-worker/handlers/donatepay-eu-shim";
@@ -17,6 +17,13 @@ import type {
 } from "../sw/logger-worker/messaging";
 
 const defaultTtl = (1000 * 60 * 60 * 24).toString(); // 24 hours
+
+let pageUnloading = false;
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", () => {
+    pageUnloading = true;
+  });
+}
 
 const DB_NAME = "events";
 const DB_VERSION = 1;
@@ -120,8 +127,13 @@ export class Event {
   }
 }
 
+/** Synchronous observer of every event flowing through the bus. */
+export type EventListener = (event: Event) => void;
+
 export interface EventBus {
   push(event: Event): void;
+  /** Subscribe to every pushed event. Returns an unsubscribe function. */
+  onEvent(listener: EventListener): () => void;
 }
 
 export class DefaultEventBus implements EventBus {
@@ -132,8 +144,14 @@ export class DefaultEventBus implements EventBus {
     //   passcode: localStorage.getItem("access-token") ?? ""
     // },
     reconnectDelay: 500,
+    maxReconnectDelay: 30000,
+    reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+    heartbeatIncoming: 10000,
+    heartbeatOutgoing: 10000,
+    heartbeatStrategy: TickerStrategy.Worker,
   });
   private _db: Promise<IDBDatabase>;
+  private _eventListeners = new Set<EventListener>();
 
   constructor(
     token: string,
@@ -173,11 +191,16 @@ export class DefaultEventBus implements EventBus {
       this._socket.onWebSocketError = (evt) => {
         reportError(token, "ODA", `websocket error: ${JSON.stringify(evt)}`);
       };
+      this._socket.onDisconnect = () => {
+        log.info("ODA socket disconnected, reconnecting");
+      };
       this._socket.onWebSocketClose = (evt) => {
+        if (pageUnloading) return;
+        if (evt.code === 1000 || evt.code === 1001) return;
         reportError(
           token,
           "ODA",
-          `websocket closed: ${evt.code} ${evt.reason}`,
+          `websocket closed: ${evt.code} ${evt.reason}, reconnecting`,
         );
       };
       this._socket.activate();
@@ -250,8 +273,35 @@ export class DefaultEventBus implements EventBus {
     this._broadcast({ type: "RELOAD" });
   }
 
+  /**
+   * Subscribe to every pushed event, including events received over STOMP
+   * and events pushed locally by handlers. Returns an unsubscribe function.
+   */
+  public onEvent(listener: EventListener): () => void {
+    this._eventListeners.add(listener);
+    return () => {
+      this._eventListeners.delete(listener);
+    };
+  }
+
+  /**
+   * Notify observers synchronously. A throwing observer must not prevent the
+   * remaining observers (or the persistence/broadcast that follows) from
+   * running, so failures are logged and swallowed.
+   */
+  private notifyEventListeners(event: Event): void {
+    for (const listener of this._eventListeners) {
+      try {
+        listener(event);
+      } catch (error) {
+        log.error({ error }, "EventBus listener failed");
+      }
+    }
+  }
+
   public async push(event: Event) {
     log.debug({ message: event }, "EventBus message");
+    this.notifyEventListeners(event);
     await this.sendMessage(event);
     const tokenType = event.get("tokenType");
     const eventName = event.get("event");

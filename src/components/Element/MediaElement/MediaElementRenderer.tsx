@@ -4,7 +4,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { fullUri } from "../../../utils";
 import { ContainerElementRenderer } from "../ContainerElement/ContainerElementRenderer";
 import { DEFAULT_IMAGE_PROPERTY_VALUE } from "../../ConfigurationPage/widgetproperties/BackgroundImageProperty";
-import { DEFAULT_COLOR_PROPERTY_VALUE } from "../../ConfigurationPage/widgetproperties/ColorProperty";
+import { GRADIENT_TYPE } from "../../ConfigurationPage/widgetproperties/ColorProperty";
 import classes from "./MediaElementRenderer.module.css";
 
 export const MediaElementRenderer = observer(
@@ -18,10 +18,10 @@ export const MediaElementRenderer = observer(
     }, [settings.url]);
 
     const style = {} as CSSProperties;
-    if (settings.width.type === "min"){
+    if (settings.width.type === "min") {
       style.width = "unset";
     }
-    if (settings.height.type === "min"){
+    if (settings.height.type === "min") {
       style.height = "unset";
     }
 
@@ -31,7 +31,13 @@ export const MediaElementRenderer = observer(
           ...settings,
           ...{
             backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE,
-            backgroundColor: DEFAULT_COLOR_PROPERTY_VALUE,
+            backgroundColor: {
+              gradient: false,
+              gradientType: GRADIENT_TYPE.LINEAR,
+              repeating: false,
+              colors: [{ color: "#FFFFFF00" }],
+              angle: 0,
+            },
             justify: "center",
             align: "center",
           },

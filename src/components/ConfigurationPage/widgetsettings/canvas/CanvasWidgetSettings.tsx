@@ -1,104 +1,12 @@
 import { ReactNode } from "react";
-import { BorderProperty } from "../../widgetproperties/BorderProperty";
-import { AbstractWidgetSettings } from "../AbstractWidgetSettings";
 import classes from "../AbstractWidgetSettings.module.css";
-import {
-  ColorProperty,
-  ColorPropertyTarget,
-} from "../../widgetproperties/ColorProperty";
-import { PaddingProperty } from "../../widgetproperties/PaddingProperty";
-import { RoundingProperty } from "../../widgetproperties/RoundingProperty";
-import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
-import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
-import { CanvasWidget } from "../../../../pages/Canvas/CanvasWidget";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { ElementsWidgetSettings } from "../../../Element/ElementsWidgetSettings";
 
-export class CanvasWidgetSettings extends AbstractWidgetSettings {
+export class CanvasWidgetSettings extends ElementsWidgetSettings {
   constructor() {
-    super({ sections: [] });
-
-    this.addSection({
-      key: "style",
-      title: "Стиль",
-      properties: [
-        new ColorProperty({
-          name: "backgroundColor",
-          displayName: "background-color",
-          target: ColorPropertyTarget.BACKGROUND,
-          value: {
-            angle: 0,
-            colors: [
-              {
-                color: "rgba(0, 0, 0, 0)",
-              },
-            ],
-            gradient: false,
-            repeating: false,
-            gradientType: 0,
-          },
-        }),
-        new BackgroundImageProperty({ name: "backgroundImage" }),
-        new BorderProperty({
-          name: "border",
-        }),
-        new PaddingProperty({
-          name: "padding",
-        }),
-        new RoundingProperty({
-          name: "rounding",
-        }),
-        new BoxShadowProperty({ name: "shadow" }),
-      ],
-    });
-  }
-
-  public get backgroundColorProperty(): ColorProperty {
-    return (
-      (this.get("backgroundColor") as ColorProperty) ||
-      new ColorProperty({
-        name: "backgroundColor",
-        displayName: "background-color",
-        target: ColorPropertyTarget.BACKGROUND,
-      })
-    );
-  }
-
-  public get borderProperty(): BorderProperty {
-    return (
-      (this.get("border") as BorderProperty) ||
-      new BorderProperty({ name: "border" })
-    );
-  }
-
-  public get paddingProperty(): PaddingProperty {
-    return (
-      (this.get("padding") as PaddingProperty) ||
-      new PaddingProperty({
-        name: "padding",
-      })
-    );
-  }
-
-  public get roundingProperty(): RoundingProperty {
-    return (
-      (this.get("rounding") as RoundingProperty) ||
-      new RoundingProperty({ name: "rounding" })
-    );
-  }
-
-  public get shadowProperty(): BoxShadowProperty {
-    return (
-      (this.get("shadow") as BoxShadowProperty) ||
-      new BoxShadowProperty({ name: "shadow" })
-    );
-  }
-
-  public get backgroundImageProperty(): BackgroundImageProperty {
-    return (
-      (this.get("backgroundImage") as BackgroundImageProperty) ||
-      new BackgroundImageProperty({ name: "backgroundImage" })
-    );
+    super([]);
   }
 
   public help(): ReactNode {
@@ -122,13 +30,5 @@ export class CanvasWidgetSettings extends AbstractWidgetSettings {
         </div>
       </>
     );
-  }
-
-  public hasDemo() {
-    return true;
-  }
-
-  public demo() {
-    return <CanvasWidget settings={this} />;
   }
 }

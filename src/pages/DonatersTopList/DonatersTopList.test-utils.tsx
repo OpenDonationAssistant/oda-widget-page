@@ -334,5 +334,9 @@ export function createMockHistoryStore(
     showVKLiveSubs: false,
     after: null,
     before: null,
+    dailyDonations: [],
+    graphCurrency: null,
+    isGraphLoading: false,
+    loadDailyDonations: () => Promise.resolve(),
   };
 }
