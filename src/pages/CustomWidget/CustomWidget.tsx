@@ -18,6 +18,17 @@ function resolvePlaceholders(str: string, data: any) {
   });
 }
 
+function resolveJsPlaceholders(str: string, data: any) {
+  return str.replace(/\{\{\s*([A-Za-z0-9_.]+?)\s*\}\}/g, (match, expr) => {
+    const path = expr.trim().split(".");
+    let cur = data;
+    for (const key of path) {
+      cur = cur?.[key];
+    }
+    return cur == null ? match : String(cur);
+  });
+}
+
 export const CustomWidget = observer(
   ({
     settings,
@@ -43,6 +54,7 @@ export const CustomWidget = observer(
         settings
           .jsContent()
           .then((blob) => blob.text())
+          .then((text) => resolveJsPlaceholders(text, config))
           .then((text) => {
             setJs(text);
           });
