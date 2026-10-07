@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { Button } from "antd";
 
 export interface Tokens {
+  accessToken: string;
   idToken: string;
   refreshToken: string;
 }
@@ -26,6 +27,7 @@ async function tokenApiCall(credentials: any) {
 }
 
 function parseTokens(response: any): Tokens {
+  const accessToken = response.data.access_token;
   const idToken = response.data.id_token;
   const refreshToken = response.data.refresh_token;
   log.debug({ idToken: idToken, refreshToken: refreshToken });
@@ -35,6 +37,7 @@ function parseTokens(response: any): Tokens {
   axios.defaults.headers.common["Authorization"] =
     `Bearer ${idToken.toString()}`;
   return {
+    accessToken: accessToken,
     idToken: idToken,
     refreshToken: refreshToken,
   };

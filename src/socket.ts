@@ -1,5 +1,6 @@
 import { Client, messageCallbackType } from "@stomp/stompjs";
 import { log } from "./logging";
+import { tokenRequest } from "./pages/Login/Login";
 
 export interface ListenerOptions {
   durable?: string;
@@ -17,32 +18,46 @@ interface Listener {
 
 const socket = new Client({
   brokerURL: process.env.REACT_APP_WS_ENDPOINT,
-  // connectHeaders: {
-  //   passcode: localStorage.getItem("access-token") ?? ""
-  // },
   reconnectDelay: 500,
 });
+
+socket.beforeConnect = async () => {
+  const refreshToken = localStorage.getItem("refresh-token");
+  if (!refreshToken) {
+    return;
+  }
+  try {
+    const tokens = await tokenRequest({ refreshToken });
+    socket.connectHeaders = { passcode: tokens.accessToken };
+  } catch (error) {
+    log.error({ error: error }, "Failed to refresh access token for websocket");
+  }
+};
 
 var listeners: Listener[] = [];
 socket.activate();
 
 function createOptions(listener: Listener) {
-  const defaultTtl = (1000*60*60*24).toString(); // 24 hours
+  const defaultTtl = (1000 * 60 * 60 * 24).toString(); // 24 hours
   const id = `${listener.topic}-${listener.id}`;
   return {
-      id: id,
-      durable: listener.options.durable ?? "true",
-      "auto-delete": listener.options.autoDelete ?? "false",
-      ack: listener.options.ack ?? "client",
-      "x-queue-name": id,
-      "x-message-ttl": listener.options.ttl?.toString() ?? defaultTtl,
-      "x-expires": listener.options.ttl?.toString() ?? defaultTtl
+    id: id,
+    durable: listener.options.durable ?? "true",
+    "auto-delete": listener.options.autoDelete ?? "false",
+    ack: listener.options.ack ?? "client",
+    "x-queue-name": id,
+    "x-message-ttl": listener.options.ttl?.toString() ?? defaultTtl,
+    "x-expires": listener.options.ttl?.toString() ?? defaultTtl,
   };
 }
 
 socket.onConnect = () => {
   listeners.forEach((listener) => {
-    socket.subscribe(listener.topic, listener.onMessage, createOptions(listener));
+    socket.subscribe(
+      listener.topic,
+      listener.onMessage,
+      createOptions(listener),
+    );
   });
 };
 
@@ -77,16 +92,21 @@ function unsubscribe(id: string, topic: string) {
 }
 
 function setupCommandListener(widgetId: string, reloadFn: Function) {
-  subscribe(widgetId, "/topic/commands", (message) => {
-    log.debug({ command: message.body }, `Received widget command`);
-    let json = JSON.parse(message.body);
-    if (json.widgetId === widgetId || json.widgetId === "all") {
-      if (json.command === "reload") {
-        reloadFn();
-        message.ack();
+  subscribe(
+    widgetId,
+    "/topic/commands",
+    (message) => {
+      log.debug({ command: message.body }, `Received widget command`);
+      let json = JSON.parse(message.body);
+      if (json.widgetId === widgetId || json.widgetId === "all") {
+        if (json.command === "reload") {
+          reloadFn();
+          message.ack();
+        }
       }
-    }
-  }, { durable: "false", autoDelete: "true", ack: "auto", ttl: 1000*60*5 });
+    },
+    { durable: "false", autoDelete: "true", ack: "auto", ttl: 1000 * 60 * 5 },
+  );
 }
 
 function cleanupCommandListener(widgetId: string) {
