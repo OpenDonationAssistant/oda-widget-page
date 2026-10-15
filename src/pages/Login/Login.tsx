@@ -32,7 +32,7 @@ function parseTokens(response: any): Tokens {
   const refreshToken = response.data.refresh_token;
   log.debug({ idToken: idToken, refreshToken: refreshToken });
   document.cookie = `JWT=${idToken}`;
-  localStorage.setItem("access-token", idToken.toString());
+  localStorage.setItem("access-token", accessToken.toString());
   localStorage.setItem("refresh-token", refreshToken.toString());
   axios.defaults.headers.common["Authorization"] =
     `Bearer ${idToken.toString()}`;
