@@ -13,6 +13,11 @@
 
 import { addWarning } from "@opendonationassistant/news-service";
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const NEWS_API_ENDPOINT =
+  process.env.REACT_APP_NEWS_API_ENDPOINT ?? "https://api.oda.digital";
+
 let worker: SharedWorker | null = null;
 let port: MessagePort | null = null;
 
@@ -62,7 +67,7 @@ function reportWorkerUnavailable(message: Record<string, unknown>): void {
   const recipientId = String(info.recipientId ?? "unknown");
   const token = String(info.token ?? "");
   addWarning({
-    baseURL: "https://api.oda.digital",
+    baseURL: NEWS_API_ENDPOINT,
     headers: {
       Authorization: `Bearer ${token}`,
     },

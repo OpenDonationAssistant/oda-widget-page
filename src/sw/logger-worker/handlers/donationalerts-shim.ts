@@ -9,7 +9,13 @@ import axios from "axios";
 import type { TokenDto } from "../systems";
 import { log } from "./log";
 
-const DONATIONALERTS_API_URL = "https://api.oda.digital/donationalerts";
+// Endpoints come from the build-time environment, with a fallback to the
+// production gateway.
+const API_ENDPOINT =
+  process.env.REACT_APP_API_ENDPOINT ?? "https://api.oda.digital";
+const HISTORY_API_ENDPOINT =
+  process.env.REACT_APP_HISTORY_API_ENDPOINT ?? "https://api.oda.digital";
+const DONATIONALERTS_API_URL = `${API_ENDPOINT}/donationalerts`;
 const CENTRIFUGO_WEBSOCKET_URL =
   "wss://centrifugo.donationalerts.com/connection/websocket";
 const CENTRIFUGO_SUBSCRIBE_URL =
@@ -168,7 +174,7 @@ function handleDonation(
   };
 
   addHistoryItem({
-    baseURL: "https://api.oda.digital",
+    baseURL: HISTORY_API_ENDPOINT,
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,

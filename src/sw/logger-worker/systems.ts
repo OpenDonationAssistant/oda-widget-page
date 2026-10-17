@@ -1,9 +1,10 @@
 /// <reference lib="webworker" />
 
 import {
-  DefaultApiFactory as RecipientService,
-  type TokenControllerTokenDto,
-} from "@opendonationassistant/oda-recipient-service-client";
+  getAccessToken,
+  listTokens,
+  type TokenControllerTokenInfoDto,
+} from "@opendonationassistant/recipient-service";
 import { log } from "./handlers/log";
 
 // Endpoint comes from the build-time environment, with a fallback to the
@@ -11,13 +12,14 @@ import { log } from "./handlers/log";
 const RECIPIENT_API_ENDPOINT =
   process.env.REACT_APP_RECIPIENT_API_ENDPOINT ?? "https://api.oda.digital";
 
-const recipientService = RecipientService(undefined, RECIPIENT_API_ENDPOINT);
-
 /** How long to wait for the token list before falling back to "unknown". */
 const TOKEN_LIST_TIMEOUT_MS = 10000;
 
-/** A recipient token as returned by the recipient-service list endpoint. */
-export type TokenDto = TokenControllerTokenDto;
+/**
+ * A recipient token as returned by the recipient-service list endpoint,
+ * enriched with the token secret fetched via `getAccessToken`.
+ */
+export type TokenDto = TokenControllerTokenInfoDto & { token: string };
 
 /**
  * Maps the worker handler name (as reported via `reportStarted`/`reportError`)
@@ -46,12 +48,28 @@ export const HANDLER_TOKEN_SYSTEM: Record<string, string> = {
 export async function availableTokens(
   odaToken: string,
 ): Promise<TokenDto[] | null> {
+  const headers = { Authorization: `Bearer ${odaToken}` };
   try {
-    const response = await recipientService.listTokens({
-      headers: { Authorization: `Bearer ${odaToken}` },
+    const response = await listTokens({
+      headers,
       timeout: TOKEN_LIST_TIMEOUT_MS,
+      baseURL: RECIPIENT_API_ENDPOINT,
+      throwOnError: true,
     });
-    return response.data;
+    return await Promise.all(
+      response.data.map(async (info) => ({
+        ...info,
+        token: (
+          await getAccessToken({
+            body: { tokenId: info.id },
+            headers,
+            timeout: TOKEN_LIST_TIMEOUT_MS,
+            baseURL: RECIPIENT_API_ENDPOINT,
+            throwOnError: true,
+          })
+        ).data.token,
+      })),
+    );
   } catch (error) {
     log("ERROR", "Failed to list recipient tokens", error);
     return null;

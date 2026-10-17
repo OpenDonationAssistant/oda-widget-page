@@ -9,16 +9,19 @@ import { subscribe } from "../../socket";
 import { log } from "../../logging";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { DefaultTokenStore } from "../../stores/TokenStore";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function PaymentAlertsPage() {
   const { conf, widgetId, recipientId, settings } =
     useLoaderData() as WidgetData;
 
+  const { accessToken } = useAuth();
+
   const widgetSettings = Widget.configFromJson(
     settings,
   ) as PaymentAlertsWidgetSettings;
 
-  const tokenStore = new DefaultTokenStore();
+  const tokenStore = new DefaultTokenStore(accessToken ?? "");
 
   const pageConfig = new PaymentPageConfig(recipientId);
   const alertController = new AlertController(

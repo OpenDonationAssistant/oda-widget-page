@@ -15,6 +15,11 @@ const DONATEPAY_EU_API_URL = "https://donatepay.eu";
 const RECONNECT_DELAY_MS = 5000;
 const API_TIMEOUT_MS = 15000;
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const HISTORY_API_ENDPOINT =
+  process.env.REACT_APP_HISTORY_API_ENDPOINT ?? "https://api.oda.digital";
+
 let connectedTokens: string[] = [];
 const activeSockets = new Set<WebSocket>();
 
@@ -139,7 +144,7 @@ function handlePayment(
   };
 
   addHistoryItem({
-    baseURL: "https://api.oda.digital",
+    baseURL: HISTORY_API_ENDPOINT,
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,

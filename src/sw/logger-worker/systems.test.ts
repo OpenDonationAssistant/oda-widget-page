@@ -1,35 +1,44 @@
-jest.mock("@opendonationassistant/oda-recipient-service-client", () => ({
-  DefaultApiFactory: jest.fn(() => ({
-    listTokens: jest.fn(),
-  })),
+jest.mock("@opendonationassistant/recipient-service", () => ({
+  listTokens: jest.fn(),
+  getAccessToken: jest.fn(),
 }));
 
-import { DefaultApiFactory } from "@opendonationassistant/oda-recipient-service-client";
+import {
+  getAccessToken,
+  listTokens,
+} from "@opendonationassistant/recipient-service";
 import {
   HANDLER_TOKEN_SYSTEM,
   availableTokens,
   hasLinkedToken,
 } from "./systems";
 
-const factoryAsUnknown = DefaultApiFactory as unknown;
-const serviceMock = (factoryAsUnknown as jest.Mock).mock.results[0].value;
+const listTokensMock = listTokens as unknown as jest.Mock;
+const getAccessTokenMock = getAccessToken as unknown as jest.Mock;
 
 const twitchToken = {
   id: "1",
   system: "Twitch",
   type: "accessToken",
-  token: "abc",
   enabled: true,
   settings: {},
+  scopes: [],
+  token: "stale",
 };
 const googleApiKeyToken = {
   id: "2",
   system: "GoogleApiKey",
   type: "accessToken",
-  token: "def",
   enabled: true,
   settings: {},
+  scopes: [],
+  token: "stale",
 };
+
+beforeEach(() => {
+  listTokensMock.mockReset();
+  getAccessTokenMock.mockReset();
+});
 
 describe("HANDLER_TOKEN_SYSTEM", () => {
   it("maps handler names to their token systems", () => {
@@ -67,21 +76,27 @@ describe("hasLinkedToken", () => {
 });
 
 describe("availableTokens", () => {
-  it("returns the linked tokens", async () => {
-    serviceMock.listTokens.mockResolvedValue({
+  it("returns the linked tokens enriched with their access token", async () => {
+    listTokensMock.mockResolvedValue({
       data: [twitchToken, googleApiKeyToken],
     });
+    getAccessTokenMock.mockResolvedValue({ data: { token: "resolved" } });
 
     const tokens = await availableTokens("oda-token");
 
-    expect(serviceMock.listTokens).toHaveBeenCalledWith({
+    expect(listTokensMock).toHaveBeenCalledWith({
       headers: { Authorization: "Bearer oda-token" },
+      timeout: 10000,
+      baseURL: expect.any(String),
+      throwOnError: true,
     });
+    expect(getAccessTokenMock).toHaveBeenCalledTimes(2);
     expect(tokens).toHaveLength(2);
+    expect(tokens?.every((token) => token.token === "resolved")).toBe(true);
   });
 
   it("returns null when the token list cannot be fetched", async () => {
-    serviceMock.listTokens.mockRejectedValue(new Error("offline"));
+    listTokensMock.mockRejectedValue(new Error("offline"));
 
     const tokens = await availableTokens("oda-token");
 

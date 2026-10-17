@@ -14,6 +14,11 @@ const ASTRO_WEBSOCKET_URL = "wss://astro.streamelements.com";
 const RECONNECT_DELAY_MS = 1000;
 const API_TIMEOUT_MS = 15000;
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const HISTORY_API_ENDPOINT =
+  process.env.REACT_APP_HISTORY_API_ENDPOINT ?? "https://api.oda.digital";
+
 let connectedTokens: string[] = [];
 
 // ── StreamElements WebSocket message types ──────────────────────────
@@ -196,7 +201,7 @@ function handleTipEvent(
   };
 
   addHistoryItem({
-    baseURL: "https://api.oda.digital",
+    baseURL: HISTORY_API_ENDPOINT,
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,

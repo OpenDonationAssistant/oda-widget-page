@@ -21,6 +21,11 @@ const statuses = new Map<string, WorkerStatusMessage>();
 type StatusChangeListener = (message: WorkerStatusMessage) => void;
 const statusListeners = new Set<StatusChangeListener>();
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const NEWS_API_ENDPOINT =
+  process.env.REACT_APP_NEWS_API_ENDPOINT ?? "https://api.oda.digital";
+
 export function onStatusChange(listener: StatusChangeListener): () => void {
   statusListeners.add(listener);
   return () => {
@@ -39,7 +44,7 @@ export function reportStarted(token: string, handler: string): void {
     listener(message);
   }
   clearWarnings({
-    baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+    baseURL: NEWS_API_ENDPOINT,
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -64,7 +69,7 @@ export function reportError(
     listener(statusMessage);
   }
   addWarning({
-    baseURL: "https://api.oda.digital",
+    baseURL: NEWS_API_ENDPOINT,
     headers: {
       Authorization: `Bearer ${token}`,
     },

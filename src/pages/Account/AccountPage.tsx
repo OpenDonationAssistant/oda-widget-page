@@ -11,9 +11,11 @@ import {
 } from "../../components/Overlay/Overlay";
 import { useContext, useState } from "react";
 import PrimaryButton from "../../components/Button/PrimaryButton";
-import { DefaultApiFactory as KeycloakService } from "@opendonationassistant/oda-recipient-service-client";
+import { changePassword as changePasswordRequest } from "@opendonationassistant/recipient-service";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const AccountPage = observer(() => {
+  const { accessToken } = useAuth();
   const parentModalState = useContext(ModalStateContext);
   const [changePasswordModal] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -30,14 +32,15 @@ export const AccountPage = observer(() => {
     useState<string>("");
 
   const changePassword = async () => {
-    return KeycloakService(
-      undefined,
-      process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
-    )
-      .changePassword({
+    return changePasswordRequest({
+      body: {
         oldPassword: oldPassword,
         newPassword: newPassword,
-      })
+      },
+      baseURL: process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${accessToken}` },
+      throwOnError: true,
+    })
       .then(() => {
         passwordChangedModal.show = true;
       })

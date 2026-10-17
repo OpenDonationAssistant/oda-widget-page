@@ -9,6 +9,7 @@ import {
 } from "../../stores/TokenStore";
 import { useState } from "react";
 import { useLoaderData } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
 import { WidgetData } from "../../types/WidgetData";
 import { GamesSection } from "./GamesSection";
 import {
@@ -18,7 +19,10 @@ import {
 } from "../../stores/GamesStore";
 
 export const IntegrationsPage = observer(() => {
-  const [tokenStore] = useState<TokenStore>(() => new DefaultTokenStore());
+  const { accessToken } = useAuth();
+  const [tokenStore] = useState<TokenStore>(
+    () => new DefaultTokenStore(accessToken ?? ""),
+  );
   const [gamesStore] = useState<GamesStore>(
     () => new DefaultGamesStore(tokenStore),
   );

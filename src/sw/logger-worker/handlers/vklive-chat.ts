@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { getAccessToken } from "@opendonationassistant/recipient-service";
 import { Event, EventBus, Variable } from "../../../bus/EventBus";
 import { uuidv7 } from "uuidv7";
 import { EmotesStore } from "../../../stores/EmotesStore";
@@ -286,7 +286,10 @@ async function startVKLiveClient(
   }
 }
 
-const recipientService = RecipientService(undefined, "https://api.oda.digital");
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway (same pattern as the chat/donation handlers).
+const RECIPIENT_API_ENDPOINT =
+  process.env.REACT_APP_RECIPIENT_API_ENDPOINT ?? "https://api.oda.digital";
 
 let connectedTokens: string[] = [];
 const websocketClients = new Set<WebSocket>();
@@ -309,8 +312,12 @@ export function register(
     .forEach((token) => {
       log("INFO", `add handler for ${token.id}`);
       connectedTokens.push(token.id);
-      recipientService
-        .getAccessToken({ tokenId: token.id }, auth)
+      getAccessToken({
+        body: { tokenId: token.id },
+        headers: auth.headers,
+        baseURL: RECIPIENT_API_ENDPOINT,
+        throwOnError: true,
+      })
         .then((response) =>
           startVKLiveClient(response.data.token, eventbus, emotesStore),
         )

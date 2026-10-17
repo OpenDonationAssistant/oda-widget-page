@@ -1,8 +1,19 @@
-import { DefaultApiFactory } from "@opendonationassistant/oda-recipient-service-client";
+import {
+  deleteToken as deleteTokenRequest,
+  getAccessToken,
+  listTokens,
+  setToken as setTokenRequest,
+  toggleToken as toggleTokenRequest,
+  type SetTokenSetTokenCommand,
+  type TokenControllerTokenInfoDto,
+} from "@opendonationassistant/recipient-service";
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { uuidv7 } from "uuidv7";
 import { createContext } from "react";
+
+/** Endpoint used for token management (same as the previous factory default). */
+const TOKEN_API_ENDPOINT = process.env.REACT_APP_AUTOMATION_API_ENDPOINT;
 
 export interface Token {
   id: string;
@@ -38,32 +49,23 @@ export class DemoTokenStore implements TokenStore {
 
 export class DefaultTokenStore implements TokenStore {
   private _tokens: Token[] = [];
+  private _token: string;
 
-  constructor() {
+  constructor(token: string) {
     makeAutoObservable(this);
+    this._token = token;
     this.load();
   }
 
-  private client() {
-    return DefaultApiFactory(
-      undefined,
-      process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
-    );
-  }
-
   public load() {
-    this.client()
-      .listTokens({})
-      .then((response) => {
-        this._tokens = response.data.map((token) => {
-          return {
-            id: token.id,
-            system: token.system,
-            enabled: token.enabled,
-            token: token.token,
-            settings: token.settings,
-          };
-        });
+    listTokens({
+      baseURL: TOKEN_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${this._token}` },
+      throwOnError: true,
+    })
+      .then((response) => this.enrich(response.data))
+      .then((tokens) => {
+        this._tokens = tokens;
         log.debug(
           {
             tokens: this._tokens.map((token) => {
@@ -78,20 +80,49 @@ export class DefaultTokenStore implements TokenStore {
       });
   }
 
+  /**
+   * Fetches the secret access token for each listed token. The list endpoint
+   * only returns token metadata, so the secret must be requested explicitly.
+   */
+  private async enrich(infos: TokenControllerTokenInfoDto[]): Promise<Token[]> {
+    return Promise.all(
+      infos.map(async (info) => ({
+        id: info.id,
+        system: info.system,
+        enabled: info.enabled,
+        token: (
+          await getAccessToken({
+            body: { tokenId: info.id },
+            baseURL: TOKEN_API_ENDPOINT,
+            headers: { Authorization: `Bearer ${this._token}` },
+            throwOnError: true,
+          })
+        ).data.token,
+        settings: info.settings,
+      })),
+    );
+  }
+
   public get tokens(): Token[] {
     return this._tokens;
   }
 
   public deleteToken(tokenId: string): void {
-    this.client()
-      .deleteToken({ id: tokenId })
-      .then(() => this.load());
+    deleteTokenRequest({
+      body: { id: tokenId },
+      baseURL: TOKEN_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${this._token}` },
+      throwOnError: true,
+    }).then(() => this.load());
   }
 
   public toggleToken(tokenId: string, enabled: boolean): void {
-    this.client()
-      .toggleToken({ id: tokenId, enabled: enabled })
-      .then(() => this.load());
+    toggleTokenRequest({
+      body: { id: tokenId, enabled: enabled },
+      baseURL: TOKEN_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${this._token}` },
+      throwOnError: true,
+    }).then(() => this.load());
   }
 
   public addToken(
@@ -99,27 +130,33 @@ export class DefaultTokenStore implements TokenStore {
     token: string,
     settings?: { [key: string]: object },
   ) {
-    this.client()
-      .setToken({
+    setTokenRequest({
+      body: {
         id: uuidv7(),
         token: token,
         type: "accessToken",
         system: system,
-        settings: settings ?? {},
-      })
-      .then(() => this.load());
+        settings: (settings ?? {}) as SetTokenSetTokenCommand["settings"],
+      },
+      baseURL: TOKEN_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${this._token}` },
+      throwOnError: true,
+    }).then(() => this.load());
   }
 
   public updateToken(token: Token) {
-    this.client()
-      .setToken({
+    setTokenRequest({
+      body: {
         id: token.id,
         token: token.token,
         type: "accessToken",
         system: token.system,
-        settings: token.settings,
-      })
-      .then(() => this.load());
+        settings: token.settings as SetTokenSetTokenCommand["settings"],
+      },
+      baseURL: TOKEN_API_ENDPOINT,
+      headers: { Authorization: `Bearer ${this._token}` },
+      throwOnError: true,
+    }).then(() => this.load());
   }
 }
 

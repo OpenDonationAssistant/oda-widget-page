@@ -29,6 +29,7 @@ import {
   List,
 } from "../../components/List/List";
 import { DefaultTokenStore, TokenStoreContext } from "../../stores/TokenStore";
+import { useAuth } from "../../contexts/AuthContext";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   const { state } = useAutomationState();
@@ -203,8 +204,9 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 
 const AutomationPage = observer(() => {
   const { state } = useAutomationState();
+  const { accessToken } = useAuth();
   const widgetStore = new DefaultWidgetStore();
-  const tokenStore = new DefaultTokenStore();
+  const tokenStore = new DefaultTokenStore(accessToken ?? "");
 
   return (
     <TokenStoreContext.Provider value={tokenStore}>

@@ -11,6 +11,11 @@ import { log } from "./log";
 
 const DONATIONALERTS_SOCKET_URL = "wss://socket.donationalerts.com/";
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const HISTORY_API_ENDPOINT =
+  process.env.REACT_APP_HISTORY_API_ENDPOINT ?? "https://api.oda.digital";
+
 let connectedTokens: string[] = [];
 const activeSockets = new Set<SocketIOClient.Socket>();
 
@@ -68,7 +73,7 @@ function persistDonation(
   command: AddHistoryItemApiAddHistoryItemCommand,
 ): void {
   addHistoryItem({
-    baseURL: "https://api.oda.digital",
+    baseURL: HISTORY_API_ENDPOINT,
     body: {
       recipientId,
       nickname: donation.username,

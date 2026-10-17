@@ -10,7 +10,10 @@ import type {
 
 // ── Configuration ───────────────────────────────────────────────────
 
-const WIDGET_API_ENDPOINT = "https://api.oda.digital";
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const WIDGET_API_ENDPOINT =
+  process.env.REACT_APP_WIDGET_API_ENDPOINT ?? "https://api.oda.digital";
 
 // ── State ──────────────────────────────────────────────────────────
 

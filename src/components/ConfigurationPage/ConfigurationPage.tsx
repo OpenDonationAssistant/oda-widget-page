@@ -1,5 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import {
+  linkDiscord,
+  linkDonationAlerts,
+  linkKick,
+  linkTwitch,
+  linkVKlive,
+} from "@opendonationassistant/recipient-service";
+import { useAuth } from "../../contexts/AuthContext";
 import { WidgetConfiguration } from "./WidgetConfiguration";
 import { useNavigate } from "react-router";
 import { WidgetStoreContext } from "../../stores/WidgetStore";
@@ -229,6 +236,7 @@ export default function ConfigurationPage() {
   const [state] = useState<ModalState>(() => new ModalState(parentModalState));
   const navigate = useNavigate();
   const [presetStore] = useState<PresetStore>(() => new DefaultPresetStore());
+  const { accessToken } = useAuth();
 
   const code = localStorage.getItem("code");
   const authState = localStorage.getItem("state");
@@ -240,58 +248,58 @@ export default function ConfigurationPage() {
       const platform = localStorage.getItem(authState);
       localStorage.removeItem(authState);
       if (platform === "twitch" && code) {
-        RecipientService(
-          undefined,
-          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-        ).linkTwitch({
-          authorizationCode: code,
+        linkTwitch({
+          body: { authorizationCode: code },
+          baseURL: process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+          headers: { Authorization: `Bearer ${accessToken}` },
+          throwOnError: true,
         });
       }
       if (platform === "vklive" && code) {
-        RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-          .linkVKlive({
-            authorizationCode: code,
-          })
-          .then(() => {
-            state.show = true;
-          });
+        linkVKlive({
+          body: { authorizationCode: code },
+          baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
+          headers: { Authorization: `Bearer ${accessToken}` },
+          throwOnError: true,
+        }).then(() => {
+          state.show = true;
+        });
       }
       if (platform === "discord" && code) {
-        RecipientService(
-          undefined,
-          process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-        )
-          .linkDiscord({
-            authorizationCode: code,
-          })
-          .then(() => {
-            state.show = true;
-          });
+        linkDiscord({
+          body: { authorizationCode: code },
+          baseURL: process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+          headers: { Authorization: `Bearer ${accessToken}` },
+          throwOnError: true,
+        }).then(() => {
+          state.show = true;
+        });
       }
       if (platform === "kick" && code) {
         const code_challenge = localStorage.getItem("code_challenge");
         if (code_challenge) {
-          RecipientService(
-            undefined,
-            process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-          )
-            .linkKick({
+          linkKick({
+            body: {
               authorizationCode: code,
               codeVerifier: code_challenge,
-            })
-            .then(() => {
-              state.show = true;
-            });
+            },
+            baseURL: process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+            headers: { Authorization: `Bearer ${accessToken}` },
+            throwOnError: true,
+          }).then(() => {
+            state.show = true;
+          });
         }
       }
     } else {
-      RecipientService(undefined, process.env.REACT_APP_HISTORY_API_ENDPOINT)
-        .linkDonationAlerts({
-          authorizationCode: code,
-        })
-        .then((response) => {
-          state.show = true;
-        });
+      linkDonationAlerts({
+        body: { authorizationCode: code },
+        baseURL: process.env.REACT_APP_HISTORY_API_ENDPOINT,
+        headers: { Authorization: `Bearer ${accessToken}` },
+        throwOnError: true,
+      }).then((response) => {
+        state.show = true;
+      });
     }
   }
 

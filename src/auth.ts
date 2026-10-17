@@ -1,6 +1,6 @@
 import axios from "axios";
 import { log } from "./logging";
-import { DefaultApiFactory as RecipientService } from "@opendonationassistant/oda-recipient-service-client";
+import { getSettings } from "@opendonationassistant/recipient-service";
 import { tokenRequest } from "./pages/Login/Login";
 import { sendMessageToWorker } from "./worker";
 
@@ -27,11 +27,11 @@ async function loadSession(widgetId?: string): Promise<Session> {
     return Promise.resolve({ logged: false, features: [], logLevels: [] });
   }
   axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-  return RecipientService(
-    undefined,
-    process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
-  )
-    .getSettings()
+  return getSettings({
+    baseURL: process.env.REACT_APP_RECIPIENT_API_ENDPOINT,
+    headers: { Authorization: `Bearer ${accessToken}` },
+    throwOnError: true,
+  })
     .then((response) => ({
       logged: true,
       id: response.data.recipientId,

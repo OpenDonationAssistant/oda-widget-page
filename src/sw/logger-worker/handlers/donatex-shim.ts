@@ -11,6 +11,11 @@ import { log } from "./log";
 
 const DONATEX_HUB_URL = "https://donatex.gg/api/public-donations-hub";
 
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const HISTORY_API_ENDPOINT =
+  process.env.REACT_APP_HISTORY_API_ENDPOINT ?? "https://api.oda.digital";
+
 let connectedTokens: string[] = [];
 const activeConnections = new Set<HubConnection>();
 
@@ -69,7 +74,7 @@ function handleDonationCreated(
   };
 
   addHistoryItem({
-    baseURL: "https://api.oda.digital",
+    baseURL: HISTORY_API_ENDPOINT,
     body: command,
     headers: {
       Authorization: `Bearer ${odaToken}`,

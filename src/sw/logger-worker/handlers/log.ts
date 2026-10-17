@@ -14,7 +14,11 @@ import {
 
 // ── Configuration ───────────────────────────────────────────────────
 
-const OTEL_ENDPOINT = "https://api.oda.digital/logs";
+// Endpoint comes from the build-time environment, with a fallback to the
+// production gateway.
+const LOG_API_ENDPOINT =
+  process.env.REACT_APP_LOG_API_ENDPOINT ?? "https://api.oda.digital";
+const OTEL_ENDPOINT = `${LOG_API_ENDPOINT}/logs`;
 const BATCH_INTERVAL_MS = 2000;
 const MAX_BATCH_SIZE = 10;
 const FLUSH_TIMEOUT_MS = 5000;
