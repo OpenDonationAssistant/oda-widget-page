@@ -78,13 +78,13 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
         <Flex vertical gap={6}>
           {alert.triggers.map((trigger, index) => (
             <Flex
+              key={index}
               gap={6}
               className="full-width"
               align="center"
               justify="center"
             >
               <TriggerComponent
-                key={index}
                 trigger={trigger}
                 onChange={(newTrigger) => {
                   alert.triggers[index] = newTrigger;

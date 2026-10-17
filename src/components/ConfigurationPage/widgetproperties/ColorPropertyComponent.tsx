@@ -215,8 +215,8 @@ const GradientColors = observer(
         <GradientSettings property={property} />
         <div className={`${classes.colorlabel}`}>Цвета</div>
         {property.value.colors.map((color: ColorStop, index: number) => (
-          <Flex vertical gap={9}>
-            <SmallLabeledContainer key={index} displayName="">
+          <Flex key={index} vertical gap={9}>
+            <SmallLabeledContainer displayName="">
               <Flex className={`${classes.gradientcolor}`} gap={9}>
                 <ColorPicker
                   className={`${classes.color}`}

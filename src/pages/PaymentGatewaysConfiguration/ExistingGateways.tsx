@@ -51,11 +51,15 @@ export const GatewayCard = observer(
             )}
           </Flex>
           <Flex vertical gap={3}>
-            {info.goodpoints.map((it) => (
-              <div className={`${classes.goodpoint}`}>{it}</div>
+            {info.goodpoints.map((it, index) => (
+              <div key={index} className={`${classes.goodpoint}`}>
+                {it}
+              </div>
             ))}
-            {info.badpoints.map((it) => (
-              <div className={`${classes.badpoint}`}>{it}</div>
+            {info.badpoints.map((it, index) => (
+              <div key={index} className={`${classes.badpoint}`}>
+                {it}
+              </div>
             ))}
           </Flex>
         </Flex>
@@ -158,11 +162,15 @@ const FullGatewayInfoCard = observer(({ info }: { info: GatewayInfo }) => {
           <div className={`${classes.gatewayname}`}>{info.name}</div>
         </Flex>
         <Flex vertical gap={3}>
-          {info.goodpoints.map((it) => (
-            <div className={`${classes.selectedgoodpoint}`}>{it}</div>
+          {info.goodpoints.map((it, index) => (
+            <div key={index} className={`${classes.selectedgoodpoint}`}>
+              {it}
+            </div>
           ))}
-          {info.badpoints.map((it) => (
-            <div className={`${classes.badpoint}`}>{it}</div>
+          {info.badpoints.map((it, index) => (
+            <div key={index} className={`${classes.badpoint}`}>
+              {it}
+            </div>
           ))}
         </Flex>
       </Flex>

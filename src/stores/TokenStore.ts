@@ -80,27 +80,35 @@ export class DefaultTokenStore implements TokenStore {
       });
   }
 
-  /**
-   * Fetches the secret access token for each listed token. The list endpoint
-   * only returns token metadata, so the secret must be requested explicitly.
-   */
   private async enrich(infos: TokenControllerTokenInfoDto[]): Promise<Token[]> {
     return Promise.all(
       infos.map(async (info) => ({
         id: info.id,
         system: info.system,
         enabled: info.enabled,
-        token: (
-          await getAccessToken({
-            body: { tokenId: info.id },
-            baseURL: TOKEN_API_ENDPOINT,
-            headers: { Authorization: `Bearer ${this._token}` },
-            throwOnError: true,
-          })
-        ).data.token,
+        token: await this.accessToken(info.id),
         settings: info.settings,
       })),
     );
+  }
+
+  /**
+   * Fetches a single token's secret, tolerating a per-token failure so one
+   * broken token does not fail the whole list. Returns "" when unavailable.
+   */
+  private async accessToken(tokenId: string): Promise<string> {
+    try {
+      const response = await getAccessToken({
+        body: { tokenId: tokenId },
+        baseURL: TOKEN_API_ENDPOINT,
+        headers: { Authorization: `Bearer ${this._token}` },
+        throwOnError: true,
+      });
+      return response.data.token;
+    } catch (error) {
+      log.error(`Failed to fetch access token for ${tokenId}`, error);
+      return "";
+    }
   }
 
   public get tokens(): Token[] {

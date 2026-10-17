@@ -499,8 +499,9 @@ export const SingleHistoryItemComponent = observer(
                 <>
                   {displayItem.goals
                     ?.map((it: any) => it.goalTitle)
-                    .map((title: any) => (
+                    .map((title: any, index: number) => (
                       <Flex
+                        key={index}
                         align="center"
                         className={`${classes.goals}`}
                         gap={6}

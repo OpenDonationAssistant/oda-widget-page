@@ -174,7 +174,7 @@ export default function PlaylistActionPanel({
                   className={`${classes.savedPlaylists}`}
                 >
                   {savedPlaylists.map((playlist) => (
-                    <Flex className="full-width">
+                    <Flex key={playlist.id} className="full-width">
                       <button
                         className="oda-btn-default"
                         style={{ flex: "1 1 auto" }}

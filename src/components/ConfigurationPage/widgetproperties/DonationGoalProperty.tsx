@@ -194,6 +194,7 @@ const DonationGoalPropertyComponent = observer(
       <List>
         {property.value.map((goal: Goal, index: number) => (
           <DonationGoalItemComponent
+            key={goal.id}
             property={property}
             index={index}
             goal={goal}

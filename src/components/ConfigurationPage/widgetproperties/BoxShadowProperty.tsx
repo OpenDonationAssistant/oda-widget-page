@@ -55,7 +55,12 @@ export const BoxShadowPropertyComponent = observer(
         <LabeledContainer help={help} displayName={displayName ?? ""}>
           <Flex vertical gap={12} className="full-width">
             {value.shadows.map((shadow, i) => (
-              <Flex vertical gap={12} className={`${classes.shadowitem}`}>
+              <Flex
+                key={i}
+                vertical
+                gap={12}
+                className={`${classes.shadowitem}`}
+              >
                 <Flex align="center" className="full-width" gap={12}>
                   <Segmented
                     className={`${classes.shadowtype}`}

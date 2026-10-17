@@ -283,8 +283,8 @@ export default function PaymentPageConfigPage() {
           <div style={{ marginBottom: "9px", fontSize: "21px" }}>
             Социальные ссылки
           </div>
-          {socials.map((link) => (
-            <Flex gap={12} className={`${classes.sociallink}`}>
+          {socials.map((link, index) => (
+            <Flex key={index} gap={12} className={`${classes.sociallink}`}>
               <Flex vertical>
                 <div className={classes.fieldname}>Название</div>
                 <Select

@@ -68,8 +68,10 @@ export const StreamCreditsWidget = observer(
                 {creditsStore.voters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
                 )}
-                {creditsStore.voters.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
+                {creditsStore.voters.map((name, index) => (
+                  <div key={index} style={creditFontStyle}>
+                    {name}
+                  </div>
                 ))}
               </Flex>
               <Flex vertical align="center">
@@ -82,8 +84,10 @@ export const StreamCreditsWidget = observer(
                 {creditsStore.newFollowers.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
                 )}
-                {creditsStore.newFollowers.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
+                {creditsStore.newFollowers.map((name, index) => (
+                  <div key={index} style={creditFontStyle}>
+                    {name}
+                  </div>
                 ))}
               </Flex>
               <Flex vertical align="center">
@@ -96,8 +100,10 @@ export const StreamCreditsWidget = observer(
                 {creditsStore.raiders.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
                 )}
-                {creditsStore.raiders.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
+                {creditsStore.raiders.map((name, index) => (
+                  <div key={index} style={creditFontStyle}>
+                    {name}
+                  </div>
                 ))}
               </Flex>
               <Flex vertical align="center">
@@ -110,8 +116,10 @@ export const StreamCreditsWidget = observer(
                 {creditsStore.gifters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
                 )}
-                {creditsStore.gifters.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
+                {creditsStore.gifters.map((name, index) => (
+                  <div key={index} style={creditFontStyle}>
+                    {name}
+                  </div>
                 ))}
               </Flex>
               <Flex vertical align="center">
@@ -124,8 +132,10 @@ export const StreamCreditsWidget = observer(
                 {creditsStore.donaters.length === 0 && (
                   <div style={creditFontStyle}>Такие отсутствуют</div>
                 )}
-                {creditsStore.donaters.map((name) => (
-                  <div style={creditFontStyle}>{name}</div>
+                {creditsStore.donaters.map((name, index) => (
+                  <div key={index} style={creditFontStyle}>
+                    {name}
+                  </div>
                 ))}
               </Flex>
               <Flex vertical align="center">

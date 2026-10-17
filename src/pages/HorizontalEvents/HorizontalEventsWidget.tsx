@@ -55,6 +55,7 @@ export const HorizontalEventsWidget = observer(
         <Marquee speed={settings.speed.value}>
           {events.map((it) => (
             <Flex
+              key={it.id}
               style={{
                 ...settings.eventsBorder.calcCss(),
                 ...settings.eventsBackgroundColor.calcCss(),

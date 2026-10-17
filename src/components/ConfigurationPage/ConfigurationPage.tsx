@@ -173,6 +173,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
         <CardList>
           {widgetStore.list.map((data) => (
             <WidgetConfiguration
+              key={data.id}
               widget={data}
               asCards={asCards}
               open={data.id === selection}

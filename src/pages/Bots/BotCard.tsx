@@ -165,6 +165,7 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
             <List>
               {bot.announcers.map((announcer) => (
                 <CollapsibleListItem
+                  key={announcer.id}
                   title={
                     <Flex align="center" gap={6}>
                       <div>Анонс стрима</div>

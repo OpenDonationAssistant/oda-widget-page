@@ -21,7 +21,6 @@ import TwitchIcon from "../../icons/TwitchIcon";
 import YouTubeIcon from "../../icons/YouTubeIcon";
 import KickIcon from "../../icons/KickIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
-import { NewFeature } from "../../components/Experimental/Experimental";
 
 const icons = new Map<string, JSX.Element>();
 icons.set("Twitch", <TwitchIcon />);

@@ -138,37 +138,37 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
                 {
                   key: "trigger",
                   label: t("General"),
-                  children: [<GeneralTab alert={alert} />],
+                  children: <GeneralTab alert={alert} />,
                 },
                 {
                   key: "layout",
                   label: t("Layout"),
-                  children: [<LayoutTab alert={alert} />],
+                  children: <LayoutTab alert={alert} />,
                 },
                 {
                   key: "sound",
                   label: t("tab-alert-audio"),
-                  children: [<SoundTab alert={alert} />],
+                  children: <SoundTab alert={alert} />,
                 },
                 {
                   key: "image",
                   label: t("tab-alert-image"),
-                  children: [<ImageTab alert={alert} />],
+                  children: <ImageTab alert={alert} />,
                 },
                 {
                   key: "header",
                   label: t("tab-alert-title"),
-                  children: [<HeaderTab alert={alert} />],
+                  children: <HeaderTab alert={alert} />,
                 },
                 {
                   key: "message",
                   label: t("tab-alert-message"),
-                  children: [<MessageTab alert={alert} />],
+                  children: <MessageTab alert={alert} />,
                 },
                 {
                   key: "voice",
                   label: t("tab-alert-voice"),
-                  children: [<VoiceTab alert={alert} />],
+                  children: <VoiceTab alert={alert} />,
                 },
               ]}
             />

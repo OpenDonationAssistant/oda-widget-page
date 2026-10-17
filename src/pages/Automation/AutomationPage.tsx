@@ -105,7 +105,7 @@ const RuleList = observer(() => {
       gap={3}
     >
       {state.rules.map((rule, index) => (
-        <List>
+        <List key={rule.id}>
           <CollapsibleListItem
             title={
               <>

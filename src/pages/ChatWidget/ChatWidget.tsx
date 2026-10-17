@@ -82,10 +82,11 @@ export const ChatWidget = observer(
                 text={message.chatter.nickname}
               />
               <div>
-                {message.parts.map((part) => {
+                {message.parts.map((part, index) => {
                   if (part.type === "emote") {
                     return (
                       <img
+                        key={index}
                         id={part.url}
                         className={classes.icon}
                         src={part.url}
@@ -97,6 +98,7 @@ export const ChatWidget = observer(
                   if (part.type === "string") {
                     return (
                       <TextRenderer
+                        key={index}
                         font={settings.messageFont}
                         className={classes.inlined}
                         text={part.text}
@@ -106,6 +108,7 @@ export const ChatWidget = observer(
                   if (part.type === "url") {
                     return (
                       <span
+                        key={index}
                         className={classes.inlined}
                         style={{
                           color: "#3ea6ff",
@@ -124,10 +127,12 @@ export const ChatWidget = observer(
         {!settings.isBlock &&
           visibleMessages.map((message, i) => (
             <span
+              key={i}
               ref={i === visibleMessages.length - 1 ? bottomRef : undefined}
             >
               {message.badges.map((badge: { url: string }) => (
                 <img
+                  key={badge.url}
                   id={badge.url}
                   className={classes.badge}
                   src={badge.url}
@@ -143,10 +148,11 @@ export const ChatWidget = observer(
                 )}
                 text={message.chatter.nickname + ": "}
               />
-              {message.parts.map((part) => {
+              {message.parts.map((part, index) => {
                 if (part.type === "emote") {
                   return (
                     <img
+                      key={index}
                       id={part.url}
                       className={classes.icon}
                       src={part.url}
@@ -158,6 +164,7 @@ export const ChatWidget = observer(
                 if (part.type === "string") {
                   return (
                     <TextRenderer
+                      key={index}
                       font={settings.messageFont}
                       className={classes.inlined}
                       text={part.text ?? ""}
