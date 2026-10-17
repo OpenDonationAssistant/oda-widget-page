@@ -58,8 +58,8 @@ describe("HANDLER_TOKEN_SYSTEM", () => {
 });
 
 describe("hasLinkedToken", () => {
-  it("returns true for unknown availability so no handler is skipped", () => {
-    expect(hasLinkedToken(null, "Twitch")).toBe(true);
+  it("returns false when availability is unknown", () => {
+    expect(hasLinkedToken(null, "Twitch")).toBe(false);
   });
 
   it("returns true when the system has a linked token", () => {
@@ -93,6 +93,20 @@ describe("availableTokens", () => {
     expect(getAccessTokenMock).toHaveBeenCalledTimes(2);
     expect(tokens).toHaveLength(2);
     expect(tokens?.every((token) => token.token === "resolved")).toBe(true);
+  });
+
+  it("keeps the list when one token's access token cannot be fetched", async () => {
+    listTokensMock.mockResolvedValue({
+      data: [twitchToken, googleApiKeyToken],
+    });
+    getAccessTokenMock
+      .mockRejectedValueOnce(new Error("unauthorized"))
+      .mockResolvedValueOnce({ data: { token: "resolved" } });
+
+    const tokens = await availableTokens("oda-token");
+
+    expect(tokens).toHaveLength(2);
+    expect(tokens?.map((token) => token.token)).toEqual(["", "resolved"]);
   });
 
   it("returns null when the token list cannot be fetched", async () => {

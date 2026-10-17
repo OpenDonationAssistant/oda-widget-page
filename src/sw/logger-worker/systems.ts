@@ -42,16 +42,18 @@ export const HANDLER_TOKEN_SYSTEM: Record<string, string> = {
 
 /**
  * Returns the tokens linked to the recipient, or `null` when the list cannot
- * be fetched. Callers should treat `null` as "unknown" and fall back to
- * registering everything rather than dropping handlers.
+ * be fetched. `null` means availability is unknown and `hasLinkedToken` treats
+ * it as "no tokens", so affected handlers are skipped.
+ *
+ * Each token's secret is resolved independently, so one failing token keeps
+ * the rest of the list intact.
  */
 export async function availableTokens(
   odaToken: string,
 ): Promise<TokenDto[] | null> {
-  const headers = { Authorization: `Bearer ${odaToken}` };
   try {
     const response = await listTokens({
-      headers,
+      headers: { Authorization: `Bearer ${odaToken}` },
       timeout: TOKEN_LIST_TIMEOUT_MS,
       baseURL: RECIPIENT_API_ENDPOINT,
       throwOnError: true,
@@ -59,15 +61,7 @@ export async function availableTokens(
     return await Promise.all(
       response.data.map(async (info) => ({
         ...info,
-        token: (
-          await getAccessToken({
-            body: { tokenId: info.id },
-            headers,
-            timeout: TOKEN_LIST_TIMEOUT_MS,
-            baseURL: RECIPIENT_API_ENDPOINT,
-            throwOnError: true,
-          })
-        ).data.token,
+        token: await accessTokenFor(info.id, odaToken),
       })),
     );
   } catch (error) {
@@ -77,14 +71,33 @@ export async function availableTokens(
 }
 
 /**
- * Whether the recipient has a token for the given handler's system. Unknown
- * availability (`null`) is treated as "yes" so no handler is skipped when the
- * token list could not be fetched.
+ * Fetches a single token's secret, tolerating a per-token failure so one
+ * broken token does not drop the whole list. Returns "" when unavailable.
  */
+async function accessTokenFor(
+  tokenId: string,
+  odaToken: string,
+): Promise<string> {
+  try {
+    const response = await getAccessToken({
+      body: { tokenId: tokenId },
+      headers: { Authorization: `Bearer ${odaToken}` },
+      timeout: TOKEN_LIST_TIMEOUT_MS,
+      baseURL: RECIPIENT_API_ENDPOINT,
+      throwOnError: true,
+    });
+    return response.data.token;
+  } catch (error) {
+    log("ERROR", `Failed to fetch access token for ${tokenId}`, error);
+    return "";
+  }
+}
+
 export function hasLinkedToken(
   tokens: TokenDto[] | null,
   handler: string,
 ): boolean {
-  if (tokens === null) return true;
+  if (tokens === null) return false;
   return tokens.some((token) => token.system === HANDLER_TOKEN_SYSTEM[handler]);
 }
+
