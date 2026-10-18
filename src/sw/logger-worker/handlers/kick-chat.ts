@@ -9,11 +9,27 @@ import { emotesFromText } from "./emotes";
 import type { TokenDto } from "../systems";
 import { log } from "./log";
 
-// Kick uses Pusher for its chat websocket. The app key and query params
-// (protocol, client, version) below match what kick-js uses.
+// Kick uses Pusher for its chat websocket. Kick rotated its public Pusher app
+// key on 2026-10-17: the previous key (32cbd69e4b950bf97679) now answers every
+// cluster with `pusher:error 4001 "not in this cluster"`. The key/cluster below
+// are verified live and overridable at build time (esbuild inlines every
+// REACT_APP_* var), so a future rotation is a config change rather than a code
+// edit. The query params (protocol, client, version) match what kick-js uses.
+const KICK_PUSHER_APP_KEY =
+  process.env.REACT_APP_KICK_PUSHER_APP_KEY ?? "34bf7a0ff419a2a775b9";
+const KICK_PUSHER_CLUSTER =
+  process.env.REACT_APP_KICK_PUSHER_CLUSTER ?? "us2";
 const KICK_PUSHER_WEBSOCKET_URL =
-  "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false";
+  `wss://ws-${KICK_PUSHER_CLUSTER}.pusher.com/app/${KICK_PUSHER_APP_KEY}` +
+  "?protocol=7&client=js&version=8.4.0&flash=false";
 const RECONNECT_DELAY_MS = 1000;
+
+// Pusher error/close codes 4000-4099 mean the connection was closed by Pusher
+// and reconnecting with the same parameters will not succeed (4001 = app key
+// rotated/deleted). Retrying on a timer would just spam errors.
+function isFatalPusherCode(code: number | undefined): boolean {
+  return typeof code === "number" && code >= 4000 && code < 4100;
+}
 
 const EVENT_NAME = "KICK_CHAT_MESSAGE";
 
@@ -90,9 +106,10 @@ function handleChatMessage(
 function handleFrame(
   odaToken: string,
   frame: any,
+  websocketClient: WebSocket,
   eventbus: EventBus,
   emotesStore: EmotesStore,
-): void {
+): boolean {
   switch (frame.event) {
     case "App\\Events\\ChatMessageEvent": {
       let data = frame.data;
@@ -102,14 +119,36 @@ function handleFrame(
         } catch (error) {
           log("ERROR", "Kick: failed to parse chat message data", error);
           reportError(odaToken, "Kick", `failed to parse chat message data: ${error}`);
-          return;
+          return false;
         }
       }
       handleChatMessage(data, eventbus, emotesStore);
-      break;
+      return false;
+    }
+    case "pusher:ping":
+      // Pusher protocol >= 5 requires a pusher:pong reply; without it the
+      // server closes the socket once activity_timeout (120s) elapses.
+      websocketClient.send(JSON.stringify({ event: "pusher:pong", data: {} }));
+      return false;
+    case "pusher:connection_established":
+      log("INFO", "Kick: pusher connection established");
+      return false;
+    case "pusher_internal:subscription_succeeded":
+      log("INFO", "Kick: subscribed to chat channel");
+      return false;
+    case "pusher:error": {
+      const data = (frame.data ?? {}) as { code?: number; message?: string };
+      reportError(
+        odaToken,
+        "Kick",
+        `pusher error ${data.code ?? "?"}: ${data.message ?? "unknown"}`,
+      );
+      // Fatal codes are reported here; the close handler then stays silent.
+      return isFatalPusherCode(data.code);
     }
     default:
       log("INFO", "Kick: unsupported event type", frame.event);
+      return false;
   }
 }
 
@@ -123,12 +162,14 @@ function startWebSocketClient(
   log("INFO", { chatroomId }, "Starting Kick WebSocket connection");
   const websocketClient = new WebSocket(KICK_PUSHER_WEBSOCKET_URL);
   let reconnecting = false;
+  let fatal = false;
   websocketClients.add(websocketClient);
 
   // Reconnect on abnormal close/error. Guarded so error + close firing
-  // together only schedule one reconnect.
+  // together only schedule one reconnect. Skipped when Pusher reports a fatal
+  // condition (4000-4099) — reconnecting unchanged cannot succeed.
   const scheduleReconnect = (): void => {
-    if (reconnecting) return;
+    if (reconnecting || fatal) return;
     reconnecting = true;
     setTimeout(() => {
       startWebSocketClient(odaToken, chatroomId, eventbus, emotesStore);
@@ -136,6 +177,7 @@ function startWebSocketClient(
   };
 
   websocketClient.addEventListener("error", (err) => {
+    if (fatal) return;
     log("ERROR", "Kick WebSocket error:", err);
     reportError(odaToken, "Kick", `WebSocket error: ${err}`);
     scheduleReconnect();
@@ -156,11 +198,17 @@ function startWebSocketClient(
   websocketClient.addEventListener("close", (event) => {
     const wasRegistered = websocketClients.delete(websocketClient);
     if (event.code === 1000) return;
+    // A pusher:error frame already reported this connection's failure.
+    if (fatal) return;
     reportError(
       odaToken,
       "Kick",
       `WebSocket closed with code ${event.code}${event.reason ? `: ${event.reason}` : ""}`,
     );
+    if (isFatalPusherCode(event.code)) {
+      fatal = true;
+      return;
+    }
     if (!wasRegistered) return; // Closed by deregister — do not reconnect.
     log("INFO",
       `Kick WebSocket closed. Reconnection attempt in ${RECONNECT_DELAY_MS}ms`,
@@ -177,7 +225,9 @@ function startWebSocketClient(
       reportError(odaToken, "Kick", `failed to parse WebSocket message: ${error}`);
       return;
     }
-    handleFrame(odaToken, frame, eventbus, emotesStore);
+    if (handleFrame(odaToken, frame, websocketClient, eventbus, emotesStore)) {
+      fatal = true;
+    }
   });
 
   return websocketClient;
@@ -198,7 +248,10 @@ async function startKickClient(
     });
     if (error || !data?.chatroom?.id) {
       log("ERROR", "Failed to get Kick channel info", { data, error });
-      reportError(odaToken, "Kick", error?.message ?? "Failed to get Kick channel info");
+      const errorMessage =
+        (error as { message?: string } | undefined)?.message ??
+        "Failed to get Kick channel info";
+      reportError(odaToken, "Kick", errorMessage);
       return;
     }
     startWebSocketClient(odaToken, data.chatroom.id, eventbus, emotesStore);
