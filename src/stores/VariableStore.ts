@@ -35,7 +35,7 @@ export class DefaultVariableStore implements VariableStore {
         log.error(response.error, "failed to load variables");
         return;
       }
-      this._variables = ((response.data ?? []) as AutomationVariableDto[]).map(
+      this._variables = ((response.data?.content ?? []) as AutomationVariableDto[]).map(
         (variable) => {
           return {
             name: variable.name,
