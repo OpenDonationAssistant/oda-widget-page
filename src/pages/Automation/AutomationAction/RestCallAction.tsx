@@ -1,4 +1,4 @@
-import { Button, Flex, Input, Select } from "antd";
+import { Button, Flex, Input, Select, Switch } from "antd";
 import { useState } from "react";
 import { produce } from "immer";
 import { makeAutoObservable, toJS } from "mobx";
@@ -16,6 +16,7 @@ export interface RestCallActionValue {
   method: RestMethod;
   payload: string;
   headers: Record<string, string>;
+  onServer: boolean;
 }
 
 interface HeaderRow {
@@ -60,6 +61,12 @@ const RestCallActionComponent = observer(
 
     return (
       <Flex vertical gap={9}>
+        <LabeledContainer
+          displayName="Выполнять на сервере"
+          help="Пока действия выполняются только на сервере"
+        >
+          <Switch checked disabled />
+        </LabeledContainer>
         <LabeledContainer displayName="Метод">
           <Select
             className="full-width"
@@ -166,6 +173,7 @@ export class RestCallAction implements AutomationAction, Renderable {
     method: "GET",
     payload: "",
     headers: {},
+    onServer: true,
   };
 
   constructor() {
@@ -173,7 +181,7 @@ export class RestCallAction implements AutomationAction, Renderable {
   }
 
   public set value(value: RestCallActionValue) {
-    this._value = { ...this._value, ...(value ?? {}) };
+    this._value = { ...this._value, ...(value ?? {}), onServer: true };
   }
 
   public get value() {
