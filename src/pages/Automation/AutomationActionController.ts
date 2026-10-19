@@ -8,6 +8,7 @@ import { RefreshDonationGoalAction } from "./AutomationAction/RefreshDonationGoa
 import { RunReelAction } from "./AutomationAction/RunReelAction";
 import { MakePinnedMessageAction } from "./AutomationAction/MakePinnedMessageAction";
 import { ShoutoutAction } from "./AutomationAction/ShoutoutAction";
+import { RestCallAction } from "./AutomationAction/RestCallAction";
 
 export class AutomationActionController {
   public get actions(): (AutomationAction & Renderable)[] {
@@ -19,6 +20,7 @@ export class AutomationActionController {
       new RunReelAction(),
       new MakePinnedMessageAction(),
       new ShoutoutAction(),
+      new RestCallAction(),
     ];
   }
 
