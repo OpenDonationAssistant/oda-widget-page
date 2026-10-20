@@ -508,7 +508,7 @@ const PaymentAlerts = observer(
                     reportWarning(
                       odaToken ?? "",
                       "DonationAlerts",
-                      `message parse error: ${e}`,
+                      `message parse error: ${e}, message: ${event.data}`,
                       "info",
                     );
                     return;
@@ -632,7 +632,7 @@ const PaymentAlerts = observer(
                   reportWarning(
                     odaToken ?? "",
                     "DonatePay",
-                    `message parse error: ${e}`,
+                    `message parse error: ${e}, message: ${event.data}`,
                     "info",
                   );
                   return;
@@ -760,7 +760,7 @@ const PaymentAlerts = observer(
                       reportWarning(
                         odaToken ?? "",
                         "DonatePay.eu",
-                        `message parse error: ${e}`,
+                        `message parse error: ${e}, message: ${event.data}`,
                         "info",
                       );
                       return;
