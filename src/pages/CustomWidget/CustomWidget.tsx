@@ -42,6 +42,25 @@ export const CustomWidget = observer(
     const [js, setJs] = useState<string>("");
     const [doc, setDoc] = useState<string>("");
 
+    // StreamElements widgets use `window.location.href.includes("streamelements")`
+    // to detect the overlay host and skip their non-SE fallback branch. With
+    // `srcDoc` the URL is `about:srcdoc`, so the fallback renders first with an
+    // empty session; the later `onWidgetLoad` instance then reuses the same
+    // component instance (its `useEffect([])` never re-runs) and the widget
+    // stays on the empty fallback. Serving the document from a blob URL whose
+    // fragment contains "streamelements" makes the host check pass, so only the
+    // `onWidgetLoad` path renders.
+    const [iframeUrl, setIframeUrl] = useState<string>("");
+    useEffect(() => {
+      if (!doc) {
+        setIframeUrl("");
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([doc], { type: "text/html" }));
+      setIframeUrl(`${url}#streamelements`);
+      return () => URL.revokeObjectURL(url);
+    }, [doc]);
+
     useEffect(() => {
       settings.configContent().then((config) => {
         settings
@@ -186,13 +205,13 @@ export const CustomWidget = observer(
 
     return (
       <>
-        {doc && (
+        {iframeUrl && (
           <iframe
             width={width}
             height={height}
             sandbox="allow-scripts allow-same-origin"
             scrolling="no"
-            srcDoc={doc}
+            src={iframeUrl}
             style={{ border: "none", background: "transparent" }}
           />
         )}
