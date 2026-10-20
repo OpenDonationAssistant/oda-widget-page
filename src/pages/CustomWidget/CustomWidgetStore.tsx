@@ -556,15 +556,22 @@ export class DefaultCustomWidgetStore implements CustomWidgetStore {
     settings
       .configContent()
       .then((content) => {
-        this._session.fieldData = content;
+        // Reassign instead of mutating: the `session` getter is a MobX computed
+        // that only reads `_session`, so in-place nested mutations neither
+        // invalidate it nor change the reference used by CustomWidget's effect
+        // dependency, leaving the iframe stuck on the initial demo session.
+        this._session = { ...this._session, fieldData: content };
       })
       .then(() => {
         return this.client().getSession();
       })
       .then((session) => {
         log.info({ session }, "SE session updated");
-        this._session.session = session.data.session;
-        this._session.channel = session.data.channel;
+        this._session = {
+          ...this._session,
+          session: session.data.session,
+          channel: session.data.channel,
+        };
       });
     makeAutoObservable(this);
     this.listen(widgetId, `/topic/${recipientId}.streamelements`);
