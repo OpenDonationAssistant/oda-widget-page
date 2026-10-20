@@ -73,6 +73,7 @@ function reportWorkerUnavailable(message: Record<string, unknown>): void {
     },
     body: {
       message: `SharedWorker is not supported in this browser (recipientId: ${recipientId})`,
+      priority: "warning",
     },
   });
 }

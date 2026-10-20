@@ -76,6 +76,7 @@ export function reportError(
     body: {
       message: `Worker ${handler} error: ${message}`,
       component: handler,
+      priority: "warning",
     },
   });
   log("ERROR", `[worker-status] ${handler} error: ${message}`);

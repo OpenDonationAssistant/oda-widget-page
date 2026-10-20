@@ -23,6 +23,9 @@ export default function WarningsPanel() {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        query: {
+          priority: "warning",
+        },
       });
       return response.data ?? [];
     },

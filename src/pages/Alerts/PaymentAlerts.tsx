@@ -21,7 +21,12 @@ import { log } from "../../logging";
 import { addWarning } from "@opendonationassistant/news-service";
 import { isFeatureEnabled, SW_DONATIONS_FEATURE } from "../../shared/features";
 
-function reportWarning(token: string, handler: string, message: string): void {
+function reportWarning(
+  token: string,
+  handler: string,
+  message: string,
+  priority: "info" | "warning" = "warning",
+): void {
   addWarning({
     baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
     headers: {
@@ -29,6 +34,7 @@ function reportWarning(token: string, handler: string, message: string): void {
     },
     body: {
       message: `${handler} error: ${message}`,
+      priority,
     },
   });
   console.error(`[PaymentAlerts] ${handler} error: ${message}`);
@@ -503,6 +509,7 @@ const PaymentAlerts = observer(
                       odaToken ?? "",
                       "DonationAlerts",
                       `message parse error: ${e}`,
+                      "info",
                     );
                     return;
                   }
@@ -626,6 +633,7 @@ const PaymentAlerts = observer(
                     odaToken ?? "",
                     "DonatePay",
                     `message parse error: ${e}`,
+                    "info",
                   );
                   return;
                 }
@@ -753,6 +761,7 @@ const PaymentAlerts = observer(
                         odaToken ?? "",
                         "DonatePay.eu",
                         `message parse error: ${e}`,
+                        "info",
                       );
                       return;
                     }
