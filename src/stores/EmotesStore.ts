@@ -218,12 +218,15 @@ export class DefaultEmotesStore implements EmotesStore {
   }
 
   private applyEmotes(source: SevenTVEmote[], channelId?: string): void {
+    // TODO do we need to dedupe here?
     const emotes: Record<string, EmoteItem> = {};
     for (const emote of source) {
       const item = this.toItem(emote);
       if (item) {
-        emotes[item.code] = item;
-        this._emotes[item.code] = item;
+        if (!emotes[item.code]) {
+          emotes[item.code] = item;
+          this._emotes[item.code] = item;
+        }
       }
     }
 
