@@ -21,8 +21,18 @@ const NEWS_API_ENDPOINT =
 let worker: SharedWorker | null = null;
 let port: MessagePort | null = null;
 
-function workerUrl(): string {
-  return `${process.env.PUBLIC_URL || ""}/logger-worker.js`;
+/**
+ * Absolute URL of the logger SharedWorker script.
+ *
+ * Custom widget documents are served from `blob:` URLs, where relative URLs
+ * cannot be resolved — `new SharedWorker("/logger-worker.js")` throws
+ * `DOMException: An invalid or illegal string was specified`. Resolving the
+ * path against the page origin gives an absolute URL that the host page and
+ * every widget iframe can use, so they all join the same worker instance.
+ */
+export function workerUrl(): string {
+  const path = `${process.env.PUBLIC_URL || ""}/logger-worker.js`;
+  return new URL(path, window.location.origin).href;
 }
 
 export function isWorkerSupported(): boolean {

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { CustomWidgetSettings } from "./CustomWidgetSettings";
 import { useEffect, useState } from "react";
 import { CustomWidgetStore } from "./CustomWidgetStore";
-import { sendMessageToWorker } from "../../worker";
+import { sendMessageToWorker, workerUrl } from "../../worker";
 
 function resolvePlaceholders(str: string, data: any) {
   return str.replace(/\{\{?\s*([A-Za-z0-9_\.]+?)\s*\}?\}/g, (_, expr) => {
@@ -135,7 +135,21 @@ export const CustomWidget = observer(
               console.log({ session: ${JSON.stringify(store.session)}}, "Sending onWidgetLoad event");
               window.dispatchEvent(e);
               console.log('adding message listener');
-              const worker = new SharedWorker("${process.env.PUBLIC_URL || ""}/logger-worker.js", { name: "logger-worker" });
+              if (typeof SharedWorker === "undefined") {
+                console.warn("SharedWorker is not supported — chat messages will not be received");
+                return;
+              }
+              // This document is served from a blob: URL, where relative URLs
+              // cannot be resolved, so use the absolute URL computed by the
+              // host page. Same URL + same name = same SharedWorker instance.
+              const workerUrl = ${JSON.stringify(workerUrl())};
+              let worker;
+              try {
+                worker = new SharedWorker(workerUrl, { name: "logger-worker" });
+              } catch (err) {
+                console.error("Failed to connect to logger worker", err);
+                return;
+              }
               worker.port.start();
               worker.port.onmessage = (message) => {
                 const event = message.data;
