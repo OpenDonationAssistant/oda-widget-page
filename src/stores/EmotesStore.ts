@@ -180,6 +180,7 @@ export class DefaultEmotesStore implements EmotesStore {
     const key = channelId ? channelCacheKey(channelId) : GLOBAL_CACHE_KEY;
     try {
       const source = await this.loadFromApi(key, channelId);
+      log.debug({ key, count: source?.length, source }, "loaded emotes from 7TV");
       if (!source) return;
 
       await this._cache.write(key, source);
