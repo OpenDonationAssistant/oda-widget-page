@@ -18,7 +18,10 @@ import { hashString } from "../../utils";
 import { connect } from "socket.io-client";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { log } from "../../logging";
-import { addWarning } from "@opendonationassistant/news-service";
+import {
+  addWarning,
+  clearWarnings,
+} from "@opendonationassistant/news-service";
 import { isFeatureEnabled, SW_DONATIONS_FEATURE } from "../../shared/features";
 
 function reportWarning(
@@ -34,10 +37,27 @@ function reportWarning(
     },
     body: {
       message: `${handler} error: ${message}`,
+      component: handler,
       priority,
     },
   });
   console.error(`[PaymentAlerts] ${handler} error: ${message}`);
+}
+
+function clearWarning(token: string, handler: string): void {
+  clearWarnings({
+    baseURL: process.env.REACT_APP_NEWS_API_ENDPOINT,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: {
+      components: [handler],
+    },
+  }).catch((error) => {
+    console.error(
+      `[PaymentAlerts] failed to clear ${handler} warnings: ${error}`,
+    );
+  });
 }
 
 const memeAlertsRegexp = /купил (\d+)/;
@@ -488,6 +508,7 @@ const PaymentAlerts = observer(
                 });
 
                 socket.addEventListener("open", (event) => {
+                  clearWarning(odaToken ?? "", "DonationAlerts");
                   integrationLog.debug("send auth request to DA");
                   socket.send(
                     JSON.stringify({
@@ -612,6 +633,7 @@ const PaymentAlerts = observer(
               });
 
               socket.addEventListener("open", (event) => {
+                clearWarning(odaToken ?? "", "DonatePay");
                 integrationLog.debug("send auth request to DonatePay");
                 socket.send(
                   JSON.stringify({
@@ -740,6 +762,7 @@ const PaymentAlerts = observer(
                   });
 
                   socket.addEventListener("open", (event) => {
+                    clearWarning(odaToken ?? "", "DonatePay.eu");
                     integrationLog.debug("send auth request to DonatePay");
                     socket.send(
                       JSON.stringify({
@@ -841,6 +864,7 @@ const PaymentAlerts = observer(
           });
 
           socket.on("connect", function () {
+            clearWarning(odaToken ?? "", "UnofficialDonationAlerts");
             integrationLog.debug("UnofficialDonationAlerts WS: connected");
             socket.emit("add-user", {
               token: token.token,
@@ -1072,13 +1096,15 @@ const PaymentAlerts = observer(
               },
             });
           });
-          connection.start().catch((err) => {
-            reportWarning(
-              odaToken ?? "",
-              "DonateX",
-              `connection error: ${err}`,
-            );
-          });
+          connection.start()
+            .then(() => clearWarning(odaToken ?? "", "DonateX"))
+            .catch((err) => {
+              reportWarning(
+                odaToken ?? "",
+                "DonateX",
+                `connection error: ${err}`,
+              );
+            });
         });
     }, [alertController, tokenStore.tokens, recipientId, navigate, features]);
 
