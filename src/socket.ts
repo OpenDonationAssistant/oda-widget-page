@@ -1,4 +1,9 @@
-import { Client, StompSubscription, messageCallbackType } from "@stomp/stompjs";
+import {
+  Client,
+  StompSubscription, messageCallbackType,
+  ReconnectionTimeMode,
+  TickerStrategy,
+} from "@stomp/stompjs";
 import { log } from "./logging";
 import { tokenRequest, Tokens } from "./pages/Login/Login";
 
@@ -19,6 +24,11 @@ interface Listener {
 const socket = new Client({
   brokerURL: process.env.REACT_APP_WS_ENDPOINT,
   reconnectDelay: 500,
+  maxReconnectDelay: 30000,
+  reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+  heartbeatIncoming: 10000,
+  heartbeatOutgoing: 10000,
+  heartbeatStrategy: TickerStrategy.Worker,
 });
 
 const subscriptions = new Map<string, StompSubscription>();
@@ -53,8 +63,13 @@ socket.onStompError = (frame) => {
   );
 };
 
-socket.onWebSocketClose = () => {
+socket.onWebSocketClose = (evt) => {
+  log.warn({ code: evt.code, reason: evt.reason }, "ODA socket closed");
   subscriptions.clear();
+};
+
+socket.onWebSocketError = () => {
+  log.warn("ODA socket error");
 };
 
 socket.onDisconnect = () => {

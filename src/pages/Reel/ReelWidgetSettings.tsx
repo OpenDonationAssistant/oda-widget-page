@@ -1,4 +1,4 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import { AnimatedFontProperty } from "../../components/ConfigurationPage/widgetproperties/AnimatedFontProperty";
 import { BorderProperty } from "../../components/ConfigurationPage/widgetproperties/BorderProperty";
 import {
@@ -17,7 +17,6 @@ import { WidgetData } from "../../types/WidgetData";
 import { useTranslation } from "react-i18next";
 import { publish } from "../../socket";
 import { getRndInteger } from "../../utils";
-import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import { ReelWidget } from "./ReelWidget";
 import { DemoReelStore } from "../../stores/ReelStore";
 import { ReelWinningEffectProperty } from "./ReelWinningEffectProperty";
@@ -145,22 +144,19 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     });
   }
 
-  Subactions = () => {
+  Subactions = ({ widgetId }: { widgetId: string }) => {
     const { conf } = useLoaderData() as WidgetData;
     const { t } = useTranslation();
-    const widgetSettingsContext = useContext(WidgetSettingsContext);
 
     return (
-      <SubActionButton
-        onClick={() => this.runReel(widgetSettingsContext.widgetId, conf)}
-      >
+      <SubActionButton onClick={() => this.runReel(widgetId, conf)}>
         <div style={{ marginLeft: "2px" }}>{t("button-spin")}</div>
       </SubActionButton>
     );
   };
 
-  public subactions(): ReactNode {
-    return <this.Subactions />;
+  public subactions(widgetId: string): ReactNode {
+    return <this.Subactions widgetId={widgetId} />;
   }
 
   public help(): ReactNode {

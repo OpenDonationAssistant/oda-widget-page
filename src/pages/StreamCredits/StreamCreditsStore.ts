@@ -56,37 +56,37 @@ export class StreamCreditsStore {
       event.type === "VKLIVE_CHAT_MESSAGE" ||
       event.type === "KICK_CHAT_MESSAGE"
     ) {
-      const nickname = event.get("chatter_user_login");
-      if (!state.voters.includes(nickname)) {
+      const nickname = event.get<string>("chatter_user_login");
+      if (nickname && !state.voters.includes(nickname)) {
         state.voters.push(nickname);
       }
     }
     if (event.type === "Alert") {
-      const nickname = String(event.get("nickname")) ?? "";
+      const nickname = String(event.get<string>("nickname")) ?? "";
       if (!state.donaters.includes(nickname)) {
         state.donaters.push(nickname);
       }
     }
     if (event.type === "TwitchChannelFollowEvent") {
-      const nickname = String(event.get("nickname")) ?? "";
+      const nickname = String(event.get<string>("nickname")) ?? "";
       if (!state.newFollowers.includes(nickname)) {
         state.newFollowers.push(nickname);
       }
     }
     if (event.type === "TwitchChannelRaidEvent") {
-      const nickname = String(event.get("channel")) ?? "";
+      const nickname = String(event.get<string>("channel")) ?? "";
       if (!state.raiders.includes(nickname)) {
         state.raiders.push(nickname);
       }
     }
     if (event.type === "TwitchChannelSubscriptionGiftEvent") {
-      const nickname = String(event.get("nickname")) ?? "";
+      const nickname = String(event.get<string>("nickname")) ?? "";
       if (!state.gifters.includes(nickname)) {
         state.gifters.push(nickname);
       }
     }
     if (event.type === "TwitchUserBannedEvent") {
-      const nickname = String(event.get("nickname")) ?? "";
+      const nickname = String(event.get<string>("nickname")) ?? "";
       if (!state.banned.includes(nickname)) {
         state.banned.push(nickname);
       }

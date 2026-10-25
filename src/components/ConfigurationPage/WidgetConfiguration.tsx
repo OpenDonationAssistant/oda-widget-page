@@ -23,7 +23,6 @@ import {
   Title,
 } from "../Overlay/Overlay";
 import { BorderedIconButton } from "../IconButton/IconButton";
-import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
 import HelpIcon from "../../icons/HelpIcon";
 import CopyIcon from "../../icons/CopyIcon";
 import { EditableString } from "../RenamableLabel/EditableString";
@@ -260,24 +259,11 @@ export const WidgetConfiguration = observer(
     }, [open, modalState]);
 
     return (
-      <WidgetSettingsContext.Provider
-        value={{
-          widgetId: widget.id,
-          settings: widget,
-          subscribe: (
-            topic: string,
-            onMessage: (message: { ack: () => void; body: string }) => void,
-          ) => {},
-          unsubscribe: (topic: string) => {},
-          publish: (topic: string, payload: any) => {},
-        }}
-      >
-        <ModalStateContext.Provider value={modalState}>
-          {asCards && <WidgetAsCard widget={widget} />}
-          {!asCards && <WidgetAsList widget={widget} />}
-          <WidgetSettings widget={widget} />
-        </ModalStateContext.Provider>
-      </WidgetSettingsContext.Provider>
+      <ModalStateContext.Provider value={modalState}>
+        {asCards && <WidgetAsCard widget={widget} />}
+        {!asCards && <WidgetAsList widget={widget} />}
+        <WidgetSettings widget={widget} />
+      </ModalStateContext.Provider>
     );
   },
 );

@@ -146,7 +146,7 @@ export class DefaultEmoteWallWidgetStore
   };
 
   private addEmotesFromEvent(event: Event) {
-    const emotes = event.get("emotes");
+    const emotes = event.get<EmoteEntry[]>("emotes");
     if (!Array.isArray(emotes)) return;
     emotes.forEach((emote: EmoteEntry) => this.addEmote(emote));
   }

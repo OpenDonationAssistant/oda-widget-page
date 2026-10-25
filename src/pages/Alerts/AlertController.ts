@@ -64,9 +64,9 @@ export class AlertController {
       })
       .then(() => {
         onEvent((event) => {
-          if (event._type === "TwitchChannelRaidEvent") {
-            const channel = event.get("channel");
-            const viewerCount = event.get("viewerCount");
+          if (event.type === "TwitchChannelRaidEvent") {
+            const channel = event.get<string>("channel");
+            const viewerCount = event.get<number>("viewerCount");
             const data = {
               id: uuidv7(),
               alertId: null,
@@ -88,16 +88,16 @@ export class AlertController {
             }
             this.log.info("Alert is handled");
           }
-          if (event._type === "Alert") {
-            const alertmedia = event.get("alertmedia");
-            const amount = event.get("amount");
-            const system = event.get("system");
-            const eventName = event.get("event");
-            const nickname = event.get("nickname");
-            const levelName = event.get("levelName");
-            const originId = event.get("originId");
-            const force = event.get("force");
-            let msg = event.get("message");
+          if (event.type === "Alert") {
+            const alertmedia = event.get<string>("alertmedia");
+            const amount = event.get<number | string>("amount");
+            const system = event.get<string>("system");
+            const eventName = event.get<string>("event");
+            const nickname = event.get<string>("nickname");
+            const levelName = event.get<string>("levelName");
+            const originId = event.get<string>("originId");
+            const force = event.get<boolean>("force");
+            let msg = event.get<string>("message");
             if (system === "Boosty" && eventName === "subscription") {
               msg = `${nickname} оформил подписку ${levelName}`;
             }
@@ -106,7 +106,7 @@ export class AlertController {
             }
             const data = {
               id: originId,
-              alertId: event.get("alertId"),
+              alertId: event.get<string>("alertId"),
               nickname: nickname,
               message: msg,
               amount: amount
@@ -118,7 +118,7 @@ export class AlertController {
                   }
                 : null,
               levelName: levelName,
-              count: event.get("count"),
+              count: event.get<number>("count"),
               system: system,
               force: force,
               event: eventName,

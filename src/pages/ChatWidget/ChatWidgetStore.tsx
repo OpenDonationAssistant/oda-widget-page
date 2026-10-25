@@ -22,6 +22,13 @@ export interface Badge {
   url: string;
 }
 
+interface RawEmote {
+  name: string;
+  start: number;
+  end: number;
+  urls?: Record<string, string>;
+}
+
 export type MessagePart = StringPart | EmotePart | UrlPart;
 
 interface StringPart {
@@ -91,19 +98,19 @@ const PLATFORM_BADGES: Record<string, Badge> = {
 };
 
 export function eventToMessage(event: Event): Message {
-  const text: string = event.get("message_text") ?? "";
-  const emotes = (event.get("emotes") ?? []).sort(
-    (a: any, b: any) => a.start - b.start,
+  const text: string = event.get<string>("message_text") ?? "";
+  const emotes = (event.get<RawEmote[]>("emotes") ?? []).sort(
+    (a, b) => a.start - b.start,
   );
 
   let index = 0;
   const rawParts: MessagePart[] = [];
-  emotes.forEach((emote: any) => {
+  emotes.forEach((emote) => {
     rawParts.push({ type: "string", text: text.slice(index, emote.start) });
     rawParts.push({
       type: "emote",
       text: emote.name,
-      url: emote.urls?.["1"],
+      url: emote.urls?.["1"] ?? "",
     });
     index = emote.end;
   });
@@ -114,7 +121,7 @@ export function eventToMessage(event: Event): Message {
   );
 
   let badges =
-    event.get("badges")?.map((it: any) => {
+    event.get<Badge[]>("badges")?.map((it) => {
       return {
         name: it.name,
         url: it.url,
@@ -129,8 +136,8 @@ export function eventToMessage(event: Event): Message {
   return {
     badges,
     chatter: {
-      nickname: event.get("chatter_user_login"),
-      color: event.get("chatter_color"),
+      nickname: event.get<string>("chatter_user_login") ?? "",
+      color: event.get<string>("chatter_color") ?? "",
     },
     parts,
   };

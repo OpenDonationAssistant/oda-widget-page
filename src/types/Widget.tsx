@@ -451,7 +451,7 @@ export class Widget {
     return this._config;
   }
   public get subactions(): ReactNode {
-    return this._config.subactions();
+    return this._config.subactions(this._id);
   }
 }
 

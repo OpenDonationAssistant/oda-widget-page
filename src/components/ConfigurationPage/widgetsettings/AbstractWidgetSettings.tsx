@@ -113,7 +113,7 @@ export class AbstractWidgetSettings {
     return <div></div>;
   }
 
-  public subactions(): ReactNode {
+  public subactions(widgetId: string): ReactNode {
     return <></>;
   }
 

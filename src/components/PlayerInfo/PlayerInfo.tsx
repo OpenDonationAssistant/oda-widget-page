@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import "./PlayerInfo.css";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -27,19 +27,16 @@ import {
   PaddingProperty,
 } from "../ConfigurationPage/widgetproperties/PaddingProperty";
 import Marquee from "react-fast-marquee";
-import { WidgetSettingsContext } from "../../contexts/WidgetSettingsContext";
+import { publish, subscribe, unsubscribe } from "../../socket";
 
 function PlayerInfo() {
   const [left, setLeft] = useState(0);
-  const { conf } = useLoaderData() as WidgetData;
+  const { widgetId, settings, conf } = useLoaderData() as WidgetData;
   const [title, setTitle] = useState<string | null>();
   const [owner, setOwner] = useState<string | null>();
-  const { widgetId, settings, subscribe, unsubscribe, publish } = useContext(
-    WidgetSettingsContext,
-  );
 
   useEffect(() => {
-    subscribe(conf.topic.player, (message) => {
+    subscribe(widgetId, conf.topic.player, (message) => {
       log.debug({ body: message.body }, `Received message`);
       let json = JSON.parse(message.body);
       if (json.title !== null) {
@@ -53,7 +50,7 @@ function PlayerInfo() {
     });
     publish(conf.topic.playerCommands, { command: "state" });
     return () => {
-      unsubscribe(conf.topic.player);
+      unsubscribe(widgetId, conf.topic.player);
     };
   }, [widgetId]);
 
