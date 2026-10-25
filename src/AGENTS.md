@@ -25,7 +25,8 @@ src/
 ├── types/                 # Preset, WidgetData, Widget
 ├── locales/               # en, ru
 ├── bus/                   # EventBus pub/sub
-├── contexts/              # AuthContext, WidgetSettingsContext
+├── transport/             # MessageBus port + STOMP/MQTT contracts (types only, unused)
+├── contexts/              # AuthContext
 ├── wizards/               # wordblacklist wizard
 ├── shared/                # features.ts (feature flags)
 └── stories/               # CRA boilerplate — not real app code
@@ -40,7 +41,7 @@ src/
 | Realtime handlers | `sw/logger-worker/handlers/` — per-platform chat/donation |
 | Emote cache logic | `sw/emote-cache-worker/` — 7TV cache-first |
 | Event system | `bus/EventBus.ts` |
-| Auth widget settings | `contexts/AuthContext.tsx`, `contexts/WidgetSettingsContext.tsx` |
+| Auth widget settings | `contexts/AuthContext.tsx` |
 | i18n setup | `i18n.js` + `locales/{en,ru}/` |
 
 ## CONVENTIONS (src-specific)
