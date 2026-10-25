@@ -7,6 +7,7 @@ import { StreamStartedTrigger } from "./AutomationTrigger/StreamStartedTrigger";
 import { ChatCommandTrigger } from "./AutomationTrigger/ChatCommandTrigger";
 import { RewardTrigger } from "./AutomationTrigger/RewardTrigger";
 import { DonationTrigger } from "./AutomationTrigger/DonationTrigger";
+import { VariableEqualsValueTrigger } from "./AutomationTrigger/VariableEqualsValueTrigger";
 
 export class AutomationTriggerController {
   public get triggers(): (AutomationTrigger & Renderable)[] {
@@ -15,6 +16,7 @@ export class AutomationTriggerController {
       new ChannelRaidedTrigger(),
       new StreamStartedTrigger(),
       new DonationTrigger(),
+      new VariableEqualsValueTrigger(),
       // new ChatCommandTrigger(),
       // new RewardTrigger(),
     ];

@@ -9,12 +9,14 @@ import { RunReelAction } from "./AutomationAction/RunReelAction";
 import { MakePinnedMessageAction } from "./AutomationAction/MakePinnedMessageAction";
 import { ShoutoutAction } from "./AutomationAction/ShoutoutAction";
 import { RestCallAction } from "./AutomationAction/RestCallAction";
+import { SetVariableValueAction } from "./AutomationAction/SetVariableValueAction";
 
 export class AutomationActionController {
   public get actions(): (AutomationAction & Renderable)[] {
     return [
       new RunAlertAction(),
       new IncreaseVariableAction(),
+      new SetVariableValueAction(),
       new IncreaseDonationGoalAction(),
       new RefreshDonationGoalAction(),
       new RunReelAction(),
