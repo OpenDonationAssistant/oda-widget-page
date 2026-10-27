@@ -18,12 +18,18 @@
   color: var(--oda-color-500);
 }
 
+.fileInput {
+  display: none;
+}
+
 .wordList {
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
   margin-top: 12px;
+  max-height: 40vh;
+  overflow-y: auto;
 }
 
 .wordItem {

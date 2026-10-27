@@ -16,7 +16,7 @@ export const ErrorPopup = observer(() => {
       onCancel={() => errorStore.clearError()}
       okText="ОК"
     >
-      <p>{errorStore.error?.message}</p>
+      <p className={`${classes.errormessage}`}>{errorStore.error?.message}</p>
     </Modal>
   );
 });

@@ -9,3 +9,7 @@
     flex-direction: row-reverse;
   }
 }
+
+.errormessage {
+  color: var(--oda-color-950);
+}
