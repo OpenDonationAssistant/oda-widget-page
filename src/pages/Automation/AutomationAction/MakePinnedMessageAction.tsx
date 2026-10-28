@@ -1,11 +1,11 @@
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode } from "react";
 import { Renderable } from "../../../utils";
 import { AutomationAction } from "../AutomationState";
 import LabeledContainer from "../../../components/LabeledContainer/LabeledContainer";
 import { observer } from "mobx-react-lite";
 import { makeAutoObservable } from "mobx";
 import Textarea from "../../../components/Textarea/Textarea";
-import { TokenStoreContext } from "../../../stores/TokenStore";
+import { useTokenStore } from "../../../stores/TokenStore";
 import { Select } from "antd";
 
 interface MakePinnedMessageActionValue {
@@ -16,10 +16,7 @@ interface MakePinnedMessageActionValue {
 
 const MakePinnedMessageActionComponent = observer(
   ({ action }: { action: MakePinnedMessageAction }) => {
-    const tokenStore = useContext(TokenStoreContext);
-    if (!tokenStore) {
-      return null;
-    }
+    const { store: tokenStore } = useTokenStore();
     const tokens = tokenStore.tokens
       .filter((token) => token.enabled)
       .filter((token) => token.system === "Twitch");

@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "../../components/Cards/CardsComponent";
 import { StreamingIntegrationsWizard } from "./StreamingIntegrationsWizard";
-import { TokenStoreContext } from "../../stores/TokenStore";
+import { useTokenStore } from "../../stores/TokenStore";
 import { useContext, useState } from "react";
 import { Flex, Switch } from "antd";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
@@ -29,7 +29,7 @@ icons.set("Kick", <KickIcon />);
 icons.set("VKLive", <VKLiveIcon />);
 
 export const StreamingPlatformsSection = observer(() => {
-  const tokenStore = useContext(TokenStoreContext);
+  const { store: tokenStore } = useTokenStore();
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -45,7 +45,7 @@ export const StreamingPlatformsSection = observer(() => {
             }}
             action={() => {
               deleteRuleDialogState.show = false;
-              tokenStore?.deleteToken(selection);
+              tokenStore.deleteToken(selection);
             }}
           >
             Вы точно хотите удалить интеграцию?
@@ -56,7 +56,7 @@ export const StreamingPlatformsSection = observer(() => {
         <span>Стриминговые платформы</span>
       </CardSectionTitle>
       <CardList>
-        {tokenStore?.tokens
+        {tokenStore.tokens
           .filter(
             (token) =>
               token.system === "Twitch" ||

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { DonationPlatformWizard } from "./IntegrationsWizard";
-import { Token, TokenStoreContext } from "../../stores/TokenStore";
+import { Token, useTokenStore } from "../../stores/TokenStore";
 import {
   ModalState,
   ModalStateContext,
@@ -47,7 +47,7 @@ export const DonationPlatformsSection = observer(({}) => {
   const [selection, setSelection] = useState<string>("");
   const [token, setToken] = useState<Token | null>(null);
   const [originToken, setOriginToken] = useState<Token | null>(null);
-  const tokenStore = useContext(TokenStoreContext);
+  const { store: tokenStore } = useTokenStore();
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -66,7 +66,7 @@ export const DonationPlatformsSection = observer(({}) => {
             }}
             action={() => {
               deleteRuleDialogState.show = false;
-              tokenStore?.deleteToken(selection);
+              tokenStore.deleteToken(selection);
             }}
           >
             Вы точно хотите удалить интеграцию?
@@ -240,7 +240,7 @@ export const DonationPlatformsSection = observer(({}) => {
                   disabled={deepEqual(token, originToken)}
                   onClick={() => {
                     if (token) {
-                      tokenStore?.updateToken(token);
+                      tokenStore.updateToken(token);
                       integrationSettingsDialogState.show = false;
                     }
                   }}
@@ -260,7 +260,7 @@ export const DonationPlatformsSection = observer(({}) => {
         </span>
       </CardSectionTitle>
       <CardList>
-        {tokenStore?.tokens
+        {tokenStore.tokens
           .filter(
             (token) =>
               token.system === "DonatePay" ||
@@ -310,7 +310,7 @@ export const DonationPlatformsSection = observer(({}) => {
               </Flex>
             </Card>
           ))}
-        {tokenStore && <DonationPlatformWizard tokenStore={tokenStore} />}
+        <DonationPlatformWizard tokenStore={tokenStore} />
       </CardList>
     </>
   );

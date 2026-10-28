@@ -10,9 +10,10 @@ import {
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { uuidv7 } from "uuidv7";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { ObjectWrapper } from "../utils";
 
-/** Endpoint used for token management (same as the previous factory default). */
 const TOKEN_API_ENDPOINT = process.env.REACT_APP_AUTOMATION_API_ENDPOINT;
 
 export interface Token {
@@ -168,4 +169,18 @@ export class DefaultTokenStore implements TokenStore {
   }
 }
 
-export const TokenStoreContext = createContext<TokenStore | null>(null);
+export const TokenStoreContext = createContext<ObjectWrapper<TokenStore>>(
+  new ObjectWrapper<TokenStore>(null),
+);
+
+export function useTokenStore() {
+  const { accessToken } = useAuth();
+  const context = useContext(TokenStoreContext);
+  if (!context.value) {
+    if (!accessToken) {
+      throw new Error("useTokenStore must be used within an AuthProvider");
+    }
+    context.value = new DefaultTokenStore(accessToken);
+  }
+  return { store: context.value };
+}

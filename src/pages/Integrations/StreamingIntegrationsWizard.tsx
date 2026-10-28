@@ -16,7 +16,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { SelectedIndexContext } from "../../stores/SelectedIndexStore";
 import { uuidv7 } from "uuidv7";
 import { Input } from "antd";
-import { TokenStore, TokenStoreContext } from "../../stores/TokenStore";
+import { useTokenStore } from "../../stores/TokenStore";
 import classes from "./IntegrationsWizard.module.css";
 
 export const ChooseStreamingPlatformComponent = observer(() => {
@@ -301,7 +301,7 @@ async function resolveYouTubeChannel(
 export const StreamingIntegrationsWizard = observer(() => {
   const [continuation] = useState<Continuation>(() => new Continuation());
   const selection = useContext(SelectedIndexContext);
-  const tokenStore = useContext(TokenStoreContext);
+  const { store: tokenStore } = useTokenStore();
   const [wizardStore] = useState<YouTubeWizardStore>(
     () => new YouTubeWizardStore(),
   );
@@ -356,7 +356,7 @@ export const StreamingIntegrationsWizard = observer(() => {
                 wizardStore.resolvedChannelId = result.channelId;
                 wizardStore.resolvedChannelTitle = result.title;
               });
-              tokenStore?.addToken("GoogleApiKey", wizardStore.apiKey, {
+              tokenStore.addToken("GoogleApiKey", wizardStore.apiKey, {
                 channelId: result.channelId,
                 name: result.title,
                 handle: wizardStore.handle,

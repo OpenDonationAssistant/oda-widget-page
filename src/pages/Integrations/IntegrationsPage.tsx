@@ -2,14 +2,9 @@ import { CardSection } from "../../components/Cards/CardsComponent";
 import { observer } from "mobx-react-lite";
 import { DonationPlatformsSection } from "./DonationPlatformsSection";
 import { StreamingPlatformsSection } from "./StreamingPlatformsSection";
-import {
-  DefaultTokenStore,
-  TokenStore,
-  TokenStoreContext,
-} from "../../stores/TokenStore";
+import { useTokenStore } from "../../stores/TokenStore";
 import { useState } from "react";
 import { useLoaderData } from "react-router";
-import { useAuth } from "../../contexts/AuthContext";
 import { WidgetData } from "../../types/WidgetData";
 import { GamesSection } from "./GamesSection";
 import {
@@ -19,26 +14,21 @@ import {
 } from "../../stores/GamesStore";
 
 export const IntegrationsPage = observer(() => {
-  const { accessToken } = useAuth();
-  const [tokenStore] = useState<TokenStore>(
-    () => new DefaultTokenStore(accessToken ?? ""),
-  );
+  const { store: tokenStore } = useTokenStore();
   const [gamesStore] = useState<GamesStore>(
     () => new DefaultGamesStore(tokenStore),
   );
   const { features } = useLoaderData() as WidgetData;
 
   return (
-    <TokenStoreContext.Provider value={tokenStore}>
-      <GamesStoreContext.Provider value={gamesStore}>
-        <h1>Интеграции</h1>
-        <CardSection>
-          <DonationPlatformsSection />
-          <StreamingPlatformsSection />
-          {features.find((f) => f.name === "GamesIntegration")?.state ===
-            "ENABLED" && <GamesSection />}
-        </CardSection>
-      </GamesStoreContext.Provider>
-    </TokenStoreContext.Provider>
+    <GamesStoreContext.Provider value={gamesStore}>
+      <h1>Интеграции</h1>
+      <CardSection>
+        <DonationPlatformsSection />
+        <StreamingPlatformsSection />
+        {features.find((f) => f.name === "GamesIntegration")?.state ===
+          "ENABLED" && <GamesSection />}
+      </CardSection>
+    </GamesStoreContext.Provider>
   );
 });

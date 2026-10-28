@@ -28,8 +28,6 @@ import {
   CollapsibleListItem,
   List,
 } from "../../components/List/List";
-import { DefaultTokenStore, TokenStoreContext } from "../../stores/TokenStore";
-import { useAuth } from "../../contexts/AuthContext";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
   const { state } = useAutomationState();
@@ -204,48 +202,44 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 
 const AutomationPage = observer(() => {
   const { state } = useAutomationState();
-  const { accessToken } = useAuth();
   const widgetStore = new DefaultWidgetStore();
-  const tokenStore = new DefaultTokenStore(accessToken ?? "");
 
   return (
-    <TokenStoreContext.Provider value={tokenStore}>
-      <WidgetStoreContext.Provider value={widgetStore}>
-        <h1>Автоматизация</h1>
+    <WidgetStoreContext.Provider value={widgetStore}>
+      <h1>Автоматизация</h1>
 
-        <Tabs
-          tabBarExtraContent={
-            <SecondaryButton
-              onClick={() => {
-                state.save();
-              }}
-            >
-              Сохранить
-            </SecondaryButton>
-          }
-          type="card"
-          items={[
-            {
-              label: "Правила",
-              key: "rules",
-              children: <RuleList />,
-            },
-            {
-              label: "Переменные",
-              key: "variables",
-              children: (
-                <Flex vertical className={`${classes.variabletab}`}>
-                  <div className={`${classes.variablesectionname}`}>Числа</div>
-                  <VariableList type="number" />
-                  <div className={`${classes.variablesectionname}`}>Строки</div>
-                  <VariableList type="string" />
-                </Flex>
-              ),
-            },
-          ]}
-        />
-      </WidgetStoreContext.Provider>
-    </TokenStoreContext.Provider>
+      <Tabs
+        tabBarExtraContent={
+          <SecondaryButton
+            onClick={() => {
+              state.save();
+            }}
+          >
+            Сохранить
+          </SecondaryButton>
+        }
+        type="card"
+        items={[
+          {
+            label: "Правила",
+            key: "rules",
+            children: <RuleList />,
+          },
+          {
+            label: "Переменные",
+            key: "variables",
+            children: (
+              <Flex vertical className={`${classes.variabletab}`}>
+                <div className={`${classes.variablesectionname}`}>Числа</div>
+                <VariableList type="number" />
+                <div className={`${classes.variablesectionname}`}>Строки</div>
+                <VariableList type="string" />
+              </Flex>
+            ),
+          },
+        ]}
+      />
+    </WidgetStoreContext.Provider>
   );
 });
 
