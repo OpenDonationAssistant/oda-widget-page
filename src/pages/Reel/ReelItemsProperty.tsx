@@ -15,7 +15,7 @@ export interface ReelItem {
 }
 
 export interface ReelItemsPropertyValue {
-  items: 
+  items: ReelItem[];
 }
 
 export class ReelItemsProperty extends DefaultWidgetProperty<ReelItemsPropertyValue> {
