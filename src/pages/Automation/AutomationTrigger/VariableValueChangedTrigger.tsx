@@ -17,7 +17,7 @@ const VariableValueChangedTriggerComponent = observer(
     return (
       <Flex vertical gap={9} className="full-width">
         <LabeledContainer displayName="Переменная">
-          <Flex vertical gap={4}>
+          <Flex vertical gap={4} className="full-width">
             <Select
               className="full-width"
               value={trigger.value.id}
