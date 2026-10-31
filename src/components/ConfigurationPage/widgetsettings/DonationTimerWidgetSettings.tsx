@@ -14,7 +14,7 @@ import { PaddingProperty } from "../widgetproperties/PaddingProperty";
 import { BlurProperty } from "../widgetproperties/BlurProperty";
 import { BoxShadowProperty } from "../widgetproperties/BoxShadowProperty";
 import { DonationTimer } from "../../../pages/DonationTimer/DonationTimer";
-import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
+import { DemoHistoryStore } from "../../../stores/history";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";

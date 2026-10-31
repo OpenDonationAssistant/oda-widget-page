@@ -22,7 +22,7 @@ import {
   HistoryItem,
   HistoryStore,
   HistoryStoreContext,
-} from "./HistoryStore";
+} from "../../stores/history";
 import { observer } from "mobx-react-lite";
 import { HistoryItemComponent } from "./HistoryItem";
 import CloseIcon from "../../icons/CloseIcon";

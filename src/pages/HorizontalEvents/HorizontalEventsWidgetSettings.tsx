@@ -12,8 +12,8 @@ import { PaddingProperty } from "../../components/ConfigurationPage/widgetproper
 import { RoundingProperty } from "../../components/ConfigurationPage/widgetproperties/RoundingProperty";
 import { TextProperty } from "../../components/ConfigurationPage/widgetproperties/TextProperty";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
-import { DemoHistoryStore } from "../History/DemoHistoryStore";
-import { HorizontalEventsModeProperty } from "./HorizontalEventsModeProperty";
+import { HistoryFiltersProperty } from "../../components/ConfigurationPage/widgetproperties/HistoryFiltersProperty";
+import { DemoHistoryStore } from "../../stores/history";
 import { HorizontalEventsWidget } from "./HorizontalEventsWidget";
 
 export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
@@ -21,10 +21,15 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
     super({ sections: [] });
 
     this.addSection({
+      key: "filters",
+      title: "Фильтры",
+      properties: [new HistoryFiltersProperty()],
+    });
+
+    this.addSection({
       key: "general",
       title: "Общие",
       properties: [
-        new HorizontalEventsModeProperty(),
         new NumberProperty({
           name: "speed",
           value: 50,
@@ -289,6 +294,10 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
   public get speed() {
     return this.get("speed") as NumberProperty;
+  }
+
+  public get historyFilters() {
+    return this.get("historyFilters") as HistoryFiltersProperty;
   }
 
   public get showHeader() {

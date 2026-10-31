@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import classes from "./DonationTimer.module.css";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { Flex } from "antd";
-import { HistoryStore } from "../History/HistoryStore";
+import { HistoryStore } from "../../stores/history";
 import { observer } from "mobx-react-lite";
 import { reaction, toJS } from "mobx";
 import { log } from "../../logging";

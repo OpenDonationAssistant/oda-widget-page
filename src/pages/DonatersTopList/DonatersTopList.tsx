@@ -11,7 +11,7 @@ import { AbstractDonatersListStore } from "./DonatersListStore";
 import { observer } from "mobx-react-lite";
 import { log } from "../../logging";
 import { SlideShowComponent } from "../../components/SlideShow/SlideShowComponent";
-import { HistoryStore } from "../History/HistoryStore";
+import { HistoryStore } from "../../stores/history";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 import {
   useVariableStore,

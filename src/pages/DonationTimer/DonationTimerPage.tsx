@@ -5,7 +5,7 @@ import WidgetWrapper from "../../WidgetWrapper";
 import { Widget } from "../../types/Widget";
 import { DonationTimerWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationTimerWidgetSettings";
 import { useState } from "react";
-import { DefaultHistoryStore, HistoryStore } from "../History/HistoryStore";
+import { DefaultHistoryStore, HistoryStore } from "../../stores/history";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function DonationTimerPage() {

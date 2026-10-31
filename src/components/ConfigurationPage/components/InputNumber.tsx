@@ -1,5 +1,5 @@
 import { Flex } from "antd";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { InputNumber as AndInputNumber } from "antd";
 import classes from "./InputNumber.module.css";
 
@@ -9,12 +9,16 @@ export default function InputNumber({
   addon,
   increment,
   className,
+  min,
+  precision
 }: {
   value: number;
   onChange: (value: number) => void;
   addon?: ReactNode;
   increment?: number;
   className?: string;
+  min?: number;
+  precision?: number;
 }) {
   return (
     <>
@@ -30,6 +34,8 @@ export default function InputNumber({
           <span className="material-symbols-sharp">remove</span>
         </button>
         <AndInputNumber
+          min={min}
+          precision={precision}
           value={value}
           addonAfter={addon}
           className={`${classes.value} ${

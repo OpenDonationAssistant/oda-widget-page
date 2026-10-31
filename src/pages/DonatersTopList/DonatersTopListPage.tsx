@@ -5,7 +5,7 @@ import { Widget } from "../../types/Widget";
 import { DonatersTopList } from "./DonatersTopList";
 import { DonatersTopListWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonatersTopListWidgetSettings";
 import { DonatersListStore } from "./DonatersListStore";
-import { DefaultHistoryStore } from "../History/HistoryStore";
+import { DefaultHistoryStore } from "../../stores/history";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function DonatersTopListPage() {

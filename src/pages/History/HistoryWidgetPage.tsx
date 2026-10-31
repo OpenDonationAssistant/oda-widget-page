@@ -7,7 +7,7 @@ import {
   DefaultHistoryStore,
   HistoryStore,
   HistoryStoreContext,
-} from "./HistoryStore";
+} from "../../stores/history";
 import {
   DefaultWidgetStore,
   WidgetStore,

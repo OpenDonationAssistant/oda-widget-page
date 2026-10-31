@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode } from "react";
 import type { AbstractDonatersListStore } from "./DonatersListStore";
-import type { HistoryStore } from "../History/HistoryStore";
+import type { HistoryStore } from "../../stores/history";
 
 /* ------------------------------------------------------------------ */
 /*  Mock helpers for DonatersTopList settings, stores & history        */

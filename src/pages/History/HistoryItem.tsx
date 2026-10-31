@@ -7,7 +7,7 @@ import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { publish } from "../../socket";
 import SongIcon from "../../icons/SongIcon";
-import { HistoryItem, HistoryStoreContext } from "./HistoryStore";
+import { HistoryItem, HistoryStoreContext } from "../../stores/history";
 import ReelIcon from "../../icons/ReelIcon";
 import RunIcon from "../../icons/RunIcon";
 import BoostyIcon from "../../icons/BoostyIcon";

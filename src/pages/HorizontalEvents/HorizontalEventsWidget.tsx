@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HorizontalEventsWidgetSettings } from "./HorizontalEventsWidgetSettings";
 import Marquee from "react-fast-marquee";
 import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
-import { HistoryItem, HistoryStore } from "../History/HistoryStore";
+import { HistoryStore, matchesHistoryFilters } from "../../stores/history";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
 
-const dayDateDiff = 1000 * 60 * 60 * 24;
+// The history service filters systems and events independently, so a mixed
+// selection can return rows that the client-side filter hides. Keep loading
+// bounded extra pages until enough matching events are collected for the feed.
+const targetEvents = 10;
+const maxExtraPages = 10;
 
 export const HorizontalEventsWidget = observer(
   ({
@@ -16,16 +20,45 @@ export const HorizontalEventsWidget = observer(
     settings: HorizontalEventsWidgetSettings;
     store: HistoryStore;
   }) => {
-    const [events, setEvents] = useState<HistoryItem[]>([]);
+    const now = new Date();
+    const filters = settings.historyFilters.value;
+    const events = store.items.filter((it) =>
+      matchesHistoryFilters(it, filters, now),
+    );
 
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const loadingMore = useRef(false);
+    const extraPagesLoaded = useRef(0);
+    const failed = useRef(false);
+
+    // `store.items` is a dependency so the effect retries even when a page
+    // adds only filtered-out rows and `events.length` does not change.
+    // TODO simplify history loading
     useEffect(() => {
-      const now = new Date();
-      setEvents(
-        store.items.filter(
-          (it) => now.getTime() - it.timestamp.getTime() < dayDateDiff,
-        ),
-      );
-    }, [store.items]);
+      if (
+        loadingMore.current ||
+        failed.current ||
+        events.length >= targetEvents ||
+        extraPagesLoaded.current >= maxExtraPages ||
+        !store.hasNext()
+      ) {
+        return;
+      }
+
+      loadingMore.current = true;
+      setIsLoadingMore(true);
+      store
+        .next()
+        .catch(() => {
+          // HistoryStore already logs the error; stop paging on failure.
+          failed.current = true;
+        })
+        .finally(() => {
+          extraPagesLoaded.current += 1;
+          loadingMore.current = false;
+          setIsLoadingMore(false);
+        });
+    }, [events.length, isLoadingMore, store, filters, store.items]);
 
     return (
       <Flex

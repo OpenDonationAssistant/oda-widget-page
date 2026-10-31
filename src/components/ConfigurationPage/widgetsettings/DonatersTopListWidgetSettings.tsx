@@ -28,7 +28,7 @@ import { DonatersTopList } from "../../../pages/DonatersTopList/DonatersTopList"
 import { DemoListStore } from "../../../pages/DonatersTopList/DemoListStore";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
-import { DemoHistoryStore } from "../../../pages/History/DemoHistoryStore";
+import { DemoHistoryStore } from "../../../stores/history";
 import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
 
 export class DonatersTopListWidgetSettings extends AbstractWidgetSettings {

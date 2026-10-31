@@ -15,6 +15,13 @@ import {
   printCsv,
   repeatAlert,
 } from "@opendonationassistant/history-service";
+import {
+  HistoryCustomPeriod,
+  HistoryFilters,
+  HistoryFiltersFlags,
+  HistoryPeriod,
+  historyPeriodStart,
+} from "./HistoryFilters";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
   month: "long",
@@ -57,7 +64,7 @@ export interface HistoryItem {
   active: boolean;
 }
 
-export interface HistoryStore {
+export interface HistoryStore extends HistoryFiltersFlags {
   today: string;
   load(): Promise<void>;
   alert(item: HistoryItem): Promise<void>;
@@ -69,27 +76,6 @@ export interface HistoryStore {
   pageNumber: number;
   items: HistoryItem[];
   isRefreshing: boolean;
-  showODA: boolean;
-  showDonationAlerts: boolean;
-  showDonatePay: boolean;
-  showDonatePayEu: boolean;
-  showDonateStream: boolean;
-  showDonateX: boolean;
-  showTribute: boolean;
-  showBoostySubs: boolean;
-  showBoostyFollows: boolean;
-  showMemeAlertsCoins: boolean;
-  showTwitchFollows: boolean;
-  showTwitchRaids: boolean;
-  showTwitchCheers: boolean;
-  showTwitchSubs: boolean;
-  showTwitchSubGifts: boolean;
-  showKickFollows: boolean;
-  showKickGifts: boolean;
-  showKickSubs: boolean;
-  showKickSubGifts: boolean;
-  showVKLiveFollows: boolean;
-  showVKLiveSubs: boolean;
   after: Date | null;
   before: Date | null;
 }
@@ -124,30 +110,6 @@ function convert(message: any): HistoryItem {
   };
 }
 
-export interface HistoryConfiguration {
-  showODA: boolean;
-  showDonationAlerts: boolean;
-  showDonatePay: boolean;
-  showDonatePayEu: boolean;
-  showDonateStream: boolean;
-  showDonateX: boolean;
-  showTribute: boolean;
-  showBoostySubs: boolean;
-  showBoostyFollows: boolean;
-  showMemeAlertsCoins: boolean;
-  showTwitchFollows: boolean;
-  showTwitchRaids: boolean;
-  showTwitchCheers: boolean;
-  showTwitchSubs: boolean;
-  showTwitchSubGifts: boolean;
-  showKickFollows: boolean;
-  showKickGifts: boolean;
-  showKickSubs: boolean;
-  showKickSubGifts: boolean;
-  showVKLiveFollows: boolean;
-  showVKLiveSubs: boolean;
-}
-
 export class DefaultHistoryStore implements HistoryStore {
   private _recipientId: string;
   private _pageSize: number;
@@ -178,6 +140,8 @@ export class DefaultHistoryStore implements HistoryStore {
   private _showVKLiveSubs: boolean;
   private _after: Date | null;
   private _before: Date | null;
+  private _period: HistoryPeriod | null;
+  private _customPeriod: HistoryCustomPeriod | null;
   private _widgetId: string;
   private _active: string | null = null;
 
@@ -190,7 +154,7 @@ export class DefaultHistoryStore implements HistoryStore {
     recipientId: string,
     widgetId: string,
     conf: any,
-    storeSettings?: HistoryConfiguration,
+    storeSettings?: HistoryFilters,
   ) {
     log.debug({ widgetId: widgetId }, "new history store");
     this._token = token;
@@ -262,6 +226,8 @@ export class DefaultHistoryStore implements HistoryStore {
       this.readValue(`${widgetId}.showVKLiveSubs`);
     this._after = null;
     this._before = null;
+    this._period = storeSettings?.period ?? null;
+    this._customPeriod = storeSettings?.customPeriod ?? null;
     makeAutoObservable(this);
     this.load()
       .then(() => {
@@ -289,7 +255,7 @@ export class DefaultHistoryStore implements HistoryStore {
         Authorization: `Bearer ${this._token}`,
       },
       body: {
-        after: this._after?.toISOString(),
+        after: this.queryAfter?.toISOString(),
         before: this._before?.toISOString(),
         events: this.events,
         systems: this.systems,
@@ -344,6 +310,10 @@ export class DefaultHistoryStore implements HistoryStore {
     this._before = before;
     this._list = [];
     this.load();
+  }
+
+  private get queryAfter(): Date | null {
+    return this._after ?? historyPeriodStart(this._period, this._customPeriod);
   }
 
   public addListener(listener: HistoryListener) {
@@ -427,6 +397,9 @@ export class DefaultHistoryStore implements HistoryStore {
     if (this._showDonatePay) {
       systems.push("DonatePay");
     }
+    if (this._showDonatePayEu) {
+      systems.push("DonatePay.eu");
+    }
     if (this._showDonateStream) {
       systems.push("Donate.Stream");
     }
@@ -471,6 +444,7 @@ export class DefaultHistoryStore implements HistoryStore {
       this._showODA ||
       this._showDonationAlerts ||
       this._showDonatePay ||
+      this._showDonatePayEu ||
       this._showDonateStream ||
       this._showDonateX ||
       this._showTribute ||
@@ -541,7 +515,7 @@ export class DefaultHistoryStore implements HistoryStore {
         size: this.pageSize,
         systems: this.systems,
         events: this.events,
-        after: this._after?.toISOString(),
+        after: this.queryAfter?.toISOString(),
         before: this._before?.toISOString(),
         sort: "timestamp,desc",
       },

@@ -4,7 +4,7 @@ import { WidgetData } from "../../types/WidgetData";
 import { Widget } from "../../types/Widget";
 import { HorizontalEventsWidget } from "./HorizontalEventsWidget";
 import { HorizontalEventsWidgetSettings } from "./HorizontalEventsWidgetSettings";
-import { DefaultHistoryStore, HistoryStore } from "../History/HistoryStore";
+import { DefaultHistoryStore, HistoryStore } from "../../stores/history";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -13,19 +13,25 @@ export default function HorizontalEventsPage() {
     useLoaderData() as WidgetData;
   const { accessToken } = useAuth();
 
+  const [widgetSettings] = useState<HorizontalEventsWidgetSettings>(
+    () =>
+      Widget.configFromJson(settings) as HorizontalEventsWidgetSettings,
+  );
+
   const [store] = useState<HistoryStore>(
     () =>
-      new DefaultHistoryStore(accessToken ?? "", recipientId, widgetId, conf),
+      new DefaultHistoryStore(
+        accessToken ?? "",
+        recipientId,
+        widgetId,
+        conf,
+        widgetSettings.historyFilters.value,
+      ),
   );
 
   return (
     <WidgetWrapper>
-      <HorizontalEventsWidget
-        settings={
-          Widget.configFromJson(settings) as HorizontalEventsWidgetSettings
-        }
-        store={store}
-      />
+      <HorizontalEventsWidget settings={widgetSettings} store={store} />
     </WidgetWrapper>
   );
 }
