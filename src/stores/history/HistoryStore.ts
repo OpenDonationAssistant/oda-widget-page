@@ -21,6 +21,7 @@ import {
   HistoryFiltersFlags,
   HistoryPeriod,
   historyPeriodStart,
+  matchesHistoryFilters,
 } from "./HistoryFilters";
 
 const dateTimeFormat = new Intl.DateTimeFormat("ru-RU", {
@@ -84,29 +85,91 @@ export interface HistoryListener {
   onHistoryItemAdded(item: HistoryItem): void;
 }
 
-function convert(message: any): HistoryItem {
+/**
+ * UI events emitted by the automation service for platform events that the
+ * history service persists. Their bodies carry only platform variables, so
+ * the history system/event pair has to be derived from the event type.
+ */
+const HISTORY_EVENT_TYPES: Record<
+  string,
+  { system: string; event: string }
+> = {
+  TwitchChannelCheerEvent: { system: "Twitch", event: "cheer" },
+  TwitchChannelFollowEvent: { system: "Twitch", event: "follow" },
+  TwitchChannelRaidEvent: { system: "Twitch", event: "raid" },
+  TwitchChannelSubscribeEvent: { system: "Twitch", event: "subscription" },
+  TwitchChannelSubscriptionGiftEvent: {
+    system: "Twitch",
+    event: "subscription-gift",
+  },
+};
+
+function asText(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (value && typeof value === "object" && "text" in value) {
+    // Twitch subscription messages arrive as { text, emotes }.
+    const text = (value as { text?: unknown }).text;
+    return typeof text === "string" ? text : "";
+  }
+  return value === undefined || value === null ? "" : String(value);
+}
+
+function convertEvent(
+  message: any,
+  active: string | null,
+): HistoryItem | null {
+  const variables: Variable[] = Array.isArray(message?.variables)
+    ? message.variables
+    : [];
+  const mapped = HISTORY_EVENT_TYPES[message?.type];
+  const system = asText(get(variables, "system") ?? mapped?.system);
+  const event = asText(get(variables, "event") ?? mapped?.event);
+  if (!system || !event) {
+    // Not a history event (goal/reel/media updates, stream status, ...).
+    return null;
+  }
+  const force = get(variables, "force");
+  if (force === true || force === "true") {
+    // Test and repeat alerts reference an existing history item (or none at
+    // all), they must not be appended as new rows.
+    return null;
+  }
+  const originId = asText(
+    get(variables, "originId") ?? (mapped ? message?.id : undefined),
+  );
+  if (!originId) {
+    return null;
+  }
+  const timestamp = new Date();
+  const amount = Number(get(variables, "amount") ?? 0);
   return {
-    id: message.id,
-    originId: get(message.variables, "originId"),
+    id: originId,
+    originId,
     amount: {
-      major: Number(get(message.variables, "amount") ?? "0"),
+      major: Number.isFinite(amount) ? amount : 0,
       minor: 0,
-      currency: "RUB",
+      currency: asText(get(variables, "currency")) || "RUB",
     },
-    nickname: get(message.variables, "nickname"),
-    system: get(message.variables, "system"),
-    event: get(message.variables, "event"),
-    count: get(message.variables, "count"),
-    levelName: get(message.variables, "levelName"),
+    nickname:
+      asText(get(variables, "nickname") ?? get(variables, "channel")) ||
+      "Аноним",
+    system,
+    event,
+    count: Number(
+      get(variables, "count") ?? get(variables, "viewerCount") ?? 0,
+    ),
+    levelName: asText(get(variables, "levelName")),
     goals: [],
     rouletteResults: [],
-    message: get(message.variables, "message"),
+    message: asText(get(variables, "message")),
     attachments: [],
     actions: [],
-    timestamp: new Date(),
-    date: "",
-    time: "",
-    active: false,
+    timestamp,
+    date: dateTimeFormat.format(timestamp),
+    time: timeFormat.format(timestamp),
+    active: originId === active,
   };
 }
 
@@ -328,6 +391,92 @@ export class DefaultHistoryStore implements HistoryStore {
     return JSON.parse(value);
   }
 
+  private get filters(): HistoryFilters {
+    const hasExplicitAfter = this._after !== null;
+    return {
+      showODA: this._showODA,
+      showDonationAlerts: this._showDonationAlerts,
+      showDonatePay: this._showDonatePay,
+      showDonatePayEu: this._showDonatePayEu,
+      showDonateStream: this._showDonateStream,
+      showDonateX: this._showDonateX,
+      showTribute: this._showTribute,
+      showBoostySubs: this._showBoostySubs,
+      showBoostyFollows: this._showBoostyFollows,
+      showMemeAlertsCoins: this._showMemeAlertsCoins,
+      showTwitchFollows: this._showTwitchFollows,
+      showTwitchRaids: this._showTwitchRaids,
+      showTwitchCheers: this._showTwitchCheers,
+      showTwitchSubs: this._showTwitchSubs,
+      showTwitchSubGifts: this._showTwitchSubGifts,
+      showKickFollows: this._showKickFollows,
+      showKickGifts: this._showKickGifts,
+      showKickSubs: this._showKickSubs,
+      showKickSubGifts: this._showKickSubGifts,
+      showVKLiveFollows: this._showVKLiveFollows,
+      showVKLiveSubs: this._showVKLiveSubs,
+      // An explicit `after` replaces the configured period in the query.
+      period: hasExplicitAfter ? undefined : (this._period ?? undefined),
+      customPeriod: hasExplicitAfter
+        ? undefined
+        : (this._customPeriod ?? undefined),
+    };
+  }
+
+  /**
+   * Mirrors the filters sent to the history service by `load()` so a live
+   * event is only appended when the server would have returned it too.
+   */
+  private passesFilters(item: HistoryItem) {
+    if (!this.systems.includes(item.system)) {
+      return false;
+    }
+    if (!this.events.includes(item.event)) {
+      return false;
+    }
+    if (this._after && item.timestamp.getTime() < this._after.getTime()) {
+      return false;
+    }
+    if (this._before && item.timestamp.getTime() > this._before.getTime()) {
+      return false;
+    }
+    return matchesHistoryFilters(item, this.filters);
+  }
+
+  private isKnown(item: { id: string; originId: string }) {
+    return this._list.some(
+      (existing) =>
+        existing.id === item.id ||
+        (item.originId !== "" && existing.originId === item.originId),
+    );
+  }
+
+  /**
+   * Adds a realtime event to the current page instead of reloading the whole
+   * history from the service.
+   */
+  private appendEvent(message: any) {
+    const item = convertEvent(message, this._active);
+    if (!item) {
+      log.debug({ message }, "ignoring event that is not a history item");
+      return;
+    }
+    if (!this.passesFilters(item)) {
+      log.debug({ item }, "history event filtered out");
+      return;
+    }
+    if (this.isKnown(item)) {
+      log.debug({ item }, "history event is already in the list");
+      return;
+    }
+    // The list is sorted by timestamp descending, so a fresh event goes first.
+    this._list = [item, ...this._list];
+    if (this._amount !== -1) {
+      this._amount = this._amount + 1;
+    }
+    this._listeners.forEach((listener) => listener.onHistoryItemAdded(item));
+  }
+
   private listen(conf: any) {
     log.debug("listening for history events");
     subscribe(
@@ -335,15 +484,13 @@ export class DefaultHistoryStore implements HistoryStore {
       conf.topic.events,
       (message) => {
         log.debug(`events widgets received: ${message.body}`);
-        setTimeout(() => {
-          this._list = [];
-          this._pageNumber = 0;
-          this.load();
-        }, 1500);
-        this._listeners.forEach((listener) => {
-          // listener.onHistoryItemAdded(JSON.parse(message.body));
-        });
-        message.ack();
+        try {
+          this.appendEvent(JSON.parse(message.body));
+        } catch (error) {
+          log.error(error);
+        } finally {
+          message.ack();
+        }
       },
       { autoDelete: "true", durable: "false" },
     );
@@ -551,7 +698,10 @@ export class DefaultHistoryStore implements HistoryStore {
             };
           })
           .filter((item) => {
-            return this._list.findIndex((i) => i.id === item.id) === -1;
+            // A realtime event may already have been appended before the
+            // service returned the same row (with its generated id), so
+            // dedupe by source id as well.
+            return !this.isKnown(item);
           });
         this._list = [...this._list, ...(newData ?? [])];
         this._refreshing = false;
