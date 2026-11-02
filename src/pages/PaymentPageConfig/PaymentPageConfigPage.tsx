@@ -323,6 +323,10 @@ export default function PaymentPageConfigPage() {
                       value: "goodgame",
                       label: "GoodGame",
                     },
+                    {
+                      value: "telegram",
+                      label: "Telegram",
+                    },
                   ]}
                   onChange={(newKey) => {
                     if (paymentPageConfig?.current) {
