@@ -1,6 +1,7 @@
 ---
 name: playwright-widget-e2e
 description: Add and run Playwright end-to-end tests for ODA widgets against the local stack. Use when writing a new widget e2e spec, adding coverage for a widget flow, or debugging existing Playwright tests in this repo.
+disable-model-invocation: true
 ---
 
 ## Quick start
