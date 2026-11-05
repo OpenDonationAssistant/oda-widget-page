@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { DonatersTopList } from "./DonatersTopList";
 import {
   createMockSettings,
@@ -6,6 +6,7 @@ import {
   createEmptyTopListStore,
   createMockHistoryStore,
   createMockHistoryItems,
+  MockVariableStoreProvider,
 } from "./DonatersTopList.test-utils";
 
 const meta: Meta<typeof DonatersTopList> = {
@@ -17,16 +18,18 @@ const meta: Meta<typeof DonatersTopList> = {
   },
   decorators: [
     (Story) => (
-      <div
-        style={{
-          width: "400px",
-          height: "300px",
-          padding: "16px",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <Story />
-      </div>
+      <MockVariableStoreProvider>
+        <div
+          style={{
+            width: "400px",
+            height: "300px",
+            padding: "16px",
+            fontFamily: "sans-serif",
+          }}
+        >
+          <Story />
+        </div>
+      </MockVariableStoreProvider>
     ),
   ],
   tags: ["autodocs"],

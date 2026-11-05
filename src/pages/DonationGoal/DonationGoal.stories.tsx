@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { DonationGoal } from "./DonationGoal";
 import { createMockGoal, createMockGoals, createMockSettings, MockVariableStoreProvider } from "./DonationGoal.test-utils";
 import type { AbstractDonationGoalState } from "./DonationGoalState";

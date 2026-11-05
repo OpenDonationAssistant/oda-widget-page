@@ -1,6 +1,7 @@
 import {
   Client,
-  StompSubscription, messageCallbackType,
+  StompSubscription,
+  messageCallbackType,
   ReconnectionTimeMode,
   TickerStrategy,
 } from "@stomp/stompjs";
@@ -21,8 +22,10 @@ interface Listener {
   options: ListenerOptions;
 }
 
+const brokerURL = process.env.REACT_APP_WS_ENDPOINT;
+
 const socket = new Client({
-  brokerURL: process.env.REACT_APP_WS_ENDPOINT,
+  brokerURL,
   reconnectDelay: 500,
   maxReconnectDelay: 30000,
   reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
@@ -77,7 +80,13 @@ socket.onDisconnect = () => {
 };
 
 var listeners: Listener[] = [];
-socket.activate();
+if (brokerURL) {
+  socket.activate();
+} else {
+  log.warn(
+    "REACT_APP_WS_ENDPOINT is not set; realtime socket will not connect",
+  );
+}
 
 function subscriptionId(listener: Listener) {
   return `${listener.topic}-${listener.id}`;

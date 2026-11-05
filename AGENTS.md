@@ -10,7 +10,7 @@ ODA Widgets (`oda-console`) — React 18 + TypeScript SPA for configuring and re
 ## STRUCTURE
 ```
 oda-widget-page/
-├── src/                  # all application code (535 files)
+├── src/                  # all application code (542 files)
 │   ├── pages/            # 29 widget feature modules (one dir per widget)
 │   ├── components/       # shared UI + ConfigurationPage (property editors)
 │   ├── stores/           # global MobX stores
@@ -22,7 +22,7 @@ oda-widget-page/
 │   └── index.tsx         # main entry: router, providers, bootstrap
 ├── scripts/              # esbuild worker bundlers (prebuild step)
 ├── public/               # static + GENERATED worker bundles (gitignored)
-├── tests/                # Playwright e2e (boilerplate only)
+├── tests/                # Playwright e2e suites
 ├── .storybook/           # Storybook 10 config
 └── Dockerfile            # node:20 build → httpd:2.4-alpine serve
 ```
@@ -92,7 +92,7 @@ npm run build-emote-cache-worker  # rebuild emote-cache SW (dev)
 npm run build                # prebuild (workers) + react-scripts build → build/
 npm test                     # Jest (CRA) watch mode; CI=true npm test for one-shot
 npm run storybook            # Storybook dev, port 6006
-npx playwright test          # e2e (tests/example.spec.ts only)
+npx playwright test          # e2e suites in tests/
 npx tsc --noEmit             # the REAL typecheck — build tolerates TS errors
 ```
 
@@ -106,7 +106,7 @@ OTP-exchange + refresh-token flow (`src/auth.ts`, `src/pages/Login/Login.tsx`). 
 - i18n fallback language is `ru`; most UI strings are Russian. Locale JSON in `src/locales/`.
 - Donation handlers in `src/sw/logger-worker/handlers/` register only when the `SW_DONATIONS` feature flag is enabled (`src/shared/features.ts`).
 - `eslint.config.js` references `src/videoplayer.js` in `globalIgnores` — file does not exist (stale).
-- `src/stories/` is CRA boilerplate, not real app code.
+- Storybook stories are colocated with widgets/components as `*.stories.tsx`; example/tutorial stories were removed.
 - `AuctionWidgetPage.tsx` imports a demo store (commented-out real store) — production risk.
 - `CommandsStore.ts` / `RewardsStore.ts` `load()`/`save()` are empty stubs — feature non-functional.
 - CI (`.github/workflows/docker-image.yml`) runs NO tests — Docker build + push to GHCR only. Triggers on push to `master` (not `main`).

@@ -1,4 +1,5 @@
-import { CSSProperties, ReactNode } from "react";
+import { CSSProperties, FC, ReactNode } from "react";
+import { AuthProvider } from "../../contexts/AuthContext";
 import type { AbstractDonatersListStore } from "./DonatersListStore";
 import type { HistoryStore } from "../../stores/history";
 
@@ -113,6 +114,7 @@ export interface MockSettingsOverrides {
   hideEmpty?: boolean;
   showHeader?: boolean;
   title?: string;
+  labelTemplate?: string;
   layout?: "vertical" | "horizontal";
   gap?: number;
   headerAlignment?: "left" | "center" | "right";
@@ -142,6 +144,7 @@ export function createMockSettings(overrides?: MockSettingsOverrides) {
     hideEmpty: o.hideEmpty ?? false,
     showHeader: o.showHeader ?? true,
     title: o.title ?? "Top Donators",
+    labelTemplate: o.labelTemplate ?? "<nickname> - <amount> <currency>",
     layout: o.layout ?? "vertical",
     gap: o.gap ?? 0,
     headerAlignment: o.headerAlignment ?? "center",
@@ -336,3 +339,11 @@ export function createMockHistoryStore(
     before: null,
   };
 }
+
+/* ──────────────────────────────────────────────
+   Auth provider (required by useVariableStore)
+   ────────────────────────────────────────────── */
+
+export const MockVariableStoreProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => <AuthProvider>{children}</AuthProvider>;

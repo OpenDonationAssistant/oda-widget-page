@@ -124,9 +124,9 @@ export const DonatersTopList = observer(
         if (end > recordsList.length) {
           end = recordsList.length;
         }
-        const label = recordsList.slice(start, end).map((record) => (
+        const label = recordsList.slice(start, end).map((record, index) => (
           <div
-            key={start}
+            key={`${start}-${index}`}
             style={{
               ...settings.itemBorder.calcCss(),
               ...settings.itemPadding.calcCss(),

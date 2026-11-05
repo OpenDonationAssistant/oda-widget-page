@@ -1,7 +1,7 @@
 # src/ — Application Source
 
 ## OVERVIEW
-535 files: 300 .tsx, 128 .css (113 CSS Modules), 86 .ts, plus png/svg/json/mdx. Single entry point, ~29 widget feature modules.
+542 files: 307 .tsx, 127 .css (115 CSS Modules), 99 .ts, plus png/svg/json. Single entry point, ~29 widget feature modules.
 
 ## STRUCTURE
 ```
@@ -29,7 +29,6 @@ src/
 ├── contexts/              # AuthContext
 ├── wizards/               # wordblacklist wizard
 ├── shared/                # features.ts (feature flags)
-└── stories/               # CRA boilerplate — not real app code
 ```
 
 ## WHERE TO LOOK
@@ -49,9 +48,9 @@ src/
 - Worker sources live in `src/sw/` but are NOT bundled here; `scripts/*.mjs` at root does that.
 - `sw/logger-worker/utils/` exists but is empty — don't import from it.
 - `logic/` is for complex runtime behavior (playlist sequencing, voice), not UI.
+- Storybook stories are colocated with their component as `*.stories.tsx`; example/tutorial stories were removed.
 
 ## ANTI-PATTERNS (src-specific)
-- **Do NOT treat `stories/` as app code** — CRA boilerplate, none of it is used.
 - **Do NOT re-enable `window.onerror` in `index.tsx` casually** — 26-line block is commented out intentionally; changing it requires understanding the global error recovery design.
 - **Do NOT import from `sw/logger-worker/utils/`** — directory is empty, no exports exist.
 - **Do NOT use `var` elsewhere** — `socket.ts` is the sole deviation; maintain consistency.
