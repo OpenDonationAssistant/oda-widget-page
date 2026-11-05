@@ -1,0 +1,23 @@
+<script>
+  /*
+   * Storybook 10.5's preview runtime (test instrumentation) replaces
+   * HTMLElement.prototype.focus with a getter/setter pair. @react-aria, which
+   * is bundled with the docs renderer, reads HTMLElement.prototype.focus with
+   * the prototype as receiver — the getter then touches `this.ownerDocument`
+   * and throws "Illegal invocation" when switching from a story to Docs.
+   *
+   * Locking the native focus method as non-configurable makes Storybook's
+   * Object.defineProperties call throw inside its own try/catch, so the
+   * instrumentation is skipped and the native method stays intact.
+   */
+  try {
+    Object.defineProperty(HTMLElement.prototype, "focus", {
+      value: HTMLElement.prototype.focus,
+      writable: true,
+      enumerable: false,
+      configurable: false,
+    });
+  } catch (error) {
+    // Leave the prototype alone if it cannot be locked.
+  }
+</script>

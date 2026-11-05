@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, Fragment, useEffect, useState } from "react";
 import classes from "./DonationGoal.module.css";
 import { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 import { DonationGoalWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
@@ -152,107 +152,105 @@ export const DonationGoal = observer(
         {state.goals
           .filter((goal) => ids.includes(goal.id))
           .map((goal) => (
-            <>
-              <div className={goalItemClassName}>
-                {settings.showTitle && (
-                  <div className={classes.goaltitle}>
-                    <AlignmentRenderer alignment={settings.titleTextAlign}>
-                      <div
-                        style={{
-                          ...titleBorderStyle,
-                          ...titlePaddingStyle,
-                          ...titleRoundingStyle,
-                          ...titleBoxShadowStyle,
-                          ...titleBackgroundColorStyle,
-                          ...titleBackgroundImage,
-                          ...settings.titleHeight.calcCss(),
-                          ...settings.titleWidth.calcCss(),
-                        }}
-                      >
-                        <TextRenderer
-                          text={variablesStore.processTemplate(
-                            goal.briefDescription,
-                          )}
-                          font={settings.titleFontProperty}
-                        />
-                      </div>
-                    </AlignmentRenderer>
-                  </div>
-                )}
+            <div key={goal.id} className={goalItemClassName}>
+              {settings.showTitle && (
+                <div className={classes.goaltitle}>
+                  <AlignmentRenderer alignment={settings.titleTextAlign}>
+                    <div
+                      style={{
+                        ...titleBorderStyle,
+                        ...titlePaddingStyle,
+                        ...titleRoundingStyle,
+                        ...titleBoxShadowStyle,
+                        ...titleBackgroundColorStyle,
+                        ...titleBackgroundImage,
+                        ...settings.titleHeight.calcCss(),
+                        ...settings.titleWidth.calcCss(),
+                      }}
+                    >
+                      <TextRenderer
+                        text={variablesStore.processTemplate(
+                          goal.briefDescription,
+                        )}
+                        font={settings.titleFontProperty}
+                      />
+                    </div>
+                  </AlignmentRenderer>
+                </div>
+              )}
+              <div
+                className={`${classes.goalbar}`}
+                style={{
+                  ...{ display: "grid" },
+                  ...barPadding,
+                }}
+              >
                 <div
-                  className={`${classes.goalbar}`}
                   style={{
-                    ...{ display: "grid" },
-                    ...barPadding,
+                    ...progressBarBorderStyle,
+                    ...outerRoundingStyle,
+                    ...outerHeight,
+                    zIndex: 0,
                   }}
+                  className={`${classes.goalprogressbar}`}
                 >
                   <div
                     style={{
-                      ...progressBarBorderStyle,
-                      ...outerRoundingStyle,
-                      ...outerHeight,
                       zIndex: 0,
+                      ...{ width: "100%", height: "100%" },
+                      ...outerRoundingStyle,
+                      ...backgroundColor,
+                      ...outerBoxShadowStyle,
+                      ...outerBackgroundImage,
                     }}
-                    className={`${classes.goalprogressbar}`}
-                  >
-                    <div
-                      style={{
-                        zIndex: 0,
-                        ...{ width: "100%", height: "100%" },
-                        ...outerRoundingStyle,
-                        ...backgroundColor,
-                        ...outerBoxShadowStyle,
-                        ...outerBackgroundImage,
-                      }}
-                    />
-                  </div>
+                  />
+                </div>
+                <div
+                  style={{
+                    ...calcBarStyle(goal),
+                    ...{
+                      ...{ minHeight: "50px" },
+                      ...settings.filledHeight.calcCss(),
+                    },
+                  }}
+                  className={`${classes.goalfilled}`}
+                />
+                <div className={`${classes.goalunfilled}`}></div>
+                {settings.showLabel && (
                   <div
                     style={{
-                      ...calcBarStyle(goal),
-                      ...{
-                        ...{ minHeight: "50px" },
-                        ...settings.filledHeight.calcCss(),
-                      },
+                      ...filledTextStyle,
+                      ...filledTextPlacement,
+                      zIndex: 3,
                     }}
-                    className={`${classes.goalfilled}`}
-                  />
-                  <div className={`${classes.goalunfilled}`}></div>
-                  {settings.showLabel && (
-                    <div
-                      style={{
-                        ...filledTextStyle,
-                        ...filledTextPlacement,
-                        zIndex: 3,
-                      }}
-                      className={`${classes.goalamount}`}
-                    >
-                      <TextRenderer
-                        font={settings.amountFontProperty}
-                        text={variablesStore
-                          .processTemplate(settings.labelTemplate)
-                          .replaceAll(
-                            "<collected>",
-                            `${goal.accumulatedAmount?.major ?? 0}`,
-                          )
-                          .replaceAll(
-                            "<required>",
-                            `${goal.requiredAmount.major}`,
-                          )
-                          .replaceAll("<currency>", "RUB")
-                          .replaceAll(
-                            "<proportion>",
-                            `${Math.trunc(
-                              ((goal.accumulatedAmount?.major ?? 0) /
-                                goal.requiredAmount.major) *
-                                100,
-                            )}`,
-                          )}
-                      />
-                    </div>
-                  )}
-                </div>
+                    className={`${classes.goalamount}`}
+                  >
+                    <TextRenderer
+                      font={settings.amountFontProperty}
+                      text={variablesStore
+                        .processTemplate(settings.labelTemplate)
+                        .replaceAll(
+                          "<collected>",
+                          `${goal.accumulatedAmount?.major ?? 0}`,
+                        )
+                        .replaceAll(
+                          "<required>",
+                          `${goal.requiredAmount.major}`,
+                        )
+                        .replaceAll("<currency>", "RUB")
+                        .replaceAll(
+                          "<proportion>",
+                          `${Math.trunc(
+                            ((goal.accumulatedAmount?.major ?? 0) /
+                              goal.requiredAmount.major) *
+                              100,
+                          )}`,
+                        )}
+                    />
+                  </div>
+                )}
               </div>
-            </>
+            </div>
           ))}
       </div>
     );

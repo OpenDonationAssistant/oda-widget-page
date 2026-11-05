@@ -82,7 +82,7 @@ socket.onDisconnect = () => {
 var listeners: Listener[] = [];
 if (brokerURL) {
   socket.activate();
-} else {
+} else if (process.env.STORYBOOK !== "true") {
   log.warn(
     "REACT_APP_WS_ENDPOINT is not set; realtime socket will not connect",
   );

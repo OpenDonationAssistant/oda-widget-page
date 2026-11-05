@@ -25,8 +25,17 @@ export class DefaultVariableStore implements VariableStore {
   }
 
   public load() {
+    const baseURL = process.env.REACT_APP_AUTOMATION_API_ENDPOINT;
+    if (!baseURL) {
+      if (process.env.STORYBOOK !== "true") {
+        log.warn(
+          "REACT_APP_AUTOMATION_API_ENDPOINT is not set; variables will not load",
+        );
+      }
+      return;
+    }
     listVariables({
-      baseURL: process.env.REACT_APP_AUTOMATION_API_ENDPOINT,
+      baseURL,
       headers: {
         Authorization: `Bearer ${this._token}`,
       },
