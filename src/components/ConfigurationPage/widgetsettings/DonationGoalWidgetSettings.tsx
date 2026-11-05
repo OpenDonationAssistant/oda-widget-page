@@ -1,4 +1,3 @@
-// TODO: позиционирование контента вертикально чтобы поместиться в рамку
 import { DonationGoalProperty } from "../widgetproperties/DonationGoalProperty";
 import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 
@@ -30,6 +29,8 @@ import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationG
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
+
+export type DonationGoalTitlePosition = "top" | "bottom" | "left" | "right";
 
 export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -90,6 +91,12 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
           name: "showTitle",
           value: true,
           displayName: "widget-donationgoal-show-title",
+        }),
+        new AlignmentProperty({
+          name: "titlePosition",
+          value: "top",
+          displayName: "widget-donationgoal-title-position",
+          options: ["top", "bottom", "left", "right"],
         }),
         new AlignmentProperty({
           name: "titleTextAlign",
@@ -313,6 +320,13 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
 
   public get titleFontProperty(): AnimatedFontProperty {
     return this.get("descriptionFont") as AnimatedFontProperty;
+  }
+
+  public get titlePosition(): DonationGoalTitlePosition {
+    const value = this.get("titlePosition")?.value;
+    return value === "bottom" || value === "left" || value === "right"
+      ? value
+      : "top";
   }
 
   public get titleTextAlign(): AlignmentProperty {

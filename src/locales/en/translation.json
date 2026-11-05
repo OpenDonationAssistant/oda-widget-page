@@ -160,6 +160,7 @@
   "widget-donationgoal-title-font-size": "Font size for title",
   "widget-donationgoal-title-color": "Title color",
   "widget-donationgoal-title-alignment": "Title alignment",
+  "widget-donationgoal-title-position": "Title position",
   "widget-donationgoal-amount-font-family": "Font for amount",
   "widget-donationgoal-amount-font-size": "Font size for amount",
   "widget-donationgoal-amount-color": "Amount color",

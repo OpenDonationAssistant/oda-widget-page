@@ -153,6 +153,7 @@
   "widget-donationgoal-title-font-size": "Размер шрифта заголовка",
   "widget-donationgoal-title-color": "Цвет заголовка",
   "widget-donationgoal-title-alignment": "Выравнивание заголовка",
+  "widget-donationgoal-title-position": "Положение заголовка",
   "widget-donationgoal-amount-font-family": "Шрифт суммы",
   "widget-donationgoal-amount-font-size": "Размер шрифта суммы",
   "widget-donationgoal-amount-color": "Цвет суммы",

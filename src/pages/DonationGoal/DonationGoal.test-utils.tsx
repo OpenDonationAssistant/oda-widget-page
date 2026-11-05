@@ -1,5 +1,5 @@
 import { CSSProperties, FC, ReactNode } from "react";
-import { VariableStoreContext } from "../../stores/VariableStore";
+import { AuthProvider } from "../../contexts/AuthContext";
 import type { Goal } from "../../components/ConfigurationPage/widgetproperties/DonationGoalProperty";
 
 /* ──────────────────────────────────────────────
@@ -114,6 +114,7 @@ export function createMockSettings(
 
     /* title */
     titleFontProperty: createMockFont(),
+    titlePosition: "top",
     titleTextAlign: { value: "center" },
     titleWidth: { calcCss: css() },
     titleHeight: { calcCss: css() },
@@ -179,19 +180,9 @@ export function createMockSettings(
 }
 
 /* ──────────────────────────────────────────────
-   VariableStore provider (required by the component)
+   Auth provider (required by useVariableStore)
    ────────────────────────────────────────────── */
 
 export const MockVariableStoreProvider: FC<{ children: ReactNode }> = ({
   children,
-}) => (
-  <VariableStoreContext.Provider
-    value={{
-      variables: [],
-      processTemplate: (t: string) => t,
-      load: () => {},
-    }}
-  >
-    {children}
-  </VariableStoreContext.Provider>
-);
+}) => <AuthProvider>{children}</AuthProvider>;

@@ -130,6 +130,54 @@ export const NoTitle: Story = {
 };
 
 /* ──────────────────────────────────────────────
+   TitleAbove — title above the progress bar (default)
+   ────────────────────────────────────────────── */
+export const TitleAbove: Story = {
+  args: {
+    state: { goals: [createMockGoal()] } as AbstractDonationGoalState,
+    settings: createMockSettings([createMockGoal()], {
+      titlePosition: "top",
+    }) as unknown as DonationGoalWidgetSettings,
+  },
+};
+
+/* ──────────────────────────────────────────────
+   TitleBelow — title below the progress bar
+   ────────────────────────────────────────────── */
+export const TitleBelow: Story = {
+  args: {
+    state: { goals: [createMockGoal()] } as AbstractDonationGoalState,
+    settings: createMockSettings([createMockGoal()], {
+      titlePosition: "bottom",
+    }) as unknown as DonationGoalWidgetSettings,
+  },
+};
+
+/* ──────────────────────────────────────────────
+   TitleLeft — title to the left of the progress bar
+   ────────────────────────────────────────────── */
+export const TitleLeft: Story = {
+  args: {
+    state: { goals: [createMockGoal()] } as AbstractDonationGoalState,
+    settings: createMockSettings([createMockGoal()], {
+      titlePosition: "left",
+    }) as unknown as DonationGoalWidgetSettings,
+  },
+};
+
+/* ──────────────────────────────────────────────
+   TitleRight — title to the right of the progress bar
+   ────────────────────────────────────────────── */
+export const TitleRight: Story = {
+  args: {
+    state: { goals: [createMockGoal()] } as AbstractDonationGoalState,
+    settings: createMockSettings([createMockGoal()], {
+      titlePosition: "right",
+    }) as unknown as DonationGoalWidgetSettings,
+  },
+};
+
+/* ──────────────────────────────────────────────
    FilledTextPlacementTop — label above the bar
    ────────────────────────────────────────────── */
 export const FilledTextPlacementTop: Story = {

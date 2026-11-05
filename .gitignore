@@ -39,3 +39,4 @@ node_modules/
 /playwright/.auth/
 
 CODE_REVIEW.md
+.dsh-tmp/

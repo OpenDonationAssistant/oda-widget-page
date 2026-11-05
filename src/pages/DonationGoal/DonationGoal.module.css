@@ -6,12 +6,54 @@
   align-items: center;
 }
 
-.goalitem{
-  display: grid;
+.goalitem {
+  display: flex;
 }
-.goaldescription{
-  grid-row: 1;
-  grid-column: 1;
+
+.title-top {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.title-bottom {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+.title-left {
+  flex-direction: row;
+  align-items: center;
+}
+
+.title-right {
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.goaltitle {
+  flex: 0 0 auto;
+}
+
+.title-left .goaltitle,
+.title-right .goaltitle {
+  max-width: 50%;
+  overflow-x: hidden;
+}
+
+.title-left .goaltitle > div,
+.title-right .goaltitle > div {
+  width: auto;
+}
+
+.goalbar {
+  width: 100%;
+}
+
+.title-left .goalbar,
+.title-right .goalbar {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
 }
 
 .goalprogressbar {

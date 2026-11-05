@@ -120,6 +120,14 @@ export const DonationGoal = observer(
       return goal.id;
     });
 
+    const titlePosition = settings.titlePosition ?? "top";
+    const goalItemClassName = [
+      classes.goalitem,
+      classes[`title-${titlePosition}`],
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return (
       <div
         style={{
@@ -145,32 +153,34 @@ export const DonationGoal = observer(
           .filter((goal) => ids.includes(goal.id))
           .map((goal) => (
             <>
-              <div className={`${classes.goalitem}`}>
+              <div className={goalItemClassName}>
                 {settings.showTitle && (
-                  <AlignmentRenderer alignment={settings.titleTextAlign}>
-                    <div
-                      style={{
-                        ...titleBorderStyle,
-                        ...titlePaddingStyle,
-                        ...titleRoundingStyle,
-                        ...titleBoxShadowStyle,
-                        ...titleBackgroundColorStyle,
-                        ...titleBackgroundImage,
-                        ...settings.titleHeight.calcCss(),
-                        ...settings.titleWidth.calcCss(),
-                      }}
-                      className={`${classes.goaldescription}}`}
-                    >
-                      <TextRenderer
-                        text={variablesStore.processTemplate(
-                          goal.briefDescription,
-                        )}
-                        font={settings.titleFontProperty}
-                      />
-                    </div>
-                  </AlignmentRenderer>
+                  <div className={classes.goaltitle}>
+                    <AlignmentRenderer alignment={settings.titleTextAlign}>
+                      <div
+                        style={{
+                          ...titleBorderStyle,
+                          ...titlePaddingStyle,
+                          ...titleRoundingStyle,
+                          ...titleBoxShadowStyle,
+                          ...titleBackgroundColorStyle,
+                          ...titleBackgroundImage,
+                          ...settings.titleHeight.calcCss(),
+                          ...settings.titleWidth.calcCss(),
+                        }}
+                      >
+                        <TextRenderer
+                          text={variablesStore.processTemplate(
+                            goal.briefDescription,
+                          )}
+                          font={settings.titleFontProperty}
+                        />
+                      </div>
+                    </AlignmentRenderer>
+                  </div>
                 )}
                 <div
+                  className={`${classes.goalbar}`}
                   style={{
                     ...{ display: "grid" },
                     ...barPadding,
