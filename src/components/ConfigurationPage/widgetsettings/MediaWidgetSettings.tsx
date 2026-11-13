@@ -51,6 +51,12 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               displayName: "Реквесты с YouTube",
             }),
             vkRequests,
+            new BooleanProperty({
+              name: "showQueueSizeOnPage",
+              value: true,
+              displayName:
+                "Показывать количество треков в очереди на странице доната",
+            }),
             tarification,
             new NumberProperty({
               name: "songMaxAmount",

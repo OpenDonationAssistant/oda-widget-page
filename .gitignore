@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -29,14 +30,6 @@ yarn-error.log*
 
 *storybook.log
 storybook-static
-
-# Playwright
-node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
 
 CODE_REVIEW.md
 .dsh-tmp/

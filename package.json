@@ -88,8 +88,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "play": "npx playwright test --project=chromium --reporter=line --workers=1 --ui"
+    "build-storybook": "storybook build"
   },
   "eslintConfig": {
     "extends": [
@@ -111,7 +110,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
-    "@playwright/test": "^1.62.0",
     "@storybook/addon-a11y": "^10.5.4",
     "@storybook/addon-docs": "^10.5.4",
     "@storybook/preset-create-react-app": "^10.5.4",

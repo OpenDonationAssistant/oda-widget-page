@@ -22,7 +22,6 @@ oda-widget-page/
 │   └── index.tsx         # main entry: router, providers, bootstrap
 ├── scripts/              # esbuild worker bundlers (prebuild step)
 ├── public/               # static + GENERATED worker bundles (gitignored)
-├── tests/                # Playwright e2e suites
 ├── .storybook/           # Storybook 10 config
 └── Dockerfile            # node:20 build → httpd:2.4-alpine serve
 ```
@@ -92,7 +91,6 @@ npm run build-emote-cache-worker  # rebuild emote-cache SW (dev)
 npm run build                # prebuild (workers) + react-scripts build → build/
 npm test                     # Jest (CRA) watch mode; CI=true npm test for one-shot
 npm run storybook            # Storybook dev, port 6006
-npx playwright test          # e2e suites in tests/
 npx tsc --noEmit             # the REAL typecheck — build tolerates TS errors
 ```
 
@@ -100,6 +98,7 @@ npx tsc --noEmit             # the REAL typecheck — build tolerates TS errors
 OTP-exchange + refresh-token flow (`src/auth.ts`, `src/pages/Login/Login.tsx`). Tokens in `localStorage`: `access-token`, `refresh-token`, per-widget `{widgetId}-access-token`. `?separateSession` query param gives a widget an isolated auth session. Worker learns the user via `USER_AUTHORIZED` postMessage.
 
 ## NOTES
+- **End-to-end specs live in the sibling repo `oda-e2e`** (`tests/console/`, shared helpers in `support/`); this repo hosts no Playwright suite.
 - **No `lint` or `typecheck` scripts exist.** `eslint.config.js` is flat config applying only Storybook rules. `.env` sets `TSC_COMPILE_ON_ERROR=true` / `ESLINT_NO_DEV_ERRORS=true` / `DISABLE_REACT_ERROR_OVERLAY=true` — `npm run build` tolerates TS/lint errors; run `npx tsc --noEmit` yourself.
 - `npm run build` does NOT regenerate workers — only `prebuild` does. A raw `react-scripts build` ships stale workers. If you edit `src/sw/` or add a `REACT_APP_*` var used in a worker, run `npm run build-worker` (dev) or `npm run build`.
 - `EventBus` (`src/bus/EventBus.ts`) persists events to IndexedDB and relays via STOMP.
