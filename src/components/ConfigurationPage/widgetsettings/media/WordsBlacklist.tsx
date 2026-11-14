@@ -1,25 +1,41 @@
 import { ReactNode } from "react";
-import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { observer } from "mobx-react-lite";
-import { Select } from "antd";
+import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
-import { log } from "../../../../logging";
+import StringListEditor from "../../../StringListEditor/StringListEditor";
 
-export interface WordsBlacklistValue {
-  words: string[];
-}
+const parseWords = (value: string): string[] => {
+  return value
+    .split(/\r?\n/)
+    .map((word) => word.trim())
+    .filter((word) => word.length > 0);
+};
 
-const WodrsBlacklistComponent = observer(
+// media-service reads wordsBlacklist as a newline-separated string
+const serializeWords = (words: string[]): string => {
+  return words.join("\n");
+};
+
+const WordsBlacklistComponent = observer(
   ({ property }: { property: WordsBlacklist }) => {
+    const words = parseWords(property.value);
+
     return (
-      <LabeledContainer displayName="Черный список слов в названии">
-        <Select
-          className="full-width"
-          mode="tags"
-          value={property.value.words}
-          onChange={(value: string[]) => {
-            log.debug({ value: value }, "words changed");
-            property.value = { words: value };
+      <LabeledContainer displayName={property.displayName}>
+        <StringListEditor
+          items={words}
+          placeholder="Введите слово..."
+          onAdd={(word) => {
+            const current = parseWords(property.value);
+            if (!current.includes(word)) {
+              property.value = serializeWords([...current, word]);
+            }
+          }}
+          onRemove={(_, index) => {
+            const current = parseWords(property.value);
+            property.value = serializeWords(
+              current.filter((_, position) => position !== index),
+            );
           }}
         />
       </LabeledContainer>
@@ -27,16 +43,20 @@ const WodrsBlacklistComponent = observer(
   },
 );
 
-export class WordsBlacklist extends DefaultWidgetProperty<WordsBlacklistValue> {
-  constructor() {
+export class WordsBlacklist extends DefaultWidgetProperty<string> {
+  constructor(value: string = "") {
     super({
-      name: "titleBlacklist",
-      value: [],
-      displayName: "Черный список",
+      name: "wordsBlacklist",
+      value: value,
+      displayName: "Черный список слов в названии",
     });
   }
 
+  copy(): WordsBlacklist {
+    return new WordsBlacklist(this.value);
+  }
+
   markup(): ReactNode {
-    return <WodrsBlacklistComponent property={this} />;
+    return <WordsBlacklistComponent property={this} />;
   }
 }

@@ -8,12 +8,7 @@ import {
   Title,
   Overlay,
 } from "../../components/Overlay/Overlay";
-import {
-  BorderedIconButton,
-  NotBorderedIconButton,
-} from "../../components/IconButton/IconButton";
-import AddIcon from "../../icons/AddIcon";
-import CloseIcon from "../../icons/CloseIcon";
+import StringListEditor from "../../components/StringListEditor/StringListEditor";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import SecondaryButton from "../../components/Button/SecondaryButton";
 import classes from "./WordBlacklistDialog.module.css";
@@ -45,22 +40,7 @@ const WordBlacklistDialogInner = observer(() => {
   const { store } = useWordBlacklistStore();
   const dialogState = useContext(ModalStateContext);
   const errorStore = useContext(ErrorStoreContext);
-  const [input, setInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleAdd = () => {
-    if (input.trim()) {
-      store.addWord(input);
-      setInput("");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAdd();
-    }
-  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,33 +75,12 @@ const WordBlacklistDialogInner = observer(() => {
     <Dialog>
       <Title>Черный список слов</Title>
       <Flex gap={12} vertical>
-        <Flex align="center" className={classes.inputRow}>
-          <input
-            className={classes.input}
-            placeholder="Введите слово..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <NotBorderedIconButton onClick={handleAdd}>
-            <AddIcon color="var(--oda-primary-color)" />
-          </NotBorderedIconButton>
-        </Flex>
-        <Flex className={classes.wordList}>
-          {store.words.map((word) => (
-            <Flex
-              key={word}
-              className={classes.wordItem}
-              justify="space-between"
-              align="center"
-            >
-              <span>{word}</span>
-              <BorderedIconButton onClick={() => store.removeWord(word)}>
-                <CloseIcon color="#FF8888" />
-              </BorderedIconButton>
-            </Flex>
-          ))}
-        </Flex>
+        <StringListEditor
+          items={store.words}
+          placeholder="Введите слово..."
+          onAdd={(word) => store.addWord(word)}
+          onRemove={(word) => store.removeWord(word)}
+        />
         <Flex className="full-width" justify="space-between">
           <Flex>
             <input

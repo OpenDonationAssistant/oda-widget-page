@@ -199,7 +199,7 @@ export default function Toolbar({ page }: { page: Page }) {
   return (
     <div className={`${style.toolbar}`}>
       {buttons.map((button) => (
-        <NewFeature show={button.page === Page.WIDGETS} key={button.label}>
+        <NewFeature show={false} key={button.label}>
           <button
             key={button.label}
             className={`${style.button} ${

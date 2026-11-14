@@ -8,6 +8,8 @@ import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { MaxLen } from "./media/MaxLen";
 import { Tarification } from "./media/Tarification";
+import { WordsBlacklist } from "./media/WordsBlacklist";
+import { RequestAllowRule } from "./media/RequestAllowRule";
 import { reaction } from "mobx";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
@@ -74,11 +76,7 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: "",
               displayName: "Текст подсказки для донатера",
             }),
-            new TextProperty({
-              name: "wordsBlacklist",
-              value: "",
-              displayName: "Blacklist слов в названии",
-            }),
+            new WordsBlacklist(),
           ],
         },
         {
@@ -118,6 +116,10 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: 100,
               displayName: "Стоимость в баллах",
             }),
+            new RequestAllowRule({
+              name: "music-twitch-request-allow",
+              roleIds: ["broadcaster", "moderator", "vip", "subscriber"],
+            }),
           ],
         },
         {
@@ -139,6 +141,10 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               value: 100,
               displayName: "Стоимость в баллах",
             }),
+            new RequestAllowRule({
+              name: "music-vklive-request-allow",
+              roleIds: ["broadcaster", "subscriber"],
+            }),
           ],
         },
         {
@@ -159,6 +165,10 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
               name: "music-kick-request-cost",
               value: 100,
               displayName: "Стоимость в баллах",
+            }),
+            new RequestAllowRule({
+              name: "music-kick-request-allow",
+              roleIds: ["broadcaster", "subscriber"],
             }),
           ],
         },
