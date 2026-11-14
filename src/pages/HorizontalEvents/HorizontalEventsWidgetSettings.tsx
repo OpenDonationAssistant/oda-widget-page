@@ -22,18 +22,18 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "filters",
-      title: "Фильтры",
+      title: "horizontal-events-section-filters",
       properties: [new HistoryFiltersProperty()],
     });
 
     this.addSection({
       key: "general",
-      title: "Общие",
+      title: "tab-reel-general",
       properties: [
         new NumberProperty({
           name: "speed",
           value: 50,
-          displayName: "Скорость прокрутки",
+          displayName: "horizontal-events-scroll-speed",
           addon: "pixels/second",
         }),
       ],
@@ -41,7 +41,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "header",
-      title: "Заголовок",
+      title: "horizontal-events-section-header",
       properties: [
         // new ListProperty({
         //   name: "headerItems",
@@ -55,12 +55,12 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new BooleanProperty({
           name: "showHeader",
           value: true,
-          displayName: "Показывать заголовок",
+          displayName: "horizontal-events-show-header",
         }),
         new TextProperty({
           name: "headerText",
           value: "Последние донаты:",
-          displayName: "Заголовок",
+          displayName: "common-title",
         }),
         new AnimatedFontProperty({
           name: "headerFont",
@@ -90,7 +90,7 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         }),
         new ColorProperty({
           name: "headerBackgroundColor",
-          displayName: "background-color",
+          displayName: "common-background",
           target: ColorPropertyTarget.BACKGROUND,
           value: {
             angle: 0,
@@ -122,16 +122,16 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "events",
-      title: "Событие",
+      title: "horizontal-events-section-event",
       properties: [
         new BooleanProperty({
           name: "showNickname",
           value: true,
-          displayName: "Показывать никнейм",
+          displayName: "horizontal-events-show-nickname",
         }),
         new AnimatedFontProperty({
           name: "eventsNicknameFont",
-          label: "Шрифт никнейма",
+          label: "horizontal-events-nickname-font",
           value: {
             outline: { enabled: false, width: 0, color: "#000000" },
             size: 24,
@@ -159,11 +159,11 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new BooleanProperty({
           name: "showMessage",
           value: true,
-          displayName: "Показывать сообщение",
+          displayName: "horizontal-events-show-message",
         }),
         new AnimatedFontProperty({
           name: "eventsMessageFont",
-          label: "Шрифт сообщения доната",
+          label: "horizontal-events-message-font",
           value: {
             outline: { enabled: false, width: 0, color: "#000000" },
             size: 24,
@@ -191,11 +191,11 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new BooleanProperty({
           name: "showAmount",
           value: true,
-          displayName: "Показывать сумму",
+          displayName: "horizontal-events-show-amount",
         }),
         new AnimatedFontProperty({
           name: "eventsAmountFont",
-          label: "Шрифт суммы",
+          label: "horizontal-events-amount-font",
           value: {
             outline: { enabled: false, width: 0, color: "#000000" },
             size: 24,
@@ -223,11 +223,11 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
         new NumberProperty({
           name: "eventGap",
           value: 12,
-          displayName: "Отступ между событиями",
+          displayName: "horizontal-events-event-gap",
         }),
         new ColorProperty({
           name: "eventsBackgroundColor",
-          displayName: "background-color",
+          displayName: "common-background",
           target: ColorPropertyTarget.BACKGROUND,
           value: {
             angle: 0,
@@ -257,11 +257,11 @@ export class HorizontalEventsWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "line",
-      title: "Полоска",
+      title: "horizontal-events-section-line",
       properties: [
         new ColorProperty({
           name: "lineBackgroundColor",
-          displayName: "background-color",
+          displayName: "common-background",
           target: ColorPropertyTarget.BACKGROUND,
           value: {
             angle: 0,

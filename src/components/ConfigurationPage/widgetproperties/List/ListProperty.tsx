@@ -4,9 +4,11 @@ import { observer } from "mobx-react-lite";
 import { Flex } from "antd";
 import CollapseLikeButton from "../../../Button/CollapseLikeButton";
 import AddIcon from "../../../../icons/AddIcon";
+import { useTranslation } from "react-i18next";
 
 const ListPropertyComponent = observer(
   ({ property }: { property: ListProperty<any> }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical className="full-width" gap={6}>
         {property.value.map((item, index) => item.markup())}
@@ -16,7 +18,7 @@ const ListPropertyComponent = observer(
           }}
         >
           <AddIcon color="var(--oda-color-1000)" />
-          <div>Добавить надпись</div>
+          <div>{t("list-add-text")}</div>
         </CollapseLikeButton>
       </Flex>
     );

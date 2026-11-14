@@ -13,6 +13,7 @@ import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageP
 import { CanvasWidget } from "../../../../pages/Canvas/CanvasWidget";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { Trans } from "react-i18next";
 
 export class CanvasWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -20,7 +21,7 @@ export class CanvasWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "style",
-      title: "Стиль",
+      title: "tab-style",
       properties: [
         new ColorProperty({
           name: "backgroundColor",
@@ -105,18 +106,24 @@ export class CanvasWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="center" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Canvas"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="widget-canvas-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Виджет для группировки других виджетов внутри себя.
+          <Trans i18nKey="widget-canvas-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Canvas) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="widget-canvas-help-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="widget-help-obs-browser-source" />
             </li>
           </ul>
         </div>

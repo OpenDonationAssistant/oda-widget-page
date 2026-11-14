@@ -2,12 +2,16 @@ import { ReactNode } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import classes from "./ReelItemListProperty.module.css";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 
 const ReelItemListPropertyComponent = observer(
   ({ property }: { property: ReelItemListProperty }) => {
+    const { t } = useTranslation();
     return (
       <div className="widget-settings-item">
-        <label className="widget-settings-name">Призы</label>
+        <label className="widget-settings-name">
+          {t("tab-reel-prizes")}
+        </label>
         <div className={classes.optionscontainer}>
           {property.value &&
             property.value.map((option, number) => (
@@ -41,7 +45,7 @@ const ReelItemListPropertyComponent = observer(
                 property.addOption();
               }}
             >
-              Добавить
+              {t("common-add")}
             </button>
           </div>
         </div>
@@ -55,7 +59,7 @@ export class ReelItemListProperty extends DefaultWidgetProperty<string[]> {
     super({
       name: "optionList",
       value: ["Ничего", "Выигрыш"],
-      displayName: "Призы",
+      displayName: "tab-reel-prizes",
     });
   }
 

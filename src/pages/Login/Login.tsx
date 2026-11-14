@@ -4,6 +4,8 @@ import axios from "axios";
 import { log } from "../../logging";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "antd";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 export interface Tokens {
   accessToken: string;
@@ -82,11 +84,12 @@ async function getToken(page: string | null, login: string, password: string) {
       window.location.replace(page ? page : "/");
     })
     .catch(() => {
-      alert("Incorrect login/password");
+      alert(i18n.t("login-incorrect"));
     });
 }
 
 export default function Login() {
+  const { t } = useTranslation();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
@@ -129,7 +132,7 @@ export default function Login() {
       <div className="login-page">
         <div className="login-form">
           <div className="login-container">
-            <span>Login</span>
+            <span>{t("login-username")}</span>
             <input
               value={login}
               type="text"
@@ -137,7 +140,7 @@ export default function Login() {
             />
           </div>
           <div className="password-container">
-            <span>Password</span>
+            <span>{t("login-password")}</span>
             <input
               value={password}
               type="password"
@@ -148,7 +151,7 @@ export default function Login() {
             id="login"
             onClick={() => getToken(params.get("page"), login, password)}
           >
-            Login
+            {t("login-submit")}
           </Button>
         </div>
       </div>

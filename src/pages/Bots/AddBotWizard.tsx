@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "../../components/Cards/CardsComponent";
 import { makeAutoObservable, reaction } from "mobx";
+import { useTranslation } from "react-i18next";
 import { Bot, BotStoreContext, Chat } from "../../stores/BotStore";
 import { Flex, QRCode, Select } from "antd";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
@@ -35,6 +36,7 @@ const ChoosePlatformComponent = observer(
 
 const AddingBotComponent = observer(
   ({ selection }: { selection: AddBotOperationStore }) => {
+    const { t } = useTranslation();
     const botStore = useContext(BotStoreContext);
     const [link, setLink] = useState<string | null>(null);
 
@@ -50,8 +52,7 @@ const AddingBotComponent = observer(
         {link && (
           <Flex vertical>
             <div style={{ color: "white" }}>
-              Откройте бота с помощью QR кода на телефоне или с помощью ссылки
-              на компьютере и нажмите "Начать".
+              {t("bot-open-qr-hint")}
             </div>
             <Flex justify="center" align="center">
               <QRCode value={link} />
@@ -67,7 +68,7 @@ const AddingBotComponent = observer(
             </Flex>
           </Flex>
         )}
-        {!link && <div>loading...</div>}
+        {!link && <div>{t("common-loading")}</div>}
       </>
     );
   },
@@ -115,16 +116,16 @@ export const AddBotWizard = observer(() => {
     new WizardConfigurationStore({
       steps: [
         {
-          title: "Добавить бота",
-          subtitle: "Выберите платформу, на которой хотите добавить бота",
+          title: "bot-add-title",
+          subtitle: "bot-choose-platform-subtitle",
           content: <ChoosePlatformComponent selection={selection} />,
           handler: () => {
             return Promise.resolve(true);
           },
         },
         {
-          title: "Добавить бота",
-          subtitle: "Подключите бота к вашему аккаунту",
+          title: "bot-add-title",
+          subtitle: "bot-connect-subtitle",
           content: <AddingBotComponent selection={selection} />,
           handler: () => {
             return (

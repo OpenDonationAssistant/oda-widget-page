@@ -53,7 +53,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       {alert.audio && (
         <>
           <div className="settings-item">
-            <LabeledContainer displayName="Аудиофайл">
+            <LabeledContainer displayName="alerts-audio-file">
               <div className="current-sound">
                 <span className="audio-name">
                   {alert.audio.replace("https://api.oda.digital/assets/", "")}
@@ -76,7 +76,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
             </LabeledContainer>
           </div>
           <div className="settings-item full-width">
-            <LabeledContainer displayName="Громкость">
+            <LabeledContainer displayName="alerts-volume">
               <Slider
                 min={1}
                 max={100}
@@ -93,7 +93,7 @@ export const SoundTab = observer(({ alert }: { alert: Alert }) => {
       )}
       <div className="audio-button-container">
         {!alert.audio && (
-          <LabeledContainer displayName="Аудиофайл">
+          <LabeledContainer displayName="alerts-audio-file">
             <div
               style={{
                 textAlign: "center",

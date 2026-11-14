@@ -4,6 +4,7 @@ import { Flex, Select } from "antd";
 import ModalButton from "../../ModalButton/ModalButton";
 import { toJS } from "mobx";
 import classes from "./DonatersTopListLabelProperty.module.css";
+import { useTranslation } from "react-i18next";
 
 const DonatersTopListLabelPropertyComponent = ({
   displayName,
@@ -14,6 +15,7 @@ const DonatersTopListLabelPropertyComponent = ({
   value: string;
   onChange: (value: string) => {};
 }) => {
+  const { t } = useTranslation();
   const [template, setTemplate] = useState<string | null>(
     "<nickname> - <amount> <currency>",
   );
@@ -31,7 +33,7 @@ const DonatersTopListLabelPropertyComponent = ({
         align="center"
         className={`${classes.template}`}
       >
-        <span>Готовый шаблон:</span>
+        <span>{t("label-template-ready")}</span>
         <Select
           value={template}
           style={{ minWidth: "400px" }}
@@ -44,19 +46,19 @@ const DonatersTopListLabelPropertyComponent = ({
           options={[
             {
               value: "<nickname> - <amount> <currency>",
-              label: "никнейм - сумма валюта",
+              label: t("donaterslist-template-nickname-amount"),
             },
             {
               value: "<nickname> <amount> <currency>",
-              label: "никнейм сумма валюта",
+              label: t("donaterslist-template-nickname-amount-space"),
             },
             {
               value: "<amount> <currency> - <nickname>",
-              label: "сумма валюта - никнейм",
+              label: t("donaterslist-template-amount-nickname"),
             },
             {
               value: null,
-              label: "custom",
+              label: t("label-template-custom"),
             },
           ]}
         />
@@ -90,7 +92,6 @@ export class DonatersTopListLabelProperty extends DefaultWidgetProperty<string> 
     return newCopy;
   }
 
-  // TODO: локализовать
   markup(): ReactNode {
     return (
       <DonatersTopListLabelPropertyComponent

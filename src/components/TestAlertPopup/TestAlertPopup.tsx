@@ -16,8 +16,10 @@ import TextArea from "antd/es/input/TextArea";
 import SubActionButton from "../Button/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import { useTranslation } from "react-i18next";
 
 export default function TestAlertPopup({}: {}) {
+  const { t } = useTranslation();
   const [nickname, setNickname] = useState("");
   const [message, setMessage] = useState("");
   const [amount, setAmount] = useState(0);
@@ -65,15 +67,15 @@ export default function TestAlertPopup({}: {}) {
           state.show = true;
         }}
       >
-        <div style={{ marginLeft: "2px" }}>Тест</div>
+        <div style={{ marginLeft: "2px" }}>{t("button-testalert")}</div>
       </SubActionButton>
       <Overlay>
         <Dialog>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Ник донатера</div>
+            <div className="test-alert-field-label">{t("testalert-donater-nickname")}</div>
             <Input
               value={nickname}
-              placeholder="Аноним"
+              placeholder={t("testalert-nickname-value")}
               autoComplete="off"
               onChange={(e) => {
                 setNickname(e.target.value);
@@ -81,10 +83,10 @@ export default function TestAlertPopup({}: {}) {
             />
           </div>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Сообщение</div>
+            <div className="test-alert-field-label">{t("testalert-message-label")}</div>
             <TextArea
               value={message}
-              placeholder="Тестовое сообщение"
+              placeholder={t("testalert-message-value")}
               autoComplete="off"
               onChange={(e) => {
                 setMessage(e.target.value);
@@ -92,7 +94,7 @@ export default function TestAlertPopup({}: {}) {
             />
           </div>
           <div className="test-alert-field-container">
-            <div className="test-alert-field-label">Сумма доната</div>
+            <div className="test-alert-field-label">{t("testalert-donation-amount")}</div>
             <InputNumber
               value={amount}
               onChange={(value) => {
@@ -106,7 +108,7 @@ export default function TestAlertPopup({}: {}) {
                 state.show = false;
               }}
             >
-              Отменить
+              {t("button-cancel")}
             </SecondaryButton>
             <PrimaryButton
               onClick={() => {
@@ -114,7 +116,7 @@ export default function TestAlertPopup({}: {}) {
                 state.show = false;
               }}
             >
-              Запустить алерт
+              {t("testalert-run-alert")}
             </PrimaryButton>
           </Flex>
         </Dialog>

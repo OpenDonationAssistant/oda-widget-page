@@ -1,6 +1,7 @@
 import classes from "./NewsComponent.module.css";
 import { Flex } from "antd";
 import { useRequest } from "ahooks";
+import { useTranslation } from "react-i18next";
 import VoteUp from "../../icons/VoteUp";
 import VoteDown from "../../icons/VoteDown";
 import { useAuth } from "../../contexts/AuthContext";
@@ -18,6 +19,7 @@ interface News {
 }
 
 export default function NewsComponent() {
+  const { t } = useTranslation();
   const { accessToken } = useAuth();
   const { data, mutate } = useRequest<News | null, any>(async () => {
     const feed = await getFeed({
@@ -79,8 +81,10 @@ export default function NewsComponent() {
           className={`${classes.newscontainer}`}
         >
           <div className={`${classes.closebutton}`}>
-            <a href="https://oda.digital/news">Новости</a>
-            <button onClick={() => sendFeedback(-1)}>скрыть сообщение</button>
+            <a href="https://oda.digital/news">{t("button-news")}</a>
+            <button onClick={() => sendFeedback(-1)}>
+              {t("news-hide-message")}
+            </button>
           </div>
           <Flex justify="center" align="baseline">
             <div className={`${classes.newstitle}`}>{data.title}</div>

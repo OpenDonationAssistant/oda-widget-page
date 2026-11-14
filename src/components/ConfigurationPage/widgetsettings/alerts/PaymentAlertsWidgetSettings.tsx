@@ -10,6 +10,7 @@ import { PremoderationProperty } from "./PremoderationProperty";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
 import { WordBlacklistProperty } from "../../widgetproperties/WordBlacklistProperty";
+import { Trans } from "react-i18next";
 
 export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
   private _alerts: PaymentAlertsProperty;
@@ -31,7 +32,7 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
             new BooleanProperty({
               name: "pause-media",
               value: true,
-              displayName: "Паузить медиаплеер",
+              displayName: "alerts-pause-media-player",
             }),
             new WordBlacklistProperty({}),
           ],
@@ -49,30 +50,24 @@ export class PaymentAlertsWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="top" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Алерты"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="alerts-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Показывает алерты для донатов. Пока поддерживает только донаты через
-          ОДА.
+          <Trans i18nKey="alerts-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="alerts-help-setup-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>
-              Добавить алерт кнопкой 'Добавить оповещение' во вкладке
-              'Оповещения'.
-            </li>
-            <li>
-              В строке 'Срабатывает когда' выбрать условие (например 'Сумма
-              доната больше') и задать сумму в появившемся поле.
-            </li>
-            <li>Добавить гиф/картинку во вкладке Изображение.</li>
-            <li>Добавить звук во вкладке "Аудио" кнопкой "Загрузить аудио"</li>
-            <li>
-              В меню этого виджета (Алерты) скопировать ссылку и вставить ссылку
-              как Browser Source в OBS поверх картинки стрима.
-            </li>
+            <li><Trans i18nKey="alerts-help-step-add" /></li>
+            <li><Trans i18nKey="alerts-help-step-condition" /></li>
+            <li><Trans i18nKey="alerts-help-step-image" /></li>
+            <li><Trans i18nKey="alerts-help-step-audio" /></li>
+            <li><Trans i18nKey="alerts-help-step-obs" /></li>
           </ul>
         </div>
       </>

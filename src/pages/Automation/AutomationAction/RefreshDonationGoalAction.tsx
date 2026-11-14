@@ -88,7 +88,7 @@ export class RefreshDonationGoalAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Обнулить сумму сбора средств";
+    return "automation-action-reset-donation-goal";
   }
 
   public get markup() {

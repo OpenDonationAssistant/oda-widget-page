@@ -7,6 +7,7 @@ import {
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import { ReactNode, createContext } from "react";
 import { Flex } from "antd";
+import { Trans } from "react-i18next";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { GRADIENT_TYPE } from "../../components/ConfigurationPage/widgetproperties/ColorProperty";
@@ -43,52 +44,52 @@ export class HistoryWidgetSettings extends AbstractWidgetSettings {
       sections: [
         {
           key: "general",
-          title: "Общие",
+          title: "tab-reel-general",
           properties: [
             new BooleanProperty({
               name: "showGoals",
               value: false,
-              displayName: "Показывать цели сбора",
+              displayName: "history-settings-show-goals",
             }),
             new BooleanProperty({
               name: "showRequests",
               value: false,
-              displayName: "Показывать реквесты",
+              displayName: "history-settings-show-requests",
             }),
             new NumberProperty({
               name: "nicknameFontSize",
               value: 18,
-              displayName: "Размер шрифта никнейма",
+              displayName: "history-settings-nickname-font-size",
               addon: "px",
             }),
             new NumberProperty({
               name: "messageFontSize",
               value: 15,
-              displayName: "Размер шрифта сообщения",
+              displayName: "history-settings-message-font-size",
               addon: "px",
             }),
             new NumberProperty({
               name: "goalFontSize",
               value: 18,
-              displayName: "Размер шрифта цели сбора",
+              displayName: "history-settings-goal-font-size",
               addon: "px",
             }),
             new NumberProperty({
               name: "musicFontSize",
               value: 15,
-              displayName: "Размер шрифта реквестов",
+              displayName: "history-settings-requests-font-size",
               addon: "px",
             }),
             new NumberProperty({
               name: "actionsFontSize",
               value: 15,
-              displayName: "Размер шрифта заказанных действий",
+              displayName: "history-settings-actions-font-size",
               addon: "px",
             }),
             new NumberProperty({
               name: "reelFontSize",
               value: 15,
-              displayName: "Размер шрифта результатов рулетки",
+              displayName: "history-settings-reel-font-size",
               addon: "px",
             }),
           ],
@@ -133,25 +134,35 @@ export class HistoryWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="top" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "События"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="history-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Отображает список донатов, обновляется автоматически реал-тайм.
+          <Trans i18nKey="history-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="history-help-how-to" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (События) скопировать ссылку.</li>
-            <li>Добавить как Dock в OBS Studio.</li>
+            <li>
+              <Trans i18nKey="history-help-step-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="history-help-step-add-dock" />
+            </li>
           </ul>
         </div>
-        <h3 className={`${classes.helptitle}`}>Гайды</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="menu-guides" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
             <li>
               <a href="https://youtu.be/nvqJ3bjTlEE">
-                Подключение док-панели со списком донатов
+                <Trans i18nKey="history-help-guide-dock" />
               </a>
             </li>
           </ul>

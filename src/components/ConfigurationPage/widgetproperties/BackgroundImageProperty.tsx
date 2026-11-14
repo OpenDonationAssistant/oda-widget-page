@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useEffect, useState } from "react";
 import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Flex, Image, Select } from "antd";
 import classes from "./BackgroundImageProperty.module.css";
 import InputNumber from "../components/InputNumber";
@@ -40,6 +40,7 @@ export const ImagePropertyComponent = observer(
     displayName: string;
     onChange?: (value: ImagePropertyValue) => void;
   }) => {
+    const { t } = useTranslation();
     const [image, setImage] = useState<string>(value.url ?? "");
 
     useEffect(() => {
@@ -93,7 +94,7 @@ export const ImagePropertyComponent = observer(
                       onChange?.(value);
                     }}
                   >
-                    <div>Загрузить</div>
+                    <div>{t("button-upload")}</div>
                   </SubActionButton>
                   <SubActionButton
                     onClick={() => {
@@ -106,12 +107,12 @@ export const ImagePropertyComponent = observer(
                     }}
                     icon={<CloseIcon color="#FF8888" />}
                   >
-                    <div>Удалить</div>
+                    <div>{t("button-delete")}</div>
                   </SubActionButton>
                 </Flex>
               </Flex>
               <Flex gap={6} align="bottom">
-                <SmallLabeledContainer displayName="Прозрачность">
+                <SmallLabeledContainer displayName="background-image-opacity">
                   <InputNumber
                     value={value.opacity}
                     onChange={(updated) => {
@@ -123,15 +124,27 @@ export const ImagePropertyComponent = observer(
                     }}
                   />
                 </SmallLabeledContainer>
-                <SmallLabeledContainer displayName="Размер">
+                <SmallLabeledContainer displayName="background-image-size">
                   <Select
                     className={`${classes.size}`}
                     value={value.size}
                     options={[
-                      { label: "original", value: "auto" },
-                      { label: "cover", value: "cover" },
-                      { label: "contain", value: "contain" },
-                      { label: "fit", value: "100% 100%" },
+                      {
+                        label: t("background-image-size-original"),
+                        value: "auto",
+                      },
+                      {
+                        label: t("background-image-size-cover"),
+                        value: "cover",
+                      },
+                      {
+                        label: t("background-image-size-contain"),
+                        value: "contain",
+                      },
+                      {
+                        label: t("background-image-size-stretch"),
+                        value: "100% 100%",
+                      },
                     ]}
                     onChange={(updated) => {
                       value.size = updated;
@@ -139,10 +152,10 @@ export const ImagePropertyComponent = observer(
                     }}
                   />
                 </SmallLabeledContainer>
-                <SmallLabeledContainer displayName="Если размер меньше виджета">
+                <SmallLabeledContainer displayName="background-image-repeat-if-smaller">
                   <Flex className={`${classes.repeatbutton}`} align="top">
                     <LightLabeledSwitchComponent
-                      label="Повтор"
+                      label="background-image-repeat"
                       value={value.repeat}
                       onChange={(checked) => {
                         value.repeat = checked;

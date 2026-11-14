@@ -15,8 +15,10 @@ import classes from "./ImageTab.module.css";
 import { BooleanProperty } from "../../widgetproperties/BooleanProperty";
 import { VolumeProperty } from "../../widgetproperties/VolumeProperty";
 import { fullUri, handleFileUpload } from "../../../../utils";
+import { useTranslation } from "react-i18next";
 
 const ImageTab = observer(({ alert }: { alert: Alert }) => {
+  const { t } = useTranslation();
   const [image, setImage] = useState<string>("");
   const [video, setVideo] = useState<string>("");
 
@@ -46,7 +48,7 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
             marginRight: "10px",
           }}
         >
-          <LabeledContainer displayName="Изображение">
+          <LabeledContainer displayName="tab-alert-image">
             <label className={`${classes.upload}`}>
               <input
                 type="file"
@@ -58,7 +60,7 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               />
               <Flex justify="center" align="center" gap={3}>
                 <span className="material-symbols-sharp">upload</span>
-                <div>Загрузить</div>
+                <div>{t("button-upload")}</div>
               </Flex>
             </label>
           </LabeledContainer>
@@ -70,9 +72,9 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               marginBottom: "24px",
             }}
           >
-            или
+            {t("alerts-or")}
           </div>
-          <LabeledContainer displayName="Видео">
+          <LabeledContainer displayName="alerts-video">
             <label
               className={`${classes.upload}`}
               style={{ marginRight: "10px" }}
@@ -87,7 +89,7 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
               />
               <Flex justify="center" align="center" gap={3}>
                 <span className="material-symbols-sharp">upload</span>
-                <div>Загрузить</div>
+                <div>{t("button-upload")}</div>
               </Flex>
             </label>
           </LabeledContainer>
@@ -101,14 +103,14 @@ const ImageTab = observer(({ alert }: { alert: Alert }) => {
             className={`${classes.imagecontainer}`}
           >
             {alert.image && (
-              <LabeledContainer displayName="Изображение">
+              <LabeledContainer displayName="tab-alert-image">
                 <Image.PreviewGroup>
                   <Image src={`${image}`} style={{ width: "100%" }} />
                 </Image.PreviewGroup>
               </LabeledContainer>
             )}
             {alert.video && (
-              <LabeledContainer displayName="Видео">
+              <LabeledContainer displayName="alerts-video">
                 <video src={video} style={{ width: "100%" }} controls muted />
               </LabeledContainer>
             )}

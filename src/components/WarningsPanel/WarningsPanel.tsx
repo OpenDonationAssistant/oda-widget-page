@@ -8,12 +8,14 @@ import {
 import classes from "./WarningsPanel.module.css";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
+import { useTranslation } from "react-i18next";
 
 interface Warning {
   message: string;
 }
 
 export default function WarningsPanel() {
+  const { t } = useTranslation();
   const { accessToken } = useAuth();
 
   const { data, refresh } = useRequest<Warning[], any>(
@@ -44,7 +46,7 @@ export default function WarningsPanel() {
       {warnings.map((warning, index) => (
         <Flex align="center" key={index} className={classes.row}>
           <div className={classes.line}>
-            <span>Warning</span>: {warning.message}
+            <span>{t("common-warning")}</span>: {warning.message}
           </div>
           <NotBorderedIconButton
             onClick={() => {
@@ -56,7 +58,7 @@ export default function WarningsPanel() {
                 body: {},
               }).then(() => refresh());
             }}
-            title="Clear all warnings"
+            title={t("warnings-clear-all")}
           >
             <CloseIcon color="white" />
           </NotBorderedIconButton>

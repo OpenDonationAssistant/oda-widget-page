@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Flex } from "antd";
+import { Trans } from "react-i18next";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
@@ -15,38 +16,38 @@ export class EmoteWallWidgetSettings extends AbstractWidgetSettings {
       sections: [
         {
           key: "widget",
-          title: "Весь виджет",
+          title: "Entire",
           properties: [
             new WidthProperty({
               name: "width",
-              displayName: "Ширина",
+              displayName: "common-width",
             }),
             new HeightProperty({
               name: "height",
-              displayName: "Высота",
+              displayName: "common-height",
             }),
           ],
         },
         {
           key: "emotes",
-          title: "Эмоции",
+          title: "emote-wall-tab-emotes",
           properties: [
             new NumberProperty({
               name: "emoteSize",
               value: 64,
               addon: "px",
-              displayName: "Размер эмоций",
+              displayName: "emote-wall-emote-size",
             }),
             new NumberProperty({
               name: "animationDuration",
               value: 4000,
               addon: "ms",
-              displayName: "Длительность анимации",
+              displayName: "animation-duration",
             }),
             new NumberProperty({
               name: "maxConcurrentEmotes",
               value: 30,
-              displayName: "Максимум эмоций на экране",
+              displayName: "emote-wall-max-emotes",
             }),
           ],
         },
@@ -78,18 +79,24 @@ export class EmoteWallWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="center" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Стена эмоций"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="emote-wall-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Виджет для отображения летящих эмоций из чата поверх стрима.
+          <Trans i18nKey="emote-wall-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Стена эмоций) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="emote-wall-help-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="widget-help-paste-link" />
             </li>
           </ul>
         </div>

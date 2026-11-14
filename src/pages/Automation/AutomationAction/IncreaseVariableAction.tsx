@@ -86,7 +86,7 @@ export class IncreaseVariableAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Увеличить переменную";
+    return "automation-action-increase-variable";
   }
 
   public get markup() {

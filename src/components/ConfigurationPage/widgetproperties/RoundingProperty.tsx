@@ -87,7 +87,7 @@ export const RoundingPropertyComponent = observer(
             className={`${classes.roundingvalues}`}
           >
             <Flex className="full-width" gap={9}>
-              <SmallLabeledContainer displayName={"TopLeft"}>
+              <SmallLabeledContainer displayName="rounding-top-left">
                 <InputNumber
                   addon="px"
                   value={value.topLeft}
@@ -99,7 +99,7 @@ export const RoundingPropertyComponent = observer(
                   }}
                 />
               </SmallLabeledContainer>
-              <SmallLabeledContainer displayName={"TopRight"}>
+              <SmallLabeledContainer displayName="rounding-top-right">
                 <InputNumber
                   addon="px"
                   value={value.topRight}
@@ -113,7 +113,7 @@ export const RoundingPropertyComponent = observer(
               </SmallLabeledContainer>
             </Flex>
             <Flex className="full-width" gap={9}>
-              <SmallLabeledContainer displayName={"BottomLeft"}>
+              <SmallLabeledContainer displayName="rounding-bottom-left">
                 <InputNumber
                   addon="px"
                   value={value.bottomLeft}
@@ -125,7 +125,7 @@ export const RoundingPropertyComponent = observer(
                   }}
                 />
               </SmallLabeledContainer>
-              <SmallLabeledContainer displayName={"BottomRight"}>
+              <SmallLabeledContainer displayName="rounding-bottom-right">
                 <InputNumber
                   addon="px"
                   value={value.bottomRight}

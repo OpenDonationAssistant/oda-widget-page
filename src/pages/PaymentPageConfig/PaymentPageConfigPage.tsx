@@ -19,8 +19,10 @@ import { AddListItemButton } from "../../components/List/List";
 import { NotBorderedIconButton } from "../../components/IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import Panel from "../../components/Panel/Panel";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentPageConfigPage() {
+  const { t } = useTranslation();
   const { recipientId } = useLoaderData() as WidgetData;
   const paymentPageConfig = useRef<PaymentPageConfig | null>(null);
   const [minimalAmount, setMinimalAmount] = useState<number>(40);
@@ -137,7 +139,7 @@ export default function PaymentPageConfigPage() {
 
   return (
     <>
-      <h1>Страница доната</h1>
+      <h1>{t("menu-payment-page-config")}</h1>
       <div className={classes.paymentpageconfig}>
         <Panel>
           <Flex style={{ flexGrow: 1 }} align="center">
@@ -150,7 +152,9 @@ export default function PaymentPageConfigPage() {
               </a>
               <Flex justify="flex-start" align="flex-start" gap={12}>
                 <Flex vertical style={{ justifyContent: "end" }}>
-                  <div className={`${classes.fieldname}`}>Аватарка</div>
+                  <div className={`${classes.fieldname}`}>
+                    {t("payment-page-avatar")}
+                  </div>
                   <label style={{ flexGrow: 1, display: "flex" }}>
                     <input type="file" onChange={handleLogoUpload} />
                     <img className={classes.logoimage} src={imageUrl} />
@@ -158,7 +162,7 @@ export default function PaymentPageConfigPage() {
                 </Flex>
                 <Flex vertical style={{ justifyContent: "end", flexGrow: 1 }}>
                   <div className={`${classes.fieldname}`}>
-                    Фоновое изображение
+                    {t("background-image")}
                   </div>
                   <label>
                     <input type="file" onChange={handleBackUpload} />
@@ -167,7 +171,9 @@ export default function PaymentPageConfigPage() {
                 </Flex>
                 {paymentPageConfig.current?.url && (
                   <Flex vertical style={{ justifyContent: "end" }}>
-                    <div className={`${classes.fieldname}`}>QR код</div>
+                    <div className={`${classes.fieldname}`}>
+                      {t("payment-page-qr-code")}
+                    </div>
                     <QRCode
                       size={210}
                       value={`https://${paymentPageConfig.current.url}`}
@@ -179,7 +185,9 @@ export default function PaymentPageConfigPage() {
           </Flex>
           <Flex vertical style={{ flexGrow: 1 }}>
             <Flex vertical style={{ height: "100%" }}>
-              <div className={`${classes.fieldname}`}>Текст на странице</div>
+              <div className={`${classes.fieldname}`}>
+                {t("payment-page-text")}
+              </div>
               <textarea
                 value={arbitraryText ?? ""}
                 className={classes.pagetext}
@@ -199,7 +207,7 @@ export default function PaymentPageConfigPage() {
           </Flex>
           <Flex vertical style={{ flexGrow: 1 }}>
             <div className={classes.fieldname}>
-              Текст подписи внизу страницы
+              {t("payment-page-footer-text")}
             </div>
             <textarea
               value={description ?? ""}
@@ -221,7 +229,9 @@ export default function PaymentPageConfigPage() {
           </Flex>
           <Flex gap={12} className="full-width">
             <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>Минимальная сумма доната</div>
+              <div className={classes.fieldname}>
+                {t("payment-page-minimal-amount")}
+              </div>
               <InputNumber
                 value={minimalAmount}
                 onChange={(value) => {
@@ -238,11 +248,11 @@ export default function PaymentPageConfigPage() {
         </Panel>
         <Panel>
           <div style={{ marginBottom: "9px", fontSize: "21px" }}>
-            Для самозанятого или ИП
+            {t("payment-page-self-employed")}
           </div>
           <Flex gap={12} className="full-width">
             <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>ФИО</div>
+              <div className={classes.fieldname}>{t("payment-page-fio")}</div>
               <Input
                 value={fio}
                 onChange={(e) => {
@@ -254,7 +264,7 @@ export default function PaymentPageConfigPage() {
               />
             </Flex>
             <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>ИНН</div>
+              <div className={classes.fieldname}>{t("payment-page-inn")}</div>
               <Input
                 value={inn}
                 onChange={(e) => {
@@ -266,7 +276,9 @@ export default function PaymentPageConfigPage() {
               />
             </Flex>
             <Flex vertical style={{ flexGrow: 1 }}>
-              <div className={classes.fieldname}>Контактный e-mail</div>
+              <div className={classes.fieldname}>
+                {t("payment-page-contact-email")}
+              </div>
               <Input
                 value={email}
                 onChange={(e) => {
@@ -281,12 +293,12 @@ export default function PaymentPageConfigPage() {
         </Panel>
         <Panel>
           <div style={{ marginBottom: "9px", fontSize: "21px" }}>
-            Социальные ссылки
+            {t("payment-page-social-links")}
           </div>
           {socials.map((link, index) => (
             <Flex key={index} gap={12} className={`${classes.sociallink}`}>
               <Flex vertical>
-                <div className={classes.fieldname}>Название</div>
+                <div className={classes.fieldname}>{t("common-name")}</div>
                 <Select
                   value={link.keys().next().value}
                   style={{ height: "100%", minWidth: "150px" }}
@@ -297,7 +309,7 @@ export default function PaymentPageConfigPage() {
                     },
                     {
                       value: "vk",
-                      label: "ВКонтакте",
+                      label: t("payment-page-social-vk"),
                     },
                     {
                       value: "youtube",
@@ -338,7 +350,7 @@ export default function PaymentPageConfigPage() {
                 />
               </Flex>
               <Flex vertical style={{ flexGrow: 1 }}>
-                <div className={classes.fieldname}>Ссылка</div>
+                <div className={classes.fieldname}>{t("payment-page-link")}</div>
                 <Input
                   value={link.values().next().value}
                   onChange={(e) => {
@@ -372,7 +384,7 @@ export default function PaymentPageConfigPage() {
               paymentPageConfig.current?.addSocial("", "");
               setHasChanges(true);
             }}
-            label="Добавить ссылку"
+            label="button-add-link"
           />
         </Panel>
         {hasChanges && (
@@ -383,7 +395,7 @@ export default function PaymentPageConfigPage() {
                 setHasChanges(false);
               }}
             >
-              Отменить
+              {t("button-cancel")}
             </UtilityButton>
             <PrimaryButton
               onClick={() => {
@@ -391,7 +403,7 @@ export default function PaymentPageConfigPage() {
                 setHasChanges(false);
               }}
             >
-              Сохранить изменения
+              {t("payment-page-save-changes")}
             </PrimaryButton>
           </Flex>
         )}

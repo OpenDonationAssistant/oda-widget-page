@@ -13,8 +13,10 @@ import { useContext, useState } from "react";
 import PrimaryButton from "../../components/Button/PrimaryButton";
 import { changePassword as changePasswordRequest } from "@opendonationassistant/recipient-service";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export const AccountPage = observer(() => {
+  const { t } = useTranslation();
   const { accessToken } = useAuth();
   const parentModalState = useContext(ModalStateContext);
   const [changePasswordModal] = useState<ModalState>(
@@ -51,13 +53,13 @@ export const AccountPage = observer(() => {
 
   return (
     <>
-      <h1>Настройки аккаунта</h1>
+      <h1>{t("account-settings-title")}</h1>
       <ModalStateContext.Provider value={passwordChangedModal}>
         <Overlay>
           <Dialog>
             <Flex vertical className="full-width">
               <div className={`${classes.successmessage}`}>
-                Пароль успешно изменен
+                {t("account-password-changed")}
               </div>
               <Flex justify="center" className="full-width">
                 <SecondaryButton
@@ -65,7 +67,7 @@ export const AccountPage = observer(() => {
                     passwordChangedModal.show = false;
                   }}
                 >
-                  Закрыть
+                  {t("common-close")}
                 </SecondaryButton>
               </Flex>
             </Flex>
@@ -77,7 +79,7 @@ export const AccountPage = observer(() => {
           <Dialog>
             <Flex vertical className="full-width">
               <div className={`${classes.errormessage}`}>
-                Неправильный пароль
+                {t("account-wrong-password")}
               </div>
               <Flex justify="center" className="full-width">
                 <SecondaryButton
@@ -85,7 +87,7 @@ export const AccountPage = observer(() => {
                     wrongPasswordModal.show = false;
                   }}
                 >
-                  Закрыть
+                  {t("common-close")}
                 </SecondaryButton>
               </Flex>
             </Flex>
@@ -97,7 +99,7 @@ export const AccountPage = observer(() => {
           <Dialog>
             <Flex vertical className="full-width">
               <div className={`${classes.successmessage}`}>
-                Пароль успешно изменен
+                {t("account-password-changed")}
               </div>
               <Flex justify="center" className="full-width">
                 <SecondaryButton
@@ -105,7 +107,7 @@ export const AccountPage = observer(() => {
                     passwordChangedModal.show = false;
                   }}
                 >
-                  Закрыть
+                  {t("common-close")}
                 </SecondaryButton>
               </Flex>
             </Flex>
@@ -115,42 +117,42 @@ export const AccountPage = observer(() => {
       <ModalStateContext.Provider value={changePasswordModal}>
         <Overlay>
           <Dialog>
-            <Title>Смена пароля</Title>
+            <Title>{t("account-change-password-title")}</Title>
             <Flex
               align="center"
               className={`${classes.container} ${classes.oldpassword}`}
             >
-              <div className={`${classes.label}`}>Старый пароль</div>
+              <div className={`${classes.label}`}>{t("account-old-password")}</div>
               <Input
                 type="password"
-                placeholder="Старый пароль"
+                placeholder={t("account-old-password")}
                 className={`${classes.input}`}
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
               />
             </Flex>
             <Flex align="center" className={`${classes.container}`}>
-              <div className={`${classes.label}`}>Новый пароль</div>
+              <div className={`${classes.label}`}>{t("account-new-password")}</div>
               <Input
                 type="password"
-                placeholder="Новый пароль"
+                placeholder={t("account-new-password")}
                 className={`${classes.input}`}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
             </Flex>
             <Flex align="center" className={`${classes.container}`}>
-              <div className={`${classes.label}`}>Повторите новый пароль</div>
+              <div className={`${classes.label}`}>{t("account-repeat-password")}</div>
               <Input
                 type="password"
-                placeholder="Повторите новый пароль"
+                placeholder={t("account-repeat-password")}
                 className={`${classes.input}`}
                 value={newPasswordConfirmation}
                 onChange={(e) => setNewPasswordConfirmation(e.target.value)}
               />
             </Flex>
             {newPassword !== newPasswordConfirmation && (
-              <div className={`${classes.warning}`}>Пароли не совпадают</div>
+              <div className={`${classes.warning}`}>{t("account-passwords-mismatch")}</div>
             )}
             <Flex justify="flex-end" gap={9} className={`${classes.buttons}`}>
               <SecondaryButton
@@ -158,7 +160,7 @@ export const AccountPage = observer(() => {
                   changePasswordModal.show = false;
                 }}
               >
-                Отменить
+                {t("button-cancel")}
               </SecondaryButton>
               <PrimaryButton
                 disabled={
@@ -169,7 +171,7 @@ export const AccountPage = observer(() => {
                   changePasswordModal.show = false;
                 }}
               >
-                Сменить
+                {t("account-change-password-action")}
               </PrimaryButton>
             </Flex>
           </Dialog>
@@ -177,7 +179,7 @@ export const AccountPage = observer(() => {
       </ModalStateContext.Provider>
       <Flex className={`${classes.container}`}>
         <SecondaryButton onClick={() => (changePasswordModal.show = true)}>
-          Сменить пароль
+          {t("account-change-password-button")}
         </SecondaryButton>
       </Flex>
     </>

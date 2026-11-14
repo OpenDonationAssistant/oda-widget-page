@@ -8,12 +8,14 @@ import { Playlist } from "../../logic/playlist/Playlist";
 import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 import classes from "./PlaylistComponent.module.css";
+import { useTranslation } from "react-i18next";
 
 export default function PlaylistComponent({
   playlist,
 }: {
   playlist: Playlist;
 }) {
+  const { t } = useTranslation();
   const { settings, widgetId } = useLoaderData() as WidgetData;
   const activeRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState<number | null>(null);
@@ -167,7 +169,9 @@ export default function PlaylistComponent({
                             className="owner"
                           >
                             {" "}
-                            Заказал: {song.owner}
+                            {t("media-requested-by", {
+                              owner: song.owner,
+                            })}
                           </div>
                         </div>
                       </li>

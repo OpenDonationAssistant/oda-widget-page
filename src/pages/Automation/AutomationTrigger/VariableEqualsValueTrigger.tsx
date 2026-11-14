@@ -22,7 +22,7 @@ const VariableEqualsValueTriggerComponent = observer(
 
     return (
       <Flex vertical gap={9}>
-        <LabeledContainer displayName="Переменная">
+        <LabeledContainer displayName="common-variable">
           <Select
             className="full-width"
             value={trigger.value.id}
@@ -48,7 +48,7 @@ const VariableEqualsValueTriggerComponent = observer(
             }}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="Значение">
+        <LabeledContainer displayName="common-value">
           {selectedVariable?.type === "number" ? (
             <InputNumber
               value={Number(trigger.value.value) || 0}
@@ -94,7 +94,7 @@ export class VariableEqualsValueTrigger implements AutomationTrigger, Renderable
   }
 
   public get name() {
-    return "Переменная равна значению";
+    return "automation-trigger-variable-equals";
   }
 
   public get id() {

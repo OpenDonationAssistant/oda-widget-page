@@ -19,6 +19,7 @@ import { BorderedIconButton } from "../../components/IconButton/IconButton";
 import SubActionButton from "../../components/Button/SubActionButton";
 import CopyIcon from "../../icons/CopyIcon";
 import classes from "./GamesSection.module.css";
+import { useTranslation } from "react-i18next";
 
 class GameSelection {
   private _game: string | null = null;
@@ -56,17 +57,18 @@ const GamesList = observer(({}) => {
 });
 
 const DonationListenerInstruction = observer(({}) => {
+  const { t } = useTranslation();
   const data = localStorage.getItem("access-token") ?? "";
 
   return (
     <Flex vertical gap={20} className="full-width">
       <div className={`${classes.instructionline}`}>
-        Токен, который нужно указать в приложении.
+        {t("integration-games-token-hint")}
       </div>
       <Flex gap={3} className="full-width" vertical align="flex-end">
         <Input className={`${classes.token}`} value={data} />
         <SubActionButton onClick={() => navigator.clipboard.writeText(data)} icon={<CopyIcon />}>
-          <span>Скопировать</span>
+          <span>{t("integration-copy")}</span>
         </SubActionButton>
       </Flex>
     </Flex>
@@ -74,6 +76,7 @@ const DonationListenerInstruction = observer(({}) => {
 });
 
 export const GamesSection = observer(({}) => {
+  const { t } = useTranslation();
   const gamesStore = useContext(GamesStoreContext);
   const gameSelection = useContext(GameSelectionContext);
 
@@ -81,8 +84,8 @@ export const GamesSection = observer(({}) => {
     new WizardConfigurationStore({
       steps: [
         {
-          title: "Добавить интеграцию",
-          subtitle: "Выберите, что хотите подключить",
+          title: "integration-add",
+          subtitle: "integration-choose-what",
           content: <GamesList />,
           condition: () => {
             return Promise.resolve(true);
@@ -92,7 +95,7 @@ export const GamesSection = observer(({}) => {
           },
         },
         {
-          title: "Добавить интеграцию",
+          title: "integration-add",
           subtitle: "",
           content: <DonationListenerInstruction />,
           condition: () => {
@@ -122,7 +125,7 @@ export const GamesSection = observer(({}) => {
   return (
     <>
       <Wizard configurationStore={wizardConfiguration} />
-      <CardSectionTitle>Игры</CardSectionTitle>
+      <CardSectionTitle>{t("integration-games")}</CardSectionTitle>
       <CardList>
         {gamesStore.added.map((game) => (
           <Card key={game.id}>

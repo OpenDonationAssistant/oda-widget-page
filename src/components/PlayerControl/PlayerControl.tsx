@@ -6,11 +6,13 @@ import { publish } from "../../socket";
 import { v4 as uuidv4 } from "uuid";
 import { PLAYLIST_TYPE } from "../../logic/playlist/Playlist";
 import { WidgetData } from "../../types/WidgetData";
+import { useTranslation } from "react-i18next";
 
 const youtube_url_regexp =
   /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/g;
 
 export default function PlayerControl({}: {}) {
+  const { t } = useTranslation();
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [volume, setVolume] = useState<string>("0.5");
@@ -119,7 +121,9 @@ export default function PlayerControl({}: {}) {
       />
       <div>
         {result && (
-          <span style={{ color: "white", marginRight: "10px" }}>{result}</span>
+          <span style={{ color: "white", marginRight: "10px" }}>
+            {t(result === "OK" ? "common-success" : "common-failed")}
+          </span>
         )}
         <input
           value={url}
@@ -134,21 +138,21 @@ export default function PlayerControl({}: {}) {
           onClick={() => add()}
           style={{ marginRight: "10px" }}
         >
-          Add
+          {t("widget-player-add")}
         </button>
         <button
           className="btn btn-primary"
           onClick={() => play()}
           style={{ marginRight: "10px" }}
         >
-          Play
+          {t("widget-player-play")}
         </button>
         <button
           className="btn btn-primary"
           onClick={() => pause()}
           style={{ marginRight: "10px" }}
         >
-          Pause
+          {t("widget-player-pause")}
         </button>
       </div>
       <div>
@@ -160,7 +164,7 @@ export default function PlayerControl({}: {}) {
           }}
         />
         <button className="btn btn-primary" onClick={() => changeVolume()}>
-          Set volume
+          {t("widget-player-set-volume")}
         </button>
       </div>
     </>

@@ -1,6 +1,8 @@
 import { Flex } from "antd";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { ReactNode } from "react";
+import { Trans } from "react-i18next";
+import { t } from "i18next";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import { CloseOverlayButton } from "../../components/Overlay/Overlay";
 import { ChatWidget } from "./ChatWidget";
@@ -31,11 +33,11 @@ import { TextProperty } from "../../components/ConfigurationPage/widgetpropertie
 export class ChatWidgetSettings extends AbstractWidgetSettings {
   private _totalWidth: WidthProperty = new WidthProperty({
     name: "width",
-    displayName: "Ширина",
+    displayName: "common-width",
   });
   private _totalHeight: HeightProperty = new HeightProperty({
     name: "height",
-    displayName: "Высота",
+    displayName: "common-height",
   });
 
   constructor() {
@@ -43,7 +45,7 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "widget",
-      title: "Весь виджет",
+      title: "Entire",
       properties: [
         this._totalWidth,
         this._totalHeight,
@@ -71,43 +73,43 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "message-line",
-      title: "Строка сообщения",
+      title: "chat-tab-message-line",
       properties: [
         new TextProperty({
           name: "hiddenNicknames",
           value: "",
-          displayName: "Никнеймы для скрытия",
-          help: "Сообщения этих пользователей не будут отображаться. Каждый никнейм с новой строки.",
+          displayName: "chat-hidden-nicknames",
+          help: t("chat-hidden-nicknames-help"),
         }),
         new SingleChoiceProperty({
           name: "layout",
           value: "vertical",
-          displayName: "Расположение сообщений",
+          displayName: "chat-messages-layout",
           options: ["vertical", "horizontal"],
         }),
         new SingleChoiceProperty({
           name: "alignment",
           value: "left",
-          displayName: "Выравнивание",
+          displayName: "widget-donaterslist-list-alignment",
           options: ["left", "center", "right"],
         }),
         new SingleChoiceProperty({
           name: "lineType",
           value: "one-line",
-          displayName: "Иконки, никнейм и текст сообщения",
+          displayName: "chat-line-type",
           options: ["separate-blocks", "one-line"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
         new NumberProperty({
           name: "totalGap",
           value: 3,
-          displayName: "Отступ между сообщениями/строками",
+          displayName: "chat-message-gap",
           addon: "px",
         }),
         new NumberProperty({
           name: "lineGap",
           value: 3,
-          displayName: "Отступ между ником и текстом сообщения",
+          displayName: "chat-nickname-gap",
           addon: "px",
         }),
         new ColorProperty({
@@ -134,7 +136,7 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "author",
-      title: "Никнейм",
+      title: "common-nickname",
       properties: [
         new AnimatedFontProperty({
           name: "authorFont",
@@ -196,7 +198,7 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "message",
-      title: "Сообщение",
+      title: "common-message",
       properties: [
         new AnimatedFontProperty({
           name: "messageFont",
@@ -403,20 +405,24 @@ export class ChatWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="center" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Чат"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="chat-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Виджет для отображения общего чата с Twitch, Kick, VKLive
+          <Trans i18nKey="chat-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Canvas) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
-              При первом открытии виджет будет скачивать в кеш сразу все эмоции,
-              доступные для канала, что может потребовать пару-тройку минут.
+              <Trans i18nKey="chat-help-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="chat-help-paste-link" />
             </li>
           </ul>
         </div>

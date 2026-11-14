@@ -20,6 +20,7 @@ import { BoxShadowProperty } from "../../widgetproperties/BoxShadowProperty";
 import { BackgroundImageProperty } from "../../widgetproperties/BackgroundImageProperty";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../../Overlay/Overlay";
+import { Trans } from "react-i18next";
 
 export class DonatonWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -27,13 +28,13 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "general",
-      title: "Общие",
+      title: "General",
       properties: [
         new TextProperty({
           name: "text",
           value: "Стрим будет идти еще <time>",
           displayName: "widget-donaton-timer-text",
-          help: "Надпись на таймере",
+          help: "donaton-timer-text-help",
         }),
         new AnimatedFontProperty({
           name: "titleFont",
@@ -69,14 +70,14 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
         new DateTimeProperty({
           name: "timer-end",
           displayName: "widget-donaton-timer-end",
-          help: "Время, до которого будет отсчитывать таймер. Подразумевается, что это время окончания стрима. В любой момент можно выставить новое время, таймер обновится.",
+          help: "donaton-timer-end-help",
         }),
       ],
     });
 
     this.addSection({
       key: "style",
-      title: "Стиль",
+      title: "tab-style",
       properties: [
         new ColorProperty({
           name: "backgroundColor",
@@ -178,19 +179,24 @@ export class DonatonWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="center" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Донатон"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="donaton-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Запускает обратный отсчет до конца стрима. Таймер увеличивается в
-          зависимости от суммы доната.
+          <Trans i18nKey="donaton-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-howto-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Донатон) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="donaton-help-step1" />
+            </li>
+            <li>
+              <Trans i18nKey="donaton-help-step2" />
             </li>
           </ul>
         </div>

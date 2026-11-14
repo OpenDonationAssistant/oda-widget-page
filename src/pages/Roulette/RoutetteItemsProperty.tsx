@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 import { DefaultWidgetProperty } from "../../components/ConfigurationPage/widgetproperties/WidgetProperty";
 import { ReactNode, useState } from "react";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
@@ -42,7 +43,7 @@ const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
       />
       {opened && (
         <Flex vertical gap={12} className={`${classes.itemsettings}`}>
-          <LabeledContainer displayName="Название лота">
+          <LabeledContainer displayName="roulette-item-name">
             <Input
               value={item.data.name}
               onChange={(e) => {
@@ -50,26 +51,26 @@ const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
               }}
             />
           </LabeledContainer>
-          <LabeledContainer displayName="Вероятность выпадения">
-            <SmallLabeledContainer displayName="Вес">
+          <LabeledContainer displayName="roulette-drop-chance">
+            <SmallLabeledContainer displayName="roulette-weight">
               <InputNumber
                 value={item.data.weight}
                 onChange={(e) => (item.data.weight = e)}
               />
             </SmallLabeledContainer>
-            <SmallLabeledContainer displayName="Итоговая вероятность">
+            <SmallLabeledContainer displayName="roulette-total-chance">
               <div>{item.probability}%</div>
             </SmallLabeledContainer>
           </LabeledContainer>
           <ColorPropertyComponent
             property={{
               value: item.data.backgroundColor,
-              displayName: "Фон",
+              displayName: "label-background",
             }}
             onChange={(updated) => (item.data.backgroundColor = updated)}
           />
           <ImagePropertyComponent
-            displayName="Фоновое изображение"
+            displayName="background-image"
             value={item.data.backgroundImage}
           />
         </Flex>
@@ -80,6 +81,8 @@ const RouletteItemComponent = observer(({ item }: { item: RouletteItem }) => {
 
 const RouletteItemsPropertyComponent = observer(
   ({ property }: { property: RouletteItemsProperty }) => {
+    const { t } = useTranslation();
+
     return (
       <List>
         {property.items.map((item, index) => (
@@ -90,7 +93,7 @@ const RouletteItemsPropertyComponent = observer(
             property.addRouletteItem();
           }}
         >
-          Добавить лот
+          {t("roulette-add-item")}
         </CollapseLikeButton>
       </List>
     );
@@ -126,7 +129,7 @@ export class RouletteItemsProperty extends DefaultWidgetProperty<
           backgroundImage: DEFAULT_IMAGE_PROPERTY_VALUE
         },
       ],
-      displayName: "Лоты",
+      displayName: "roulette-tab-items",
     });
   }
 

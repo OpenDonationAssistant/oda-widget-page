@@ -1,5 +1,6 @@
 import { DefaultApiFactory } from "@opendonationassistant/oda-widget-service-client";
 import { WIDGET_TYPES, Widget } from "../types/Widget";
+import i18n from "../i18n";
 import { makeAutoObservable } from "mobx";
 import { log } from "../logging";
 import { produce } from "immer";
@@ -69,7 +70,9 @@ export class DefaultWidgetStore implements WidgetStore {
     const response = await this.client().addWidget({
       type: type,
       sortOrder: this.list.length,
-      name: WIDGET_TYPES.filter((it) => it.name === type).at(0)?.title ?? type,
+      name: i18n.t(
+        WIDGET_TYPES.filter((it) => it.name === type).at(0)?.title ?? type,
+      ),
     });
     log.debug({ response: response.data }, "add widget response");
     const widget = Widget.fromJson(response.data, this);

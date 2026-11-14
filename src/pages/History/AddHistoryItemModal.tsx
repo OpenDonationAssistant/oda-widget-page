@@ -103,19 +103,25 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
       <ModalStateContext.Provider value={showModal}>
         <Overlay>
           <Panel>
-            <Title>Добавить донат</Title>
+            <Title>{t("dialog-add-donation-title")}</Title>
             <Flex vertical className="full-width">
               <Flex vertical className={`${classes.section}`} gap={12}>
-                <div className={`${classes.sectiontitle}`}>Основное</div>
+                <div className={`${classes.sectiontitle}`}>
+                  {t("history-add-donation-general")}
+                </div>
                 <Flex vertical>
-                  <div className={`${classes.label}`}>Ник поддержавшего</div>
+                  <div className={`${classes.label}`}>
+                    {t("history-add-donation-supporter-nickname")}
+                  </div>
                   <Input
                     value={nickname}
                     onChange={(value) => setNickname(value.target.value)}
                   />
                 </Flex>
                 <Flex vertical>
-                  <div className={`${classes.label}`}>Сумма</div>
+                  <div className={`${classes.label}`}>
+                    {t("dialog-add-donation-amount")}
+                  </div>
                   <InputNumber
                     className={`full-width`}
                     value={amount}
@@ -123,7 +129,9 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                   />
                 </Flex>
                 <Flex vertical>
-                  <div className={`${classes.label}`}>Сообщение</div>
+                  <div className={`${classes.label}`}>
+                    {t("common-message")}
+                  </div>
                   <Input
                     type="textarea"
                     className={`full-width`}
@@ -133,7 +141,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                 </Flex>
                 <Flex vertical>
                   <div className={`${classes.label}`}>
-                    Учитывать в сборе средств
+                    {t("dialog-add-donation-count-in-goal")}
                   </div>
                   <Select
                     className="full-width"
@@ -145,7 +153,9 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                   />
                 </Flex>
                 <Flex vertical>
-                  <div className={`${classes.label}`}>Дата доната</div>
+                  <div className={`${classes.label}`}>
+                    {t("history-add-donation-date")}
+                  </div>
                   <DateTimeInput
                     value={authorizationTimestamp}
                     onChange={(value) => setAuthorizationTimestamp(value)}
@@ -153,7 +163,9 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                 </Flex>
               </Flex>
               <Flex vertical className={`${classes.section}`}>
-                <div className={`${classes.sectiontitle}`}>Дополнительно</div>
+                <div className={`${classes.sectiontitle}`}>
+                  {t("history-add-donation-advanced")}
+                </div>
                 <Flex wrap gap={6}>
                   <LabeledSwitchComponent
                     label="dialog-add-donation-show-alert"
@@ -179,7 +191,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
               </Flex>
               <Flex gap={6} justify="flex-end">
                 <SecondaryButton onClick={() => (showModal.show = false)}>
-                  Отменить
+                  {t("button-cancel")}
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={() => {
@@ -187,7 +199,7 @@ export default function AddHistoryItemModal({ compact }: { compact: boolean }) {
                     showModal.show = false;
                   }}
                 >
-                  Добавить
+                  {t("common-add")}
                 </PrimaryButton>
               </Flex>
             </Flex>

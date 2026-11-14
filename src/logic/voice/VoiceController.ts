@@ -1,3 +1,4 @@
+import i18n from "../../i18n";
 import { Alert } from "../../components/ConfigurationPage/widgetsettings/alerts/Alerts";
 import { log } from "../../logging";
 import { getRndInteger, sleep } from "../../utils";
@@ -90,7 +91,10 @@ export class VoiceController {
         : text;
     const resultText = choosenTemplate
       .trim()
-      .replace("<username>", data.nickname ? data.nickname : "Аноним")
+      .replace(
+        "<username>",
+        data.nickname ? data.nickname : i18n.t("common-anonymous"),
+      )
       .replace("<amount>", data.amount.major)
       .replace("<minoramount>", data.amount.major * 100)
       .replace("<streamer>", this._streamerName);

@@ -20,6 +20,7 @@ import {
   Wizard,
   WizardConfigurationStore,
 } from "../../components/Wizard/WizardComponent";
+import { useTranslation } from "react-i18next";
 
 export const GatewayCard = observer(
   ({
@@ -33,6 +34,7 @@ export const GatewayCard = observer(
     onClick: () => void;
     onDelete?: () => void;
   }) => {
+    const { t } = useTranslation();
     return (
       <Card
         selected={!onDelete && selected}
@@ -41,7 +43,7 @@ export const GatewayCard = observer(
         <Flex vertical gap={36}>
           <Flex align="center" justify="space-between">
             <Flex align="center" gap={12} justify="flex-start">
-              <div className={`${classes.gatewayname}`}>{info.name}</div>
+              <div className={`${classes.gatewayname}`}>{t(info.name)}</div>
               {onDelete && <Switch value={selected} onClick={onClick} />}
             </Flex>
             {onDelete && (
@@ -53,12 +55,12 @@ export const GatewayCard = observer(
           <Flex vertical gap={3}>
             {info.goodpoints.map((it, index) => (
               <div key={index} className={`${classes.goodpoint}`}>
-                {it}
+                {t(it)}
               </div>
             ))}
             {info.badpoints.map((it, index) => (
               <div key={index} className={`${classes.badpoint}`}>
-                {it}
+                {t(it)}
               </div>
             ))}
           </Flex>
@@ -71,6 +73,7 @@ export const GatewayCard = observer(
 const SettingsModal = observer(
   ({ configuration }: { configuration: PaymentGatewayConfigurationStore }) => {
     const continuation = useContext(ContinuationContext);
+    const { t } = useTranslation();
 
     const checkFields = () => {
       continuation.canContinue = true;
@@ -91,8 +94,10 @@ const SettingsModal = observer(
         {configuration.gateway &&
           configuration.gateway.fields.map((field) => (
             <Flex key={field.id} vertical className="full-width">
-              <div className={`${classes.fieldname}`}>{field.name}</div>
-              <div className={`${classes.fieldcomment}`}>{field.comment}</div>
+              <div className={`${classes.fieldname}`}>{t(field.name)}</div>
+              <div className={`${classes.fieldcomment}`}>
+                {field.comment ? t(field.comment) : null}
+              </div>
               <Input
                 value={field.value}
                 className={`${classes.fieldvalue}`}
@@ -110,15 +115,20 @@ const SettingsModal = observer(
 
 const InstructionLine = observer(
   ({ instructions }: { instructions: Instruction[] }) => {
+    const { t } = useTranslation();
     return (
       <Flex gap={36} vertical>
         {instructions.map((line, index) => (
           <Flex key={index} vertical gap={6}>
             <div className={`${classes.instructionstatement}`}>
-              {line.statement}
+              {t(line.statement)}
             </div>
             <div className={`${classes.instructioncomment}`}>
-              {line.comment}
+              {typeof line.comment === "string"
+                ? line.comment
+                  ? t(line.comment)
+                  : null
+                : line.comment}
             </div>
             {line.screen && (
               <img src={line.screen} className={`${classes.screen}`} />
@@ -154,22 +164,25 @@ const InstructionModal = observer(
 );
 
 const FullGatewayInfoCard = observer(({ info }: { info: GatewayInfo }) => {
+  const { t } = useTranslation();
   return (
     <div className={`${classes.card}`}>
-      <div className={`${classes.choosenmethod}`}>Выбранный способ оплаты:</div>
+      <div className={`${classes.choosenmethod}`}>
+        {t("gateway-selected-payment-method")}
+      </div>
       <Flex vertical justify="flex-end">
         <Flex align="center" justify="space-between">
-          <div className={`${classes.gatewayname}`}>{info.name}</div>
+          <div className={`${classes.gatewayname}`}>{t(info.name)}</div>
         </Flex>
         <Flex vertical gap={3}>
           {info.goodpoints.map((it, index) => (
             <div key={index} className={`${classes.selectedgoodpoint}`}>
-              {it}
+              {t(it)}
             </div>
           ))}
           {info.badpoints.map((it, index) => (
             <div key={index} className={`${classes.badpoint}`}>
-              {it}
+              {t(it)}
             </div>
           ))}
         </Flex>
@@ -251,15 +264,15 @@ export function FiatGatewaysSection({
 }: {
   configuration: PaymentGatewayConfigurationStore;
 }) {
+  const { t } = useTranslation();
   const [continuation] = useState<Continuation>(new Continuation());
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     () =>
       new WizardConfigurationStore({
         steps: [
           {
-            title: "Добавить способ приема донатов",
-            subtitle:
-              "Выберите партнера, через которого будет осуществляться прием донатов",
+            title: "gateway-wizard-add-donation-method",
+            subtitle: "gateway-wizard-choose-partner-subtitle",
             content: (
               <ChooseGatewayModal type="fiat" configuration={configuration} />
             ),
@@ -268,7 +281,7 @@ export function FiatGatewaysSection({
             },
           },
           {
-            title: "Зарегистрируйте аккаунт у партнера",
+            title: "gateway-wizard-register-partner",
             subtitle: "",
             content: (
               <InstructionModal step={2} configuration={configuration} />
@@ -276,7 +289,7 @@ export function FiatGatewaysSection({
             isInformation: true,
           },
           {
-            title: "Внесите необходимые настройки в личном кабинете партнера",
+            title: "gateway-wizard-configure-partner",
             subtitle: "",
             content: (
               <InstructionModal step={3} configuration={configuration} />
@@ -284,9 +297,8 @@ export function FiatGatewaysSection({
             isInformation: true,
           },
           {
-            title: "Добавить способ оплаты",
-            subtitle:
-              "Внесите технические настройки в Оду для подключения партнера",
+            title: "gateway-wizard-add-payment-method",
+            subtitle: "gateway-wizard-add-payment-method-subtitle",
             content: <SettingsModal configuration={configuration} />,
           },
         ],
@@ -307,7 +319,7 @@ export function FiatGatewaysSection({
   return (
     <ContinuationContext.Provider value={continuation}>
       <div className={`${classes.sectionname}`}>
-        Фиатная валюта (RUB, USD, etc)
+        {t("gateway-fiat-currency")}
       </div>
       <CardList>
         <ExisingGateways configuration={configuration} type="fiat" />
@@ -316,7 +328,7 @@ export function FiatGatewaysSection({
             wizardConfiguration.next();
           }}
         >
-          Добавить
+          {t("common-add")}
         </CardButton>
       </CardList>
       <Wizard configurationStore={wizardConfiguration} />
@@ -329,15 +341,15 @@ export function CryptoGatewaysSection({
 }: {
   configuration: PaymentGatewayConfigurationStore;
 }) {
+  const { t } = useTranslation();
   const [continuation] = useState<Continuation>(new Continuation());
   const [wizardConfiguration] = useState<WizardConfigurationStore>(
     () =>
       new WizardConfigurationStore({
         steps: [
           {
-            title: "Добавить способ приема донатов",
-            subtitle:
-              "Выберите партнера, через которого будет осуществляться прием донатов",
+            title: "gateway-wizard-add-donation-method",
+            subtitle: "gateway-wizard-choose-partner-subtitle",
             content: (
               <ChooseGatewayModal type="crypto" configuration={configuration} />
             ),
@@ -346,7 +358,7 @@ export function CryptoGatewaysSection({
             },
           },
           {
-            title: "Зарегистрируйте аккаунт у партнера",
+            title: "gateway-wizard-register-partner",
             subtitle: "",
             content: (
               <InstructionModal step={2} configuration={configuration} />
@@ -354,7 +366,7 @@ export function CryptoGatewaysSection({
             isInformation: true,
           },
           {
-            title: "Внесите необходимые настройки в личном кабинете партнера",
+            title: "gateway-wizard-configure-partner",
             subtitle: "",
             content: (
               <InstructionModal step={3} configuration={configuration} />
@@ -362,9 +374,8 @@ export function CryptoGatewaysSection({
             isInformation: true,
           },
           {
-            title: "Добавить способ оплаты",
-            subtitle:
-              "Внесите технические настройки в Оду для подключения партнера",
+            title: "gateway-wizard-add-payment-method",
+            subtitle: "gateway-wizard-add-payment-method-subtitle",
             content: <SettingsModal configuration={configuration} />,
           },
         ],
@@ -385,7 +396,7 @@ export function CryptoGatewaysSection({
   return (
     <ContinuationContext.Provider value={continuation}>
       <div className={`${classes.sectionname}`}>
-        Криптовалюта (Bitcoin, TON, etc)
+        {t("gateway-crypto-currency")}
       </div>
       <CardList>
         <ExisingGateways configuration={configuration} type="crypto" />
@@ -394,7 +405,7 @@ export function CryptoGatewaysSection({
             wizardConfiguration.next();
           }}
         >
-          Добавить
+          {t("common-add")}
         </CardButton>
       </CardList>
       <Wizard configurationStore={wizardConfiguration} />

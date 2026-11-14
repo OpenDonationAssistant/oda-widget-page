@@ -18,6 +18,7 @@ import { DemoHistoryStore } from "../../../stores/history";
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
+import { Trans } from "react-i18next";
 
 export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -25,7 +26,7 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "general",
-      title: "Общие",
+      title: "tab-reel-general",
       properties: [
         new BooleanProperty({
           name: "resetOnLoad",
@@ -45,7 +46,7 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "style",
-      title: "Стиль",
+      title: "tab-style",
       properties: [
         new AlignmentProperty({
           name: "textAlign",
@@ -78,8 +79,8 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
         }),
         new BoxShadowProperty({
           name: "boxShadow",
-          displayName: "Тени виджета",
-          help: "Устанавливает тени виджета.",
+          displayName: "widget-box-shadow",
+          help: "widget-box-shadow-help",
         }),
       ],
     });
@@ -90,8 +91,8 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
       (this.get("boxShadow") as BoxShadowProperty) ||
       new BoxShadowProperty({
         name: "boxShadow",
-        displayName: "Тени виджета",
-        help: "Устанавливает тени виджета.",
+        displayName: "widget-box-shadow",
+        help: "widget-box-shadow-help",
       })
     );
   }
@@ -168,19 +169,24 @@ export class DonationTimerWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="top" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Таймер донатов"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="widget-donation-timer-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Считает время с момента последнего доната, обновляется автоматически
-          реал-тайм.
+          <Trans i18nKey="widget-donation-timer-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Таймер донатов) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="widget-donation-timer-help-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="widget-help-obs-browser-source" />
             </li>
           </ul>
         </div>

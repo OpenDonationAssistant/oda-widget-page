@@ -14,7 +14,7 @@ import classes from "../../components/ConfigurationPage/widgetsettings/AbstractW
 import SubActionButton from "../../components/Button/SubActionButton";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { publish } from "../../socket";
 import { getRndInteger } from "../../utils";
 import { ReelWidget } from "./ReelWidget";
@@ -57,7 +57,7 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
             new NumberProperty({
               name: "perView",
               value: 5,
-              addon: "карт", // TODO: localize
+              addon: <Trans i18nKey="reel-cards-unit" />,
               displayName: "widget-reel-displayed-amount",
             }),
             new NumberProperty({
@@ -163,24 +163,27 @@ export class ReelWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="reel-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Позволяет запускать рулетку на донаты, в которой выграет одна из
-          карточек - "призов". Запускается на каждый донат больше заданной
-          суммы.
+          <Trans i18nKey="reel-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
             <li>
-              Задать сумму для запуска рулетки в строке 'Требуемая сумма'.
+              <Trans i18nKey="reel-help-required-amount" />
             </li>
-            <li>Добавить карточки-призы во вкладке Призы.</li>
             <li>
-              В меню этого виджета (Рулетка) скопировать ссылку и вставить
-              ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="reel-help-add-prizes" />
+            </li>
+            <li>
+              <Trans i18nKey="reel-help-copy-link" />
             </li>
           </ul>
         </div>

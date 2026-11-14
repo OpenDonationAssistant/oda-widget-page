@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { log } from "../../logging";
+import { useTranslation } from "react-i18next";
 
 export default function RequestsDisabledWarning() {
+  const { t } = useTranslation();
   const [requestsEnabled, setRequestsEnabled] = useState(true);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function RequestsDisabledWarning() {
       {!requestsEnabled && (
         <div className="disabled-media-warning">
           <span className="material-symbols-sharp">priority_high</span>
-          requests disabled
+          {t("media-requests-disabled")}
         </div>
       )}
     </>

@@ -32,6 +32,7 @@ import {
   PaddingPropertyValue,
 } from "../ConfigurationPage/widgetproperties/PaddingProperty";
 import SubActionButton from "../Button/SubActionButton";
+import { useTranslation } from "react-i18next";
 import {
   AnimationPropertyComponent,
   AnimationPropertyValue,
@@ -76,6 +77,7 @@ export const DEFAULT_LABEL_ELEMENT_SETTINGS = {
 
 export const LabelElementCompoent = observer(
   ({ data }: { data: ElementData<LabelElementSettings> }) => {
+    const { t } = useTranslation();
     const parentModalState = useContext(ModalStateContext);
     const [mainWindowModalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
@@ -86,7 +88,7 @@ export const LabelElementCompoent = observer(
         <Flex vertical gap={18}>
           <Flex vertical gap={3}>
             <Flex justify="space-between" align="center">
-              <div className={`${classes.label}`}>Текст</div>
+              <div className={`${classes.label}`}>{t("label-text")}</div>
               <Flex gap={12} align="center">
                 <Flex align="center">
                   <span
@@ -118,7 +120,7 @@ export const LabelElementCompoent = observer(
                 <SubActionButton onClick={() => {
                   mainWindowModalState.show = true;
                 }}>
-                  Настройки шрифта
+                  {t("widget-font-settings")}
                 </SubActionButton>
                 <FontSettingsOverlay
                   property={
@@ -142,45 +144,45 @@ export const LabelElementCompoent = observer(
           <ColorPropertyComponent
             property={{
               value: data.settings.backgroundColor,
-              displayName: "Фон",
+              displayName: "background-color",
             }}
             onChange={(updated) => (data.settings.backgroundColor = updated)}
           />
           <ImagePropertyComponent
-            displayName="Фоновое изображение"
+            displayName="background-image"
             value={data.settings.backgroundImage}
           />
           <BorderPropertyComponent
-            help="Рамка"
+            help="label-border-help"
             value={data.settings.border}
-            displayName="Граница"
+            displayName="border"
           />
           <PaddingPropertyComponent
-            displayName="Отступ"
+            displayName="padding"
             value={data.settings.padding}
           />
           <RoundingPropertyComponent
-            displayName="Скругление"
+            displayName="rounding"
             value={data.settings.rounding}
           />
-          <LabeledContainer displayName="Анимации">
+          <LabeledContainer displayName="label-animations">
             <Flex vertical className="full-width" gap={9}>
               <AnimationPropertyComponent
-                displayName="Анимация появления"
+                displayName="appearance-animation"
                 value={data.settings.inAnimation}
               />
               <AnimationPropertyComponent
-                displayName="Основная анимация"
+                displayName="label-idle-animation"
                 value={data.settings.idleAnimation}
               />
               <AnimationPropertyComponent
-                displayName="Анимация скрытия"
+                displayName="label-out-animation"
                 value={data.settings.outAnimation}
               />
             </Flex>
           </LabeledContainer>
           <BoxShadowPropertyComponent
-            displayName="Тени"
+            displayName="label-shadows"
             value={data.settings.shadow}
             buttonClassName={classes.addshadowbutton}
           />

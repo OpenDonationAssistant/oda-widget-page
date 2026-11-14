@@ -19,8 +19,10 @@ import { reaction } from "mobx";
 import CloseIcon from "../../icons/CloseIcon";
 import { log } from "../../logging";
 import { BorderedIconButton } from "../../components/IconButton/IconButton";
+import { useTranslation } from "react-i18next";
 
 const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
+  const { t } = useTranslation();
   const triggerController = useContext(AutomationTriggerControllerContext);
   const index = useContext(SelectedIndexContext);
 
@@ -49,7 +51,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
   return (
     <Modal
       size="big"
-      title={`Действие в ${rule.name}`}
+      title={t("automation-modal-title", { name: rule.name })}
       show={index.index != null}
       onSubmit={() => {
         if (index.index != null) {
@@ -68,7 +70,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
           className="full-width"
           options={triggerController.triggers.map((option) => {
             return {
-              label: option.name,
+              label: option.name ? t(option.name) : "",
               value: option.id,
             };
           })}
@@ -87,6 +89,7 @@ const TriggerModal = observer(({ rule }: { rule: AutomationRule }) => {
 });
 
 const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
+  const { t } = useTranslation();
   const actionController = useContext(AutomationActionControllerContext);
   const index = useContext(SelectedIndexContext);
 
@@ -109,7 +112,7 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
   return (
     <Modal
       size="big"
-      title={`Действие в ${rule.name}`}
+      title={t("automation-modal-title", { name: rule.name })}
       show={index.index != null}
       onSubmit={() => {
         if (index.index != null) {
@@ -128,7 +131,7 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
           className="full-width"
           options={actionController.actions.map((option) => {
             return {
-              label: option.name,
+              label: option.name ? t(option.name) : "",
               value: option.id,
             };
           })}
@@ -147,6 +150,7 @@ const ActionModal = observer(({ rule }: { rule: AutomationRule }) => {
 });
 
 const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
+  const { t } = useTranslation();
   const [selectedIndex] = useState<SelectedIndexStore>(
     new SelectedIndexStore(),
   );
@@ -159,7 +163,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
       <div className={`${classes.rule}`}>
         <Flex vertical>
           <Flex className={`${classes.ruletrigger}`} vertical gap={9}>
-            <span>Условия</span>
+            <span>{t("automation-conditions")}</span>
             <Flex>
               <SelectedIndexContext.Provider value={selectedIndex}>
                 <TriggerModal rule={rule} />
@@ -172,7 +176,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         justify="space-between"
                       >
                         <div className={`${classes.triggername}`}>
-                          {trigger.name ? trigger.name : "<Не выбрано>"}
+                          {trigger.name
+                            ? t(trigger.name)
+                            : t("automation-not-selected")}
                         </div>
                         <BorderedIconButton
                           onClick={() => rule.removeTrigger(index)}
@@ -190,7 +196,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         }}
                         className={`${classes.edit}`}
                       >
-                        Изменить
+                        {t("automation-edit")}
                       </button>
                     </div>
                   ))}
@@ -203,7 +209,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                   >
                     <Flex vertical justify="center">
                       <span className="material-symbols-sharp">add</span>
-                      <div>Добавить условие</div>
+                      <div>{t("automation-add-condition")}</div>
                     </Flex>
                   </Button>
                 </Flex>
@@ -211,7 +217,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
             </Flex>
           </Flex>
           <Flex vertical gap={10} className={`${classes.rulebody}`}>
-            <span>Действия</span>
+            <span>{t("common-actions")}</span>
             <Flex>
               <SelectedIndexContext.Provider value={selectedAction}>
                 <ActionModal rule={rule} />
@@ -224,7 +230,9 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         justify="space-between"
                       >
                         <div className={`${classes.triggername}`}>
-                          {action.name ? action.name : "<Не выбрано>"}
+                          {action.name
+                            ? t(action.name)
+                            : t("automation-not-selected")}
                         </div>
                         <BorderedIconButton
                           onClick={() => rule.removeAction(index)}
@@ -242,7 +250,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                         }}
                         className={`${classes.edit}`}
                       >
-                        Изменить
+                        {t("automation-edit")}
                       </button>
                     </div>
                   ))}
@@ -255,7 +263,7 @@ const RuleComponent = observer(({ rule }: { rule: AutomationRule }) => {
                   >
                     <Flex vertical justify="center" align="center">
                       <span className="material-symbols-sharp">add</span>
-                      <div>Добавить действие</div>
+                      <div>{t("automation-add-action")}</div>
                     </Flex>
                   </Button>
                 </Flex>

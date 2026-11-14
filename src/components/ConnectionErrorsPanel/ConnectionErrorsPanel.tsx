@@ -7,8 +7,10 @@ import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import { sendMessageToWorker } from "../../worker";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export default observer(function ConnectionErrorsPanel() {
+  const { t } = useTranslation();
   const [store] = useState<WorkersStore>(() => new DefaultWorkersStore());
   const { accessToken } = useAuth();
 
@@ -32,13 +34,17 @@ export default observer(function ConnectionErrorsPanel() {
                 <Button
                   size="small"
                   onClick={() => restart(error.handler)}
-                  title={`Restart ${error.handler}`}
+                  title={t("connection-error-restart-hint", {
+                    handler: error.handler,
+                  })}
                 >
-                  Restart
+                  {t("connection-error-restart")}
                 </Button>
                 <NotBorderedIconButton
                   onClick={() => store.remove(error.handler)}
-                  title={`Remove ${error.handler} errors`}
+                  title={t("connection-error-remove-hint", {
+                    handler: error.handler,
+                  })}
                 >
                   <CloseIcon color="white" />
                 </NotBorderedIconButton>

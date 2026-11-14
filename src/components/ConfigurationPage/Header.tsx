@@ -41,12 +41,12 @@ export default function Header() {
             items: [
               {
                 key: "en",
-                label: "En",
+                label: t("language-en"),
                 onClick: () => changeLang("en"),
               },
               {
                 key: "ru",
-                label: "Ru",
+                label: t("language-ru"),
                 onClick: () => changeLang("ru"),
               },
             ],

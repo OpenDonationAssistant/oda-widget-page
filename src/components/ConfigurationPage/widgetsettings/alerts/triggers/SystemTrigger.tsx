@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { Select } from "antd";
 
 export const SYSTEM_TRIGGER = {
-  description: "Донат сделан через",
+  description: "alerts-trigger-donation-system",
   type: "system",
 };
 

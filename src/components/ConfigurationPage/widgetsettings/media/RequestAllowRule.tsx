@@ -7,6 +7,7 @@ import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import SmallLabeledContainer from "../../../SmallLabeledContainer/SmallLabeledContainer";
 import StringListEditor from "../../../StringListEditor/StringListEditor";
 import classes from "./RequestAllowRule.module.css";
+import { useTranslation } from "react-i18next";
 
 export type RequestAllowMode = "all" | "selected";
 
@@ -18,10 +19,10 @@ export interface RequestAllowRuleValue {
 }
 
 const roleLabels: Record<string, string> = {
-  broadcaster: "Стример",
-  moderator: "Модератор",
-  vip: "VIP",
-  subscriber: "Подписчик",
+  broadcaster: "media-role-broadcaster",
+  moderator: "media-role-moderator",
+  vip: "media-role-vip",
+  subscriber: "media-role-subscriber",
 };
 
 function normalizeNickname(nickname: string): string {
@@ -78,17 +79,18 @@ function NicknameList({
 
 const RequestAllowRuleComponent = observer(
   ({ property }: { property: RequestAllowRule }) => {
+    const { t } = useTranslation();
     const value = property.value;
     const nobodyAllowed = value.roles.length === 0 && value.users.length === 0;
 
     return (
-      <LabeledContainer displayName="Кто может заказать">
+      <LabeledContainer displayName="media-who-can-request">
         <Flex vertical gap={8} className="full-width">
           <Segmented
             className="full-width"
             options={[
-              { label: "Все", value: "all" },
-              { label: "Выбранные", value: "selected" },
+              { label: t("common-all"), value: "all" },
+              { label: t("media-selected"), value: "selected" },
             ]}
             value={value.mode}
             onChange={(mode) => {
@@ -97,10 +99,10 @@ const RequestAllowRuleComponent = observer(
           />
           {value.mode === "selected" && (
             <>
-              <SmallLabeledContainer displayName="Роли">
+              <SmallLabeledContainer displayName="media-roles">
                 <Checkbox.Group
                   options={property.roleIds.map((roleId) => {
-                    return { label: roleLabels[roleId], value: roleId };
+                    return { label: t(roleLabels[roleId]), value: roleId };
                   })}
                   className={classes.paddingleft}
                   value={value.roles}
@@ -110,16 +112,16 @@ const RequestAllowRuleComponent = observer(
                 />
               </SmallLabeledContainer>
               <NicknameList
-                displayName="Разрешённые зрители"
-                placeholder="Ник зрителя"
+                displayName="media-allowed-viewers"
+                placeholder={t("media-viewer-nickname")}
                 entries={value.users}
                 onChange={(users) => {
                   property.update({ users: users });
                 }}
               />
               <NicknameList
-                displayName="Запрещённые зрители"
-                placeholder="Ник запрещённого зрителя"
+                displayName="media-denied-viewers"
+                placeholder={t("media-denied-viewer-nickname")}
                 entries={value.excludedUsers}
                 onChange={(excludedUsers) => {
                   property.update({ excludedUsers: excludedUsers });
@@ -127,8 +129,7 @@ const RequestAllowRuleComponent = observer(
               />
               {nobodyAllowed && (
                 <Typography.Text type="secondary">
-                  Никто не сможет активировать награду, пока не выбрана хотя бы
-                  одна роль или не добавлен хотя бы один разрешённый зритель.
+                  {t("media-nobody-allowed")}
                 </Typography.Text>
               )}
             </>
@@ -151,7 +152,7 @@ export class RequestAllowRule extends DefaultWidgetProperty<RequestAllowRuleValu
         users: [],
         excludedUsers: [],
       },
-      displayName: "Кто может заказать",
+      displayName: "media-who-can-request",
     });
     this._roleIds = roleIds;
   }

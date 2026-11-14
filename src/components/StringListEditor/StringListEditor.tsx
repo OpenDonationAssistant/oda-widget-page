@@ -6,12 +6,13 @@ import {
 } from "../IconButton/IconButton";
 import AddIcon from "../../icons/AddIcon";
 import CloseIcon from "../../icons/CloseIcon";
+import { useTranslation } from "react-i18next";
 import classes from "./StringListEditor.module.css";
 
 export default function StringListEditor({
   items,
   placeholder,
-  addTitle = "Добавить",
+  addTitle,
   onAdd,
   onRemove,
   className,
@@ -23,6 +24,7 @@ export default function StringListEditor({
   onRemove: (value: string, index: number) => void;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
 
   const handleAdd = () => {
@@ -51,7 +53,7 @@ export default function StringListEditor({
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <NotBorderedIconButton onClick={handleAdd} title={addTitle}>
+        <NotBorderedIconButton onClick={handleAdd} title={addTitle ?? t("common-add")}>
           <AddIcon color="var(--oda-primary-color)" />
         </NotBorderedIconButton>
       </Flex>

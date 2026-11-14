@@ -3,6 +3,7 @@ import { AbstractWidgetSettings } from "./AbstractWidgetSettings";
 import classes from "./AbstractWidgetSettings.module.css";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { Flex } from "antd";
+import { Trans } from "react-i18next";
 
 export class PlayerControlWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -15,18 +16,25 @@ export class PlayerControlWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="top" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Remote Control"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="player-control-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Позволяет удаленно управлять виджетом Плеер - добавлять треки,
-          паузить/включать плеер.
+          <Trans i18nKey="player-control-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-howto-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (События) скопировать ссылку.</li>
-            <li>Открыть ссылку в браузере</li>
+            <li>
+              <Trans i18nKey="player-control-help-step1" />
+            </li>
+            <li>
+              <Trans i18nKey="player-control-help-step2" />
+            </li>
           </ul>
         </div>
       </>

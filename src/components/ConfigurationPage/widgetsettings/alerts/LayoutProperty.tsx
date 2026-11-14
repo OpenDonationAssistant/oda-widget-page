@@ -9,9 +9,12 @@ import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
 import { Card } from "../../../Cards/CardsComponent";
 import PictureIcon from "../../../../icons/PictureIcon";
+import { useTranslation } from "react-i18next";
 
 const LayoutPropertyComponent = observer(
   ({ property }: { property: LayoutProperty }) => {
+    const { t } = useTranslation();
+
     return (
       <>
         <div className={`${classes.previews}`}>
@@ -30,8 +33,8 @@ const LayoutPropertyComponent = observer(
               style={{ height: "100%" }}
             >
               <PictureIcon />
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+              <div>{t("common-title")}</div>
+              <div>{t("common-message")}</div>
             </Flex>
           </Card>
           <Card
@@ -48,9 +51,9 @@ const LayoutPropertyComponent = observer(
               justify="center"
               style={{ height: "100%" }}
             >
-              <div>Заголовок</div>
+              <div>{t("common-title")}</div>
               <PictureIcon />
-              <div>Сообщение</div>
+              <div>{t("common-message")}</div>
             </Flex>
           </Card>
           <Card
@@ -67,8 +70,8 @@ const LayoutPropertyComponent = observer(
               justify="center"
               style={{ height: "100%" }}
             >
-              <div>Заголовок</div>
-              <div>Сообщение</div>
+              <div>{t("common-title")}</div>
+              <div>{t("common-message")}</div>
               <PictureIcon />
             </Flex>
           </Card>
@@ -82,8 +85,8 @@ const LayoutPropertyComponent = observer(
           >
             <Flex align="top" justify="center" style={{ height: "100%" }}>
               <Flex vertical>
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </Flex>
               <PictureIcon />
             </Flex>
@@ -101,9 +104,9 @@ const LayoutPropertyComponent = observer(
               justify="center"
               style={{ height: "100%", width: "100%" }}
             >
-              <div style={{ wordBreak: "break-all" }}>Заголовок</div>
+              <div style={{ wordBreak: "break-all" }}>{t("common-title")}</div>
               <PictureIcon />
-              <div style={{ wordBreak: "break-all" }}>Сообщение</div>
+              <div style={{ wordBreak: "break-all" }}>{t("common-message")}</div>
             </Flex>
           </Card>
           <Card
@@ -121,8 +124,8 @@ const LayoutPropertyComponent = observer(
             >
               <PictureIcon />
               <Flex vertical justify="flex-start">
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </Flex>
             </Flex>
           </Card>
@@ -140,8 +143,8 @@ const LayoutPropertyComponent = observer(
               style={{ height: "100%", width: "100%" }}
             >
               <div>
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </div>
               <PictureIcon />
             </Flex>
@@ -160,11 +163,11 @@ const LayoutPropertyComponent = observer(
               style={{ height: "100%", width: "100%" }}
             >
               <div style={{ width: "50px", wordBreak: "break-all" }}>
-                Заголовок
+                {t("common-title")}
               </div>
               <PictureIcon />
               <div style={{ width: "50px", wordBreak: "break-all" }}>
-                Сообщение
+                {t("common-message")}
               </div>
             </Flex>
           </Card>
@@ -183,8 +186,8 @@ const LayoutPropertyComponent = observer(
             >
               <PictureIcon />
               <div>
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </div>
             </Flex>
           </Card>
@@ -198,8 +201,8 @@ const LayoutPropertyComponent = observer(
           >
             <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
               <Flex vertical justify="flex-end">
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </Flex>
               <PictureIcon />
             </Flex>
@@ -213,9 +216,9 @@ const LayoutPropertyComponent = observer(
             }}
           >
             <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
-              <div style={{ wordBreak: "break-all" }}>Заголовок</div>
+              <div style={{ wordBreak: "break-all" }}>{t("common-title")}</div>
               <PictureIcon />
-              <div style={{ wordBreak: "break-all" }}>Сообщение</div>
+              <div style={{ wordBreak: "break-all" }}>{t("common-message")}</div>
             </Flex>
           </Card>
           <Card
@@ -229,8 +232,8 @@ const LayoutPropertyComponent = observer(
             <Flex align="flex-end" justify="center" style={{ height: "100%" }}>
               <PictureIcon />
               <Flex vertical justify="flex-end">
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </Flex>
             </Flex>
           </Card>
@@ -253,8 +256,8 @@ const LayoutPropertyComponent = observer(
                   transform: "translate(-50%, 0%)",
                 }}
               >
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </div>
               <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
@@ -278,8 +281,8 @@ const LayoutPropertyComponent = observer(
                   transform: "translate(-50%, -50%)",
                 }}
               >
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </div>
               <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
@@ -303,8 +306,8 @@ const LayoutPropertyComponent = observer(
                   transform: "translate(-50%, -50%)",
                 }}
               >
-                <div>Заголовок</div>
-                <div>Сообщение</div>
+                <div>{t("common-title")}</div>
+                <div>{t("common-message")}</div>
               </div>
               <PictureIcon style={{ width: "100%", height: "100%" }} />
             </div>
@@ -317,7 +320,7 @@ const LayoutPropertyComponent = observer(
               });
             }}
           >
-            <div>Фиксированные координаты</div>
+            <div>{t("alerts-fixed-coordinates")}</div>
           </Card>
         </div>
         {"16" === property.value.value && (
@@ -451,7 +454,7 @@ export class LayoutProperty extends DefaultWidgetProperty<LayoutPropertyValue> {
         headerStartPoint: null,
         messageStartPoint: null,
       },
-      displayName: "layout",
+      displayName: "alerts-layout",
     });
   }
 

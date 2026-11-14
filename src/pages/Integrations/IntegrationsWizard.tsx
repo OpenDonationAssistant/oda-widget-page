@@ -18,6 +18,7 @@ import { TokenStore } from "../../stores/TokenStore";
 import { uuidv7 } from "uuidv7";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
+import { Trans, useTranslation } from "react-i18next";
 
 export class IntegrationWizardStore {
   private _system:
@@ -69,6 +70,7 @@ export const IntegrationWizardStoreContext = createContext(
 );
 
 export const ChooseDonationPlatformComponent = observer(() => {
+  const { t } = useTranslation();
   const context = useContext(IntegrationWizardStoreContext);
 
   return (
@@ -80,11 +82,10 @@ export const ChooseDonationPlatformComponent = observer(() => {
         <Flex className="full-width" vertical justify="flex-start">
           <CardTitle>DonationAlerts</CardTitle>
           <div className={`${classes.description}`}>
-            Позволяет учитывать донаты с сайта DonationAlerts в таких виджетах
-            как "Топ донатеры", "Таймер до конца трансляции", "Цель сбора".
-            <br />
-            Если включить оповещения для DA, то озвучка будет от ODA. Заказы
-            музыки не переносятся.
+            <Trans
+              i18nKey="integration-donationalerts-description"
+              components={{ br: <br /> }}
+            />
           </div>
         </Flex>
       </Card>
@@ -93,19 +94,15 @@ export const ChooseDonationPlatformComponent = observer(() => {
         onClick={() => (context.system = "unofficialdonationalerts")}
       >
         <Flex className="full-width" vertical justify="flex-start">
-          <CardTitle>Boosty и DonationAlerts через неофициальный api</CardTitle>
+          <CardTitle>{t("integration-unofficial-title")}</CardTitle>
           <div className={`${classes.description}`}>
-            Делает полноценную интеграцию - учитывает донаты с сайта
-            DonationAlerts в таких виджетах как "Топ донатеры", "Таймер до конца
-            трансляции", "Цель сбора" И подхватывает озвучку с DA, как и заказы
-            музыки.
+            <Trans i18nKey="integration-unofficial-description" />
           </div>
           <div className={`${classes.description}`}>
-            Также позволяет отображать оповещения о покупках монет в MemeAlerts
-            и о подписках на Boosty.
+            <Trans i18nKey="integration-unofficial-memealerts-description" />
           </div>
           <div className={`${classes.description}`}>
-            Может работать нестабильно.
+            <Trans i18nKey="integration-unofficial-unstable" />
           </div>
         </Flex>
       </Card>
@@ -116,9 +113,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
         <Flex className="full-width" vertical justify="flex-start">
           <CardTitle>DonateX</CardTitle>
           <div className={`${classes.description}`}>
-            Делает полноценную интеграцию - учитывает донаты с DonateX в таких
-            виджетах как "Топ донатеры", "Таймер до конца трансляции", "Цель
-            сбора" И подхватывает озвучку, как и заказы музыки.
+            <Trans i18nKey="integration-donatex-description" />
           </div>
         </Flex>
       </Card>
@@ -129,9 +124,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
         <Flex className="full-width" vertical justify="flex-start">
           <CardTitle>DonatePay.ru</CardTitle>
           <div className={`${classes.description}`}>
-            Позволяет учитывать донаты с DonatePay в таких виджетах как "Топ
-            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
-            позволяет отображать оповещения, но с озвучкой ODA.
+            <Trans i18nKey="integration-donatepay-ru-description" />
           </div>
         </Flex>
       </Card>
@@ -142,9 +135,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
         <Flex className="full-width" vertical justify="flex-start">
           <CardTitle>DonatePay.eu</CardTitle>
           <div className={`${classes.description}`}>
-            Позволяет учитывать донаты с DonatePay.EU в таких виджетах как "Топ
-            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
-            позволяет отображать оповещения, но с озвучкой ODA.
+            <Trans i18nKey="integration-donatepay-eu-description" />
           </div>
         </Flex>
       </Card>
@@ -157,9 +148,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
             <span>Tribute</span>
           </CardTitle>
           <div className={`${classes.description}`}>
-            Позволяет учитывать донаты с Tribute в таких виджетах как "Топ
-            донатеры", "Таймер до конца трансляции", "Цель сбора". Также
-            позволяет отображать оповещения с озвучкой ODA.
+            <Trans i18nKey="integration-tribute-description" />
           </div>
         </Flex>
       </Card>
@@ -168,6 +157,7 @@ export const ChooseDonationPlatformComponent = observer(() => {
 });
 
 export const AddDonatePayTokenComponent = observer(() => {
+  const { t } = useTranslation();
   const context = useContext(IntegrationWizardStoreContext);
   const { recipientId } = useLoaderData() as WidgetData;
 
@@ -176,8 +166,10 @@ export const AddDonatePayTokenComponent = observer(() => {
       {context.system === "donatepay.eu" && (
         <Flex className="full-width" gap={12} vertical>
           <div className={`${classes.instruction}`}>
-            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
-            <a href="https://donatepay.eu/page/api">API DonatePay.eu</a>
+            <Trans
+              i18nKey="integration-donatepay-eu-api-instruction"
+              components={{ lnk: <a href="https://donatepay.eu/page/api" /> }}
+            />
           </div>
           <Input
             value={context.accessToken}
@@ -190,10 +182,14 @@ export const AddDonatePayTokenComponent = observer(() => {
       {context.system === "unofficialdonationalerts" && (
         <Flex className="full-width" gap={12} vertical>
           <div className={`${classes.instruction}`}>
-            1. Укажите Секретный токен. Скопировать его можно на странице{" "}
-            <a href="https://www.donationalerts.com/dashboard/general-settings/account">
-              Настройки аккаунта
-            </a>
+            <Trans
+              i18nKey="integration-donationalerts-account-settings-instruction"
+              components={{
+                lnk: (
+                  <a href="https://www.donationalerts.com/dashboard/general-settings/account" />
+                ),
+              }}
+            />
           </div>
           <Input
             value={context.accessToken}
@@ -206,8 +202,10 @@ export const AddDonatePayTokenComponent = observer(() => {
       {context.system === "donatepay.ru" && (
         <Flex className="full-width" gap={12} vertical>
           <div className={`${classes.instruction}`}>
-            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
-            <a href="https://donatepay.ru/page/api">API DonatePay.ru</a>
+            <Trans
+              i18nKey="integration-donatepay-ru-api-instruction"
+              components={{ lnk: <a href="https://donatepay.ru/page/api" /> }}
+            />
           </div>
           <Input
             value={context.accessToken}
@@ -220,8 +218,12 @@ export const AddDonatePayTokenComponent = observer(() => {
       {context.system === "donatex" && (
         <Flex className="full-width" gap={12} vertical>
           <div className={`${classes.instruction}`}>
-            1. Укажите API ключ. Скопировать API ключ можно на странице{" "}
-            <a href="https://donatex.gg/streamer/settings">Настройки</a>
+            <Trans
+              i18nKey="integration-donatex-settings-instruction"
+              components={{
+                lnk: <a href="https://donatex.gg/streamer/settings" />,
+              }}
+            />
           </div>
           <Input
             value={context.accessToken}
@@ -234,10 +236,7 @@ export const AddDonatePayTokenComponent = observer(() => {
       {context.system === "tribute" && (
         <Flex className="full-width" gap={12} vertical>
           <div className={`${classes.instruction}`}>
-            1. Укажите API ключ. Чтобы его скопировать, откройте приложение
-            "Tribute" в телеграмме, нажмите на троеточие в правом верхнем углу,
-            затем выберите "Настройки", в открывшемся окне настроек - "API
-            Keys", далее - "Generate API Key"("Сгенерировать ключ API")
+            <Trans i18nKey="integration-tribute-api-key-instruction" />
           </div>
           <Input
             value={context.accessToken}
@@ -249,7 +248,7 @@ export const AddDonatePayTokenComponent = observer(() => {
             className={`${classes.instruction}`}
             style={{ userSelect: "text" }}
           >
-            2. В том же окне, добавьте Webhook:
+            {t("integration-tribute-webhook-instruction")}{" "}
             https://api.oda.digital/tribute/webhook/{recipientId}
           </div>
         </Flex>
@@ -266,8 +265,8 @@ export const DonationPlatformWizard = observer(
       new WizardConfigurationStore({
         steps: [
           {
-            title: "Добавить донатную платформу",
-            subtitle: "Выберите донатную платформу, которую хотите добавить",
+            title: "integration-wizard-add-donation-platform",
+            subtitle: "integration-wizard-choose-donation-platform-subtitle",
             content: <ChooseDonationPlatformComponent />,
             handler: () => {
               if (selection.system === "donationalerts") {
@@ -285,8 +284,8 @@ export const DonationPlatformWizard = observer(
             },
           },
           {
-            title: "Добавить донатную платформу",
-            subtitle: "Введите информацию для подключения",
+            title: "integration-wizard-add-donation-platform",
+            subtitle: "integration-wizard-enter-connection-info",
             content: <AddDonatePayTokenComponent />,
             condition: () => {
               return Promise.resolve(
@@ -334,8 +333,8 @@ export const DonationPlatformWizard = observer(
             },
           },
           {
-            title: "Добавить донатную платформу",
-            subtitle: "Введите информацию для подключения",
+            title: "integration-wizard-add-donation-platform",
+            subtitle: "integration-wizard-enter-connection-info",
             content: <AddDonatePayTokenComponent />,
             condition: () => {
               return Promise.resolve(selection.system === "paywall");

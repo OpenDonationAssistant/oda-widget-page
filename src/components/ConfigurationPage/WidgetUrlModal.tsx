@@ -17,6 +17,7 @@ import CopyIcon from "../../icons/CopyIcon";
 import SubActionButton from "../Button/SubActionButton";
 import { log } from "../../logging";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 
 async function createOtp(id: string) {
   log.debug("creating otp");
@@ -51,6 +52,7 @@ function url(type: string, id: string, otp: string): string {
 
 export const WidgetUrlModal = observer(
   ({ type, id }: { type: string; id: string }) => {
+    const { t } = useTranslation();
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
       () => new ModalState(parentModalState),
@@ -73,7 +75,7 @@ export const WidgetUrlModal = observer(
         <ModalStateContext.Provider value={dialogState}>
           <Overlay>
             <Panel>
-              <Title>Как подключить виджет</Title>
+              <Title>{t("widget-url-title")}</Title>
               {loading && (
                 <Flex
                   className={`${classes.spin} full-width`}
@@ -86,9 +88,7 @@ export const WidgetUrlModal = observer(
               {data && (
                 <Flex vertical gap={20} className={`${classes.modal}`}>
                   <div>
-                    Виджет можно добавить в OBS Studio как Browser source (чтобы
-                    отобразить на стриме) или как Dock-panel (чтобы держать под
-                    рукой) используя эту ссылку:
+                    {t("widget-url-description")}
                   </div>
                   <Flex vertical gap={3}>
                     <Input className={`${classes.url}`} value={data} />
@@ -97,7 +97,7 @@ export const WidgetUrlModal = observer(
                         onClick={() => copyUrl(data)}
                         icon={<CopyIcon />}
                       >
-                        <span>Скопировать</span>
+                        <span>{t("widget-url-copy")}</span>
                       </SubActionButton>
                       <SubActionButton
                         onClick={() => openUrl(data)}
@@ -110,15 +110,12 @@ export const WidgetUrlModal = observer(
                           </span>
                         }
                       >
-                        <span>Открыть</span>
+                        <span>{t("common-open")}</span>
                       </SubActionButton>
                     </Flex>
                   </Flex>
                   <div className={`${classes.qrcodedescription}`}>
-                    Если хотите воспользоваться виджетом на телефоне или
-                    добавить его в Prisma Live или его аналоги, воспользуйтесь
-                    QR кодом - виджет откроется в браузере телефона, там же
-                    можно скопировать ссылку на него для Prisma Live.
+                    {t("widget-url-qr-description")}
                   </div>
                   <Flex justify="center">
                     <QRCode size={320} value={data} />

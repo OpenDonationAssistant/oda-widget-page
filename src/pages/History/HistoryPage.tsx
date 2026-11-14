@@ -114,6 +114,7 @@ function groupConsecutiveItems(items: HistoryItem[]): HistoryItemGroup[] {
 }
 
 const HistoryItemList = observer(({}: {}) => {
+  const { t } = useTranslation();
   const historyStore = useContext(HistoryStoreContext);
   const settings = new HistoryWidgetSettings();
   settings.set("showRequests", true);
@@ -135,7 +136,7 @@ const HistoryItemList = observer(({}: {}) => {
             <div key={`group-${groupIndex}`}>
               {isFirstItem && firstGroupItemDate === historyStore?.today && (
                 <div className={`${classes.historyday}`}>
-                  Сегодня ({firstGroupItemDate})
+                  {t("history-today", { date: firstGroupItemDate })}
                 </div>
               )}
               {isFirstItem && firstGroupItemDate !== historyStore?.today && (
@@ -161,7 +162,7 @@ const HistoryItemList = observer(({}: {}) => {
             align="center"
           >
             <SecondaryButton onClick={() => historyStore?.next()}>
-              Показать еще
+              {t("history-load-more")}
             </SecondaryButton>
           </Flex>
         )}
@@ -171,6 +172,7 @@ const HistoryItemList = observer(({}: {}) => {
 });
 
 const NewsLineComponent = observer(({}) => {
+  const { t } = useTranslation();
   const { accessToken } = useAuth();
   const [newsStore] = useState<NewsStore>(
     () => new DefaultNewsStore(accessToken ?? ""),
@@ -179,7 +181,9 @@ const NewsLineComponent = observer(({}) => {
     <>
       {newsStore.news && newsStore.news.length > 0 && (
         <Flex className={`${classes.newscontainer}`} align="center">
-          <div className={`${classes.newsprefix}`}>new</div>
+          <div className={`${classes.newsprefix}`}>
+            {t("history-news-badge")}
+          </div>
           <Marquee
             className={`${classes.newsline}`}
             style={{ marginRight: "36px" }}
@@ -305,15 +309,19 @@ export const HistoryComponent = observer(
           <Overlay>
             <Panel>
               <Flex justify="space-between" className="full-width">
-                <div className={`${classes.title}`}>Настройки отображения</div>
+                <div className={`${classes.title}`}>
+                  {t("history-display-settings")}
+                </div>
                 <CloseOverlayButton />
               </Flex>
               <Subtitle>
-                Выберите, какие события будут отображаться в истории
+                {t("history-display-settings-description")}
               </Subtitle>
               <div className={`${classes.filters}`}>
                 <Flex className={`${classes.filterpanel}`} vertical>
-                  <div className={`${classes.filtersection}`}>Донаты</div>
+                  <div className={`${classes.filtersection}`}>
+                    {t("history-group-donations")}
+                  </div>
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showODA}
@@ -360,14 +368,14 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showBoostySubs}
-                      label="Подписки Boosty"
+                      label="history-toggle-boosty-subs"
                       onChange={(update) => {
                         historyStore.showBoostySubs = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showBoostyFollows}
-                      label="Отслеживания Boosty"
+                      label="history-toggle-boosty-follows"
                       onChange={(update) => {
                         historyStore.showBoostyFollows = update;
                       }}
@@ -379,7 +387,7 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showMemeAlertsCoins}
-                      label="Покупки Meme Alerts"
+                      label="history-toggle-meme-alerts-purchases"
                       onChange={(update) => {
                         historyStore.showMemeAlertsCoins = update;
                       }}
@@ -391,35 +399,35 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showTwitchFollows}
-                      label="Подписки (фолловы) Twitch"
+                      label="history-toggle-twitch-followers"
                       onChange={(update) => {
                         historyStore.showTwitchFollows = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showTwitchRaids}
-                      label="Рейды Twitch"
+                      label="history-toggle-twitch-raids"
                       onChange={(update) => {
                         historyStore.showTwitchRaids = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showTwitchCheers}
-                      label="Чиры Twitch"
+                      label="history-toggle-twitch-cheers"
                       onChange={(update) => {
                         historyStore.showTwitchCheers = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showTwitchSubs}
-                      label="Подписки Twitch"
+                      label="history-toggle-twitch-subs"
                       onChange={(update) => {
                         historyStore.showTwitchSubs = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showTwitchSubGifts}
-                      label="Подаренные подписки Twitch"
+                      label="history-toggle-twitch-sub-gifts"
                       onChange={(update) => {
                         historyStore.showTwitchSubGifts = update;
                       }}
@@ -431,28 +439,28 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showKickFollows}
-                      label="Подписки (фолловы) Kick"
+                      label="history-toggle-kick-follows"
                       onChange={(update) => {
                         historyStore.showKickFollows = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showKickGifts}
-                      label="Подарки Kick"
+                      label="history-toggle-kick-gifts"
                       onChange={(update) => {
                         historyStore.showKickGifts = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showKickSubs}
-                      label="Подписки Kick"
+                      label="history-toggle-kick-subs"
                       onChange={(update) => {
                         historyStore.showKickSubs = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showKickSubGifts}
-                      label="Подаренные подписки Kick"
+                      label="history-toggle-kick-sub-gifts"
                       onChange={(update) => {
                         historyStore.showKickSubGifts = update;
                       }}
@@ -464,14 +472,14 @@ export const HistoryComponent = observer(
                   <div className={`${classes.filterlist}`}>
                     <SwitchComponent
                       value={historyStore.showVKLiveFollows}
-                      label="Подписки (фолловы) VK Live"
+                      label="history-toggle-vklive-follows"
                       onChange={(update) => {
                         historyStore.showVKLiveFollows = update;
                       }}
                     />
                     <SwitchComponent
                       value={historyStore.showVKLiveSubs}
-                      label="Подписки VK Live"
+                      label="history-toggle-vklive-subs"
                       onChange={(update) => {
                         historyStore.showVKLiveSubs = update;
                       }}
@@ -482,7 +490,9 @@ export const HistoryComponent = observer(
             </Panel>
           </Overlay>
           <Flex justify="space-between" align="center" gap={12} wrap>
-            {showHeader && <h1 className={`${classes.header}`}>История</h1>}
+            {showHeader && (
+              <h1 className={`${classes.header}`}>{t("menu-history")}</h1>
+            )}
             {!showHeader && <ConnectedServices />}
             <Flex gap={3} className={`${classes.headerbuttons}`}>
               {!showHeader &&
@@ -538,7 +548,7 @@ export const HistoryComponent = observer(
                         local_police
                       </span>
                       <div className={`${classes.moderationlabel}`}>
-                        Премодерация
+                        {t("history-premoderation")}
                       </div>
                     </Flex>
                     <Switch
@@ -603,7 +613,7 @@ export const HistoryComponent = observer(
           </Flex>
           {showFilters && (
             <Flex vertical gap={9} className={`${classes.searchfilters}`}>
-              <LabeledContainer displayName="Дата">
+              <LabeledContainer displayName="common-date">
                 <Flex
                   gap={18}
                   align="center"

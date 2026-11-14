@@ -2,22 +2,26 @@ import classes from "./common.module.css";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import { Input, Button, Flex } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 export default function SocialsSection({
   config,
 }: {
   config: PaymentPageConfig;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={classes.widgetsettingsitem}>
-      <div className={classes.widgetsettingsname}>Социальные сети</div>
+      <div className={classes.widgetsettingsname}>
+        {t("payment-page-socials")}
+      </div>
       <div style={{ width: "60%" }}>
         {config.socials.map((social, index) => {
           const [[name, link]] = Array.from(social.entries());
           return (
             <Flex key={index} gap={8} align="center" style={{ marginBottom: 8 }}>
               <Input
-                placeholder="Название"
+                placeholder={t("common-name")}
                 value={name}
                 onChange={(e) => {
                   const newSocials = [...config.socials];
@@ -28,7 +32,7 @@ export default function SocialsSection({
                 style={{ width: "45%" }}
               />
               <Input
-                placeholder="Ссылка"
+                placeholder={t("payment-page-link")}
                 value={link}
                 onChange={(e) => {
                   config.deleteSocial(name);
@@ -51,7 +55,7 @@ export default function SocialsSection({
           onClick={() => config.addSocial("", "")}
           block
         >
-          Добавить социальную сеть
+          {t("payment-page-add-social")}
         </Button>
       </div>
     </div>

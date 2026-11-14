@@ -29,6 +29,7 @@ import { DemoDonationGoalState } from "../../../pages/DonationGoal/DemoDonationG
 import { Flex } from "antd";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { AlignmentProperty } from "../widgetproperties/AlignmentProperty";
+import { Trans } from "react-i18next";
 
 export type DonationGoalTitlePosition = "top" | "bottom" | "left" | "right";
 
@@ -77,8 +78,8 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BoxShadowProperty({
           name: "boxShadow",
-          displayName: "Тени виджета",
-          help: "Устанавливает тени виджета.",
+          displayName: "widget-box-shadow",
+          help: "widget-box-shadow-help",
         }),
       ],
     });
@@ -139,8 +140,8 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BoxShadowProperty({
           name: "titleBoxShadow",
-          displayName: "Тени",
-          help: "Устанавливает тени под заголовком(название цели).",
+          displayName: "widget-box-shadows",
+          help: "widget-donationgoal-title-shadow-help",
         }),
       ],
     });
@@ -158,7 +159,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         new SingleChoiceProperty({
           name: "filledTextPlacement",
           value: "center",
-          displayName: "Расположение надписи",
+          displayName: "widget-donationgoal-label-placement",
           options: ["top", "center", "bottom"],
           selectionType: SELECTION_TYPE.SEGMENTED,
         }),
@@ -194,7 +195,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BoxShadowProperty({
           name: "outerBoxShadow",
-          displayName: "Тени",
+          displayName: "widget-box-shadows",
         }),
       ],
     });
@@ -235,7 +236,7 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
         }),
         new BoxShadowProperty({
           name: "innerBoxShadow",
-          displayName: "Тени",
+          displayName: "widget-box-shadows",
         }),
       ],
     });
@@ -269,28 +270,27 @@ export class DonationGoalWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Сбор средств"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="widget-donationgoal-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Позволяет создать цели сбора донатов и отслеживать их выполнение на
-          стриме.
+          <Trans i18nKey="widget-donationgoal-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
             <li>
-              В настройках виджета создать цели с помощью кнопки "Добавить
-              цели", добавить им название и описание, задать сумму.
+              <Trans i18nKey="widget-donationgoal-help-create-goals" />
             </li>
             <li>
-              Чтобы какая-то цель выбиралась автоматически, в панели цели надо
-              включить опцию 'По умолчанию'.
+              <Trans i18nKey="widget-donationgoal-help-default-goal" />
             </li>
             <li>
-              Чтобы отобразить прогресс на стриме, в меню виджета скопируйте
-              ссылку и встатьте ссылку как Browser Source в OBS поверх картинки
-              стрима.
+              <Trans i18nKey="widget-donationgoal-help-progress" />
             </li>
           </ul>
         </div>

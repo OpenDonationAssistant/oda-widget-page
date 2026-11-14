@@ -7,8 +7,10 @@ import { Playlist } from "../../logic/playlist/Playlist";
 import { Provider, Song } from "./types";
 import { WidgetData } from "../../types/WidgetData";
 import { sleep } from "../../utils";
+import { useTranslation } from "react-i18next";
 
 export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
+  const { t } = useTranslation();
   const [showNewMediaPopup, setShowNewMediaPopup] = useState(false);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
   const { recipientId } = useLoaderData() as WidgetData;
@@ -145,8 +147,7 @@ export default function AddMediaPopup({ playlist }: { playlist: Playlist }) {
         <span className="material-symbols-sharp">close</span>
       </button>
       <div className="add-media-popup-description">
-        Введите ссылку на YouTube видео или плейлист. Плейлист должен быть
-        доступен по ссылке
+        {t("media-add-video-description")}
       </div>
       <input
         id="new-media-input"

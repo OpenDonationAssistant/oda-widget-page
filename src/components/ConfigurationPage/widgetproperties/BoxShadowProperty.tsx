@@ -8,7 +8,7 @@ import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
 import classes from "./BoxShadowProperty.module.css";
 import { log } from "../../../logging";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import CloseIcon from "../../../icons/CloseIcon";
 import CopyIcon from "../../../icons/CopyIcon";
 import SubActionButton from "../../Button/SubActionButton";
@@ -37,7 +37,6 @@ export const DEFAULT_SHADOW = {
   color: "#000000",
 };
 
-// TODO: 18n
 export const BoxShadowPropertyComponent = observer(
   ({
     displayName,
@@ -50,6 +49,7 @@ export const BoxShadowPropertyComponent = observer(
     value: BoxShadowPropertyValue;
     buttonClassName?: string;
   }) => {
+    const { t } = useTranslation();
     return (
       <>
         <LabeledContainer help={help} displayName={displayName ?? ""}>
@@ -87,7 +87,7 @@ export const BoxShadowPropertyComponent = observer(
                 <Flex gap={9}>
                   <SmallLabeledContainer
                     className={classes.label}
-                    displayName="Смещение по горизонтали"
+                    displayName="button-shadow-offset-x"
                   >
                     <InputNumber
                       value={shadow.x}
@@ -95,7 +95,7 @@ export const BoxShadowPropertyComponent = observer(
                       onChange={(updated) => (value.shadows[i].x = updated)}
                     />
                   </SmallLabeledContainer>
-                  <SmallLabeledContainer displayName="Смещение по вертикали">
+                  <SmallLabeledContainer displayName="button-shadow-offset-y">
                     <InputNumber
                       value={shadow.y}
                       addon="px"
@@ -104,14 +104,14 @@ export const BoxShadowPropertyComponent = observer(
                   </SmallLabeledContainer>
                 </Flex>
                 <Flex gap={9}>
-                  <SmallLabeledContainer displayName="Размытие">
+                  <SmallLabeledContainer displayName="box-shadow-blur">
                     <InputNumber
                       value={shadow.blur}
                       addon="px"
                       onChange={(updated) => (value.shadows[i].blur = updated)}
                     />
                   </SmallLabeledContainer>
-                  <SmallLabeledContainer displayName="Растяжение">
+                  <SmallLabeledContainer displayName="box-shadow-spread">
                     <InputNumber
                       value={shadow.spread}
                       addon="px"
@@ -131,13 +131,13 @@ export const BoxShadowPropertyComponent = observer(
                     }}
                     icon={<CopyIcon />}
                   >
-                    <div>Копировать</div>
+                    <div>{t("common-copy")}</div>
                   </SubActionButton>
                   <SubActionButton
                     onClick={() => value.shadows.splice(i, 1)}
                     icon={<CloseIcon color="#FF8888" />}
                   >
-                    <div style={{ color: "#FF8888" }}>Удалить</div>
+                    <div style={{ color: "#FF8888" }}>{t("button-delete")}</div>
                   </SubActionButton>
                 </Flex>
               </Flex>
@@ -157,7 +157,7 @@ export const BoxShadowPropertyComponent = observer(
             >
               <Flex justify="center" align="center" gap={3}>
                 <AddIcon color="var(--oda-color-150)" />
-                <div>Добавить тень</div>
+                <div>{t("widget-shadow-add")}</div>
               </Flex>
             </button>
           </Flex>
@@ -251,6 +251,12 @@ export class BoxShadowProperty extends DefaultWidgetProperty<BoxShadowPropertyVa
   }
 
   markup(): ReactNode {
-    return <BoxShadowPropertyComponent value={this.value} />;
+    return (
+      <BoxShadowPropertyComponent
+        value={this.value}
+        displayName={this.displayName}
+        help={this.help}
+      />
+    );
   }
 }

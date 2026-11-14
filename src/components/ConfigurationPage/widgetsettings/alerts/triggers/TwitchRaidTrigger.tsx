@@ -3,7 +3,7 @@ import { DonationEvent, Trigger } from "./AlertTriggerInterface";
 import { ReactNode } from "react";
 
 export const TWITCH_RAID_TRIGGER = {
-  description: "Twitch Raid",
+  description: "alerts-trigger-twitch-raid",
   type: "twitch_raid",
 };
 

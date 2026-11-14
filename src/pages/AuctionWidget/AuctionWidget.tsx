@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import { AuctionWidgetSettings } from "./AuctionWidgetSettings";
 import { AuctionWidgetStore } from "./AuctionWidgetStore";
 import classes from "./AuctionWidget.module.css";
@@ -17,6 +18,7 @@ export function AuctionWidget({
   settings: AuctionWidgetSettings;
   store: AuctionWidgetStore;
 }) {
+  const { t } = useTranslation();
   const games = useMemo(
     () => aggregateGames(store.donations),
     [store.donations],
@@ -25,8 +27,8 @@ export function AuctionWidget({
   return (
     <div className={classes.auction}>
       <div className={classes.header}>
-        <span>Аукцион игр</span>
-        <strong>{settings.goalTitle || "Все цели"}</strong>
+        <span>{t("auction-widget-title")}</span>
+        <strong>{settings.goalTitle || t("auction-all-goals")}</strong>
       </div>
       <div className={classes.wheel}>
         {games.map((game, index) => (

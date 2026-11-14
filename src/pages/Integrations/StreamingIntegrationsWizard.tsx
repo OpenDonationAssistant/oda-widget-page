@@ -18,6 +18,7 @@ import { uuidv7 } from "uuidv7";
 import { Input } from "antd";
 import { useTokenStore } from "../../stores/TokenStore";
 import classes from "./IntegrationsWizard.module.css";
+import { Trans, useTranslation } from "react-i18next";
 
 export const ChooseStreamingPlatformComponent = observer(() => {
   const continuation = useContext(ContinuationContext);
@@ -174,21 +175,23 @@ class YouTubeWizardStore {
 // ---------------------------------------------------------------------------
 
 export const YouTubeHandleInputComponent = observer(() => {
+  const { t } = useTranslation();
   const wizardStore = useContext(YouTubeWizardStoreContext);
 
   return (
     <div className={`${classes.content}`}>
       <div className={`${classes.instruction}`}>
-        Укажите хэндл (handle) вашего YouTube-канала. Это часть URL вашего
-        канала после <code>@</code>, например{" "}
-        <code style={{ userSelect: "text" }}>@MyChannel</code>.
-        <br />
-        <br />
-        Хэндл будет использован для автоматического поиска вашего канала в
-        YouTube.
+        <Trans
+          i18nKey="integration-youtube-handle-hint"
+          components={{
+            code: <code />,
+            code2: <code style={{ userSelect: "text" }} />,
+            br: <br />,
+          }}
+        />
       </div>
       <Input
-        placeholder="@handle канала"
+        placeholder={t("integration-youtube-handle-placeholder")}
         value={wizardStore.handle}
         onChange={(e) => (wizardStore.handle = e.target.value)}
         style={{ marginTop: 12 }}
@@ -198,46 +201,54 @@ export const YouTubeHandleInputComponent = observer(() => {
 });
 
 export const YouTubeApiKeyInputComponent = observer(() => {
+  const { t } = useTranslation();
   const wizardStore = useContext(YouTubeWizardStoreContext);
 
   return (
     <div className={`${classes.content}`}>
       <div className={`${classes.instruction}`}>
-        Для подключения YouTube необходим ключ API Google (Google API Key).
+        <Trans i18nKey="integration-youtube-api-key-intro" />
         <br />
         <br />
-        Чтобы получить ключ API:
+        <Trans i18nKey="integration-youtube-api-key-howto" />
         <br />
         <br />
-        1. Откройте{" "}
-        <a
-          href="https://console.cloud.google.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Google Cloud Console
-        </a>{" "}
-        и войдите в свой аккаунт Google.
+        <Trans
+          i18nKey="integration-youtube-api-key-step1"
+          components={{
+            lnk: (
+              <a
+                href="https://console.cloud.google.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            ),
+          }}
+        />
         <br />
         <br />
-        2. Создайте новый проект (или выберите существующий): нажмите{" "}
-        <b>SELECT PROJECT</b> → <b>New Project</b>, введите название и нажмите{" "}
-        <b>CREATE</b>.
+        <Trans
+          i18nKey="integration-youtube-api-key-step2"
+          components={{ b: <b /> }}
+        />
         <br />
         <br />
-        3. В левом меню перейдите в <b>APIs &amp; Services</b> → <b>Library</b>.
-        Найдите <b>YouTube Data API v3</b> и нажмите <b>ENABLE</b>.
+        <Trans
+          i18nKey="integration-youtube-api-key-step3"
+          components={{ b: <b /> }}
+        />
         <br />
         <br />
-        4. Перейдите в <b>APIs &amp; Services</b> → <b>Credentials</b>. Нажмите{" "}
-        <b>CREATE CREDENTIALS</b> → <b>API key</b>. Скопируйте сгенерированный
-        ключ.
+        <Trans
+          i18nKey="integration-youtube-api-key-step4"
+          components={{ b: <b /> }}
+        />
         <br />
         <br />
-        5. Вставьте скопированный ключ в поле ниже.
+        <Trans i18nKey="integration-youtube-api-key-step5" />
       </div>
       <Input
-        placeholder="Google API Key"
+        placeholder={t("integration-google-api-key-placeholder")}
         value={wizardStore.apiKey}
         onChange={(e) => (wizardStore.apiKey = e.target.value)}
         style={{ marginTop: 12 }}
@@ -247,18 +258,19 @@ export const YouTubeApiKeyInputComponent = observer(() => {
 });
 
 export const YouTubeSuccessComponent = observer(() => {
+  const { t } = useTranslation();
   const wizardStore = useContext(YouTubeWizardStoreContext);
 
   return (
     <div className={`${classes.content}`}>
       <div className={`${classes.instruction}`}>
-        YouTube-канал успешно подключён!
+        <Trans i18nKey="integration-youtube-success" />
         <br />
         <br />
-        Канал: {wizardStore.resolvedChannelTitle} (
+        {t("integration-youtube-channel")} {wizardStore.resolvedChannelTitle} (
         {wizardStore.resolvedChannelId})
         <br />
-        Хэндл: {wizardStore.handle}
+        {t("integration-youtube-handle")} {wizardStore.handle}
       </div>
     </div>
   );
@@ -312,9 +324,8 @@ export const StreamingIntegrationsWizard = observer(() => {
         steps: [
           // Step 1 — platform chooser
           {
-            title: "Добавить платформу",
-            subtitle:
-              "Выберите стриминговую платформу, которую хотите добавить",
+            title: "integration-wizard-add-platform",
+            subtitle: "integration-wizard-choose-streaming-platform-subtitle",
             content: <ChooseStreamingPlatformComponent />,
             handler: () => {
               if (selection.id === null) {
@@ -328,8 +339,8 @@ export const StreamingIntegrationsWizard = observer(() => {
           },
           // Step 2 — YouTube channel handle
           {
-            title: "Добавить YouTube",
-            subtitle: "Укажите хэндл вашего YouTube-канала",
+            title: "integration-wizard-add-youtube",
+            subtitle: "integration-wizard-youtube-handle-subtitle",
             content: <YouTubeHandleInputComponent />,
             condition: () => Promise.resolve(selection.id === "youtube"),
             handler: () => {
@@ -339,8 +350,8 @@ export const StreamingIntegrationsWizard = observer(() => {
           },
           // Step 3 — YouTube API key
           {
-            title: "Добавить YouTube",
-            subtitle: "Введите Google API Key",
+            title: "integration-wizard-add-youtube",
+            subtitle: "integration-wizard-youtube-api-key-subtitle",
             content: <YouTubeApiKeyInputComponent />,
             condition: () => Promise.resolve(selection.id === "youtube"),
             handler: async () => {
@@ -367,8 +378,8 @@ export const StreamingIntegrationsWizard = observer(() => {
           },
           // Step 4 — success (information step)
           {
-            title: "Добавить YouTube",
-            subtitle: "YouTube-канал подключён",
+            title: "integration-wizard-add-youtube",
+            subtitle: "integration-wizard-youtube-connected-subtitle",
             content: <YouTubeSuccessComponent />,
             condition: () => Promise.resolve(selection.id === "youtube"),
             isInformation: true,

@@ -1,4 +1,4 @@
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { ColorPicker, Flex, Input, Select, Switch } from "antd";
 
@@ -72,6 +72,7 @@ const FontBrowser = ({
   const [name, setName] = useState<string | null>(null);
   const [fontList, setFontList] = useState<Font[]>([]);
   const modalState = useContext(ModalStateContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     log.debug(
@@ -93,11 +94,11 @@ const FontBrowser = ({
   return (
     <Overlay>
       <Panel>
-        <Title>Выбор шрифта</Title>
+        <Title>{t("font-browser-title")}</Title>
         <Flex className={`${classes.filters}`} gap={12}>
           <SmallLabeledContainer
             className="autoscale-1"
-            displayName="Фильтр по названию"
+            displayName="font-filter-name"
           >
             <Input
               className={`${classes.filter}`}
@@ -107,19 +108,19 @@ const FontBrowser = ({
           </SmallLabeledContainer>
           <SmallLabeledContainer
             className="autoscale-1"
-            displayName="Категория"
+            displayName="font-category"
           >
             <Select
               className={`${classes.filter}`}
               value={category}
               options={[
-                { label: "Display", value: "display" },
-                { label: "Handwriting", value: "handwriting" },
-                { label: "Sans Serif", value: "sans-serif" },
-                { label: "Serif", value: "serif" },
-                { label: "Monospace", value: "monospace" },
-                { label: "Other", value: "other" },
-                { label: "Любая", value: null },
+                { label: t("font-category-display"), value: "display" },
+                { label: t("font-category-handwriting"), value: "handwriting" },
+                { label: t("font-category-sans-serif"), value: "sans-serif" },
+                { label: t("font-category-serif"), value: "serif" },
+                { label: t("font-category-monospace"), value: "monospace" },
+                { label: t("font-category-other"), value: "other" },
+                { label: t("font-category-any"), value: null },
               ]}
               onChange={(value) => {
                 setPage(0);
@@ -129,15 +130,15 @@ const FontBrowser = ({
           </SmallLabeledContainer>
           <SmallLabeledContainer
             className="autoscale-1"
-            displayName="Поддерживаемый язык"
+            displayName="font-language"
           >
             <Select
               className={`${classes.filter}`}
               value={language}
               options={[
-                { label: "Русский", value: "cyrillic" },
-                { label: "English", value: "latin" },
-                { label: "Любой", value: null },
+                { label: t("font-language-russian"), value: "cyrillic" },
+                { label: t("font-language-english"), value: "latin" },
+                { label: t("font-language-any"), value: null },
               ]}
               onChange={(value) => {
                 setPage(0);
@@ -173,10 +174,10 @@ const FontBrowser = ({
               modalState.show = false;
             }}
           >
-            Отменить
+            {t("button-cancel")}
           </SecondaryButton>
           <SecondaryButton onClick={() => setPage((old) => old + 1)}>
-            Показать ещё
+            {t("font-show-more")}
           </SecondaryButton>
           <PrimaryButton
             disabled={!selected}
@@ -188,7 +189,7 @@ const FontBrowser = ({
               }
             }}
           >
-            Принять
+            {t("font-accept")}
           </PrimaryButton>
         </Flex>
       </Panel>
@@ -212,6 +213,7 @@ export const FontSettingsOverlay = observer(
     const [browserModalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+    const { t } = useTranslation();
 
     function refreshFonts(): Promise<void> {
       return fonts.list().then((list) => setFontList(list));
@@ -233,7 +235,7 @@ export const FontSettingsOverlay = observer(
         </ModalStateContext.Provider>
         <Overlay>
           <Dialog center={false}>
-            <Title>Настройки шрифта</Title>
+            <Title>{t("widget-font-settings")}</Title>
             <div className={`${classes.democontainer}`}>
               <div
                 className={`${classes.demo}`}
@@ -315,7 +317,7 @@ export const FontSettingsOverlay = observer(
                       </SmallLabeledContainer>
                       <SmallLabeledContainer
                         className="autoscale-1"
-                        displayName="Название"
+                        displayName="common-name"
                       >
                         <Select
                           showSearch
@@ -468,7 +470,7 @@ export const FontSettingsOverlay = observer(
                       paddingBottom: "9px",
                     }}
                   >
-                    Обводка
+                    {t("font-outline")}
                   </div>
                   <Switch
                     value={property.value.outline.enabled}
@@ -484,7 +486,7 @@ export const FontSettingsOverlay = observer(
                 </Flex>
                 {property.value.outline.enabled && (
                   <Flex gap={9} className="full-width">
-                    <SmallLabeledContainer displayName="Толщина">
+                    <SmallLabeledContainer displayName="font-outline-width">
                       <InputNumber
                         value={property.value.outline.width}
                         addon="px"
@@ -502,7 +504,7 @@ export const FontSettingsOverlay = observer(
                         }}
                       />
                     </SmallLabeledContainer>
-                    <SmallLabeledContainer displayName="Цвет">
+                    <SmallLabeledContainer displayName="label-color">
                       <ColorPicker
                         style={{
                           border: "1px solid #36363D",
@@ -543,7 +545,7 @@ export const FontSettingsOverlay = observer(
                     />
                     {property.value.animation !== "none" && (
                       <Flex gap={6}>
-                        <SmallLabeledContainer displayName="Режим анимации">
+                        <SmallLabeledContainer displayName="widget-font-animation-type">
                           <Select
                             value={property.value.animationType}
                             className="full-width"
@@ -552,13 +554,22 @@ export const FontSettingsOverlay = observer(
                               if (onChange) onChange(property);
                             }}
                             options={[
-                              { value: "entire", label: "Целиком" },
-                              { value: "word", label: "По словам" },
-                              { value: "letter", label: "По буквам" },
+                              {
+                                value: "entire",
+                                label: t("font-animation-entire"),
+                              },
+                              {
+                                value: "word",
+                                label: t("font-animation-word"),
+                              },
+                              {
+                                value: "letter",
+                                label: t("font-animation-letter"),
+                              },
                             ]}
                           />
                         </SmallLabeledContainer>
-                        <SmallLabeledContainer displayName="Скорость анимации">
+                        <SmallLabeledContainer displayName="widget-donaterslist-carousel-animation-speed">
                           <Select
                             value={property.value.animationSpeed}
                             className="full-width"
@@ -567,11 +578,20 @@ export const FontSettingsOverlay = observer(
                               if (onChange) onChange(property);
                             }}
                             options={[
-                              { value: "slower", label: "Очень медленно" },
-                              { value: "slow", label: "Медленно" },
-                              { value: "normal", label: "Нормально" },
-                              { value: "fast", label: "Быстро" },
-                              { value: "faster", label: "Очень быстро" },
+                              {
+                                value: "slower",
+                                label: t("font-speed-slower"),
+                              },
+                              { value: "slow", label: t("font-speed-slow") },
+                              {
+                                value: "normal",
+                                label: t("font-speed-normal"),
+                              },
+                              { value: "fast", label: t("font-speed-fast") },
+                              {
+                                value: "faster",
+                                label: t("font-speed-faster"),
+                              },
                             ]}
                           />
                         </SmallLabeledContainer>
@@ -581,7 +601,7 @@ export const FontSettingsOverlay = observer(
                 </LabeledContainer>
               </div>
               <div className="settings-item">
-                <LabeledContainer displayName="Тени">
+                <LabeledContainer displayName="font-shadows">
                   <Flex vertical className="full-width" gap={3}>
                     {property.value.shadows.map((shadow, i) => (
                       <Flex
@@ -591,14 +611,14 @@ export const FontSettingsOverlay = observer(
                         className={`${classes.shadowitem}`}
                       >
                         <Flex gap={6} className="full-width">
-                          <SmallLabeledContainer displayName="Смещение по горизонтали">
+                          <SmallLabeledContainer displayName="button-shadow-offset-x">
                             <InputNumber
                               value={shadow.x}
                               addon="px"
                               onChange={(updated) => (shadow.x = updated)}
                             />
                           </SmallLabeledContainer>
-                          <SmallLabeledContainer displayName="Смещение по вертикали">
+                          <SmallLabeledContainer displayName="button-shadow-offset-y">
                             <InputNumber
                               value={shadow.y}
                               addon="px"
@@ -609,7 +629,7 @@ export const FontSettingsOverlay = observer(
                         <Flex gap={6} className="full-width">
                           <SmallLabeledContainer
                             className={`${classes.half}`}
-                            displayName="Радиус блюра"
+                            displayName="button-shadow-size"
                           >
                             <InputNumber
                               value={shadow.blur}
@@ -619,7 +639,7 @@ export const FontSettingsOverlay = observer(
                           </SmallLabeledContainer>
                           <SmallLabeledContainer
                             className={`${classes.half}`}
-                            displayName="Цвет"
+                            displayName="label-color"
                           >
                             <ColorPicker
                               showText
@@ -639,12 +659,12 @@ export const FontSettingsOverlay = observer(
                               )
                             }
                           >
-                            <div>Копировать</div>
+                            <div>{t("common-copy")}</div>
                           </SubActionButton>
                           <SubActionButton
                             onClick={() => property.value.shadows.splice(i, 1)}
                           >
-                            <div style={{ color: "#FF8888" }}>Удалить</div>
+                            <div style={{ color: "#FF8888" }}>{t("button-delete")}</div>
                           </SubActionButton>
                         </Flex>
                       </Flex>
@@ -659,7 +679,7 @@ export const FontSettingsOverlay = observer(
                         });
                       }}
                     >
-                      Добавить тень
+                      {t("widget-shadow-add")}
                     </CollapseLikeButton>
                   </Flex>
                 </LabeledContainer>
@@ -670,7 +690,7 @@ export const FontSettingsOverlay = observer(
                 className={`${classes.okbutton}`}
                 onClick={() => (parentModalState.show = false)}
               >
-                Применить
+                {t("button-apply")}
               </PrimaryButton>
             </Flex>
           </Dialog>
@@ -692,6 +712,7 @@ export const AnimatedFontComponent = observer(
     const [mainWindowModalState] = useState<ModalState>(
       () => new ModalState(parentModalState),
     );
+    const { t } = useTranslation();
 
     return (
       <ModalStateContext.Provider value={mainWindowModalState}>
@@ -700,7 +721,7 @@ export const AnimatedFontComponent = observer(
             mainWindowModalState.show = true;
           }}
         >
-          Настройки шрифта
+          {t("widget-font-settings")}
         </SecondaryButton>
         <FontSettingsOverlay property={property} onChange={onChange} />
       </ModalStateContext.Provider>

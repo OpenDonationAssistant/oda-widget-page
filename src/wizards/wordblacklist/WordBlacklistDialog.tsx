@@ -15,6 +15,7 @@ import classes from "./WordBlacklistDialog.module.css";
 import { useWordBlacklistStore } from "./WordBlacklistStore";
 import { ErrorStoreContext } from "../../stores/ErrorStore";
 import { log } from "../../logging";
+import { useTranslation } from "react-i18next";
 
 const MAX_FILE_SIZE = 1024 * 1024;
 
@@ -37,6 +38,7 @@ const decodeText = (buffer: ArrayBuffer): string => {
 };
 
 const WordBlacklistDialogInner = observer(() => {
+  const { t } = useTranslation();
   const { store } = useWordBlacklistStore();
   const dialogState = useContext(ModalStateContext);
   const errorStore = useContext(ErrorStoreContext);
@@ -50,7 +52,10 @@ const WordBlacklistDialogInner = observer(() => {
     }
     if (file.size > MAX_FILE_SIZE) {
       errorStore.setError(
-        `Файл «${file.name}» больше ${MAX_FILE_SIZE / (1024 * 1024)} МБ. Загрузите файл меньшего размера.`,
+        t("word-blacklist-file-too-large", {
+          name: file.name,
+          size: MAX_FILE_SIZE / (1024 * 1024),
+        }),
       );
       return;
     }
@@ -61,23 +66,23 @@ const WordBlacklistDialogInner = observer(() => {
         .map((word) => word.trim())
         .filter((word) => word.length > 0);
       if (words.length === 0) {
-        errorStore.setError("В файле не найдено ни одного слова");
+        errorStore.setError(t("word-blacklist-empty-file"));
         return;
       }
       words.forEach((word) => store.addWord(word));
     } catch (error) {
       log.error(error, "failed to read word blacklist file");
-      errorStore.setError("Не удалось прочитать файл с чёрным списком");
+      errorStore.setError(t("word-blacklist-read-failed"));
     }
   };
 
   return (
     <Dialog>
-      <Title>Черный список слов</Title>
+      <Title>{t("word-blacklist-title")}</Title>
       <Flex gap={12} vertical>
         <StringListEditor
           items={store.words}
-          placeholder="Введите слово..."
+          placeholder={t("word-blacklist-placeholder")}
           onAdd={(word) => store.addWord(word)}
           onRemove={(word) => store.removeWord(word)}
         />
@@ -92,13 +97,13 @@ const WordBlacklistDialogInner = observer(() => {
             />
             <Flex justify="flex-start">
               <SecondaryButton onClick={() => fileInputRef.current?.click()}>
-                Загрузить из файла
+                {t("word-blacklist-upload-file")}
               </SecondaryButton>
             </Flex>
           </Flex>
           <Flex gap={6} justify="flex-end">
             <SecondaryButton onClick={() => (dialogState.show = false)}>
-              Отменить
+              {t("button-cancel")}
             </SecondaryButton>
             <PrimaryButton
               onClick={() => {
@@ -106,7 +111,7 @@ const WordBlacklistDialogInner = observer(() => {
                 dialogState.show = false;
               }}
             >
-              Сохранить
+              {t("button-save")}
             </PrimaryButton>
           </Flex>
         </Flex>
@@ -116,6 +121,7 @@ const WordBlacklistDialogInner = observer(() => {
 });
 
 export default function WordBlacklistDialog() {
+  const { t } = useTranslation();
   const parentModalState = useContext(ModalStateContext);
   const [dialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -134,7 +140,7 @@ export default function WordBlacklistDialog() {
           dialogState.open();
         }}
       >
-        Настроить чёрный список
+        {t("word-blacklist-configure")}
       </button>
     </ModalStateContext.Provider>
   );

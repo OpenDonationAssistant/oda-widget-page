@@ -19,7 +19,7 @@ export class WordBlacklistProperty extends DefaultWidgetProperty<string> {
     super({
       name: "word-blacklist",
       value: params.value ?? "",
-      displayName: "Список запрещенных слов",
+      displayName: "word-blacklist",
     });
   }
 

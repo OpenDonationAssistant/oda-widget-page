@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { WidgetData } from "../../types/WidgetData";
 import { GamesSection } from "./GamesSection";
+import { useTranslation } from "react-i18next";
 import {
   DefaultGamesStore,
   GamesStore,
@@ -14,6 +15,7 @@ import {
 } from "../../stores/GamesStore";
 
 export const IntegrationsPage = observer(() => {
+  const { t } = useTranslation();
   const { store: tokenStore } = useTokenStore();
   const [gamesStore] = useState<GamesStore>(
     () => new DefaultGamesStore(tokenStore),
@@ -22,7 +24,7 @@ export const IntegrationsPage = observer(() => {
 
   return (
     <GamesStoreContext.Provider value={gamesStore}>
-      <h1>Интеграции</h1>
+      <h1>{t("menu-integrations")}</h1>
       <CardSection>
         <DonationPlatformsSection />
         <StreamingPlatformsSection />

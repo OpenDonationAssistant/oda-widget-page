@@ -3,7 +3,7 @@ import { DonationEvent, Trigger } from "./AlertTriggerInterface";
 import InputNumber from "../../../components/InputNumber";
 
 export const LESS_THAN_DONATION_AMOUNT_TRIGGER = {
-  description: "Сумма меньше",
+  description: "alerts-trigger-amount-less-than",
   type: "less-than-donation-amount",
 };
 

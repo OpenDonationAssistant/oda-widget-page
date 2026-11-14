@@ -1,4 +1,5 @@
 import { makeAutoObservable, toJS } from "mobx";
+import i18n from "../../i18n";
 import { ObjectWrapper, Renderable } from "../../utils";
 import { log } from "../../logging";
 import { uuidv7 } from "uuidv7";
@@ -35,7 +36,9 @@ export interface AutomationAction {
 
 export class AutomationRule {
   private _id: string;
-  private _name: string = "Без названия";
+  private _name: string = i18n.t("automation-untitled-rule", {
+    defaultValue: "Untitled",
+  });
   private _enabled: boolean = true;
   private _triggers: (AutomationTrigger & Renderable)[] = [];
   private _actions: (AutomationAction & Renderable)[] = [];

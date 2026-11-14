@@ -3,6 +3,7 @@ import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import { observer } from "mobx-react-lite";
 import { LightLabeledSwitchComponent } from "../../../LabeledSwitch/LabeledSwitchComponent";
 import InputNumber from "../../components/InputNumber";
+import { useTranslation } from "react-i18next";
 
 export interface MaxLenValue {
   limitLen: boolean;
@@ -10,10 +11,11 @@ export interface MaxLenValue {
 }
 
 const MaxLenComponent = observer(({ property }: { property: MaxLen }) => {
+  const { t } = useTranslation();
   return (
     <>
       <LightLabeledSwitchComponent
-        label="Ограничение по длине"
+        label="media-max-length"
         value={property.value.limitLen}
         onChange={(update) => {
           property.value.limitLen = update;
@@ -22,7 +24,7 @@ const MaxLenComponent = observer(({ property }: { property: MaxLen }) => {
       {property.value.limitLen && (
         <InputNumber
           value={property.value.limit}
-          addon="сек"
+          addon={t("media-unit-seconds")}
           onChange={(update) => {
             property.value.limit = update;
           }}
@@ -39,7 +41,7 @@ export class MaxLen extends DefaultWidgetProperty<MaxLenValue> {
       value: {
         limitLen: false,
       },
-      displayName: "Ограничение по длине",
+      displayName: "media-max-length",
     });
   }
 

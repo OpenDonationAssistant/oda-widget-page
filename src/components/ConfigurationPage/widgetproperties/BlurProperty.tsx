@@ -6,6 +6,7 @@ import InputNumber from "../components/InputNumber";
 import { produce } from "immer";
 import { toJS } from "mobx";
 import { Flex, Switch } from "antd";
+import { useTranslation } from "react-i18next";
 
 interface BlurPropertyValue {
   enabled: boolean;
@@ -38,6 +39,7 @@ export class BlurProperty extends DefaultWidgetProperty<BlurPropertyValue> {
   }
 
   BlurPropertyComponent = observer(() => {
+    const { t } = useTranslation();
     return (
       <LabeledContainer help={this.help} displayName={this.displayName}>
         <Flex justify="flex-start" align="center" gap={50}>
@@ -50,7 +52,9 @@ export class BlurProperty extends DefaultWidgetProperty<BlurPropertyValue> {
                 }))
               }
             />
-            <span>{this.value.enabled ? "Enabled" : "Disabled"}</span>
+            <span>
+              {this.value.enabled ? t("common-enabled") : t("common-disabled")}
+            </span>
           </Flex>
           <InputNumber
             value={this.value.blur}

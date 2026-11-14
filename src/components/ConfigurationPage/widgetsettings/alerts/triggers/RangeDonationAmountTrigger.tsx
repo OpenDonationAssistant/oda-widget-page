@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import InputNumber from "../../../components/InputNumber";
 
 export const RANDE_DONATION_AMOUNT_TRIGGER = {
-  description: "Сумма больше или равна",
+  description: "alerts-trigger-amount-at-least",
   type: "at-least-donation-amount",
 };
 

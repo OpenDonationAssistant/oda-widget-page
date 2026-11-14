@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import SecondaryButton from "../Button/SecondaryButton";
 import PrimaryButton from "../Button/PrimaryButton";
 import { useKeyPress } from "ahooks";
+import { useTranslation } from "react-i18next";
 import { NotBorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 import { ExecutionStoreContext } from "../../stores/ExecutionStore";
@@ -163,11 +164,12 @@ export const Warning = ({
   action: () => void;
   onCancel?: () => void;
 }) => {
+  const { t } = useTranslation();
   const state = useContext(ModalStateContext);
 
   return (
     <Flex vertical className={`${classes.warning} ${classes.modal}`} gap={36}>
-      <Title>Подтвердите действие</Title>
+      <Title>{t("dialog-confirm-title")}</Title>
       <div className={`${classes.warningchildren}`}>{children}</div>
       <Flex className="full-width" justify="flex-end" gap={9}>
         <SecondaryButton
@@ -176,15 +178,16 @@ export const Warning = ({
             state.show = false;
           }}
         >
-          Отменить
+          {t("button-cancel")}
         </SecondaryButton>
-        <PrimaryButton onClick={action}>Продолжить</PrimaryButton>
+        <PrimaryButton onClick={action}>{t("button-continue")}</PrimaryButton>
       </Flex>
     </Flex>
   );
 };
 
 export const Waiting = () => {
+  const { t } = useTranslation();
   const executionStore = useContext(ExecutionStoreContext);
 
   return (
@@ -195,14 +198,16 @@ export const Waiting = () => {
       className={`${classes.waiting} ${classes.modal}`}
       gap={36}
     >
-      {executionStore.running && <Title showClose={false}>Подождите</Title>}
+      {executionStore.running && (
+        <Title showClose={false}>{t("dialog-waiting")}</Title>
+      )}
       {!executionStore.running && !executionStore.acknowledged && (
         <>
           {executionStore.hasError && (
-            <Title showClose={false}>Произошла ошибка</Title>
+            <Title showClose={false}>{t("error-occurred")}</Title>
           )}
           {!executionStore.hasError && (
-            <Title showClose={false}>Успешно выполнено</Title>
+            <Title showClose={false}>{t("dialog-success")}</Title>
           )}
           <Flex className="full-width" justify="flex-end">
             <PrimaryButton
@@ -211,7 +216,7 @@ export const Waiting = () => {
                 executionStore.callback();
               }}
             >
-              OK
+              {t("dialog-ok")}
             </PrimaryButton>
           </Flex>
         </>

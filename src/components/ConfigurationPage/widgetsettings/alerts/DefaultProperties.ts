@@ -43,12 +43,12 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "totalAnimation",
-    displayName: "Анимация отображения",
+    displayName: "alerts-animation-display",
     target: "idle"
   }),
   new AnimationProperty({
     name: "totalDisappearance",
-    displayName: "Анимация исчезновения",
+    displayName: "alerts-animation-disappearance",
     target: "out"
   }),
   new LayoutProperty(),
@@ -101,7 +101,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new NumberProperty({
     name: "audioDelay",
     value: 0,
-    displayName: "Задержка аудио",
+    displayName: "alerts-audio-delay",
     addon: "ms",
   }),
   new VolumeProperty({
@@ -113,7 +113,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new TextProperty({
     name: "nicknameTextTemplate",
     value: "<username> - <amount>",
-    displayName: "Текст",
+    displayName: "alerts-text",
   }),
   new AnimatedFontProperty({
     name: "font",
@@ -121,22 +121,22 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new NumberProperty({
     name: "imageAppearanceDelay",
     value: 0,
-    displayName: "Задержка появления",
+    displayName: "alerts-appearance-delay",
     addon: "ms",
   }),
   new AnimationProperty({
     name: "imageAppearance",
-    displayName: "Анимация появления",
+    displayName: "appearance-animation",
     target: "in"
   }),
   new AnimationProperty({
     name: "imageAnimation",
-    displayName: "Анимация отображения",
+    displayName: "alerts-animation-display",
     target: "idle"
   }),
   new AnimationProperty({
     name: "imageDisappearance",
-    displayName: "Анимация исчезновения",
+    displayName: "alerts-animation-disappearance",
     target: "out"
   }),
   new DefaultWidgetProperty({
@@ -146,11 +146,11 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new NumberProperty({
     name: "headerVoiceDelay",
     value: 0,
-    displayName: "Задержка озвучки заголовка",
+    displayName: "alerts-header-voice-delay",
     addon: "ms",
   }),
   new TextProperty({
-    displayName: "Фразы для озвучивания заголовка с сообщением",
+    displayName: "widget-alert-voice-title-phrase",
     name: "voiceTextTemplate",
     value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username> с фразой
@@ -193,7 +193,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
     value: true,
   }),
   new TextProperty({
-    displayName: "Фразы для озвучивания заголовка если нет сообщения",
+    displayName: "widget-alert-voice-empty-alert-phrase",
     name: "voiceEmptyTextTemplates",
     value: `Пользователь <username> оставил сообщение
 <amount> рублей пожертвовал добрый человек по имени <username>
@@ -232,7 +232,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
 Очень рады <username> и <amount> рублям`,
   }),
   new TextProperty({
-    displayName: "Текст",
+    displayName: "alerts-text",
     name: "messageTemplate",
     value: "<message>",
   }),
@@ -242,13 +242,13 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new NumberProperty({
     name: "messageVoiceDelay",
     value: 0,
-    displayName: "Задержка озвучки сообщения",
+    displayName: "alerts-message-voice-delay",
     addon: "ms",
   }),
   new NumberProperty({
     name: "messageAppearanceDelay",
     value: 0,
-    displayName: "Задержка появления",
+    displayName: "alerts-appearance-delay",
     addon: "ms",
   }),
   new AnimationProperty({
@@ -257,12 +257,12 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "messageAnimation",
-    displayName: "Анимация отображения",
+    displayName: "alerts-animation-display",
     target: "idle"
   }),
   new AnimationProperty({
     name: "messageDisappearance",
-    displayName: "Анимация исчезновения",
+    displayName: "alerts-animation-disappearance",
     target: "out"
   }),
   new DefaultWidgetProperty({
@@ -287,7 +287,7 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   new NumberProperty({
     name: "headerAppearanceDelay",
     value: 0,
-    displayName: "Задержка появления",
+    displayName: "alerts-appearance-delay",
     addon: "ms",
   }),
   new AnimationProperty({
@@ -296,12 +296,12 @@ export const DEFAULT_PROPERTIES = (alert: Alert) => [
   }),
   new AnimationProperty({
     name: "headerAnimation",
-    displayName: "Анимация",
+    displayName: "alerts-animation",
     target:"idle"
   }),
   new AnimationProperty({
     name: "headerDisappearance",
-    displayName: "Анимация исчезновения",
+    displayName: "alerts-animation-disappearance",
     target:"out"
   }),
   new WidthProperty({ name: "headerWidth" }),

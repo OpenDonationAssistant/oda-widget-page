@@ -126,6 +126,8 @@ const NewWidgetSection = observer(({ category }: { category: string }) => {
 });
 
 export const SelectWidgetComponent = () => {
+  const { t } = useTranslation();
+
   return (
     <Flex
       vertical
@@ -133,11 +135,15 @@ export const SelectWidgetComponent = () => {
       className="withscroll"
       style={{ maxHeight: "75vh" }}
     >
-      <div className={`${classes.section}`}>Для стрима</div>
+      <div className={`${classes.section}`}>
+        {t("wizard-section-onscreen")}
+      </div>
       <NewWidgetSection category="onscreen" />
-      <div className={`${classes.section}`}>Медиа</div>
+      <div className={`${classes.section}`}>{t("wizard-section-media")}</div>
       <NewWidgetSection category="media" />
-      <div className={`${classes.section}`}>Инструменты стримера</div>
+      <div className={`${classes.section}`}>
+        {t("wizard-section-internal")}
+      </div>
       <NewWidgetSection category="internal" />
     </Flex>
   );

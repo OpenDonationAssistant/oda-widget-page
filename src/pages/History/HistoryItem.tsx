@@ -24,6 +24,8 @@ import KickIcon from "../../icons/KickIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
 import ArrowUp from "../../icons/ArrowUp";
 import ArrowDown from "../../icons/ArrowDown";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 function interruptAlert(conf: any) {
   publish(conf.topic.alertWidgetCommans, {
@@ -32,6 +34,7 @@ function interruptAlert(conf: any) {
 }
 
 const Description = observer(({ item }: { item: HistoryItem }) => {
+  const { t } = useTranslation();
   const { conf } = useLoaderData() as WidgetData;
   const historyStore = useContext(HistoryStoreContext);
   const settings = useContext(HistoryWidgetSettingsContenxt);
@@ -102,7 +105,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
                   interruptAlert(conf);
                 }}
               >
-                Прервать
+                {t("history-item-interrupt")}
               </SubActionButton>
             )}
             {!item.active && (
@@ -112,7 +115,7 @@ const Description = observer(({ item }: { item: HistoryItem }) => {
                 }}
                 icon={<span className="material-symbols-sharp">replay</span>}
               >
-                <div>Повторить</div>
+                <div>{t("common-retry")}</div>
               </SubActionButton>
             )}
           </Flex>
@@ -127,9 +130,12 @@ function getGroupedHeader(
   system: string,
   items: HistoryItem[],
   settings: any,
+  t: TFunction,
 ): ReactNode {
   const count = items.length;
-  const nicknames = items.map((item) => item.nickname ?? "Аноним");
+  const nicknames = items.map(
+    (item) => item.nickname ?? t("common-anonymous"),
+  );
 
   switch (event) {
     case "follow":
@@ -153,7 +159,7 @@ function getGroupedHeader(
             className={classes.title}
             style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
           >
-            <span>Новых фолловеров - {count}: </span>
+            <span>{t("history-item-followers", { count })}{" "}</span>
             <span className={`${classes.levelname}`}>
               {nicknames.join(", ")}
             </span>
@@ -180,7 +186,7 @@ function getGroupedHeader(
             className={classes.title}
             style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
           >
-            <span>Зарейдили </span>
+            <span>{t("history-item-raided")}{" "}</span>
             <span
               className={`${classes.levelname}`}
               style={{ color: "var(--oda-primary-color)" }}
@@ -212,7 +218,7 @@ function getGroupedHeader(
             className={classes.title}
             style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
           >
-            <span>Новых подписчиков - {count}: </span>
+            <span>{t("history-item-subscribers", { count })}{" "}</span>
             <span className={`${classes.levelname}`}>
               {nicknames.join(", ")}
             </span>
@@ -226,6 +232,7 @@ function getGroupedHeader(
 
 export const GroupedHistoryItemComponent = observer(
   ({ groupedItems }: { groupedItems: HistoryItem[] }) => {
+    const { t } = useTranslation();
     const displayItem = groupedItems[0];
     const settings = useContext(HistoryWidgetSettingsContenxt);
     const [expanded, setExpanded] = useState(false);
@@ -234,6 +241,7 @@ export const GroupedHistoryItemComponent = observer(
       displayItem.system,
       groupedItems,
       settings,
+      t,
     );
 
     return (
@@ -268,6 +276,7 @@ export const GroupedHistoryItemComponent = observer(
 
 export const SingleHistoryItemComponent = observer(
   ({ displayItem }: { displayItem: HistoryItem }) => {
+    const { t } = useTranslation();
     const settings = useContext(HistoryWidgetSettingsContenxt);
     let header;
 
@@ -297,7 +306,11 @@ export const SingleHistoryItemComponent = observer(
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{displayItem.nickname ?? "Аноним"} подарил подписку </span>
+              <span>
+                {t("history-item-gifted-subscription", {
+                  nickname: displayItem.nickname ?? t("common-anonymous"),
+                })}{" "}
+              </span>
               <span className={`${classes.levelname}`}>
                 {displayItem.levelName}
               </span>
@@ -330,7 +343,11 @@ export const SingleHistoryItemComponent = observer(
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{displayItem.nickname ?? "Аноним"} купил подписку </span>
+              <span>
+                {t("history-item-bought-subscription", {
+                  nickname: displayItem.nickname ?? t("common-anonymous"),
+                })}{" "}
+              </span>
               <span className={`${classes.levelname}`}>
                 {displayItem.levelName}
               </span>
@@ -350,11 +367,15 @@ export const SingleHistoryItemComponent = observer(
                 className={classes.title}
                 style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
               >
-                <span> {displayItem.nickname ?? "Аноним"} купил </span>
+                <span>
+                  {t("history-item-bought", {
+                    nickname: displayItem.nickname ?? t("common-anonymous"),
+                  })}{" "}
+                </span>
                 <span className={`${classes.memecount}`}>
                   {displayItem.count}
                 </span>
-                <span> мемкоинов</span>
+                <span> {t("history-item-memecoins")}</span>
               </span>
             </Flex>
           );
@@ -398,9 +419,11 @@ export const SingleHistoryItemComponent = observer(
                 {displayItem.amount?.major}
                 {`\u20BD`}
               </span>
-              <span className={`${classes.from}`}>от</span>
+              <span className={`${classes.from}`}>
+                {t("history-item-from")}
+              </span>
               <span className={`${classes.nickname}`}>
-                {displayItem.nickname ?? "Аноним"}
+                {displayItem.nickname ?? t("common-anonymous")}
               </span>
             </span>
           );
@@ -431,7 +454,11 @@ export const SingleHistoryItemComponent = observer(
               className={classes.title}
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
-              <span>{displayItem.nickname ?? "Аноним"} зафолловился</span>
+              <span>
+                {t("history-item-followed", {
+                  nickname: displayItem.nickname ?? t("common-anonymous"),
+                })}
+              </span>
             </span>
           </Flex>
         );
@@ -459,9 +486,9 @@ export const SingleHistoryItemComponent = observer(
               style={{ fontSize: `${settings.nicknameFontSize.value}px` }}
             >
               <span>
-                Рейд от{" "}
+                {t("history-item-raid-from")}{" "}
                 <span style={{ color: "var(--oda-primary-color)" }}>
-                  {displayItem.nickname ?? "Аноним"}
+                  {displayItem.nickname ?? t("common-anonymous")}
                 </span>
               </span>
             </span>

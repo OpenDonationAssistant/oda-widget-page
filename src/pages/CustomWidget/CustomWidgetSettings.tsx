@@ -1,4 +1,5 @@
 import { Flex } from "antd";
+import { Trans } from "react-i18next";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { ReactNode } from "react";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
@@ -13,22 +14,22 @@ import { DemoCustomWidgetStore } from "./CustomWidgetStore";
 export class CustomWidgetSettings extends AbstractWidgetSettings {
   private _sources: SourcesProperty = new SourcesProperty({
     name: "sources",
-    displayName: "Файлы",
+    displayName: "custom-widget-files",
   });
   private _width: WidthProperty = new WidthProperty({
     name: "width",
-    displayName: "Ширина",
+    displayName: "common-width",
   });
   private _height: HeightProperty = new HeightProperty({
     name: "height",
-    displayName: "Высота",
+    displayName: "common-height",
   });
   constructor() {
     super({ sections: [] });
 
     this.addSection({
       key: "style",
-      title: "Общее",
+      title: "General",
       properties: [this._width, this._height, this._sources],
     });
   }
@@ -77,18 +78,24 @@ export class CustomWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="center" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Canvas"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="custom-widget-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Виджет для группировки других виджетов внутри себя.
+          <Trans i18nKey="custom-widget-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Canvas) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="custom-widget-help-copy-link" />
+            </li>
+            <li>
+              <Trans i18nKey="widget-help-paste-link" />
             </li>
           </ul>
         </div>

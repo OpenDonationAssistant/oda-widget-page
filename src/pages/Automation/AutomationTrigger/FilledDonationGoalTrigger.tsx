@@ -8,6 +8,7 @@ import { Renderable } from "../../../utils";
 import InputNumber from "../../../components/ConfigurationPage/components/InputNumber";
 import { WidgetStoreContext } from "../../../stores/WidgetStore";
 import { DonationGoalWidgetSettings } from "../../../components/ConfigurationPage/widgetsettings/DonationGoalWidgetSettings";
+import { useTranslation } from "react-i18next";
 
 interface FilledDonationGoalTriggerValue {
   unit: "amount" | "percent";
@@ -18,6 +19,7 @@ interface FilledDonationGoalTriggerValue {
 
 const FilledDonationGoalTriggerComponent = observer(
   ({ trigger }: { trigger: FilledDonationGoalTrigger }) => {
+    const { t } = useTranslation();
     const widgets = useContext(WidgetStoreContext);
 
     return (
@@ -66,8 +68,8 @@ const FilledDonationGoalTriggerComponent = observer(
         <Segmented
           value={trigger.value.unit}
           options={[
-            { label: "Проценты", value: "percent" },
-            { label: "Сумма", value: "amount" },
+            { label: t("automation-goal-unit-percent"), value: "percent" },
+            { label: t("automation-goal-unit-amount"), value: "amount" },
           ]}
           onChange={(value: "percent" | "amount") => {
             trigger.value = produce(trigger.value, (draft) => {
@@ -95,7 +97,7 @@ export class FilledDonationGoalTrigger
   }
 
   public get name() {
-    return "Заполнен донатгол";
+    return "automation-trigger-donation-goal-filled";
   }
 
   public get id() {

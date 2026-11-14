@@ -1,11 +1,14 @@
 import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 import classes from "./GuidesPage.module.css";
 
 export const GuidesPage = observer(() => {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1>Гайды</h1>
+      <h1>{t("menu-guides")}</h1>
       <Flex vertical className={`${classes.cards}`}>
         <Flex
           className={`${classes.card}`}
@@ -16,11 +19,9 @@ export const GuidesPage = observer(() => {
             )
           }
         >
-          <div className={`${classes.subtitle}`}>Автополоска на платформе ODA</div>
+          <div className={`${classes.subtitle}`}>{t("guides-oda-autobar-title")}</div>
           <div>
-            Гайд, описывающий как можно автоматизировать виджет "Цель сбора" на
-            примере настроек для ивента RGG Land: автоматическое увеличение
-            цели, сброс собранной суммы, ведение счетчика.
+            {t("guides-oda-autobar-description")}
           </div>
         </Flex>
       </Flex>

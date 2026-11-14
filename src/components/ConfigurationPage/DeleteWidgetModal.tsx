@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Widget } from "../../types/Widget";
 import {
   ModalState,
@@ -10,6 +11,7 @@ import { BorderedIconButton } from "../IconButton/IconButton";
 import CloseIcon from "../../icons/CloseIcon";
 
 export default function DeleteWidgetModal({ widget }: { widget: Widget }) {
+  const { t } = useTranslation();
   const parentModalState = useContext(ModalStateContext);
   const [dialogState] = useState<ModalState>(
     () => new ModalState(parentModalState),
@@ -19,7 +21,7 @@ export default function DeleteWidgetModal({ widget }: { widget: Widget }) {
       <ModalStateContext.Provider value={dialogState}>
         <Overlay>
           <Warning action={() => widget.delete()}>
-            Вы действительно хотите удалить виджет?
+            {t("widget-delete-confirmation")}
           </Warning>
         </Overlay>
         <BorderedIconButton onClick={() => (dialogState.show = true)}>

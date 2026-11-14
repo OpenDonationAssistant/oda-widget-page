@@ -5,6 +5,7 @@ import { produce } from "immer";
 import { Renderable } from "../../../utils";
 import { AutomationTrigger, useAutomationState } from "../AutomationState";
 import LabeledContainer from "../../../components/LabeledContainer/LabeledContainer";
+import { useTranslation } from "react-i18next";
 
 export interface VariableValueChangedTriggerValue {
   id: string;
@@ -12,11 +13,12 @@ export interface VariableValueChangedTriggerValue {
 
 const VariableValueChangedTriggerComponent = observer(
   ({ trigger }: { trigger: VariableValueChangedTrigger }) => {
+    const { t } = useTranslation();
     const { state } = useAutomationState();
 
     return (
       <Flex vertical gap={9} className="full-width">
-        <LabeledContainer displayName="Переменная">
+        <LabeledContainer displayName="common-variable">
           <Flex vertical gap={4} className="full-width">
             <Select
               className="full-width"
@@ -44,7 +46,7 @@ const VariableValueChangedTriggerComponent = observer(
                 color: "var(--oda-secondary-text-color)",
               }}
             >
-              Правило сработает при любом новом значении переменной
+              {t("automation-variable-changed-hint")}
             </span>
           </Flex>
         </LabeledContainer>
@@ -73,7 +75,7 @@ export class VariableValueChangedTrigger
   }
 
   public get name() {
-    return "Значение переменной изменилось";
+    return "automation-trigger-variable-changed";
   }
 
   public get id() {

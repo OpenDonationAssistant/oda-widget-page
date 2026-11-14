@@ -93,7 +93,7 @@ export class AdvancedTextProperty extends DefaultWidgetProperty<AdvancedTextProp
         ...DEFAULT_ADVANCED_TEXT_PROPERTY_VALUE,
         ...(params.value ?? {}),
       },
-      displayName: params.label ?? "widget-font",
+      displayName: params.label ?? "widget-font-label",
     });
     this._label = params.label ?? "widget-font-label";
   }

@@ -23,13 +23,13 @@ const MakePinnedMessageActionComponent = observer(
 
     return (
       <>
-        <LabeledContainer displayName="Текст сообщения">
+        <LabeledContainer displayName="automation-pin-message-text">
           <Textarea
             value={action.value.message}
             onChange={(value) => (action.value.message = value)}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="Аккаунт, кто пишет">
+        <LabeledContainer displayName="automation-pin-message-sender">
           <Select
             className="full-width"
             value={action.value.senderRefreshTokenId}
@@ -44,7 +44,7 @@ const MakePinnedMessageActionComponent = observer(
             }}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="В каком чате">
+        <LabeledContainer displayName="automation-pin-message-channel">
           <Select
             className="full-width"
             value={action.value.recipientTwitchId}
@@ -66,7 +66,7 @@ const MakePinnedMessageActionComponent = observer(
 
 export class MakePinnedMessageAction implements AutomationAction, Renderable {
   id = "pin-twitch-message";
-  name = "Отправить и закрепить сообщение в Twitch чате";
+  name = "automation-action-pin-message";
   markup: ReactNode = (<MakePinnedMessageActionComponent action={this} />);
   value: MakePinnedMessageActionValue = {
     message: "",

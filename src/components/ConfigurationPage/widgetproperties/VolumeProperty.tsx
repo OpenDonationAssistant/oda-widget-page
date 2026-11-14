@@ -7,7 +7,7 @@ import Slider from "rc-slider";
 const VolumePropertyComponent = observer(
   ({ property }: { property: VolumeProperty }) => {
     return (
-      <LabeledContainer displayName="Громкость">
+      <LabeledContainer displayName={property.displayName}>
         <Slider
           min={1}
           max={100}
@@ -35,7 +35,7 @@ export class VolumeProperty extends DefaultWidgetProperty<number> {
     super({
       name: name,
       value: value ?? 100,
-      displayName: displayName ?? "Громкость",
+      displayName: displayName ?? "widget-volume",
     });
   }
 

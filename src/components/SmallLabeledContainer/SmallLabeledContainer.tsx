@@ -19,7 +19,10 @@ export default function SmallLabeledContainer({
       <label className={`${classes.name}`}>
         <Trans i18nKey={displayName} />
         {help && (
-          <Tooltip placement="right" title={help}>
+          <Tooltip
+            placement="right"
+            title={typeof help === "string" ? <Trans i18nKey={help} /> : help}
+          >
             <span className="material-symbols-sharp">help</span>
           </Tooltip>
         )}

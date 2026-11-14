@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { produce } from "immer";
 import { Renderable } from "../../../utils";
 import InputNumber from "../../../components/ConfigurationPage/components/InputNumber";
+import { useTranslation } from "react-i18next";
 
 interface RewardTriggerValue {
   system?: string;
@@ -24,12 +25,13 @@ const REWARD_SYSTEMS = [
 
 const RewardTriggerComponent = observer(
   ({ trigger }: { trigger: RewardTrigger }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical gap={9}>
         <Select
           className="full-width"
           allowClear
-          placeholder="Платформа"
+          placeholder={t("common-platform")}
           value={trigger.value.system}
           options={REWARD_SYSTEMS}
           onChange={(value) => {
@@ -40,7 +42,7 @@ const RewardTriggerComponent = observer(
         />
         <Input
           value={trigger.value.nickname}
-          placeholder="Никнейм"
+          placeholder={t("common-nickname")}
           onChange={(e) => {
             trigger.value = produce(trigger.value, (draft) => {
               draft.nickname = e.target.value;
@@ -49,7 +51,7 @@ const RewardTriggerComponent = observer(
         />
         <Input
           value={trigger.value.title}
-          placeholder="Название награды"
+          placeholder={t("automation-reward-title")}
           onChange={(e) => {
             trigger.value = produce(trigger.value, (draft) => {
               draft.title = e.target.value;
@@ -66,7 +68,7 @@ const RewardTriggerComponent = observer(
         />
         <Input
           value={trigger.value.description}
-          placeholder="Описание"
+          placeholder={t("common-description")}
           onChange={(e) => {
             trigger.value = produce(trigger.value, (draft) => {
               draft.description = e.target.value;
@@ -92,7 +94,7 @@ export class RewardTrigger implements AutomationTrigger, Renderable {
   }
 
   public get name() {
-    return "Награда активирована";
+    return "automation-trigger-reward-redeemed";
   }
 
   public get id() {

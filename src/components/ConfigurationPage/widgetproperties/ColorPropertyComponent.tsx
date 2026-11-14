@@ -14,6 +14,7 @@ import InputNumber from "../components/InputNumber";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
 import { NotBorderedIconButton } from "../../IconButton/IconButton";
 import CloseIcon from "../../../icons/CloseIcon";
+import { useTranslation } from "react-i18next";
 
 const ColorStopComponent = observer(
   ({
@@ -90,6 +91,7 @@ const AddColorToGradient = observer(
     property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
+    const { t } = useTranslation();
     return (
       <Button
         className={`${classes.addbutton}`}
@@ -105,7 +107,8 @@ const AddColorToGradient = observer(
         }}
       >
         <Flex>
-          <span className={`material-symbols-sharp`}>add</span>Добавить цвет
+          <span className={`material-symbols-sharp`}>add</span>
+          {t("color-add")}
         </Flex>
       </Button>
     );
@@ -120,24 +123,25 @@ const GradientSettings = observer(
     property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
+    const { t } = useTranslation();
     return (
       <>
-        <SmallLabeledContainer displayName="Тип градиента">
+        <SmallLabeledContainer displayName="label-gradient-type">
           <Segmented
             className="full-width"
             value={property.value.gradientType}
             options={[
               {
                 value: GRADIENT_TYPE.LINEAR,
-                label: "Линейный",
+                label: t("gradient-type-linear"),
               },
               {
                 value: GRADIENT_TYPE.RADIAL,
-                label: "Круговой",
+                label: t("gradient-type-radial"),
               },
               {
                 value: GRADIENT_TYPE.CONIC,
-                label: "Конический",
+                label: t("gradient-type-conic"),
               },
             ]}
             onChange={(value) => {
@@ -157,11 +161,11 @@ const GradientSettings = observer(
             options={[
               {
                 value: 0,
-                label: "Обычный",
+                label: t("gradient-mode-normal"),
               },
               {
                 value: 1,
-                label: "Повторяющийся",
+                label: t("gradient-mode-repeating"),
               },
             ]}
             onChange={(value) => {
@@ -177,7 +181,7 @@ const GradientSettings = observer(
           />
         </SmallLabeledContainer>
         {property.value.gradientType === GRADIENT_TYPE.LINEAR && (
-          <SmallLabeledContainer displayName="Наклон">
+          <SmallLabeledContainer displayName="gradient-angle">
             <InputNumber
               value={property.value.angle}
               addon="deg"
@@ -210,10 +214,11 @@ const GradientColors = observer(
     property: { value: ColorPropertyValue };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical={true} className="full-width" gap={10}>
         <GradientSettings property={property} />
-        <div className={`${classes.colorlabel}`}>Цвета</div>
+        <div className={`${classes.colorlabel}`}>{t("gradient-colors")}</div>
         {property.value.colors.map((color: ColorStop, index: number) => (
           <Flex key={index} vertical gap={9}>
             <SmallLabeledContainer displayName="">
@@ -261,7 +266,7 @@ const GradientColors = observer(
                     }}
                   />
                   <span className={classes.colorStopLabel}>
-                    С точкой остановки
+                    {t("gradient-color-stop-enabled")}
                   </span>
                 </Flex>
                 <NotBorderedIconButton
@@ -282,7 +287,7 @@ const GradientColors = observer(
             </SmallLabeledContainer>
             {color.stop && (
               <SmallLabeledContainer
-                displayName={`Точка остановки цвета #${index + 1}`}
+                displayName={t("gradient-color-stop", { index: index + 1 })}
               >
                 <ColorStopComponent property={property} index={index} />
               </SmallLabeledContainer>
@@ -302,6 +307,7 @@ export const ColorPropertyComponent = observer(
     property: { value: ColorPropertyValue; displayName: string };
     onChange?: (value: ColorPropertyValue) => void;
   }) => {
+    const { t } = useTranslation();
     return (
       <Flex gap={10} vertical={true} className="full-width">
         <LabeledContainer displayName={property.displayName}>
@@ -311,11 +317,11 @@ export const ColorPropertyComponent = observer(
             options={[
               {
                 value: 2,
-                label: "Однотонный",
+                label: t("color-mode-solid"),
               },
               {
                 value: 3,
-                label: "Градиент",
+                label: t("color-mode-gradient"),
               },
             ]}
             value={property.value.gradient ? 3 : 2}

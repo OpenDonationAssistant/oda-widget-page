@@ -3,20 +3,22 @@ import { DefaultWidgetProperty } from "./WidgetProperty";
 import { observer } from "mobx-react-lite";
 import { Segmented } from "antd";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
+import { useTranslation } from "react-i18next";
 
 const DonatersTopListLayoutPropertyComponent = observer(
   ({ property }: { property: DonatersTopListLayoutProperty }) => {
+    const { t } = useTranslation();
     return (
       <>
-        <LabeledContainer displayName="Расположить список">
+        <LabeledContainer displayName={property.displayName}>
           <Segmented
             className="full-width"
             options={[
               {
-                label: "Вертикально",
+                label: t("vertical"),
                 value: "vertical",
               },
-              { label: "Горизонтально", value: "horizontal" },
+              { label: t("horizontal"), value: "horizontal" },
             ]}
             value={property.value}
             onChange={(value) => {
@@ -31,7 +33,11 @@ const DonatersTopListLayoutPropertyComponent = observer(
 
 export class DonatersTopListLayoutProperty extends DefaultWidgetProperty<string> {
   constructor() {
-    super({ name: "layout", displayName: "Компоновка", value: "vertical" });
+    super({
+      name: "layout",
+      displayName: "widget-donaterslist-list-layout",
+      value: "vertical",
+    });
   }
 
   copy() {

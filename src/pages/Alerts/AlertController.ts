@@ -27,6 +27,7 @@ import { BooleanProperty } from "../../components/ConfigurationPage/widgetproper
 import { PremoderationProperty } from "../../components/ConfigurationPage/widgetsettings/alerts/PremoderationProperty";
 import { AlignmentProperty } from "../../components/ConfigurationPage/widgetproperties/AlignmentProperty";
 import { uuidv7 } from "uuidv7";
+import i18n from "i18next";
 
 export class AlertController {
   private log = parent.child({ module: "alertController" });
@@ -71,7 +72,7 @@ export class AlertController {
               id: uuidv7(),
               alertId: null,
               nickname: channel,
-              message: `Рейд`,
+              message: i18n.t("alerts-raid-message"),
               amount: { major: viewerCount, minor: 0, currency: "" },
               media: null,
               levelName: null,
@@ -99,10 +100,17 @@ export class AlertController {
             const force = event.get<boolean>("force");
             let msg = event.get<string>("message");
             if (system === "Boosty" && eventName === "subscription") {
-              msg = `${nickname} оформил подписку ${levelName}`;
+              msg = i18n.t("alerts-boosty-subscription-message", {
+                nickname,
+                levelName,
+                interpolation: { escapeValue: false },
+              });
             }
             if (system === "Boosty" && eventName === "follow") {
-              msg = `${nickname} отслеживает на Бусти`;
+              msg = i18n.t("alerts-boosty-follow-message", {
+                nickname,
+                interpolation: { escapeValue: false },
+              });
             }
             const data = {
               id: originId,
@@ -533,7 +541,10 @@ export class AlertController {
         const nicknameTextTemplate = alert.property("nicknameTextTemplate");
 
         const title = nicknameTextTemplate
-          .replace("<username>", data.nickname ? data.nickname : "Аноним")
+          .replace(
+            "<username>",
+            data.nickname ? data.nickname : i18n.t("common-anonymous"),
+          )
           .replace("<amount>", `${data.amount.major} ${data.amount.currency}`);
         this.log.debug("setting title");
         this.state.title = title;

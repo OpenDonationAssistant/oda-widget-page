@@ -28,12 +28,14 @@ import { SaveOrCancel } from "../../components/Button/SaveButtons";
 import { AnnouncerDataAnnouncerType } from "@opendonationassistant/oda-max-service-client";
 import { useModal } from "../../components/Overlay/UseModal";
 import UtilityButton from "../../components/Button/UtilityButton";
+import { useTranslation } from "react-i18next";
 
 const AnnouncerComponent = observer(
   ({ announcer }: { announcer: Announcer }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical gap={18} className={`${classes.container}`}>
-        <LabeledContainer displayName="Текст анонса">
+        <LabeledContainer displayName="bot-announcer-text">
           <TextArea
             value={announcer.text}
             onChange={(e) => {
@@ -42,7 +44,7 @@ const AnnouncerComponent = observer(
           />
         </LabeledContainer>
         <LightLabeledSwitchComponent
-          label="Удалять анонс по завершению стрима"
+          label="bot-delete-announcer-label"
           value={announcer.type === AnnouncerDataAnnouncerType.StreamAndDelete}
           onChange={(newValue) => {
             announcer.type = newValue
@@ -50,20 +52,20 @@ const AnnouncerComponent = observer(
               : AnnouncerDataAnnouncerType.Stream;
           }}
         />
-        <LabeledContainer displayName="Ссылки">
+        <LabeledContainer displayName="bot-announcer-links">
           <Flex vertical className="full-width" gap={9}>
             {announcer.buttons.map((button, index) => (
               <Flex key={index} gap={6} align="center">
                 <Input
                   value={button.text}
-                  placeholder="Текст"
+                  placeholder={t("bot-link-text")}
                   onChange={(e) => {
                     button.text = e.target.value;
                   }}
                 />
                 <Input
                   value={button.url}
-                  placeholder="Ссылка"
+                  placeholder={t("bot-link-url")}
                   onChange={(e) => {
                     button.url = e.target.value;
                   }}
@@ -91,6 +93,7 @@ const AnnouncerComponent = observer(
 );
 
 const AddAnnouncerComponent = ({ bot: bot }: { bot: Bot }) => {
+  const { t } = useTranslation();
   const { modalState } = useModal();
   const botStore = useContext(BotStoreContext);
   const [selection, setSelection] = useState<Chat | null>(null);
@@ -99,7 +102,7 @@ const AddAnnouncerComponent = ({ bot: bot }: { bot: Bot }) => {
     <ModalStateContext.Provider value={modalState}>
       <Overlay>
         <Dialog>
-          <Title>Выберите чат</Title>
+          <Title>{t("bot-choose-chat")}</Title>
           <Flex
             justify="space-between"
             align="center"
@@ -123,11 +126,11 @@ const AddAnnouncerComponent = ({ bot: bot }: { bot: Bot }) => {
                 botStore?.refreshChats();
               }}
             >
-              Обновить
+              {t("button-refresh")}
             </UtilityButton>
           </Flex>
           <SaveOrCancel
-            saveLabel="Выбрать"
+            saveLabel={t("bot-select")}
             changeable={{
               changed: !!selection,
               save: () => {
@@ -151,6 +154,7 @@ const AddAnnouncerComponent = ({ bot: bot }: { bot: Bot }) => {
 };
 
 export const BotCard = observer(({ bot }: { bot: Bot }) => {
+  const { t } = useTranslation();
   const { modalState } = useModal();
   const botStore = useContext(BotStoreContext);
 
@@ -160,7 +164,7 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
         <Overlay>
           <Panel>
             <Title>
-              <div>Настройки интеграции MAX</div>
+              <div>{t("bot-max-integration-settings")}</div>
             </Title>
             <List>
               {bot.announcers.map((announcer) => (
@@ -168,7 +172,7 @@ export const BotCard = observer(({ bot }: { bot: Bot }) => {
                   key={announcer.id}
                   title={
                     <Flex align="center" gap={6}>
-                      <div>Анонс стрима</div>
+                      <div>{t("bot-stream-announcer")}</div>
                       <Switch
                         checked={announcer.enabled}
                         onChange={(e) => (announcer.enabled = e)}

@@ -45,7 +45,7 @@ export class RunAlertAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Запустить алерт";
+    return "automation-action-run-alert";
   }
 
   public get markup() {

@@ -45,7 +45,7 @@ const StreamStartedTriggerComponent = observer(
 
 export class StreamStartedTrigger implements AutomationTrigger, Renderable {
   id = "stream-started";
-  name = "Стрим начался";
+  name = "automation-trigger-stream-started";
   value: StreamStartedTriggerValue = { tokenId: undefined };
   markup: ReactNode;
 

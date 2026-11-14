@@ -92,7 +92,7 @@ export class IncreaseDonationGoalAction
   }
 
   public get name() {
-    return "Увеличить сумму цели сбора средств";
+    return "automation-action-increase-donation-goal";
   }
 
   public get markup() {

@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import {
   linkDiscord,
   linkDonationAlerts,
@@ -48,6 +49,7 @@ import { reaction } from "mobx";
 import { log } from "../../logging";
 
 const Widgets = observer(({ asCards }: { asCards: boolean }) => {
+  const { t } = useTranslation();
   const widgetStore = useContext(WidgetStoreContext);
   const presetStore = useContext(PresetStoreContext);
   const [selection, setSelection] = useState<string>("");
@@ -57,7 +59,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
       new WizardConfigurationStore({
         steps: [
           {
-            title: "Добавить виджет",
+            title: <Trans i18nKey="button-addwidget" />,
             subtitle: "",
             content: <SelectWidgetComponent />,
             handler: () => {
@@ -65,7 +67,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             },
           },
           {
-            title: "Выберите шаблон",
+            title: <Trans i18nKey="wizard-select-preset-title" />,
             subtitle: "",
             content: <SelectPresetComponent />,
             condition: async () => {
@@ -165,7 +167,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
             onClick={() => {
               wizardConfiguration.next();
             }}
-            label="Добавить виджет"
+            label="button-addwidget"
           />
         </List>
       )}
@@ -181,7 +183,7 @@ const Widgets = observer(({ asCards }: { asCards: boolean }) => {
           ))}
           <CardButton onClick={() => wizardConfiguration.next()}>
             <AddIcon color="var(--oda-primary-color)" />
-            <div>Добавить виджет</div>
+            <div>{t("button-addwidget")}</div>
           </CardButton>
         </CardList>
       )}
@@ -226,6 +228,7 @@ const WidgetList = observer(({ asCards }: { asCards: boolean }) => {
 });
 
 export default function ConfigurationPage() {
+  const { t } = useTranslation();
   const [asCards, setAsCards] = useState<boolean>(() => {
     const value = localStorage.getItem("asCards");
     if (value === null || value === undefined) {
@@ -309,7 +312,7 @@ export default function ConfigurationPage() {
       <ModalStateContext.Provider value={state}>
         <Overlay>
           <Dialog>
-            <Title>Подключение успешно</Title>
+            <Title>{t("widget-connected-title")}</Title>
             <div style={{ height: "200px" }}></div>
             <Flex className="full-width" justify="flex-end">
               <PrimaryButton
@@ -317,14 +320,14 @@ export default function ConfigurationPage() {
                   navigate(0);
                 }}
               >
-                Ok
+                {t("button-ok")}
               </PrimaryButton>
             </Flex>
           </Dialog>
         </Overlay>
       </ModalStateContext.Provider>
       <Flex justify="space-between" align="center">
-        <h1 className={`${classes.header}`}>Виджеты</h1>
+        <h1 className={`${classes.header}`}>{t("menu-widgets")}</h1>
         <Flex
           className="full-width"
           justify="flex-end"

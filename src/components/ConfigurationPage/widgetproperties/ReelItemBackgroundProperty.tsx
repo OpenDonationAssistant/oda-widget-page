@@ -5,9 +5,11 @@ import classes from "./ReelItemBackgroundProperty.module.css";
 import { uuidv7 } from "uuidv7";
 import { observer } from "mobx-react-lite";
 import { fullUri } from "../../../utils";
+import { useTranslation } from "react-i18next";
 
 const ReelBackgroundComponent = observer(
   ({ property }: { property: ReelItemBackgroundProperty }) => {
+    const { t } = useTranslation();
     const [image, setImage] = useState<string>("");
 
     useEffect(() => {
@@ -17,13 +19,15 @@ const ReelBackgroundComponent = observer(
     return (
       <>
         <div className={`${classes.itembackcontainer}`}>
-          <div className={`${classes.itembacklabel}`}>Фон карточек</div>
+          <div className={`${classes.itembacklabel}`}>
+            {t("widget-reel-item-background")}
+          </div>
           <label className={`upload-button ${classes.itembackuploadbutton}`}>
             <input
               type="file"
               onChange={(e) => property.handleBackgroundImageChange(e)}
             />
-            Загрузить изображение
+            {t("button-upload-image")}
           </label>
         </div>
         {property.value && (
@@ -41,7 +45,7 @@ export class ReelItemBackgroundProperty extends DefaultWidgetProperty<
     super({
       name: "backgroundImage",
       value: null,
-      displayName: "Фон карточек",
+      displayName: "widget-reel-item-background",
     });
   }
 

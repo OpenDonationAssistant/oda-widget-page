@@ -26,6 +26,7 @@ import PaymentGatewaysConfiguration from "./pages/PaymentGatewaysConfiguration/P
 import { WidgetData } from "./types/WidgetData";
 import { HistoryPage } from "./pages/History/HistoryPage";
 import { ConfigProvider, Flex, theme } from "antd";
+import { useTranslation } from "react-i18next";
 import "./i18n";
 import "animate.css";
 import WidgetWrapper from "./WidgetWrapper";
@@ -192,6 +193,7 @@ function detectPage(path: string): Page {
 }
 
 function ConfigurationPageTemplate() {
+  const { t } = useTranslation();
   const { recipientId } = useLoaderData() as WidgetData;
   const location = useLocation();
   const page = detectPage(location.pathname);
@@ -216,12 +218,12 @@ function ConfigurationPageTemplate() {
         <UtilityButton
           onClick={() => window.open("https://yoomoney.ru/to/4100118300145014")}
         >
-          Поддержать
+          {t("footer-support")}
         </UtilityButton>
         <UtilityButton
           onClick={() => window.open("https://t.me/+mM61pLIJkZM2Y2E6")}
         >
-          Обратная связь
+          {t("footer-feedback")}
         </UtilityButton>
       </Flex>
       <AntHeader>

@@ -36,6 +36,7 @@ import { PresetWindow } from "../../PresetsComponent";
 import { Preset } from "../../../../types/Preset";
 import { deepEqual } from "../../../../utils";
 import { TriggersStore } from "./triggers/TriggersStore";
+import { useTranslation } from "react-i18next";
 
 function testAlert(topic: string, alert: Alert) {
   const variables = [
@@ -76,6 +77,7 @@ function testAlert(topic: string, alert: Alert) {
 
 const AlertItemComponent = observer(
   ({ alert, open }: { alert: Alert; open: boolean }) => {
+    const { t } = useTranslation();
     const { conf } = useLoaderData() as WidgetData;
     const parentModalState = useContext(ModalStateContext);
     const [deleteDialogState] = useState<ModalState>(
@@ -109,7 +111,7 @@ const AlertItemComponent = observer(
               <SubActionButton
                 onClick={() => testAlert(conf.topic.events, alert)}
               >
-                <div>Тест</div>
+                <div>{t("button-testalert")}</div>
               </SubActionButton>
               <BorderedIconButton
                 onClick={() => {
@@ -126,7 +128,7 @@ const AlertItemComponent = observer(
                       alert.delete();
                     }}
                   >
-                    Вы точно хотите удалить оповещение?
+                    {t("alerts-delete-confirm")}
                   </Warning>
                 </Overlay>
                 <BorderedIconButton
@@ -185,6 +187,7 @@ const ListComponent = observer(
     property: PaymentAlertsProperty;
     configuration: WizardConfigurationStore;
   }) => {
+    const { t } = useTranslation();
     const selection = useContext(SelectedIndexContext);
     const [filter, setFilter] = useState<ListFilter>(() => {
       return { enabled: "all" };
@@ -240,9 +243,9 @@ const ListComponent = observer(
               className={`${classes.smallsegmented}`}
               value={filter.enabled}
               options={[
-                { value: "all", label: "Все" },
-                { value: "enabled", label: "Включенные" },
-                { value: "disabled", label: "Выключенные" },
+                { value: "all", label: t("common-all") },
+                { value: "enabled", label: t("alerts-filter-enabled") },
+                { value: "disabled", label: t("alerts-filter-disabled") },
               ]}
               onChange={(value) =>
                 setFilter({ enabled: value as "all" | "enabled" | "disabled" })
@@ -279,7 +282,7 @@ const PaymentAlertsPropertyComponent = observer(
         new WizardConfigurationStore({
           steps: [
             {
-              title: "Выберите шаблон",
+              title: "alerts-choose-template",
               subtitle: "",
               content: <ChooseTemplate />,
               handler: () => {

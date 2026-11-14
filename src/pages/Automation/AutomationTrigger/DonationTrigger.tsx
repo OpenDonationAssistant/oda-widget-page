@@ -6,6 +6,7 @@ import { Renderable } from "../../../utils";
 import { AutomationTrigger } from "../AutomationState";
 import LabeledContainer from "../../../components/LabeledContainer/LabeledContainer";
 import InputNumber from "../../../components/ConfigurationPage/components/InputNumber";
+import { useTranslation } from "react-i18next";
 
 export interface DonationTriggerValue {
   system?: string;
@@ -26,13 +27,14 @@ const DONATION_SYSTEMS = [
 
 const DonationTriggerComponent = observer(
   ({ trigger }: { trigger: DonationTrigger }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical gap={9}>
-        <LabeledContainer displayName="Платформа">
+        <LabeledContainer displayName="common-platform">
           <Select
             className="full-width"
             allowClear
-            placeholder="Любая платформа"
+            placeholder={t("automation-donation-any-platform")}
             value={trigger.value.system}
             options={DONATION_SYSTEMS}
             onChange={(system: string | undefined) => {
@@ -42,7 +44,7 @@ const DonationTriggerComponent = observer(
             }}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="Минимальная сумма">
+        <LabeledContainer displayName="automation-donation-min-amount">
           <InputNumber
             value={trigger.value.minAmount ?? 0}
             onChange={(minAmount) => {
@@ -52,7 +54,7 @@ const DonationTriggerComponent = observer(
             }}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="Максимальная сумма">
+        <LabeledContainer displayName="automation-donation-max-amount">
           <InputNumber
             className="full-width"
             value={trigger.value.maxAmount ?? 999999999}
@@ -89,7 +91,7 @@ export class DonationTrigger implements AutomationTrigger, Renderable {
   }
 
   public get name() {
-    return "Донат";
+    return "automation-trigger-donation";
   }
 
   public get id() {

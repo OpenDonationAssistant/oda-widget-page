@@ -2,12 +2,16 @@ import classes from "./common.module.css";
 import { PaymentPageConfig } from "../../components/MediaWidget/PaymentPageConfig";
 import InputNumber from "../../components/ConfigurationPage/components/InputNumber";
 import { Input, Flex, QRCode } from "antd";
+import { useTranslation } from "react-i18next";
 
 export default function GeneralTab({ config }: { config: PaymentPageConfig }) {
+  const { t } = useTranslation();
   return (
     <>
       <div className={classes.widgetsettingsitem}>
-        <div className={classes.widgetsettingsname}>Адрес страницы</div>
+        <div className={classes.widgetsettingsname}>
+          {t("payment-page-address")}
+        </div>
         <a
           href={`https://${config.recipientId}.oda.digital/`}
           className={classes.url}
@@ -26,7 +30,7 @@ export default function GeneralTab({ config }: { config: PaymentPageConfig }) {
       </Flex>
       <div className={classes.widgetsettingsitem}>
         <div className={classes.widgetsettingsname}>
-          Текст кнопки "Задонатить"
+          {t("payment-page-button-text")}
         </div>
         <Input
           value={config.payButtonText}
@@ -39,7 +43,7 @@ export default function GeneralTab({ config }: { config: PaymentPageConfig }) {
       </div>
       <div className={classes.widgetsettingsitem}>
         <div className={classes.widgetsettingsname}>
-          Минимальная сумма доната
+          {t("payment-page-minimal-amount")}
         </div>
         <InputNumber
           value={config.minimalAmount}

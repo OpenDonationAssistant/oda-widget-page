@@ -15,7 +15,7 @@ import CloseIcon from "../../../icons/CloseIcon";
 import { BorderedIconButton } from "../../IconButton/IconButton";
 import { TextPropertyRawComponent } from "./TextProperty";
 import { AddListItemButton, List, ListItem } from "../../List/List";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 export interface Amount {
   major: number;
@@ -64,20 +64,17 @@ const ItemComponent = observer(
             />
             {goal.mode === "choose" && (
               <div className={classes.modedescription}>
-                Чтобы донат засчитался в этой цели, донатер должен выбрать эту
-                цель на странице доната
+                <Trans i18nKey="widget-goal-mode-choose-description" />
               </div>
             )}
             {goal.mode === "default" && (
               <div className={classes.modedescription}>
-                Цель выбрана по умолчанию и донат засчитается в неё, если
-                донатер не выбрал другую
+                <Trans i18nKey="widget-goal-mode-default-description" />
               </div>
             )}
             {goal.mode === "all" && (
               <div className={classes.modedescription}>
-                Все донаты всегда засчитываются в этой цели сбора, даже если
-                существуют другие цели. Не отображается на странице доната.
+                <Trans i18nKey="widget-goal-mode-all-description" />
               </div>
             )}
           </Flex>
@@ -113,7 +110,7 @@ const ItemComponent = observer(
                 paymentPageConfig?.goals.filter((g) => g.id === goal.id)[0]
                   ?.accumulatedAmount.major ?? 0
               }
-              addon="руб."
+              addon={t("unit-rub")}
               onChange={(value) => {
                 const updated = toJS(goal);
                 if (!updated.accumulatedAmount) {
@@ -137,7 +134,7 @@ const ItemComponent = observer(
           <LabeledContainer displayName="widget-goal-amount">
             <InputNumber
               value={goal.requiredAmount.major}
-              addon="руб."
+              addon={t("unit-rub")}
               onChange={(value) => {
                 const updated = toJS(goal);
                 updated.requiredAmount.major = value ?? 0;
@@ -223,7 +220,7 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
           accumulatedAmount: { major: 0, currency: "RUB" },
         },
       ],
-      displayName: "Цель",
+      displayName: "widget-goal",
     });
   }
 
@@ -246,7 +243,6 @@ export class DonationGoalProperty extends DefaultWidgetProperty<Goal[]> {
     this.value = updated;
   }
 
-  // TODO: 18n
   addGoal() {
     (this.value as Goal[]).push({
       id: uuidv7(),

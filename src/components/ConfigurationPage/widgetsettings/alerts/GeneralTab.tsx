@@ -14,6 +14,7 @@ import { RangeDonationAmountTrigger } from "./triggers/RangeDonationAmountTrigge
 import { SystemTrigger } from "./triggers/SystemTrigger";
 import { LessThanDonationAmountTrigger } from "./triggers/LessThanDonationAmountTrigger";
 import { log } from "../../../../logging";
+import { useTranslation } from "react-i18next";
 
 const TriggerComponent = observer(
   ({
@@ -29,14 +30,15 @@ const TriggerComponent = observer(
     onChange: (trigger: Trigger) => void;
   }) => {
     const triggersStore = useContext(TriggersStoreContext);
+    const { t } = useTranslation();
 
     const options = [
       ...triggersStore.available,
       ...[triggersStore.getType(trigger.type)],
-    ].map((t) => {
+    ].map((triggerType) => {
       return {
-        value: t?.type,
-        label: t?.description,
+        value: triggerType?.type,
+        label: triggerType ? t(triggerType.description) : undefined,
       };
     });
 
@@ -71,10 +73,12 @@ const AlertPropertyComponent = ({
 };
 
 const GeneralTab = observer(({ alert }: { alert: Alert }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="settings-item">
-        <div style={{ fontSize: "21px" }}>Срабатывает когда</div>
+        <div style={{ fontSize: "21px" }}>{t("alerts-fires-when")}</div>
         <Flex vertical gap={6}>
           {alert.triggers.map((trigger, index) => (
             <Flex
@@ -107,7 +111,7 @@ const GeneralTab = observer(({ alert }: { alert: Alert }) => {
                 alert.triggers.push(new UnknownTrigger());
               }}
             >
-              Добавить условие
+              {t("alerts-add-condition")}
             </CollapseLikeButton>
           )}
         </Flex>

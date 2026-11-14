@@ -29,6 +29,7 @@ import DonationAlertsIcon from "../../icons/DonationAlertsIcon";
 import DonateXIcon from "../../icons/DonateXIcon";
 import DonatePayIcon from "../../icons/DonatePayIcon";
 import { NewFeature } from "../../components/Experimental/Experimental";
+import { useTranslation } from "react-i18next";
 
 const icons = new Map<string, JSX.Element>();
 icons.set(
@@ -44,6 +45,7 @@ icons.set("DonatePay", <DonatePayIcon color="var(--oda-primary-color)" />);
 icons.set("DonatePay.eu", <DonatePayIcon color="var(--oda-primary-color)" />);
 
 export const DonationPlatformsSection = observer(({}) => {
+  const { t } = useTranslation();
   const [selection, setSelection] = useState<string>("");
   const [token, setToken] = useState<Token | null>(null);
   const [originToken, setOriginToken] = useState<Token | null>(null);
@@ -69,7 +71,7 @@ export const DonationPlatformsSection = observer(({}) => {
               tokenStore.deleteToken(selection);
             }}
           >
-            Вы точно хотите удалить интеграцию?
+            {t("integration-delete-confirm")}
           </Warning>
         </Overlay>
       </ModalStateContext.Provider>
@@ -77,11 +79,13 @@ export const DonationPlatformsSection = observer(({}) => {
         <Overlay>
           <Panel>
             <Title>
-              <div>Настройки интеграции {token?.system}</div>
+              <div>
+                {t("integration-settings-title", { system: token?.system })}
+              </div>
             </Title>
             <Flex vertical gap={18} className={`${classes.container}`}>
               <LightLabeledSwitchComponent
-                label="Показывать оповещения"
+                label="dialog-add-donation-show-alert"
                 value={token?.settings["triggerAlerts"] ?? false}
                 onChange={(newValue) => {
                   if (token) {
@@ -90,7 +94,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 }}
               />
               <LightLabeledSwitchComponent
-                label="Учитывать в топе"
+                label="dialog-add-donation-count-in-top"
                 value={token?.settings["countInTop"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
@@ -99,7 +103,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 }}
               />
               <LightLabeledSwitchComponent
-                label="Учитывать в сборе средств"
+                label="dialog-add-donation-count-in-goal"
                 value={token?.settings["addToGoal"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
@@ -108,7 +112,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 }}
               />
               <LightLabeledSwitchComponent
-                label="Запускать рулетку"
+                label="dialog-add-donation-trigger-reel"
                 value={token?.settings["triggerReel"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
@@ -117,7 +121,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 }}
               />
               <LightLabeledSwitchComponent
-                label="Учитывать в таймере до конца трансляции"
+                label="integration-count-in-timer"
                 value={token?.settings["triggerDonaton"] ?? true}
                 onChange={(newValue) => {
                   if (token) {
@@ -128,7 +132,7 @@ export const DonationPlatformsSection = observer(({}) => {
               {token?.system === "Tribute" && (
                 <>
                   <LightLabeledSwitchComponent
-                    label="Подписки: Показывать оповещения"
+                    label="integration-subscriptions-show-alerts"
                     value={
                       token?.settings["subscriptionsTriggerAlerts"] ?? true
                     }
@@ -139,7 +143,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Подписки: Учитывать в сборе средств"
+                    label="integration-subscriptions-count-in-goal"
                     value={token?.settings["subscriptionsAddToGoal"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -148,7 +152,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Подписки: Учитывать в таймере"
+                    label="integration-subscriptions-count-in-timer"
                     value={
                       token?.settings["subscriptionsTriggerDonaton"] ?? true
                     }
@@ -160,7 +164,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Подписки: Запускать рулетку"
+                    label="integration-subscriptions-trigger-reel"
                     value={token?.settings["subscriptionsTriggerReel"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -169,7 +173,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Подписки: Учитывать в топе"
+                    label="integration-subscriptions-count-in-top"
                     value={token?.settings["subscriptionsCountInTop"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -178,7 +182,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Покупки: Показывать оповещения"
+                    label="integration-purchases-show-alerts"
                     value={token?.settings["purchasesTriggerAlerts"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -187,7 +191,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Покупки: Учитывать в сборе средств"
+                    label="integration-purchases-count-in-goal"
                     value={token?.settings["purchasesAddToGoal"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -196,7 +200,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Покупки: Учитывать в таймере"
+                    label="integration-purchases-count-in-timer"
                     value={token?.settings["purchasesTriggerDonaton"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -205,7 +209,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Покупки: Запускать рулетку"
+                    label="integration-purchases-trigger-reel"
                     value={token?.settings["purchasesTriggerReel"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -214,7 +218,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }}
                   />
                   <LightLabeledSwitchComponent
-                    label="Покупки: Учитывать в топе"
+                    label="integration-purchases-count-in-top"
                     value={token?.settings["purchasesCountInTop"] ?? true}
                     onChange={(newValue) => {
                       if (token) {
@@ -234,7 +238,7 @@ export const DonationPlatformsSection = observer(({}) => {
                 <SecondaryButton
                   onClick={() => (integrationSettingsDialogState.show = false)}
                 >
-                  Отменить
+                  {t("button-cancel")}
                 </SecondaryButton>
                 <PrimaryButton
                   disabled={deepEqual(token, originToken)}
@@ -245,7 +249,7 @@ export const DonationPlatformsSection = observer(({}) => {
                     }
                   }}
                 >
-                  Сохранить
+                  {t("button-save")}
                 </PrimaryButton>
               </Flex>
             </Flex>
@@ -253,10 +257,9 @@ export const DonationPlatformsSection = observer(({}) => {
         </Overlay>
       </ModalStateContext.Provider>
       <CardSectionTitle>
-        <div>Донатные платформы</div>
+        <div>{t("integration-donation-platforms")}</div>
         <span className={`${classes.comment}`}>
-          * Для корректной работы интеграций нужно чтобы виджет
-          'Оповещения/Алерты' был включен в ОБС.
+          {t("integration-alerts-widget-note")}
         </span>
       </CardSectionTitle>
       <CardList>

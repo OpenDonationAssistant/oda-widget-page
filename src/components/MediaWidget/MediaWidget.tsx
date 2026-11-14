@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import PlaylistActionPanel from "./PlaylistActionPanel";
 
 export default function MediaWidget() {
+  const { t } = useTranslation();
   const { recipientId, conf, widgetId } = useLoaderData() as WidgetData;
 
   const [playlist, setPlaylist] = useState<Playlist>(
@@ -92,9 +93,12 @@ export default function MediaWidget() {
         )}
         <div className="playlist-controls">
           <Menu>
-            <MenuEventButton text="Hide/Show video" event="toggleVideo" />
+            <MenuEventButton
+              text={t("media-menu-hide-show-video")}
+              event="toggleVideo"
+            />
             <MenuButton
-              text="Toggle music requests"
+              text={t("media-menu-toggle-requests")}
               handler={() => {
                 paymentPageConfig.current?.toggleMediaRequests();
                 paymentPageConfig.current?.save();
@@ -112,7 +116,7 @@ export default function MediaWidget() {
                   playlistController.current?.switchTo(PLAYLIST_TYPE.REQUESTED);
                 }}
               >
-                Requested
+                {t("media-tab-requested")}
               </a>
             </li>
             <li className="nav-item">
@@ -125,7 +129,7 @@ export default function MediaWidget() {
                   playlistController.current?.switchTo(PLAYLIST_TYPE.PERSONAL);
                 }}
               >
-                Personal
+                {t("media-tab-personal")}
               </a>
             </li>
           </ul>

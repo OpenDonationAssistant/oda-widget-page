@@ -67,7 +67,7 @@ export class RunReelAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Запустить рулетку";
+    return "automation-action-run-reel";
   }
 
   public get markup() {

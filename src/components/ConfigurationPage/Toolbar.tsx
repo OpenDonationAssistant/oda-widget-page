@@ -174,9 +174,12 @@ function NewFeature({
   className?: string;
   show?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={`${classes.wrapper} ${className ?? ""}`}>
-      {show && <span className={`${classes.newfeature}`}>new</span>}
+      {show && (
+        <span className={`${classes.newfeature}`}>{t("toolbar-new-badge")}</span>
+      )}
       {children}
     </div>
   );

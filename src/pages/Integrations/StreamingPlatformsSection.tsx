@@ -21,6 +21,7 @@ import TwitchIcon from "../../icons/TwitchIcon";
 import YouTubeIcon from "../../icons/YouTubeIcon";
 import KickIcon from "../../icons/KickIcon";
 import VKLiveIcon from "../../icons/VKLiveIcon";
+import { useTranslation } from "react-i18next";
 
 const icons = new Map<string, JSX.Element>();
 icons.set("Twitch", <TwitchIcon />);
@@ -29,6 +30,7 @@ icons.set("Kick", <KickIcon />);
 icons.set("VKLive", <VKLiveIcon />);
 
 export const StreamingPlatformsSection = observer(() => {
+  const { t } = useTranslation();
   const { store: tokenStore } = useTokenStore();
   const parentModalState = useContext(ModalStateContext);
   const [deleteRuleDialogState] = useState<ModalState>(
@@ -48,12 +50,12 @@ export const StreamingPlatformsSection = observer(() => {
               tokenStore.deleteToken(selection);
             }}
           >
-            Вы точно хотите удалить интеграцию?
+            {t("integration-delete-confirm")}
           </Warning>
         </Overlay>
       </ModalStateContext.Provider>
       <CardSectionTitle>
-        <span>Стриминговые платформы</span>
+        <span>{t("integration-streaming-platforms")}</span>
       </CardSectionTitle>
       <CardList>
         {tokenStore.tokens

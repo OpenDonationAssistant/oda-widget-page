@@ -5,6 +5,7 @@ import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import InputNumber from "../../components/InputNumber";
 import SmallLabeledContainer from "../../../SmallLabeledContainer/SmallLabeledContainer";
+import { useTranslation } from "react-i18next";
 
 export interface TarificationValue {
   method: "perMinute" | "perLink";
@@ -13,19 +14,20 @@ export interface TarificationValue {
 
 const TarificationComponent = observer(
   ({ property }: { property: Tarification }) => {
+    const { t } = useTranslation();
     return (
       <>
-        <LabeledContainer displayName="Стоимость видео">
-          <SmallLabeledContainer displayName="Рассчитывать за">
+        <LabeledContainer displayName="media-video-price">
+          <SmallLabeledContainer displayName="media-count-per">
             <Segmented
               className="full-width"
               options={[
                 {
-                  label: "За минуту",
+                  label: t("media-per-minute"),
                   value: "perMinute",
                 },
                 {
-                  label: "За ссылку",
+                  label: t("media-per-link"),
                   value: "perLink",
                 },
               ]}
@@ -38,8 +40,8 @@ const TarificationComponent = observer(
           <SmallLabeledContainer
             displayName={
               property.value.method === "perMinute"
-                ? "Стоимость минуты"
-                : "Стоимость одной ссылки"
+                ? "media-minute-price"
+                : "media-link-price"
             }
           >
             <InputNumber
@@ -62,7 +64,7 @@ export class Tarification extends DefaultWidgetProperty<TarificationValue> {
         method: "perLink",
         cost: 100,
       },
-      displayName: "Стоимость видео",
+      displayName: "media-video-price",
     });
   }
 

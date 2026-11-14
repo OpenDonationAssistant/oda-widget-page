@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Toggle from "react-toggle";
 import "react-toggle/style.css";
+import { useTranslation } from "react-i18next";
 
 export enum VIDEO_IMPL {
   EMBEDDED,
@@ -14,6 +15,7 @@ export default function VideoPopupToggler({
   state: VIDEO_IMPL;
   onChange: Function;
 }) {
+  const { t } = useTranslation();
   const [videoImpl, setVideoImpl] = useState<VIDEO_IMPL>(state);
   return (
     <>
@@ -32,7 +34,9 @@ export default function VideoPopupToggler({
             }}
           />
           <span className="videoImpl">
-            {videoImpl === VIDEO_IMPL.REMOTE ? "Remote" : "Embedded"}
+            {videoImpl === VIDEO_IMPL.REMOTE
+              ? t("media-video-remote")
+              : t("media-video-embedded")}
           </span>
         </label>
       </div>

@@ -11,7 +11,7 @@ const ReelWinningEffectPropertyComponent = observer(
 
     return (
       <Flex gap={12} className={`full-width`} wrap>
-        <LabeledContainer displayName="Эффект для выигравшей карточки">
+        <LabeledContainer displayName="reel-winning-effect">
           <Segmented
             options={[
               { label: t("none"), value: "none" },
@@ -36,7 +36,7 @@ export class ReelWinningEffectProperty extends DefaultWidgetProperty<ReelWinning
     super({
       name: "reelWinningEffect",
       value: { id: "blink" },
-      displayName: "Эффект для выигравшей карточки",
+      displayName: "reel-winning-effect",
     });
   }
 

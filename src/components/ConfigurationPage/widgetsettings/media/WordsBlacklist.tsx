@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { DefaultWidgetProperty } from "../../widgetproperties/WidgetProperty";
 import LabeledContainer from "../../../LabeledContainer/LabeledContainer";
 import StringListEditor from "../../../StringListEditor/StringListEditor";
+import { useTranslation } from "react-i18next";
 
 const parseWords = (value: string): string[] => {
   return value
@@ -18,13 +19,14 @@ const serializeWords = (words: string[]): string => {
 
 const WordsBlacklistComponent = observer(
   ({ property }: { property: WordsBlacklist }) => {
+    const { t } = useTranslation();
     const words = parseWords(property.value);
 
     return (
       <LabeledContainer displayName={property.displayName}>
         <StringListEditor
           items={words}
-          placeholder="Введите слово..."
+          placeholder={t("media-enter-word")}
           onAdd={(word) => {
             const current = parseWords(property.value);
             if (!current.includes(word)) {
@@ -48,7 +50,7 @@ export class WordsBlacklist extends DefaultWidgetProperty<string> {
     super({
       name: "wordsBlacklist",
       value: value,
-      displayName: "Черный список слов в названии",
+      displayName: "media-words-blacklist",
     });
   }
 

@@ -25,7 +25,7 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
       value: params.value ?? {
         timestamp: dayjs(Date.now()).endOf("day").set("second", 0).toDate(),
       },
-      displayName: params.displayName ?? "datetime",
+      displayName: params.displayName ?? "date-time",
       help: params.help,
     });
   }
@@ -34,7 +34,7 @@ export class DateTimeProperty extends DefaultWidgetProperty<DateTimePropertyValu
     ({ property }: { property: DateTimeProperty }) => {
       return (
         <>
-          <LabeledContainer help={property.help} displayName={property.name}>
+          <LabeledContainer help={property.help} displayName={property.displayName}>
             <DateTimeInput
               value={new Date(property.value.timestamp ?? Date.now()).getTime()}
               onChange={(value) => {

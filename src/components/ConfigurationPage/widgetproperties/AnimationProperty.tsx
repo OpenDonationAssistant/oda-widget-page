@@ -31,6 +31,7 @@ export const AnimationPropertyComponent = observer(
     value: AnimationPropertyValue;
     displayName: string;
   }) => {
+    const { t } = useTranslation();
     return (
       <Flex gap={6}>
         <SmallLabeledContainer displayName={displayName} className={`${classes.half}`}>
@@ -38,12 +39,12 @@ export const AnimationPropertyComponent = observer(
             className="full-width"
             value={value.animation}
             options={[...ALL_ANIMATIONS, "random", "none"].map((option) => {
-              return { label: option, value: option };
+              return { label: t(option), value: option };
             })}
             onChange={(selected) => (value.animation = selected)}
           />
         </SmallLabeledContainer>
-        <SmallLabeledContainer displayName="Продолжительность" className={`${classes.half}`}>
+        <SmallLabeledContainer displayName={t("animation-property-duration")} className={`${classes.half}`}>
           <InputNumber
             value={value.duration}
             addon="ms"

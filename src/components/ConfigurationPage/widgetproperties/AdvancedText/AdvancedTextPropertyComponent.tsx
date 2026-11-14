@@ -62,7 +62,7 @@ export const AdvancedTextPropertyComponent = observer(
         <Flex align="center" gap={9} justify="space-between">
           <Flex align="center" gap={9}>
             <div className={`${classes.headertext}`}>
-              {property.displayName}
+              <Trans i18nKey={property.displayName} />
             </div>
             <Switch
               value={property.text.showText}
@@ -91,7 +91,7 @@ export const AdvancedTextPropertyComponent = observer(
                     mainWindowModalState.show = true;
                   }}
                 >
-                  Настройки шрифта
+                  {t("widget-font-settings")}
                 </SecondaryButton>
                 <Overlay>
                   <Panel>
@@ -241,8 +241,8 @@ export const AdvancedTextPropertyComponent = observer(
                                       />
                                       <div>
                                         {property.text.outline.enabled
-                                          ? "On"
-                                          : "Off"}
+                                          ? t("common-enabled")
+                                          : t("common-disabled")}
                                       </div>
                                     </Flex>
                                     <Flex gap={5}>
@@ -420,7 +420,7 @@ export const AdvancedTextPropertyComponent = observer(
               </ModalStateContext.Provider>
             </Flex>
             <Flex vertical className="full-width">
-              <div className={`${classes.textlabel}`}>Текст</div>
+              <div className={`${classes.textlabel}`}>{t("label-text")}</div>
               <textarea
                 className={`${classes.text}`}
                 value={property.text.value}
@@ -435,7 +435,7 @@ export const AdvancedTextPropertyComponent = observer(
               <ColorPropertyComponent
                 property={{
                   value: property.value.background,
-                  displayName: "Фон",
+                  displayName: "label-background",
                 }}
                 onChange={(value) => {
                   property.value = produce(toJS(property.value), (draft) => {
@@ -448,7 +448,7 @@ export const AdvancedTextPropertyComponent = observer(
               <ImagePropertyComponent
                 property={{
                   value: property.value.backgroundImage,
-                  displayName: "Фоновое изображение",
+                  displayName: "background-image",
                 }}
                 onChange={(value) => {
                   property.value = produce(toJS(property.value), (draft) => {

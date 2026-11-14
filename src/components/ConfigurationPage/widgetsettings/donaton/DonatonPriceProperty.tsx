@@ -7,12 +7,14 @@ import { produce } from "immer";
 import { toJS } from "mobx";
 import InputNumber from "../../components/InputNumber";
 import classes from "./DonatonPriceProperty.module.css";
+import { useTranslation } from "react-i18next";
 
 const DonationPricePropertyComponent = observer(
   ({ property }: { property: DonatonPriceProperty }) => {
+    const { t } = useTranslation();
     return (
       <>
-        <LabeledContainer displayName="Соотношение" help={property.help}>
+        <LabeledContainer displayName="donaton-price-ratio" help={property.help}>
           <Flex
             className="full-width"
             gap={10}
@@ -28,10 +30,10 @@ const DonationPricePropertyComponent = observer(
                 });
               }}
               options={[
-                { label: "Минута", value: "MIN" },
-                { label: "10 Минут", value: "10MIN" },
-                { label: "Час", value: "HOUR" },
-                { label: "Сутки", value: "DAY" },
+                { label: t("donaton-unit-minute"), value: "MIN" },
+                { label: t("donaton-unit-10-minutes"), value: "10MIN" },
+                { label: t("donaton-unit-hour"), value: "HOUR" },
+                { label: t("donaton-unit-day"), value: "DAY" },
               ]}
             />
             <span className={`${classes.equalsign}`}>=</span>
@@ -57,7 +59,6 @@ interface DonationPrice {
   unit: string;
 }
 
-// TODO: 18n
 export class DonatonPriceProperty extends DefaultWidgetProperty<DonationPrice> {
   constructor() {
     super({
@@ -67,7 +68,7 @@ export class DonatonPriceProperty extends DefaultWidgetProperty<DonationPrice> {
         unit: "HOUR",
       },
       displayName: "widget-donation-price",
-      help: "Соотношение, исходя из которого будет добавляться время к таймеру. Например, если 1 час = 360 рублей, то в пересчете на один рубль, (60*60)/360=10 секунд за 1 рубль доната. Округление всегда вверх.",
+      help: "donaton-price-help",
     });
   }
 

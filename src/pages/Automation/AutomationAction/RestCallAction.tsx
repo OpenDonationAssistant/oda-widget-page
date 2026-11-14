@@ -3,6 +3,7 @@ import { useState } from "react";
 import { produce } from "immer";
 import { makeAutoObservable, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 import { Renderable } from "../../../utils";
 import { AutomationAction } from "../AutomationState";
 import LabeledContainer from "../../../components/LabeledContainer/LabeledContainer";
@@ -44,6 +45,7 @@ const rowsFromHeaders = (
 
 const RestCallActionComponent = observer(
   ({ action }: { action: RestCallAction }) => {
+    const { t } = useTranslation();
     const [rows, setRows] = useState<HeaderRow[]>(() =>
       rowsFromHeaders(action.value.headers),
     );
@@ -62,12 +64,12 @@ const RestCallActionComponent = observer(
     return (
       <Flex vertical gap={9}>
         <LabeledContainer
-          displayName="Выполнять на сервере"
-          help="Пока действия выполняются только на сервере"
+          displayName="automation-rest-run-on-server"
+          help={t("automation-rest-server-only-help")}
         >
           <Switch checked disabled />
         </LabeledContainer>
-        <LabeledContainer displayName="Метод">
+        <LabeledContainer displayName="automation-rest-method">
           <Select
             className="full-width"
             value={action.value.method ?? "GET"}
@@ -96,13 +98,12 @@ const RestCallActionComponent = observer(
                 color: "var(--oda-secondary-text-color)",
               }}
             >
-              Поддерживаются переменные: {"<nickname>"}, {"<amount>"},{" "}
-              {"<message>"}, {"<system>"}
+              {t("automation-rest-variables-hint")}
             </span>
           </Flex>
         </LabeledContainer>
         {(action.value.method ?? "GET") !== "GET" && (
-          <LabeledContainer displayName="Тело запроса">
+          <LabeledContainer displayName="automation-rest-body">
             <Textarea
               value={action.value.payload ?? ""}
               onChange={(payload) => {
@@ -113,12 +114,12 @@ const RestCallActionComponent = observer(
             />
           </LabeledContainer>
         )}
-        <LabeledContainer displayName="Заголовки">
+        <LabeledContainer displayName="automation-rest-headers">
           <Flex vertical gap={6} className="full-width">
             {rows.map((row, index) => (
               <Flex key={index} gap={6} align="center" className="full-width">
                 <Input
-                  placeholder="Название"
+                  placeholder={t("common-name")}
                   value={row.name}
                   onChange={(e) => {
                     applyRows(
@@ -131,7 +132,7 @@ const RestCallActionComponent = observer(
                   }}
                 />
                 <Input
-                  placeholder="Значение"
+                  placeholder={t("common-value")}
                   value={row.value}
                   onChange={(e) => {
                     applyRows(
@@ -158,7 +159,7 @@ const RestCallActionComponent = observer(
             <Button
               onClick={() => applyRows([...rows, { name: "", value: "" }])}
             >
-              Добавить заголовок
+              {t("automation-rest-add-header")}
             </Button>
           </Flex>
         </LabeledContainer>
@@ -193,7 +194,7 @@ export class RestCallAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Вызвать REST API";
+    return "automation-action-rest-call";
   }
 
   public get markup() {

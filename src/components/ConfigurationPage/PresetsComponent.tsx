@@ -24,6 +24,7 @@ import SecondaryButton from "../Button/SecondaryButton";
 import PrimaryButton from "../Button/PrimaryButton";
 import { Alert } from "./widgetsettings/alerts/Alerts";
 import { TwitchAlertData } from "../../pages/TwitchAlerts/types";
+import { useTranslation } from "react-i18next";
 
 const PreviewImage = observer(
   ({ preset, onSelect }: { preset: Preset; onSelect: () => void }) => {
@@ -62,6 +63,7 @@ export const PresetWindow = ({
   const [system, setSystem] = useState<Preset[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const presetStore = useContext(PresetStoreContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoading(true);
@@ -93,7 +95,7 @@ export const PresetWindow = ({
       {personal && personal.length > 0 && (
         <Flex vertical className={`${classes.cardlistcontainer}`}>
           <Subtitle className={`${classes.presetsubtitle}`}>
-            Ваши шаблоны
+            {t("preset-personal-title")}
           </Subtitle>
           <CardList>
             {personal.map((preset) => (
@@ -109,7 +111,7 @@ export const PresetWindow = ({
       {system && system.length > 0 && (
         <Flex vertical className={`${classes.cardlistcontainer}`}>
           <Subtitle className={`${classes.presetsubtitle}`}>
-            Стандартные шаблоны
+            {t("preset-system-title")}
           </Subtitle>
           <CardList>
             {system.map((preset) => (
@@ -141,13 +143,14 @@ export const PresetsComponent = observer(
     const [selection] = useState<SelectedIndexStore>(
       () => new SelectedIndexStore(),
     );
+    const { t } = useTranslation();
 
     return (
       <SelectedIndexContext.Provider value={selection}>
         <ModalStateContext.Provider value={modalState}>
           <Overlay>
             <Panel>
-              <Title>Шаблоны</Title>
+              <Title>{t("preset-window-title")}</Title>
               <Flex
                 vertical
                 className={`${classes.presetcontainer} withscroll`}
@@ -166,7 +169,7 @@ export const PresetsComponent = observer(
                     modalState.show = false;
                   }}
                 >
-                  Отменить
+                  {t("button-cancel")}
                 </SecondaryButton>
                 <PrimaryButton
                   onClick={() => {
@@ -178,7 +181,7 @@ export const PresetsComponent = observer(
                     }
                   }}
                 >
-                  Применить
+                  {t("button-apply")}
                 </PrimaryButton>
               </Flex>
             </Panel>
@@ -188,7 +191,7 @@ export const PresetsComponent = observer(
               modalState.show = true;
             }}
           >
-            Применить шаблон
+            {t("preset-apply-button")}
           </SubActionButton>
         </ModalStateContext.Provider>
       </SelectedIndexContext.Provider>

@@ -22,7 +22,7 @@ const SetVariableValueActionComponent = observer(
 
     return (
       <Flex vertical gap={9}>
-        <LabeledContainer displayName="Переменная">
+        <LabeledContainer displayName="common-variable">
           <Select
             className="full-width"
             value={action.value.id}
@@ -48,7 +48,7 @@ const SetVariableValueActionComponent = observer(
             }}
           />
         </LabeledContainer>
-        <LabeledContainer displayName="Значение">
+        <LabeledContainer displayName="common-value">
           {selectedVariable?.type === "number" ? (
             <InputNumber
               value={Number(action.value.value) || 0}
@@ -94,7 +94,7 @@ export class SetVariableValueAction implements AutomationAction, Renderable {
   }
 
   public get name() {
-    return "Установить значение переменной";
+    return "automation-action-set-variable";
   }
 
   public get id() {

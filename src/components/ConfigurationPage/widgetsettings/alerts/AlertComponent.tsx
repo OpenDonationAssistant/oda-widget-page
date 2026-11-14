@@ -35,6 +35,7 @@ import { TriggersStoreContext } from "./triggers/TriggersStore";
 import { DemoTokenStore } from "../../../../stores/TokenStore";
 
 const SaveButtons = observer(() => {
+  const { t } = useTranslation();
   const widget = useContext(WidgetContext);
   const dialog = useContext(ModalStateContext);
 
@@ -55,7 +56,7 @@ const SaveButtons = observer(() => {
           dialog.show = false;
         }}
       >
-        Отменить
+        {t("button-cancel")}
       </SecondaryButton>
       <PrimaryButton
         disabled={!widget?.config.unsaved}
@@ -63,7 +64,7 @@ const SaveButtons = observer(() => {
           widget?.save();
         }}
       >
-        Сохранить
+        {t("button-save")}
       </PrimaryButton>
     </Flex>
   );
@@ -180,7 +181,7 @@ export const AlertComponent = observer(({ alert }: { alert: Alert }) => {
               className={`${classes.previewcontainer}`}
             >
               <SubActionButton onClick={() => savePreset()}>
-                Создать шаблон
+                {t("alerts-create-template")}
               </SubActionButton>
               <PresetsComponent target={alert} presetStore={presetStore} />
             </Flex>

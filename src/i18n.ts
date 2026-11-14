@@ -7,13 +7,16 @@ i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .use(
-    resourcesToBackend((language, namespace) =>
+    resourcesToBackend((language: string, namespace: string) =>
       import(`./locales/${language}/${namespace}.json`),
     ),
   )
   .init({
     partialBundledLanguages: true,
     fallbackLng: "ru",
+    interpolation: {
+      escapeValue: false,
+    },
     detection: {
       order: ["path", "localStorage", "htmlTag", "cookie"],
       caches: ["localStorage", "cookie"], // cache user language on

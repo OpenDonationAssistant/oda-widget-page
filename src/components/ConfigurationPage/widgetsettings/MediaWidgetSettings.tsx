@@ -11,13 +11,14 @@ import { Tarification } from "./media/Tarification";
 import { WordsBlacklist } from "./media/WordsBlacklist";
 import { RequestAllowRule } from "./media/RequestAllowRule";
 import { reaction } from "mobx";
+import { Trans } from "react-i18next";
 
 export class MediaWidgetSettings extends AbstractWidgetSettings {
   constructor() {
     const vkRequests = new BooleanProperty({
       name: "vkvideoEnabled",
       value: true,
-      displayName: "Реквесты с VKVideo",
+      displayName: "media-requests-vkvideo",
     });
     const tarification = new Tarification();
     reaction(
@@ -40,48 +41,48 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
       sections: [
         {
           key: "general",
-          title: "Общие",
+          title: "General",
           properties: [
             new BooleanProperty({
               name: "requestsEnabled",
               value: true,
-              displayName: "Реквесты включены",
+              displayName: "media-requests-enabled",
             }),
             new BooleanProperty({
               name: "youtubeEnabled",
               value: true,
-              displayName: "Реквесты с YouTube",
+              displayName: "media-requests-youtube",
             }),
             vkRequests,
             new BooleanProperty({
               name: "showQueueSizeOnPage",
               value: true,
               displayName:
-                "Показывать количество треков в очереди на странице доната",
+                "media-show-queue-size-on-page",
             }),
             tarification,
             new NumberProperty({
               name: "songMaxAmount",
               value: 12,
-              displayName: "Максимальное кол-во видео в одном донате",
+              displayName: "media-max-videos-per-donation",
             }),
             new NumberProperty({
               name: "requestViewAmount",
               value: 100,
-              displayName: "Минимальное кол-во просмотров",
+              displayName: "media-min-views",
             }),
             new MaxLen(),
             new TextProperty({
               name: "requestTooltip",
               value: "",
-              displayName: "Текст подсказки для донатера",
+              displayName: "media-request-tooltip-text",
             }),
             new WordsBlacklist(),
           ],
         },
         {
           key: "appearance",
-          title: "Внешний вид",
+          title: "media-appearance-section",
           properties: [
             new NumberProperty({
               name: "playlistSongTitleFontSize",
@@ -104,17 +105,17 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
             new BooleanProperty({
               name: "twitchPointsRequestsEnabled",
               value: false,
-              displayName: "Заказ за баллы",
+              displayName: "media-points-request",
             }),
             new TextProperty({
               name: "music-twitch-request-title",
               value: "Заказ музыки",
-              displayName: "Название награды",
+              displayName: "media-reward-name",
             }),
             new NumberProperty({
               name: "music-twitch-request-cost",
               value: 100,
-              displayName: "Стоимость в баллах",
+              displayName: "media-reward-cost",
             }),
             new RequestAllowRule({
               name: "music-twitch-request-allow",
@@ -129,17 +130,17 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
             new BooleanProperty({
               name: "vklivePointsRequestsEnabled",
               value: false,
-              displayName: "Заказ за баллы",
+              displayName: "media-points-request",
             }),
             new TextProperty({
               name: "music-vklive-request-title",
               value: "Заказ музыки",
-              displayName: "Название награды",
+              displayName: "media-reward-name",
             }),
             new NumberProperty({
               name: "music-vklive-request-cost",
               value: 100,
-              displayName: "Стоимость в баллах",
+              displayName: "media-reward-cost",
             }),
             new RequestAllowRule({
               name: "music-vklive-request-allow",
@@ -154,17 +155,17 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
             new BooleanProperty({
               name: "kickPointsRequestsEnabled",
               value: false,
-              displayName: "Заказ за баллы",
+              displayName: "media-points-request",
             }),
             new TextProperty({
               name: "music-kick-request-title",
               value: "Заказ музыки",
-              displayName: "Название награды",
+              displayName: "media-reward-name",
             }),
             new NumberProperty({
               name: "music-kick-request-cost",
               value: 100,
-              displayName: "Стоимость в баллах",
+              displayName: "media-reward-cost",
             }),
             new RequestAllowRule({
               name: "music-kick-request-allow",
@@ -180,47 +181,46 @@ export class MediaWidgetSettings extends AbstractWidgetSettings {
     return (
       <>
         <Flex align="top" justify="space-between">
-          <h3 className={`${classes.helptitle}`}>Виджет "Плеер"</h3>
+          <h3 className={`${classes.helptitle}`}>
+            <Trans i18nKey="media-help-title" />
+          </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Проигрывает видео из реквеста из доната.
+          <Trans i18nKey="media-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-howto-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Плеер) скопировать ссылку</li>
             <li>
-              Скопированную ссылку можно вставить как Dock в OBS либо открыть в
-              браузере. В обоих случаях плеер будет принимать реквесты,
-              проигрывать их.
+              <Trans i18nKey="media-help-step-copy-link" />
             </li>
             <li>
-              Чтобы уточнить цену реквестов и отобразить поле для их добавления,
-              надо в разделе 'Страница доната' выставить поле 'Реквесты
-              музыки/видео' в Enabled и прописать их стоимость в поле 'Стоимость
-              реквестов'.
+              <Trans i18nKey="media-help-step-paste-dock" />
+            </li>
+            <li>
+              <Trans i18nKey="media-help-step-price" />
             </li>
           </ul>
         </div>
-        <h3 className={`${classes.helptitle}`}>FAQ</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="media-help-faq-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
             <li>
-              Если подключен виджет алертов, плеер будет включать паузу на время
-              алерта.
+              <Trans i18nKey="media-help-faq-alert-pause" />
             </li>
             <li>
-              Внутри виджета 'Плеер' можно включать/выключать реквесты - в меню
-              кнопка 'Disable requests'.
+              <Trans i18nKey="media-help-faq-toggle" />
             </li>
             <li>
-              Если запущено несколько копий плеера, то реквесты будут попадать
-              рандомно в один из них.
+              <Trans i18nKey="media-help-faq-copies" />
             </li>
             <li>
-              С помощью виджета 'Remote Control' можно управлять плеером
-              дистанционно (например модератору).
+              <Trans i18nKey="media-help-faq-remote" />
             </li>
           </ul>
         </div>

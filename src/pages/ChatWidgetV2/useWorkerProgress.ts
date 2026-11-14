@@ -22,7 +22,7 @@ const ERROR_VISIBLE_MS = 60000
 const INITIAL: WorkerProgress = {
   stage: "starting",
   percent: 0,
-  label: "Starting...",
+  label: "",
   handlerErrors: [],
 }
 

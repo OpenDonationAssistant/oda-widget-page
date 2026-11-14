@@ -30,6 +30,7 @@ import {
 } from "../../components/List/List";
 
 const VariableComponent = observer(({ variable }: { variable: Variable }) => {
+  const { t } = useTranslation();
   const { state } = useAutomationState();
 
   return (
@@ -40,7 +41,9 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
     >
       <Flex style={{ flexGrow: 1 }}>
         <EditableString
-          label={variable.name ? variable.name : "<Без названия>"}
+          label={
+            variable.name ? variable.name : t("automation-variable-untitled")
+          }
           onChange={(value) => {
             variable.name = value;
           }}
@@ -55,7 +58,7 @@ const VariableComponent = observer(({ variable }: { variable: Variable }) => {
         {variable.type === "string" && (
           <Input
             value={variable.value as string}
-            placeholder="<пусто>"
+            placeholder={t("automation-variable-empty-placeholder")}
             onChange={(e) => {
               variable.value = e.target.value;
             }}
@@ -111,7 +114,7 @@ const RuleList = observer(() => {
                   <div>{rule.name}</div>
                   <Modal
                     className={`${classes.helpmodal}`}
-                    title="rename-rule"
+                    title={t("automation-rename-rule")}
                     open={showModal}
                     onCancel={toggleModal}
                     onClose={toggleModal}
@@ -149,7 +152,7 @@ const RuleList = observer(() => {
                         deleteRuleDialogState.show = false;
                       }}
                     >
-                      Вы точно хотите удалить правило?
+                      {t("automation-delete-rule-confirm")}
                     </Warning>
                   </Overlay>
                 </ModalStateContext.Provider>
@@ -157,7 +160,7 @@ const RuleList = observer(() => {
                   onClick={() => (deleteRuleDialogState.show = true)}
                   icon={<CloseIcon color="#FF8888" />}
                 >
-                  <span style={{ color: "#FF8888" }}>Удалить</span>
+                  <span style={{ color: "#FF8888" }}>{t("button-delete")}</span>
                 </SubActionButton>
               </>
             }
@@ -201,12 +204,13 @@ const VariableList = observer(({ type }: { type: "string" | "number" }) => {
 });
 
 const AutomationPage = observer(() => {
+  const { t } = useTranslation();
   const { state } = useAutomationState();
   const widgetStore = new DefaultWidgetStore();
 
   return (
     <WidgetStoreContext.Provider value={widgetStore}>
-      <h1>Автоматизация</h1>
+      <h1>{t("menu-automation")}</h1>
 
       <Tabs
         tabBarExtraContent={
@@ -215,24 +219,28 @@ const AutomationPage = observer(() => {
               state.save();
             }}
           >
-            Сохранить
+            {t("button-save")}
           </SecondaryButton>
         }
         type="card"
         items={[
           {
-            label: "Правила",
+            label: t("automation-tab-rules"),
             key: "rules",
             children: <RuleList />,
           },
           {
-            label: "Переменные",
+            label: t("automation-tab-variables"),
             key: "variables",
             children: (
               <Flex vertical className={`${classes.variabletab}`}>
-                <div className={`${classes.variablesectionname}`}>Числа</div>
+                <div className={`${classes.variablesectionname}`}>
+                  {t("automation-variables-numbers")}
+                </div>
                 <VariableList type="number" />
-                <div className={`${classes.variablesectionname}`}>Строки</div>
+                <div className={`${classes.variablesectionname}`}>
+                  {t("automation-variables-strings")}
+                </div>
                 <VariableList type="string" />
               </Flex>
             ),

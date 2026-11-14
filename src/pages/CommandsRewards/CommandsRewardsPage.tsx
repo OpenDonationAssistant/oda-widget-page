@@ -7,6 +7,7 @@ import { Command, useCommandsStore } from "./CommandsStore";
 import { Reward, useRewardsStore } from "./RewardsStore";
 import CloseIcon from "../../icons/CloseIcon";
 import { FilledList, ListItemData } from "../../components/List/FilledList";
+import { useTranslation } from "react-i18next";
 
 const CommandComponent = observer(({ command }: { command: ListItemData }) => {
   const { store } = useCommandsStore();
@@ -119,22 +120,23 @@ const RewardsList = observer(() => {
 });
 
 const CommandsRewardsPage = observer(() => {
+  const { t } = useTranslation();
   const commands = useCommandsStore().store;
   const rewards = useRewardsStore().store;
 
   return (
     <>
-      <h1>Команды и награды</h1>
+      <h1>{t("menu-commands-rewards")}</h1>
       <Tabs
         type="card"
         items={[
           {
-            label: "Команды",
+            label: t("commands-rewards-tab-commands"),
             key: "commands",
             children: <FilledList store={commands} />,
           },
           {
-            label: "Награды",
+            label: t("commands-rewards-tab-rewards"),
             key: "rewards",
             children: <FilledList store={rewards} />,
           },

@@ -93,6 +93,7 @@ const WidgetSettingsWindow = observer(
 );
 
 const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
+  const { t } = useTranslation();
   const preview = useRef<HTMLElement | null>(null);
   const presetStore = useContext(PresetStoreContext);
 
@@ -157,7 +158,7 @@ const WidgetSettings = observer(({ widget }: { widget: Widget }) => {
                   className={`${classes.templatebuttons}`}
                 >
                   <SubActionButton onClick={() => savePreset()}>
-                    Создать шаблон
+                    {t("preset-create-button")}
                   </SubActionButton>
                   <PresetsComponent presetStore={presetStore} target={widget} />
                 </Flex>

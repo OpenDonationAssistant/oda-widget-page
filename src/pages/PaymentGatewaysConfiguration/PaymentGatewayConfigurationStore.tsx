@@ -2,20 +2,26 @@ import { DefaultApiFactory as PaymentService } from "@opendonationassistant/oda-
 import { Flex } from "antd";
 import { makeAutoObservable } from "mobx";
 import { ReactNode } from "react";
+import { Trans } from "react-i18next";
 import { uuidv7 } from "uuidv7";
 import { log } from "../../logging";
 
 export interface Instruction {
-  statement: ReactNode;
+  /** i18n key */
+  statement: string;
+  /** i18n key for plain text, or a <Trans> node for rich text */
   comment: ReactNode;
   screen?: string;
 }
 
 export interface GatewayInfo {
+  /** i18n key */
   name: string;
   id: string;
   type: "fiat" | "crypto";
+  /** i18n keys */
   goodpoints: string[];
+  /** i18n keys */
   badpoints: string[];
   fields: GatewayField[];
   instructions: Map<number, Instruction[]>;
@@ -23,7 +29,9 @@ export interface GatewayInfo {
 
 export interface GatewayField {
   id: string;
+  /** i18n key */
   name: string;
+  /** i18n key, empty when there is no comment */
   comment: string;
   value: string;
 }
@@ -45,16 +53,22 @@ export class PaymentGatewayConfigurationStore {
   private _configurations: GatewayConfiguration[] = [];
   private _gateways: GatewayInfo[] = [
     {
-      name: "Юмани",
+      name: "gateway-yoomoney-name",
       id: "yoomoney",
       type: "fiat",
-      goodpoints: ["Не требуется самозанятость", "Комиссия 3% + 3% вывод"],
-      badpoints: ["Нет СБП", "Не принимает зарубежные карты"],
+      goodpoints: [
+        "gateway-goodpoint-self-employment-not-required",
+        "gateway-yoomoney-goodpoint-fee",
+      ],
+      badpoints: [
+        "gateway-yoomoney-badpoint-no-sbp",
+        "gateway-badpoint-no-foreign-cards",
+      ],
       fields: [
         {
           id: "shopId",
-          name: "Введите номер кошелька Юмани",
-          comment: "Номер кошелька можно скопировать в личном кабинете Юмани",
+          name: "gateway-field-yoomoney-wallet-name",
+          comment: "gateway-field-yoomoney-wallet-comment",
           value: "",
         },
       ],
@@ -63,16 +77,20 @@ export class PaymentGatewayConfigurationStore {
           2,
           [
             {
-              statement: "1. Создайте кошелек в Юмани",
+              statement: "gateway-yoomoney-instruction-create-wallet",
               comment: (
                 <div>
-                  Оформить кошелек можно по{" "}
-                  <a
-                    target="_blank"
-                    href="https://yoomoney.ru/yooid/signup/step/phone"
-                  >
-                    ссылке
-                  </a>
+                  <Trans
+                    i18nKey="gateway-yoomoney-instruction-create-wallet-comment"
+                    components={{
+                      lnk: (
+                        <a
+                          target="_blank"
+                          href="https://yoomoney.ru/yooid/signup/step/phone"
+                        />
+                      ),
+                    }}
+                  />
                 </div>
               ),
             },
@@ -82,18 +100,22 @@ export class PaymentGatewayConfigurationStore {
           3,
           [
             {
-              statement: "2. Внесите нужные настройки",
+              statement: "gateway-yoomoney-instruction-configure",
               comment: (
                 <>
                   <div>
-                    Откройте{" "}
-                    <a href="https://yoomoney.ru/transfer/myservices/http-notification?lang=ru">
-                      настройки
-                    </a>{" "}
-                    и вставьте ссылку
-                    "https://api.oda.digital/notification/yoomoney".
+                    <Trans
+                      i18nKey="gateway-yoomoney-instruction-webhook"
+                      components={{
+                        lnk: (
+                          <a href="https://yoomoney.ru/transfer/myservices/http-notification?lang=ru" />
+                        ),
+                      }}
+                    />
                   </div>
-                  <div>Поставьте галку "Отправлять HTTP-уведомления".</div>
+                  <div>
+                    <Trans i18nKey="gateway-yoomoney-instruction-http-notifications" />
+                  </div>
                 </>
               ),
               screen:
@@ -104,28 +126,26 @@ export class PaymentGatewayConfigurationStore {
       ]),
     },
     {
-      name: "Юкасса",
+      name: "gateway-yookassa-name",
       id: "yookassa",
       type: "fiat",
       goodpoints: [
-        "Требуется самозанятость",
-        "Комиссия 2.8% + 0% вывод",
-        "Комиссия 0.4% на СБП + 0% вывод",
+        "gateway-goodpoint-self-employment-required",
+        "gateway-yookassa-goodpoint-fee",
+        "gateway-yookassa-goodpoint-sbp-fee",
       ],
-      badpoints: ["Не принимает зарубежные карты"],
+      badpoints: ["gateway-badpoint-no-foreign-cards"],
       fields: [
         {
           id: "shopId",
-          name: "Введите Идентификатор магазина",
-          comment:
-            "Идентификатор магазина можно скопировать в личном кабинете Юкассы, вверху рядом с надписью shopId, либо в разделе Настройки -> Магазин, под строчкой shopId",
+          name: "gateway-field-shop-id-name",
+          comment: "gateway-field-yookassa-shop-id-comment",
           value: "",
         },
         {
           id: "apiKey",
-          name: "Введите Секретный ключ",
-          comment:
-            "Секретный ключ можно скопировать в разделе Интеграции -> Ключи API под заголовком Секретный ключ",
+          name: "gateway-field-yookassa-secret-key-name",
+          comment: "gateway-field-yookassa-secret-key-comment",
           value: "",
         },
       ],
@@ -134,61 +154,60 @@ export class PaymentGatewayConfigurationStore {
           2,
           [
             {
-              statement: "1. Оформите статус самозанятого",
-              comment: "Оформить самозанятого можно на сайте Госуслуг",
+              statement: "gateway-instruction-self-employment",
+              comment: "gateway-instruction-self-employment-comment",
             },
             {
-              statement:
-                "2. Перейдите по ссылке для регистрации аккаунта в Юкассе",
+              statement: "gateway-yookassa-instruction-register",
               comment: (
                 <Flex vertical>
                   <div>
-                    Используя полученный ИНН самозанятого зарегистрируйте акаунт
-                    Юкассы используя ссылку ниже. Ссылка позволит уменьшить
-                    коммиссию до 2,8 %
+                    <Trans i18nKey="gateway-yookassa-instruction-register-comment" />
                   </div>
                   <a
                     target="_blank"
                     href="https://yookassa.ru/joinups/?source=oda.digital"
                   >
-                    Зарегистрироваться в Юкассе
+                    <Trans i18nKey="gateway-yookassa-register-link" />
                   </a>
                 </Flex>
               ),
             },
             {
-              statement: "3. Заполните контактные данные",
+              statement: "gateway-instruction-fill-contacts",
               comment: (
                 <Flex vertical>
                   <div>
-                    В{" "}
-                    <a href="https://widgets.oda.digital/configuration/payment-page">
-                      ЛК ОДЫ
-                    </a>{" "}
-                    заполните контактные данные (ФИО, ИНН, E-Mail). Они будут
-                    отображаться на странице доната в разделе "Пользовательское
-                    соглашение" - это требование Юкассы.
+                    <Trans
+                      i18nKey="gateway-yookassa-instruction-contacts-comment"
+                      components={{
+                        lnk: (
+                          <a href="https://widgets.oda.digital/configuration/payment-page" />
+                        ),
+                      }}
+                    />
                   </div>
                 </Flex>
               ),
             },
             {
-              statement: "4. Заполните анкету подключения.",
+              statement: "gateway-yookassa-instruction-form",
               comment: (
                 <Flex vertical>
                   <div>
-                    В пункте Прием платежей выберите "На сайте", указав адрес
-                    страницы доната.
+                    <Trans i18nKey="gateway-yookassa-instruction-payments-site" />
                   </div>
-                  <div>Чеки подключать не надо.</div>
                   <div>
-                    В "Цель деятельности" можно оставить пункт "Получение
-                    прибыли от реализации основных видов деятельности"
+                    <Trans i18nKey="gateway-yookassa-instruction-receipts" />
                   </div>
-                  <div>Отправьте анкету на проверку.</div>
                   <div>
-                    Автоматический валидатор будет ругаться, что на странице не
-                    хватает контактных данных - игнорируем эту ошибку.
+                    <Trans i18nKey="gateway-yookassa-instruction-purpose" />
+                  </div>
+                  <div>
+                    <Trans i18nKey="gateway-yookassa-instruction-submit" />
+                  </div>
+                  <div>
+                    <Trans i18nKey="gateway-yookassa-instruction-validator" />
                   </div>
                 </Flex>
               ),
@@ -199,9 +218,8 @@ export class PaymentGatewayConfigurationStore {
           3,
           [
             {
-              statement: "1. Пропишите URL ОДЫ для HTTP уведомлений",
-              comment:
-                "В разделе 'Интеграции' -> 'HTTP уведомления' в строке 'URL для уведомлений' вставьте адрес 'https://api.oda.digital/notification/yookassa', проставив галку у всех событий (payment.succeeded, payment.canceled и т.д.)",
+              statement: "gateway-yookassa-instruction-webhook-url",
+              comment: "gateway-yookassa-instruction-webhook-url-comment",
               screen:
                 "https://api.oda.digital/assets/photo_2024-03-03_10-32-18.jpg",
             },
@@ -210,36 +228,33 @@ export class PaymentGatewayConfigurationStore {
       ]),
     },
     {
-      name: "Робокасса",
+      name: "gateway-robokassa-name",
       id: "robokassa",
       type: "fiat",
       goodpoints: [
-        "Требуется самозанятость",
-        "Комиссия 3% на банк.карты",
-        "Комиссия 2.8% на СБП",
-        "Принимает зарубежные карты",
+        "gateway-goodpoint-self-employment-required",
+        "gateway-robokassa-goodpoint-card-fee",
+        "gateway-robokassa-goodpoint-sbp-fee",
+        "gateway-robokassa-goodpoint-foreign-cards",
       ],
-      badpoints: ["При выводе менее 10000 рублей комиссия 50 рублей"],
+      badpoints: ["gateway-robokassa-badpoint-withdrawal-fee"],
       fields: [
         {
           id: "shopId",
-          name: "Введите Идентификатор магазина",
-          comment:
-            "Идентификатор магазина можно скопировать в Настройках магазина во вкладке Технические настройки",
+          name: "gateway-field-shop-id-name",
+          comment: "gateway-field-robokassa-shop-id-comment",
           value: "",
         },
         {
           id: "apiKey",
-          name: "Введите Пароль #1",
-          comment:
-            "В Настройках магазина во вкладке Технические настройки сгенерируйте и скопируйте сюда Пароль #1",
+          name: "gateway-field-robokassa-password1-name",
+          comment: "gateway-field-robokassa-password1-comment",
           value: "",
         },
         {
           id: "secret",
-          name: "Введите Пароль #2",
-          comment:
-            "В Настройках магазина во вкладке Технические настройки сгенерируйте и скопируйте сюда Пароль #2",
+          name: "gateway-field-robokassa-password2-name",
+          comment: "gateway-field-robokassa-password2-comment",
           value: "",
         },
       ],
@@ -248,48 +263,45 @@ export class PaymentGatewayConfigurationStore {
           2,
           [
             {
-              statement: "1. Оформите статус самозанятого",
-              comment: "Оформить самозанятого можно на сайте Госуслуг",
+              statement: "gateway-instruction-self-employment",
+              comment: "gateway-instruction-self-employment-comment",
             },
             {
-              statement:
-                "2. Перейдите по ссылке для регистрации аккаунта в Робокассе",
+              statement: "gateway-robokassa-instruction-register",
               comment: (
                 <Flex vertical>
                   <div>
-                    Используя полученный ИНН самозанятого, зарегистрируйте
-                    акаунт Робокассы используя ссылку ниже. Ссылка позволит
-                    уменьшить коммиссию до 3%
+                    <Trans i18nKey="gateway-robokassa-instruction-register-comment" />
                   </div>
                   <a
                     target="_blank"
                     href={`https://partner.robokassa.ru/Reg/Register?PromoCode=odadonation&culture=ru`}
                   >
-                    Зарегистрироваться в Робокассе
+                    <Trans i18nKey="gateway-robokassa-register-link" />
                   </a>
                 </Flex>
               ),
             },
             {
-              statement: "3. Заполните контактные данные",
+              statement: "gateway-instruction-fill-contacts",
               comment: (
                 <Flex vertical>
                   <div>
-                    В{" "}
-                    <a href="https://widgets.oda.digital/configuration/payment-page">
-                      ЛК ОДЫ
-                    </a>{" "}
-                    заполните контактные данные (ФИО, ИНН, E-Mail). Они будут
-                    отображаться на странице доната в разделе "Пользовательское
-                    соглашение" - это требование Робокассы.
+                    <Trans
+                      i18nKey="gateway-robokassa-instruction-contacts-comment"
+                      components={{
+                        lnk: (
+                          <a href="https://widgets.oda.digital/configuration/payment-page" />
+                        ),
+                      }}
+                    />
                   </div>
                 </Flex>
               ),
             },
             {
-              statement: "4. Добавьте магазин",
-              comment:
-                "В разделе 'Мои магазины' добавьте новый. Заполните необходимые данные, указав адрес страницы доната в строке 'Ссылка на ваш сайт'. После заполнения всех данных, отправьте анкету на подтверждение.",
+              statement: "gateway-robokassa-instruction-add-shop",
+              comment: "gateway-robokassa-instruction-add-shop-comment",
             },
           ],
         ],
@@ -297,58 +309,55 @@ export class PaymentGatewayConfigurationStore {
           3,
           [
             {
-              statement: "1. Пропишите URL ODA для HTTP уведомлений",
-              comment:
-                "Найти в ЛК Робокассы созданный магазин, в его настройках во вкладке 'Технические настройки' вставьте в строку 'Result url' адрес 'https://api.oda.digital/notification/robokassa'",
+              statement: "gateway-robokassa-instruction-result-url",
+              comment: "gateway-robokassa-instruction-result-url-comment",
             },
             {
-              statement: "2. Пропишите URL ODA для возврата со страницы оплаты",
-              comment:
-                "Найти в ЛК Робокассы созданный магазин, в его настройках во вкладке 'Технические настройки' вставьте в строку 'Success Url' адрес 'https://<ник>.oda.digital/payment/robokassa/result', заменив '<ник>' на свой логин в ODA",
+              statement: "gateway-robokassa-instruction-success-url",
+              comment: "gateway-robokassa-instruction-success-url-comment",
             },
             {
-              statement: "3. Пропишите URL ODA для возврата в случае ошибки",
-              comment:
-                "Найти в ЛК Робокассы созданный магазин, в его настройках во вкладке 'Технические настройки' вставьте в строку 'Fail Url' адрес 'https://<ник>.oda.digital', заменив '<ник>' на свой логин в ODA",
+              statement: "gateway-robokassa-instruction-fail-url",
+              comment: "gateway-robokassa-instruction-fail-url-comment",
             },
           ],
         ],
       ]),
     },
     {
-      name: "Rahmat",
+      name: "gateway-rahmat-name",
       id: "rahmat",
       type: "fiat",
-      goodpoints: ["Узбекистан. Требуется самозанятость"],
-      badpoints: ["При оплате сумма отображается в сумах."],
+      goodpoints: ["gateway-rahmat-goodpoint-uzbekistan"],
+      badpoints: ["gateway-rahmat-badpoint-sums"],
       fields: [
         {
           id: "shopId",
-          name: "Введите store Id",
+          name: "gateway-field-rahmat-store-id-name",
           comment: "",
           value: "",
         },
         {
           id: "appId",
-          name: "Введите application Id",
+          name: "gateway-field-rahmat-app-id-name",
           comment: "",
           value: "",
         },
         {
           id: "appSecret",
-          name: "Введите application secret",
+          name: "gateway-field-rahmat-app-secret-name",
           comment: "",
           value: "",
         },
         {
           id: "mxik",
-          name: "Введите ИКПУ из справочника tasnif.soliq.uz",
+          name: "gateway-field-rahmat-mxik-name",
           comment: "",
           value: "",
         },
         {
           id: "packageCode",
-          name: "Введите Код упаковки из справочника tasnif.soliq.uz",
+          name: "gateway-field-rahmat-package-code-name",
           comment: "",
           value: "",
         },
@@ -358,8 +367,8 @@ export class PaymentGatewayConfigurationStore {
           2,
           [
             {
-              statement: "1. Оформите статус самозанятого",
-              comment: "",
+              statement: "gateway-instruction-self-employment",
+              comment: "gateway-instruction-self-employment-comment",
             },
           ],
         ],
@@ -367,7 +376,7 @@ export class PaymentGatewayConfigurationStore {
           3,
           [
             {
-              statement: "Ничего не требуется",
+              statement: "gateway-rahmat-instruction-nothing",
               comment: "",
             },
           ],
@@ -375,31 +384,31 @@ export class PaymentGatewayConfigurationStore {
       ]),
     },
     {
-      name: "CryptoCloud",
+      name: "gateway-cryptocloud-name",
       id: "cryptocloud",
       type: "crypto",
-      goodpoints: ["Не требуется самозанятость", "Комиссия от 0.4% до 1.9%"],
+      goodpoints: [
+        "gateway-goodpoint-self-employment-not-required",
+        "gateway-cryptocloud-goodpoint-fee",
+      ],
       badpoints: [],
       fields: [
         {
           id: "shopId",
-          name: "Введите Shop ID",
-          comment:
-            "Shop ID можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
+          name: "gateway-field-cryptocloud-shop-id-name",
+          comment: "gateway-field-cryptocloud-shop-id-comment",
           value: "",
         },
         {
           id: "apiKey",
-          name: "Введите API Key",
-          comment:
-            "API Key можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
+          name: "gateway-field-cryptocloud-api-key-name",
+          comment: "gateway-field-cryptocloud-api-key-comment",
           value: "",
         },
         {
           id: "secret",
-          name: "Введите Secret",
-          comment:
-            "Secret можно скопировать в настройках проекта во вкладке 'Интеграция и API'",
+          name: "gateway-field-cryptocloud-secret-name",
+          comment: "gateway-field-cryptocloud-secret-comment",
           value: "",
         },
       ],
@@ -408,27 +417,25 @@ export class PaymentGatewayConfigurationStore {
           2,
           [
             {
-              statement: "1. Перейдите по ссылке для регистрации аккаунта",
+              statement: "gateway-cryptocloud-instruction-register",
               comment: (
                 <a
                   target="_blank"
                   href="https://app.cryptocloud.plus/?ref=0C1K5OW5US"
                 >
-                  Зарегистрировать аккаунт
+                  <Trans i18nKey="gateway-cryptocloud-register-link" />
                 </a>
               ),
             },
             {
-              statement: "2. Создайте проект",
+              statement: "gateway-cryptocloud-instruction-create-project",
               comment: (
                 <>
                   <div>
-                    После регистрации аккаунта, в разделе Мои проекты добавьте
-                    новый проект и заполните всю информацию.
+                    <Trans i18nKey="gateway-cryptocloud-instruction-create-project-comment" />
                   </div>
                   <div>
-                    В настройке "Как вы хотите принимать платежи" должен быть
-                    выбран пункт "На своем сайте".
+                    <Trans i18nKey="gateway-cryptocloud-instruction-payment-method" />
                   </div>
                 </>
               ),
@@ -439,28 +446,34 @@ export class PaymentGatewayConfigurationStore {
           3,
           [
             {
-              statement: "2. Настройте проект",
+              statement: "gateway-cryptocloud-instruction-configure",
               screen:
                 "https://api.oda.digital/assets/2025-11-15_15-11-1763210389.png",
               comment: (
                 <>
                   <div>
-                    В созданном проекте во вкладке "Интеграция и API" заполните
-                    поля следующим образом:
-                  </div>
-                  <div>Ваш сайт - https://oda.digital</div>
-                  <div>Настройки CMS - Other CMS</div>
-                  <div>
-                    Успешный URL - {"<ваша страница доната>"}
-                    /payment/cryptocloud/result
+                    <Trans i18nKey="gateway-cryptocloud-instruction-configure-comment" />
                   </div>
                   <div>
-                    Неудачный URL - {"<ваша страница доната>"}
-                    /payment/cryptocloud/result
+                    <Trans i18nKey="gateway-cryptocloud-instruction-site" />
                   </div>
                   <div>
-                    URL для уведомлений -
-                    https://api.oda.digital/notification/cryptocloud
+                    <Trans i18nKey="gateway-cryptocloud-instruction-cms" />
+                  </div>
+                  <div>
+                    <Trans i18nKey="gateway-cryptocloud-instruction-success-url-label" />{" "}
+                    {"<"}
+                    <Trans i18nKey="gateway-cryptocloud-your-donation-page" />
+                    {">"}/payment/cryptocloud/result
+                  </div>
+                  <div>
+                    <Trans i18nKey="gateway-cryptocloud-instruction-fail-url-label" />{" "}
+                    {"<"}
+                    <Trans i18nKey="gateway-cryptocloud-your-donation-page" />
+                    {">"}/payment/cryptocloud/result
+                  </div>
+                  <div>
+                    <Trans i18nKey="gateway-cryptocloud-instruction-notification-url" />
                   </div>
                 </>
               ),

@@ -14,6 +14,7 @@ import {
   Title,
 } from "../Overlay/Overlay";
 import { Flex } from "antd";
+import { useTranslation } from "react-i18next";
 import classes from "./WizardComponent.module.css";
 import { makeAutoObservable, reaction } from "mobx";
 import PrimaryButton from "../Button/PrimaryButton";
@@ -182,6 +183,7 @@ export const Wizard = observer(
   }: {
     configurationStore: WizardConfigurationStore;
   }) => {
+    const { t } = useTranslation();
     const parentModalState = useContext(ModalStateContext);
     const [dialogState] = useState<ModalState>(
       () =>
@@ -210,30 +212,40 @@ export const Wizard = observer(
           <ModalStateContext.Provider value={dialogState}>
             <Overlay>
               <Panel>
-                <Title>{configurationStore.step.title}</Title>
+                <Title>
+                  {typeof configurationStore.step.title === "string"
+                    ? t(configurationStore.step.title)
+                    : configurationStore.step.title}
+                </Title>
                 <div className={`${classes.subtitle}`}>
-                  {configurationStore.step.subtitle}
+                  {t(configurationStore.step.subtitle)}
                 </div>
                 <Flex>{configurationStore.step.content}</Flex>
                 <Flex className={`${classes.buttons}`}>
                   {configurationStore.stepAmount && (
                     <div>
-                      Шаг {configurationStore.index + 1} из{" "}
-                      {configurationStore.stepAmount}
+                      {t("wizard-step-of", {
+                        current: configurationStore.index + 1,
+                        total: configurationStore.stepAmount,
+                      })}
                     </div>
                   )}
                   {!configurationStore.stepAmount && (
-                    <div>Шаг {configurationStore.index + 1}</div>
+                    <div>
+                      {t("wizard-step", {
+                        current: configurationStore.index + 1,
+                      })}
+                    </div>
                   )}
                   <Flex gap={9} justify="flex-end">
                     <SecondaryButton onClick={() => configurationStore.reset()}>
-                      Отменить
+                      {t("button-cancel")}
                     </SecondaryButton>
                     <PrimaryButton
                       disabled={!configurationStore.canContinue}
                       onClick={() => configurationStore.next()}
                     >
-                      Далее
+                      {t("common-next")}
                     </PrimaryButton>
                   </Flex>
                 </Flex>

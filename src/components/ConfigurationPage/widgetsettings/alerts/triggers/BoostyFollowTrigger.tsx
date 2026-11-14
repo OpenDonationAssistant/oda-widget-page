@@ -3,7 +3,7 @@ import { DonationEvent, Trigger } from "./AlertTriggerInterface";
 import { ReactNode } from "react";
 
 export const BOOSTY_FOLLOW_TRIGGER = {
-  description: "Отслеживание на Boosty",
+  description: "alerts-trigger-boosty-follow",
   type: "boosty_follow",
 };
 

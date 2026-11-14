@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 
 export const FIXED_DONATION_AMOUNT_TRIGGER = {
   type: "fixed-donation-amount",
-  description: "Сумма равна",
+  description: "alerts-trigger-amount-equals",
 };
 
 export class FixedDonationAmountTrigger implements Trigger {

@@ -63,7 +63,7 @@ const DonatersTopListCarouselPropertyComponent = observer(
               <SmallLabeledContainer displayName="widget-donaterslist-carousel-delay">
                 <InputNumber
                   value={property.value.delay}
-                  addon="sec" // TODO: localize
+                  addon={t("unit-seconds")}
                   onChange={(delay) => {
                     if (delay === undefined || delay === null) {
                       return;
@@ -83,7 +83,7 @@ const DonatersTopListCarouselPropertyComponent = observer(
                 gap: "9px",
               }}
             >
-              <SmallLabeledContainer displayName="Анимация появления">
+              <SmallLabeledContainer displayName="appearance-animation">
                 <Select
                   style={{ flexGrow: 1 }}
                   value={property.value.inAnimation}
@@ -98,7 +98,7 @@ const DonatersTopListCarouselPropertyComponent = observer(
                   }}
                 />
               </SmallLabeledContainer>
-              <SmallLabeledContainer displayName="Анимация скрытия">
+              <SmallLabeledContainer displayName="widget-donaterslist-carousel-out-animation">
                 <Select
                   style={{ flexGrow: 1 }}
                   value={property.value.outAnimation}
@@ -133,7 +133,7 @@ export class DonatersTopListCarouselProperty extends DefaultWidgetProperty<Donat
         inAnimation: "none",
         outAnimation: "none",
       },
-      displayName: "Карусель",
+      displayName: "widget-donaterslist-carousel",
     });
   }
 

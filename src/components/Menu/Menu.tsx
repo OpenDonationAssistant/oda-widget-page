@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import classes from "./Menu.module.css";
 
 export default function Menu({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -55,7 +57,7 @@ export default function Menu({ children }: { children: React.ReactNode }) {
         className={`${classes.widgetmenu} ${showMenu ? "" : "visually-hidden"}`}
       >
         <button className="btn btn-dark" onClick={() => navigate(0)}>
-          Reload
+          {t("menu-reload")}
         </button>
         {children}
       </div>

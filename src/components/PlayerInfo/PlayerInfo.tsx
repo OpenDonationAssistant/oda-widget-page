@@ -27,9 +27,11 @@ import {
   PaddingProperty,
 } from "../ConfigurationPage/widgetproperties/PaddingProperty";
 import Marquee from "react-fast-marquee";
+import { useTranslation } from "react-i18next";
 import { publish, subscribe, unsubscribe } from "../../socket";
 
 function PlayerInfo() {
+  const { t } = useTranslation();
   const [left, setLeft] = useState(0);
   const { widgetId, settings, conf } = useLoaderData() as WidgetData;
   const [title, setTitle] = useState<string | null>();
@@ -207,8 +209,10 @@ function PlayerInfo() {
             <span className={`player-info-text`}>
               {title &&
                 left > 1 &&
-                `Треков в очереди: ${left}, играет ${title}`}
-              {title && !(left > 1) && `Играет: ${title}`}
+                t("widget-player-info-queue", { left: left, title: title })}
+              {title &&
+                !(left > 1) &&
+                t("widget-player-info-playing", { title: title })}
             </span>
           </div>
         </div>

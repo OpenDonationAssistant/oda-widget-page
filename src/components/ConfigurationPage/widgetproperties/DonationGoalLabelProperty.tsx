@@ -4,6 +4,7 @@ import { Flex, Select } from "antd";
 import ModalButton from "../../ModalButton/ModalButton";
 import { toJS } from "mobx";
 import classes from "./DonationGoalLabelProperty.module.css";
+import { useTranslation } from "react-i18next";
 
 const DonationGoalPropertyComponent = ({
   displayName,
@@ -14,6 +15,7 @@ const DonationGoalPropertyComponent = ({
   value: string;
   onChange: (value: string) => {};
 }) => {
+  const { t } = useTranslation();
   const [template, setTemplate] = useState<string | null>(
     "<collected> / <required> <currency>",
   );
@@ -31,7 +33,7 @@ const DonationGoalPropertyComponent = ({
         align="center"
         className={`${classes.template}`}
       >
-        <span>Готовый шаблон:</span>
+        <span>{t("label-template-ready")}</span>
         <Select
           value={template}
           style={{ minWidth: "400px" }}
@@ -44,23 +46,23 @@ const DonationGoalPropertyComponent = ({
           options={[
             {
               value: "<required> <currency>",
-              label: "требуемая сумма",
+              label: t("donationgoal-template-required"),
             },
             {
               value: "<collected> <currency>",
-              label: "собранная сумма",
+              label: t("widget-goal-accumulated-amount"),
             },
             {
               value: "<proportion>%",
-              label: "собранная сумма в процентах",
+              label: t("donationgoal-template-collected-percent"),
             },
             {
               value: "<collected> / <required> <currency>",
-              label: "собранная сумма/требуемая сумма",
+              label: t("donationgoal-template-collected-required"),
             },
             {
               value: null,
-              label: "custom",
+              label: t("label-template-custom"),
             },
           ]}
         />
@@ -94,7 +96,6 @@ export class DonationGoalLabelProperty extends DefaultWidgetProperty<string> {
     return newCopy;
   }
 
-  // TODO: локализовать
   markup(): ReactNode {
     return (
       <DonationGoalPropertyComponent

@@ -5,6 +5,7 @@ import { Flex } from "antd";
 import { observer } from "mobx-react-lite";
 import { HistoryStore, matchesHistoryFilters } from "../../stores/history";
 import { TextRenderer } from "../../components/Renderer/TextRenderer";
+import { useTranslation } from "react-i18next";
 
 // The history service filters systems and events independently, so a mixed
 // selection can return rows that the client-side filter hides. Keep loading
@@ -20,6 +21,7 @@ export const HorizontalEventsWidget = observer(
     settings: HorizontalEventsWidgetSettings;
     store: HistoryStore;
   }) => {
+    const { t } = useTranslation();
     const now = new Date();
     const filters = settings.historyFilters.value;
     const events = store.items.filter((it) =>
@@ -99,7 +101,7 @@ export const HorizontalEventsWidget = observer(
               }}
             >
               <TextRenderer
-                text={it.nickname ?? "Аноним"}
+                text={it.nickname ?? t("common-anonymous")}
                 font={settings.eventsNicknameFont}
               />{" "}
               {settings.showAmount.value && (

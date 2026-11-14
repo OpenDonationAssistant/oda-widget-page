@@ -5,6 +5,7 @@ import { AutomationTrigger } from "../AutomationState";
 import { ReactNode } from "react";
 import { produce } from "immer";
 import { Renderable } from "../../../utils";
+import { useTranslation } from "react-i18next";
 
 interface ChatCommandTriggerValue {
   system?: string;
@@ -21,12 +22,13 @@ const CHAT_SYSTEMS = [
 
 const ChatCommandTriggerComponent = observer(
   ({ trigger }: { trigger: ChatCommandTrigger }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical gap={9}>
         <Select
           className="full-width"
           allowClear
-          placeholder="Платформа"
+          placeholder={t("common-platform")}
           value={trigger.value.system}
           options={CHAT_SYSTEMS}
           onChange={(value) => {
@@ -37,7 +39,7 @@ const ChatCommandTriggerComponent = observer(
         />
         <Input
           value={trigger.value.nickname}
-          placeholder="Никнейм"
+          placeholder={t("common-nickname")}
           onChange={(e) => {
             trigger.value = produce(trigger.value, (draft) => {
               draft.nickname = e.target.value;
@@ -46,7 +48,7 @@ const ChatCommandTriggerComponent = observer(
         />
         <Input
           value={trigger.value.message}
-          placeholder="Команда (например !run-reel)"
+          placeholder={t("automation-chat-command-placeholder")}
           onChange={(e) => {
             trigger.value = produce(trigger.value, (draft) => {
               draft.message = e.target.value;
@@ -70,7 +72,7 @@ export class ChatCommandTrigger implements AutomationTrigger, Renderable {
   }
 
   public get name() {
-    return "Команда в чате";
+    return "automation-trigger-chat-command";
   }
 
   public get id() {

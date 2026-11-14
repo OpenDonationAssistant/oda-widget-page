@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import InputNumber from "../components/InputNumber";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import { useTranslation } from "react-i18next";
 
 export interface PaddingPropertyValue {
   isSame: boolean | null;
@@ -32,6 +33,7 @@ export const PaddingPropertyComponent = observer(
     value: PaddingPropertyValue;
     displayName: string;
   }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical={true} gap={12}>
         <LabeledContainer displayName={displayName}>
@@ -41,15 +43,15 @@ export const PaddingPropertyComponent = observer(
             options={[
               {
                 value: null,
-                label: "Отсутствует",
+                label: t("label-rounding-absent"),
               },
               {
                 value: true,
-                label: "Общий",
+                label: t("paddingproperty-mode-same"),
               },
               {
                 value: false,
-                label: "По сторонам",
+                label: t("paddingproperty-mode-sides"),
               },
             ]}
             value={value.isSame}

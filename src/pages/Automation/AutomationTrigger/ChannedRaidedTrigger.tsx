@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 
 export class ChannelRaidedTrigger implements AutomationTrigger, Renderable {
   id = "channel-raided";
-  name = "Канал зарейдили";
+  name = "automation-trigger-channel-raided";
   value: any = {};
 
   constructor() {

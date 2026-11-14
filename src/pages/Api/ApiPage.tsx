@@ -42,6 +42,7 @@ const EditAppSettingsForm = observer(
     store: AppStore;
     dialogState: ModalState;
   }) => {
+    const { t } = useTranslation();
     const [name, setName] = useState(app.name ?? "");
     const [description, setDescription] = useState(app.description ?? "");
     const [redirectUris, setRedirectUris] = useState<string[]>(
@@ -69,23 +70,23 @@ const EditAppSettingsForm = observer(
     return (
       <Flex vertical gap={21} className="full-width">
         <Panel>
-          <h4 className={`${classes.sectionname}`}>Общее</h4>
-          <SmallLabeledContainer displayName="Название приложения">
+          <h4 className={`${classes.sectionname}`}>{t("General")}</h4>
+          <SmallLabeledContainer displayName="api-app-name">
             <Input
               value={name}
               onChange={(e) => setName(String(e.target.value))}
             />
           </SmallLabeledContainer>
-          <SmallLabeledContainer displayName="Описание приложения">
+          <SmallLabeledContainer displayName="api-app-description">
             <Textarea value={description} onChange={setDescription} />
           </SmallLabeledContainer>
         </Panel>
         <Panel>
-          <h4 className={`${classes.sectionname}`}>Настройки OpenID Connect</h4>
-          <SmallLabeledContainer displayName="Client ID">
+          <h4 className={`${classes.sectionname}`}>{t("api-oidc-settings")}</h4>
+          <SmallLabeledContainer displayName="api-client-id">
             <Input readOnly value={app.clientId} />
           </SmallLabeledContainer>
-          <SmallLabeledContainer displayName="Client Secret">
+          <SmallLabeledContainer displayName="api-client-secret">
             <Input
               readOnly
               value={
@@ -97,7 +98,7 @@ const EditAppSettingsForm = observer(
             {showFullSecret && (
               <NotBorderedIconButton
                 onClick={() => navigator.clipboard.writeText(secret)}
-                title="Скопировать"
+                title={t("button-copy")}
               >
                 <CopyIcon />
               </NotBorderedIconButton>
@@ -108,10 +109,10 @@ const EditAppSettingsForm = observer(
                 setGeneratedSecret(newSecret);
               }}
             >
-              Обновить
+              {t("button-refresh")}
             </SecondaryButton>
           </SmallLabeledContainer>
-          <SmallLabeledContainer displayName="Redirect URIs">
+          <SmallLabeledContainer displayName="api-redirect-uris">
             <Flex vertical gap={6} className="full-width">
               {redirectUris.map((uri, index) => (
                 <Flex key={index} gap={6} align="center" className="full-width">
@@ -130,11 +131,11 @@ const EditAppSettingsForm = observer(
               ))}
             </Flex>
           </SmallLabeledContainer>
-          <AddListItemButton label="Добавить" onClick={addRedirectUri} />
+          <AddListItemButton label="common-add" onClick={addRedirectUri} />
         </Panel>
         <Flex justify="flex-end" gap={9} className="full-width">
           <SecondaryButton onClick={() => (dialogState.show = false)}>
-            Отменить
+            {t("button-cancel")}
           </SecondaryButton>
           <PrimaryButton
             onClick={async () => {
@@ -147,7 +148,7 @@ const EditAppSettingsForm = observer(
               dialogState.show = false;
             }}
           >
-            Сохранить
+            {t("button-save")}
           </PrimaryButton>
         </Flex>
       </Flex>
@@ -157,6 +158,7 @@ const EditAppSettingsForm = observer(
 
 const AppCard = observer(
   ({ store, app }: { store: AppStore; app: UserApp }) => {
+    const { t } = useTranslation();
     const parentModalState = useContext(ModalStateContext);
     const [editDialogState] = useState<ModalState>(
       () => new ModalState(parentModalState),
@@ -169,7 +171,7 @@ const AppCard = observer(
       <ModalStateContext.Provider value={editDialogState}>
         <Overlay>
           <OverlayPanel>
-            <Title>Настройки приложения</Title>
+            <Title>{t("api-app-settings")}</Title>
             <EditAppSettingsForm
               app={app}
               store={store}
@@ -185,7 +187,7 @@ const AppCard = observer(
                 deleteDialogState.show = false;
               }}
             >
-              Вы действительно хотите удалить приложение «{app.name}»?
+              {t("api-delete-app-confirm", { name: app.name })}
             </Warning>
           </Overlay>
           <Card onClick={() => (editDialogState.show = true)}>
@@ -217,12 +219,12 @@ export const ApiPage = observer(() => {
     <>
       <h1>{t("menu-api")}</h1>
       <div className={`${classes.section}`}>
-        <h3>Документация</h3>
+        <h3>{t("api-documentation")}</h3>
         <a
           className={`${classes.href}`}
           href="https://opendonationassistant.mintlify.app/"
         >
-          Описание API
+          {t("api-description")}
         </a>
         <a
           className={`${classes.href}`}
@@ -232,7 +234,7 @@ export const ApiPage = observer(() => {
         </a>
       </div>
       <div className={`${classes.section}`}>
-        <h3>Мои приложения</h3>
+        <h3>{t("api-my-apps")}</h3>
         <CardList>
           {store.apps.map((app) => (
             <AppCard key={app.clientId} app={app} store={store} />

@@ -1,4 +1,6 @@
 import { ReactNode } from "react";
+import { Trans } from "react-i18next";
+import { t } from "i18next";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "./RouletteWidgetSettings.module.css";
 import { RouletteItemsProperty } from "./RoutetteItemsProperty";
@@ -23,7 +25,7 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
       sections: [
         {
           key: "general",
-          title: "Общие",
+          title: "roulette-tab-general",
           properties: [
             new ColorProperty({
               name: "widgetBackgroundColor",
@@ -57,14 +59,14 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
             }),
             new BoxShadowProperty({
               name: "boxShadow",
-              displayName: "Тени виджета",
-              help: "Устанавливает тени виджета.",
+              displayName: "widget-shadow",
+              help: t("widget-shadow-help"),
             }),
           ],
         },
         {
           key: "items",
-          title: "Лоты",
+          title: "roulette-tab-items",
           properties: [new RouletteItemsProperty()],
         },
       ],
@@ -78,16 +80,24 @@ export class RouletteWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="roulette-help-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}></div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Текущий трек) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="roulette-help-copy-link" />
             </li>
-            <li>Добавить видео в плеер, проверить что виджет отображается.</li>
+            <li>
+              <Trans i18nKey="widget-help-paste-link" />
+            </li>
+            <li>
+              <Trans i18nKey="roulette-help-add-video" />
+            </li>
           </ul>
         </div>
       </>

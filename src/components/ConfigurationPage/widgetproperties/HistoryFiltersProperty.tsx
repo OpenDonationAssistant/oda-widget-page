@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Flex, Segmented, Select } from "antd";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
+import { useTranslation } from "react-i18next";
 import LabeledContainer from "../../LabeledContainer/LabeledContainer";
 import { LabeledSwitchComponent } from "../../LabeledSwitch/LabeledSwitchComponent";
 import {
@@ -21,6 +22,7 @@ import InputNumber from "../components/InputNumber";
 
 const HistoryFiltersPropertyComponent = observer(
   ({ property }: { property: HistoryFiltersProperty }) => {
+    const { t } = useTranslation();
     const filters = property.value;
     const customPeriod = filters.customPeriod ?? {
       amount: 1,
@@ -40,13 +42,16 @@ const HistoryFiltersPropertyComponent = observer(
 
     return (
       <Flex vertical gap={18}>
-        <LabeledContainer displayName="Период">
+        <LabeledContainer displayName="history-period">
           <Flex vertical gap={8} style={{ width: "100%" }}>
             <Segmented
               block
               className="full-width"
               value={filters.period}
-              options={HISTORY_PERIOD_OPTIONS}
+              options={HISTORY_PERIOD_OPTIONS.map((option) => ({
+                label: t(option.label),
+                value: option.value,
+              }))}
               onChange={(value) => {
                 property.value = {
                   ...filters,
@@ -67,7 +72,10 @@ const HistoryFiltersPropertyComponent = observer(
                 <Select
                   style={{ width: "160px" }}
                   value={customPeriod.unit}
-                  options={HISTORY_PERIOD_UNIT_OPTIONS}
+                  options={HISTORY_PERIOD_UNIT_OPTIONS.map((option) => ({
+                    label: t(option.label),
+                    value: option.value,
+                  }))}
                   onChange={(value) =>
                     updateCustomPeriod({
                       unit: value as HistoryPeriodUnit,
@@ -113,7 +121,7 @@ export class HistoryFiltersProperty extends DefaultWidgetProperty<HistoryFilters
   }) {
     super({
       name: params?.name ?? "historyFilters",
-      displayName: params?.displayName ?? "События для отображения",
+      displayName: params?.displayName ?? "history-events-to-display",
       value: { ...defaultHistoryFilters(), ...params?.value },
     });
   }

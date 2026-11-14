@@ -3,6 +3,7 @@ import classes from "./Modal.module.css";
 import { ReactNode, useEffect, useRef } from "react";
 import { log } from "../../logging";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Modal({
   children,
@@ -31,6 +32,7 @@ export default function Modal({
   onSubmit: () => void;
   onDecline: () => void;
 }) {
+  const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const backRef = useRef<HTMLDivElement | null>(null);
 
@@ -111,12 +113,12 @@ export default function Modal({
                         onClick={onDecline}
                         className={`${classes.decline}`}
                       >
-                        {declineButtonText ? declineButtonText : "Отменить"}
+                        {declineButtonText ? declineButtonText : t("button-cancel")}
                       </Button>
                     )}
                     {(showSubmitButton === undefined || showSubmitButton) && (
                       <Button className={`${classes.save}`} onClick={onSubmit}>
-                        {submitButtonText ? submitButtonText : "Сохранить"}
+                        {submitButtonText ? submitButtonText : t("button-save")}
                       </Button>
                     )}
                   </Flex>

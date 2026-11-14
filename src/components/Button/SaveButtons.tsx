@@ -5,11 +5,13 @@ import { ModalStateContext } from "../Overlay/Overlay";
 import { reaction } from "mobx";
 import { log } from "../../logging";
 import { Flex } from "antd";
+import { useTranslation } from "react-i18next";
 import SecondaryButton from "./SecondaryButton";
 import PrimaryButton from "./PrimaryButton";
 import classes from "./SaveButtons.module.css";
 
 export const SaveButtons = observer(() => {
+  const { t } = useTranslation();
   const widget = useContext(WidgetContext);
   const dialog = useContext(ModalStateContext);
 
@@ -28,7 +30,7 @@ export const SaveButtons = observer(() => {
           dialog.show = false;
         }}
       >
-        Отменить
+        {t("button-cancel")}
       </SecondaryButton>
       <PrimaryButton
         disabled={!widget?.config.unsaved}
@@ -36,7 +38,7 @@ export const SaveButtons = observer(() => {
           widget?.save();
         }}
       >
-        Сохранить
+        {t("button-save")}
       </PrimaryButton>
     </Flex>
   );
@@ -56,6 +58,7 @@ export const SaveOrCancel = observer(
     saveLabel?: string;
     changeable: { changed: boolean; save: () => void };
   }) => {
+    const { t } = useTranslation();
     const parentModalState = useContext(ModalStateContext);
 
     return (
@@ -66,7 +69,7 @@ export const SaveOrCancel = observer(
         className={`${classes.buttons}`}
       >
         <SecondaryButton onClick={() => (parentModalState.show = false)}>
-          Отменить
+          {t("button-cancel")}
         </SecondaryButton>
         <PrimaryButton
           disabled={!changeable.changed}
@@ -74,7 +77,7 @@ export const SaveOrCancel = observer(
             changeable.save();
           }}
         >
-          {saveLabel ?? "Сохранить"}
+          {saveLabel ?? t("button-save")}
         </PrimaryButton>
       </Flex>
     );

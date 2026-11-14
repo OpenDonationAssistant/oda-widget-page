@@ -1,4 +1,6 @@
 import { ReactNode } from "react";
+import { Trans } from "react-i18next";
+import { t } from "i18next";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import { BooleanProperty } from "../../components/ConfigurationPage/widgetproperties/BooleanProperty";
 import { NumberProperty } from "../../components/ConfigurationPage/widgetproperties/NumberProperty";
@@ -12,34 +14,34 @@ export class AuctionWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "auction",
-      title: "Аукцион",
+      title: "auction-title",
       properties: [
         new TextProperty({
           name: "goalTitle",
           value: "Аукцион",
-          displayName: "Цель сбора",
-          help: "Если заполнено, беру только донаты с этой целью сбора.",
+          displayName: "auction-goal-title",
+          help: t("auction-goal-help"),
         }),
         new BooleanProperty({
           name: "todayOnly",
           value: true,
-          displayName: "Только донаты за сегодня",
+          displayName: "auction-today-only-property",
         }),
         new BooleanProperty({
           name: "autoRefresh",
           value: true,
-          displayName: "Автообновление",
+          displayName: "auction-auto-refresh",
         }),
         new NumberProperty({
           name: "timerMinutes",
           value: 10,
-          displayName: "Таймер",
-          addon: "мин",
+          displayName: "auction-timer",
+          addon: <Trans i18nKey="auction-minutes-unit" />,
         }),
         new NumberProperty({
           name: "rubPerMinute",
           value: 100,
-          displayName: "1 минута за",
+          displayName: "auction-minute-price",
           addon: "₽",
         }),
       ],

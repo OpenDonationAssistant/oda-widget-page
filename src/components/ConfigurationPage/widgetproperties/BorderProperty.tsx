@@ -10,6 +10,7 @@ import { Color } from "antd/es/color-picker";
 import { log } from "../../../logging";
 import classes from "./BorderProperty.module.css";
 import SmallLabeledContainer from "../../SmallLabeledContainer/SmallLabeledContainer";
+import { useTranslation } from "react-i18next";
 
 export interface Border {
   width: number;
@@ -49,6 +50,7 @@ export const BorderPropertyComponent = observer(
     displayName: string;
     value: BorderPropertyValue;
   }) => {
+    const { t } = useTranslation();
     return (
       <Flex vertical={true} gap={10}>
         <LabeledContainer help={help} displayName={displayName}>
@@ -58,15 +60,15 @@ export const BorderPropertyComponent = observer(
             options={[
               {
                 value: null,
-                label: "Отсутствует",
+                label: t("label-rounding-absent"),
               },
               {
                 value: true,
-                label: "Общая",
+                label: t("borderproperty-mode-same"),
               },
               {
                 value: false,
-                label: "По сторонам",
+                label: t("paddingproperty-mode-sides"),
               },
             ]}
             value={value.isSame}
@@ -203,6 +205,7 @@ const BorderSideComponent = ({
   width: number;
   onWidthChange: (value: number) => void;
 }) => {
+  const { t } = useTranslation();
   return (
     <Flex gap={9} className="full-width">
       <Select
@@ -212,35 +215,35 @@ const BorderSideComponent = ({
         options={[
           {
             value: "solid",
-            label: "solid",
+            label: t("border-style-solid"),
           },
           {
             value: "dotted",
-            label: "dotted",
+            label: t("border-style-dotted"),
           },
           {
             value: "dashed",
-            label: "dashed",
+            label: t("border-style-dashed"),
           },
           {
             value: "double",
-            label: "double",
+            label: t("border-style-double"),
           },
           {
             value: "groove",
-            label: "groove",
+            label: t("border-style-groove"),
           },
           {
             value: "ridge",
-            label: "ridge",
+            label: t("border-style-ridge"),
           },
           {
             value: "inset",
-            label: "inset",
+            label: t("border-style-inset"),
           },
           {
             value: "outset",
-            label: "outset",
+            label: t("border-style-outset"),
           },
         ]}
       />

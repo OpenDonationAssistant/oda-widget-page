@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 import { StreamCreditsWidgetSettings } from "./StreamCreditsWidgetSettings";
 import { useEffect, useRef, useState } from "react";
 import { StreamCreditsStore } from "./StreamCreditsStore";
@@ -13,6 +14,7 @@ export const StreamCreditsWidget = observer(
     settings: StreamCreditsWidgetSettings;
     creditsStore: StreamCreditsStore;
   }) => {
+    const { t } = useTranslation();
     const [show, setShow] = useState<boolean>(true);
     const [height, setHeight] = useState(0);
     const [duration, setDuration] = useState<number>(10000);
@@ -60,13 +62,13 @@ export const StreamCreditsWidget = observer(
             >
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Танцующие на столе
+                  {t("stream-credits-voters-title")}
                 </div>
                 <div style={titleFontStyle}>
-                  (участники стрима)
+                  {t("stream-credits-voters-subtitle")}
                 </div>
                 {creditsStore.voters.length === 0 && (
-                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                  <div style={creditFontStyle}>{t("stream-credits-empty")}</div>
                 )}
                 {creditsStore.voters.map((name, index) => (
                   <div key={index} style={creditFontStyle}>
@@ -76,13 +78,13 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Новые посетители таверны
+                  {t("stream-credits-followers-title")}
                 </div>
                 <div style={titleFontStyle}>
-                  (фоллоу)
+                  {t("stream-credits-followers-subtitle")}
                 </div>
                 {creditsStore.newFollowers.length === 0 && (
-                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                  <div style={creditFontStyle}>{t("stream-credits-empty")}</div>
                 )}
                 {creditsStore.newFollowers.map((name, index) => (
                   <div key={index} style={creditFontStyle}>
@@ -92,13 +94,13 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Пришли в своей компании
+                  {t("stream-credits-raiders-title")}
                 </div>
                 <div style={titleFontStyle}>
-                  (рейдеры)
+                  {t("stream-credits-raiders-subtitle")}
                 </div>
                 {creditsStore.raiders.length === 0 && (
-                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                  <div style={creditFontStyle}>{t("stream-credits-empty")}</div>
                 )}
                 {creditsStore.raiders.map((name, index) => (
                   <div key={index} style={creditFontStyle}>
@@ -108,13 +110,13 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Угостили лисят в баре
+                  {t("stream-credits-gifters-title")}
                 </div>
                 <div style={titleFontStyle}>
-                  (подарочные подписки)
+                  {t("stream-credits-gifters-subtitle")}
                 </div>
                 {creditsStore.gifters.length === 0 && (
-                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                  <div style={creditFontStyle}>{t("stream-credits-empty")}</div>
                 )}
                 {creditsStore.gifters.map((name, index) => (
                   <div key={index} style={creditFontStyle}>
@@ -124,13 +126,13 @@ export const StreamCreditsWidget = observer(
               </Flex>
               <Flex vertical align="center">
                 <div style={titleFontStyle}>
-                  Подкинули бармену на отпуск
+                  {t("stream-credits-donaters-title")}
                 </div>
                 <div style={titleFontStyle}>
-                  (донатеры)
+                  {t("stream-credits-donaters-subtitle")}
                 </div>
                 {creditsStore.donaters.length === 0 && (
-                  <div style={creditFontStyle}>Такие отсутствуют</div>
+                  <div style={creditFontStyle}>{t("stream-credits-empty")}</div>
                 )}
                 {creditsStore.donaters.map((name, index) => (
                   <div key={index} style={creditFontStyle}>
@@ -139,7 +141,9 @@ export const StreamCreditsWidget = observer(
                 ))}
               </Flex>
               <Flex vertical align="center">
-                <div style={titleFontStyle}>Спасибо за внимание!</div>
+                <div style={titleFontStyle}>
+                  {t("stream-credits-thanks")}
+                </div>
               </Flex>
             </Flex>
           </Flex>

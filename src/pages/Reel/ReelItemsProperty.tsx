@@ -23,7 +23,7 @@ export class ReelItemsProperty extends DefaultWidgetProperty<ReelItemsPropertyVa
     super({
       name: "reelItems",
       value: {},
-      displayName: "Призы",
+      displayName: "tab-reel-prizes",
     });
   }
 

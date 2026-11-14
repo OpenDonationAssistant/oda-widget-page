@@ -3,7 +3,7 @@ import { DonationEvent, Trigger } from "./AlertTriggerInterface";
 import { ReactNode } from "react";
 
 export const BOOSTY_SUBSCRIPTION_TRIGGER = {
-  description: "Подписка Boosty",
+  description: "alerts-trigger-boosty-subscription",
   type: "boosty_subscription",
 };
 

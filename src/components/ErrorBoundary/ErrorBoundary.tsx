@@ -1,4 +1,5 @@
 import React, { Component, ReactNode } from "react";
+import i18n from "i18next";
 import { globalErrorStore } from "../../stores/ErrorStore";
 
 interface Props {
@@ -23,7 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.log("Catch error");
     if (globalErrorStore) {
-      globalErrorStore.setError("Произошла ошибка", error.message);
+      globalErrorStore.setError(i18n.t("error-occurred"), error.message);
     }
   }
 

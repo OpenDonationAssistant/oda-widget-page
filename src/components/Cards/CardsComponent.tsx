@@ -1,4 +1,5 @@
 import { MouseEventHandler, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import classes from "./CardsComponent.module.css";
 import { Button, Flex } from "antd";
 import { log } from "../../logging";
@@ -101,6 +102,7 @@ export function CardButton({
   children?: ReactNode;
   onClick: MouseEventHandler<HTMLElement>;
 }) {
+  const { t } = useTranslation();
   return (
     <Button className={`${classes.buttoncard}`} onClick={onClick}>
       <Flex
@@ -114,7 +116,7 @@ export function CardButton({
         {!children && (
           <>
             <span className="material-symbols-sharp">add</span>
-            <div>Добавить</div>
+            <div>{t("common-add")}</div>
           </>
         )}
       </Flex>

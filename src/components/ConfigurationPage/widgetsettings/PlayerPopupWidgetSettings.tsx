@@ -9,6 +9,7 @@ import PlayerPopup from "../../PlayerPopup/PlayerPopup";
 import { DemoPlayerStore } from "../../PlayerPopup/DemoPlayer";
 import { CloseOverlayButton } from "../../Overlay/Overlay";
 import { Flex } from "antd";
+import { Trans } from "react-i18next";
 
 export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
   constructor() {
@@ -16,34 +17,34 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
 
     this.addSection({
       key: "style",
-      title: "Стиль",
+      title: "tab-style",
       properties: [
         new BorderProperty({
           name: "widgetBorder",
-          help: "Позволяет создать рамку вокруг виджета, задать ее цвет и толщину. Значение 'Общая' задает рамку с одинаковыми сторонами, 'Стороны' позволяет менять цвет, толщину или стиль рамки на конкретной стороне (справа, слева, снизу, сверху).",
+          help: "player-popup-border-help",
         }),
         new RoundingProperty({
           name: "rounding",
           displayName: "rounding",
-          help: "Устанавливает скругление углов виджета вокруг содержимого.",
+          help: "player-popup-rounding-help",
         }),
         new BoxShadowProperty({
           name: "boxShadow",
-          displayName: "Тени виджета",
-          help: "Устанавливает тени виджета.",
+          displayName: "player-popup-shadow",
+          help: "player-popup-shadow-help",
         }),
       ],
     });
 
     this.addSection({
       key: "general",
-      title: "Общие",
+      title: "General",
       properties: [
         new BooleanProperty({
           name: "audioOnly",
           value: false,
           displayName: "widget-player-popup-sound-only",
-          help: "С включенной опцией 'Только звук' видео показываться не будет. Такая опция по сути позволяет захватить в OBS отдельно аудио из плеера - если вы добавляете плеер в OBS как Dock, то для него не создается отдельной аудиодорожки. Добавив этот виджет на сцену и включив эту опцию, вы по сути просто создадите отдельную аудиодорожку для плеера.",
+          help: "player-popup-sound-only-help",
         }),
       ],
     });
@@ -100,25 +101,32 @@ export class PlayerPopupWidgetSettings extends AbstractWidgetSettings {
       <>
         <Flex align="top" justify="space-between">
           <h3 className={`${classes.helptitle}`}>
-            Виджет "Видео из проигрывателя"
+            <Trans i18nKey="player-popup-help-title" />
           </h3>
           <CloseOverlayButton />
         </Flex>
         <div className={`${classes.helpdescription}`}>
-          Показывает на стриме видео из реквеста.
+          <Trans i18nKey="player-popup-help-description" />
         </div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-howto-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>Подключить виджет "Проигрыватель видео"(плеер)</li>
             <li>
-              В меню этого виджета (Видео из проигрывателя) скопировать ссылку и
-              вставить как Browser Source поверх картинки стрима
+              <Trans i18nKey="player-popup-help-step1" />
             </li>
-            <li>Дождаться реквеста или добавить видео в плеер</li>
-            <li>В плеере нажать переключатель Embedded</li>
             <li>
-              В этом виджете поверх стрима должен начать проигрываться реквест
+              <Trans i18nKey="player-popup-help-step2" />
+            </li>
+            <li>
+              <Trans i18nKey="player-popup-help-step3" />
+            </li>
+            <li>
+              <Trans i18nKey="player-popup-help-step4" />
+            </li>
+            <li>
+              <Trans i18nKey="player-popup-help-step5" />
             </li>
           </ul>
         </div>

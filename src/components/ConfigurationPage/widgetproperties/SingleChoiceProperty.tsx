@@ -13,6 +13,7 @@ export enum SELECTION_TYPE {
 
 export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
   private _options: string[];
+  private _labelKeys: Record<string, string> | undefined;
   private _selectionType: SELECTION_TYPE;
 
   constructor({
@@ -20,17 +21,24 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
     value,
     displayName,
     options,
+    labelKeys,
     selectionType,
   }: {
     name: string;
     value: string;
     displayName: string;
     options?: string[];
+    labelKeys?: Record<string, string>;
     selectionType?: SELECTION_TYPE;
   }) {
     super({ name: name, value: value, displayName: displayName });
     this._options = options ?? [];
+    this._labelKeys = labelKeys;
     this._selectionType = selectionType ?? SELECTION_TYPE.DROPDOWN;
+  }
+
+  private labelKey(option: string): string {
+    return this._labelKeys?.[option] ?? option;
   }
 
   SegmentedSelect = observer(() => {
@@ -45,7 +53,7 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
         value={this.value}
         className="full-width"
         options={this._options.map((option) => {
-          return { label: t(option), value: option };
+          return { label: t(this.labelKey(option)), value: option };
         })}
         onChange={(selected) => {
           this.value = selected;
@@ -67,7 +75,7 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
             value: option,
             label: (
               <>
-                <Trans i18nKey={option} />
+                <Trans i18nKey={this.labelKey(option)} />
               </>
             ),
           };
@@ -99,6 +107,7 @@ export class SingleChoiceProperty extends DefaultWidgetProperty<string> {
       value: this.value,
       displayName: this.displayName,
       options: this._options,
+      labelKeys: this._labelKeys,
       selectionType: this._selectionType,
     });
   }

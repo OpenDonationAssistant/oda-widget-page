@@ -44,7 +44,7 @@ export default function PlaylistActionPanel({
           data.map((playlist: PlaylistDto) => {
             return {
               id: playlist.id ?? uuidv7(),
-              name: playlist.title ?? "<Без названия>",
+              name: playlist.title ?? t("media-untitled-playlist"),
             };
           }),
         );
@@ -97,7 +97,7 @@ export default function PlaylistActionPanel({
       .playlist(playlistId)
       .then((res) => {
         controller.current.clear();
-        setPlaylistName(res.data.title ?? "Без названия");
+        setPlaylistName(res.data.title ?? t("media-untitled-playlist"));
         controller.current.addSongs(
           res.data.items?.map((item) => {
             return {

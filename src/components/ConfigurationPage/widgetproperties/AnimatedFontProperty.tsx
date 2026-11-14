@@ -73,7 +73,7 @@ export class AnimatedFontProperty extends DefaultWidgetProperty<FontPropertyValu
         ...DEFAULT_FONT_PROPERTY_VALUE,
         ...(params.value ?? {}),
       },
-      displayName: "animatedfont",
+      displayName: "widget-font-label",
     });
     this._label = params.label ?? "widget-font-label";
   }

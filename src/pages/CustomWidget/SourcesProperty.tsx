@@ -64,7 +64,7 @@ export class SourcesProperty extends DefaultWidgetProperty<Sources> {
     super({
       name: name,
       value: normalized,
-      displayName: displayName ?? "Файлы",
+      displayName: displayName ?? "custom-widget-files",
     });
     console.log("SourcesProperty", this._value);
     makeObservable(this, {
@@ -204,7 +204,7 @@ export class SourcesProperty extends DefaultWidgetProperty<Sources> {
             }}
           />
         </SourceButton>
-        <SourceButton label={<Trans>Fields</Trans>}>
+        <SourceButton label={<Trans i18nKey="custom-widget-source-fields" />}>
           <Editor
             height="50vh"
             theme="vs-dark"
@@ -220,7 +220,7 @@ export class SourcesProperty extends DefaultWidgetProperty<Sources> {
             }}
           />
         </SourceButton>
-        <SourceButton label={<Trans>Data</Trans>}>
+        <SourceButton label={<Trans i18nKey="custom-widget-source-data" />}>
           <Editor
             height="50vh"
             theme="vs-dark"

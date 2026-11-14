@@ -9,6 +9,7 @@ import { AppStore, UserApp } from "../../stores/AppStore";
 import { Flex, Input } from "antd";
 import Textarea from "../../components/Textarea/Textarea";
 import { makeAutoObservable, reaction } from "mobx";
+import { useTranslation } from "react-i18next";
 import classes from "./AddAppWizard.module.css";
 
 class UserAppInfo {
@@ -23,17 +24,18 @@ class UserAppInfo {
 }
 
 const AppInfoStep = observer(({ app }: { app: UserAppInfo }) => {
+  const { t } = useTranslation();
   return (
     <Flex vertical className="full-width" gap={21}>
       <Flex vertical className="full-width">
-        <h3 className={`${classes.sectionname}`}>Название приложения</h3>
+        <h3 className={`${classes.sectionname}`}>{t("api-app-name")}</h3>
         <Input
           value={app.name ?? ""}
           onChange={(e) => (app.name = String(e.target.value))}
         />
       </Flex>
       <Flex vertical className="full-width">
-        <h3 className={`${classes.sectionname}`}>Описание приложения</h3>
+        <h3 className={`${classes.sectionname}`}>{t("api-app-description")}</h3>
         <Textarea
           value={app.description ?? ""}
           onChange={(e) => (app.description = String(e))}
@@ -49,7 +51,7 @@ export const AddAppWizard = observer(({ appStore }: { appStore: AppStore }) => {
     new WizardConfigurationStore({
       steps: [
         {
-          title: "Добавить приложение",
+          title: "api-add-app-title",
           subtitle: "",
           content: <AppInfoStep app={app} />,
           handler: async () => {

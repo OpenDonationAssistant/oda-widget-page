@@ -1,4 +1,6 @@
 import { ReactNode } from "react";
+import { Trans } from "react-i18next";
+import { t } from "i18next";
 import { AbstractWidgetSettings } from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings";
 import classes from "../../components/ConfigurationPage/widgetsettings/AbstractWidgetSettings.module.css";
 import {
@@ -23,7 +25,7 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
       sections: [
         {
           key: "general",
-          title: "Общие",
+          title: "stream-credits-tab-general",
           properties: [
             new AnimatedFontProperty({
               name: "titleFont",
@@ -32,7 +34,7 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
               name: "creditsFont",
             }),
             new NumberProperty({
-              displayName: "Скорость прокрутки",
+              displayName: "stream-credits-scroll-speed",
               name: "speed",
               addon: "px/sec",
               value: 10,
@@ -73,8 +75,8 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
             }),
             new BoxShadowProperty({
               name: "boxShadow",
-              displayName: "Тени виджета",
-              help: "Устанавливает тени виджета.",
+              displayName: "widget-shadow",
+              help: t("widget-shadow-help"),
             }),
           ],
         },
@@ -85,16 +87,24 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
   public help(): ReactNode {
     return (
       <>
-        <h3 className={`${classes.helptitle}`}>Виджет "Рулетка"</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="stream-credits-help-title" />
+        </h3>
         <div className={`${classes.helpdescription}`}></div>
-        <h3 className={`${classes.helptitle}`}>Как подключить</h3>
+        <h3 className={`${classes.helptitle}`}>
+          <Trans i18nKey="widget-help-how-to-connect" />
+        </h3>
         <div className={`${classes.helpdescription}`}>
           <ul>
-            <li>В меню этого виджета (Текущий трек) скопировать ссылку.</li>
             <li>
-              Вставить ссылку как Browser Source в OBS поверх картинки стрима.
+              <Trans i18nKey="stream-credits-help-copy-link" />
             </li>
-            <li>Добавить видео в плеер, проверить что виджет отображается.</li>
+            <li>
+              <Trans i18nKey="widget-help-paste-link" />
+            </li>
+            <li>
+              <Trans i18nKey="stream-credits-help-add-video" />
+            </li>
           </ul>
         </div>
       </>
@@ -131,7 +141,7 @@ export class StreamCreditsWidgetSettings extends AbstractWidgetSettings {
     return (
       (this.get("speed") as NumberProperty) ||
       new NumberProperty({
-        displayName: "Скорость прокрутки",
+        displayName: "stream-credits-scroll-speed",
         name: "speed",
         addon: "px/sec",
         value: 10,

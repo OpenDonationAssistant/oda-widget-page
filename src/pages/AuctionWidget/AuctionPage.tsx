@@ -3,6 +3,7 @@ import { Widget } from "../../types/Widget";
 import { WidgetData } from "../../types/WidgetData";
 import { AuctionWidgetSettings } from "./AuctionWidgetSettings";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import classes from "./AuctionPage.module.css";
 
 const PALETTE = ["#ef3e5c", "#2ec4b6", "#f7c948", "#4d96ff", "#9b5de5", "#f15bb5", "#00bbf9", "#8ac926"];
@@ -21,7 +22,7 @@ function formatTimer(timerEndAt, now) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function parseManualRows(text) {
+function parseManualRows(text, fallbackNickname: string) {
   return text
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -32,26 +33,31 @@ function parseManualRows(text) {
       );
       if (!match) return null;
 
-      return normalizeDonation({
-        id: `manual-${crypto.randomUUID()}`,
-        nickname: match[1],
-        amount: Number(match[2].replace(/\s/g, "").replace(",", ".")) || 0,
-        text: match[3].trim(),
-        source: "manual",
-      });
+      return normalizeDonation(
+        {
+          id: `manual-${crypto.randomUUID()}`,
+          nickname: match[1],
+          amount: Number(match[2].replace(/\s/g, "").replace(",", ".")) || 0,
+          text: match[3].trim(),
+          source: "manual",
+        },
+        fallbackNickname,
+      );
     })
     .filter(Boolean);
 }
 
 function DonationsTable({ rows, onDelete }) {
+  const { t } = useTranslation();
+
   return (
     <div className="table-scroll tab-view active">
       <table>
         <thead>
           <tr>
-            <th>Никнейм</th>
-            <th>Сумма</th>
-            <th>Игра</th>
+            <th>{t("common-nickname")}</th>
+            <th>{t("common-amount")}</th>
+            <th>{t("auction-col-game")}</th>
             <th />
           </tr>
         </thead>
@@ -65,7 +71,7 @@ function DonationsTable({ rows, onDelete }) {
                 <button
                   className="icon-danger"
                   onClick={() => onDelete(row.id)}
-                  title="Удалить"
+                  title={t("button-delete")}
                 >
                   ×
                 </button>
@@ -79,14 +85,16 @@ function DonationsTable({ rows, onDelete }) {
 }
 
 function EditsTable({ rawGames, overrides, onChange, onDelete }) {
+  const { t } = useTranslation();
+
   return (
     <div className="table-scroll tab-view active">
       <table>
         <thead>
           <tr>
-            <th>Исходное название</th>
-            <th>Название в колесе</th>
-            <th>Сумма</th>
+            <th>{t("auction-col-source-title")}</th>
+            <th>{t("auction-col-wheel-title")}</th>
+            <th>{t("common-amount")}</th>
             <th />
           </tr>
         </thead>
@@ -101,7 +109,10 @@ function EditsTable({ rawGames, overrides, onChange, onDelete }) {
                     <strong>{game.title}</strong>
                     <br />
                     <small>
-                      {game.donations} донатов, исходно {formatRub(game.amount)}
+                      {t("auction-edit-meta", {
+                        donations: game.donations,
+                        amount: formatRub(game.amount),
+                      })}
                     </small>
                   </td>
                   <td>
@@ -127,7 +138,7 @@ function EditsTable({ rawGames, overrides, onChange, onDelete }) {
                     <button
                       className="icon-danger"
                       onClick={() => onDelete(game.key)}
-                      title="Удалить"
+                      title={t("button-delete")}
                     >
                       ×
                     </button>
@@ -169,10 +180,10 @@ export function aggregateRawGames(rows) {
   return games;
 }
 
-function normalizeDonation(row) {
+function normalizeDonation(row, fallbackNickname: string) {
   return {
     id: row.id || crypto.randomUUID(),
-    nickname: row.nickname || "Без ника",
+    nickname: row.nickname || fallbackNickname,
     amount: Number(row.amount || 0),
     currency: row.currency || "RUB",
     text: String(row.text || "").trim(),
@@ -266,12 +277,13 @@ export function getWeightedSegments(games, eliminated) {
 }
 
 export default function AuctionPage() {
+  const { t } = useTranslation();
   const { settings, widgetId, conf } = useLoaderData() as WidgetData;
   const widgetSettings = Widget.configFromJson(
     settings,
   ) as AuctionWidgetSettings;
 
-  const [status, setStatus] = useState("Готов");
+  const [status, setStatus] = useState(t("auction-status-ready"));
   const [chaos, setChaos] = useState(false);
   const [goalFilter, setGoalFilter] = useState("");
   const [todayOnly, setTodayOnly] = useState(true);
@@ -316,10 +328,10 @@ export default function AuctionPage() {
   const [spinning, setSpinning] = useState(false);
   const finalText =
     activeGames.length === 1
-      ? `Победитель: ${activeGames[0].title}`
+      ? t("auction-final-winner", { title: activeGames[0].title })
       : activeGames.length === 0
-        ? "Добавьте донаты или ручные строки, чтобы собрать колесо."
-        : `До финала осталось выбываний: ${activeGames.length - 1}`;
+        ? t("auction-final-empty")
+        : t("auction-final-remaining", { remaining: activeGames.length - 1 });
 
   const spinWheel = useCallback(
     (mode) => {
@@ -343,7 +355,11 @@ export default function AuctionPage() {
 
       setSpinning(true);
       setChaos(mode === "windmill");
-      setCurrentPick(mode === "windmill" ? "мельница..." : "крутим...");
+      setCurrentPick(
+        mode === "windmill"
+          ? t("auction-spinning-windmill")
+          : t("auction-spinning"),
+      );
       setRotation(nextRotation);
 
       window.setTimeout(() => {
@@ -355,12 +371,16 @@ export default function AuctionPage() {
         setChaos(false);
         setStatus(
           mode === "windmill"
-            ? `Мельница выбила: ${selection.segment.title}`
-            : `Выбыла: ${selection.segment.title}`,
+            ? t("auction-status-windmill-eliminated", {
+                title: selection.segment.title,
+              })
+            : t("auction-status-eliminated", {
+                title: selection.segment.title,
+              }),
         );
       }, 5300);
     },
-    [rotation, spinning, weightedSegments],
+    [rotation, spinning, t, weightedSegments],
   );
 
   function resetTournament() {
@@ -370,19 +390,19 @@ export default function AuctionPage() {
     setTimerAppliedDonationIds(new Set());
     setRotation(0);
     setCurrentPick("-");
-    setStatus("Турнир сброшен");
+    setStatus(t("auction-status-tournament-reset"));
   }
 
   function startAuctionTimer() {
     const minutes = Math.max(1, Number(timerMinutes) || 10);
     setTimerEndAt(Date.now() + minutes * 60_000);
-    setStatus(`Таймер запущен: ${minutes} мин`);
+    setStatus(t("auction-status-timer-started", { minutes }));
   }
 
   function resetAuctionTimer() {
     setTimerEndAt(null);
     setTimerAppliedDonationIds(new Set());
-    setStatus("Таймер сброшен");
+    setStatus(t("auction-status-timer-reset"));
   }
 
   const sortedDonations = useMemo(
@@ -409,7 +429,7 @@ export default function AuctionPage() {
       next.delete(id);
       return next;
     });
-    setStatus("Донат удален");
+    setStatus(t("auction-status-donation-deleted"));
   }
 
   function deleteGame(key) {
@@ -431,7 +451,7 @@ export default function AuctionPage() {
       for (const row of removed) next.delete(row.id);
       return next;
     });
-    setStatus("Игра удалена");
+    setStatus(t("auction-status-game-deleted"));
   }
 
   const extendTimerForDonations = useCallback(
@@ -481,7 +501,7 @@ export default function AuctionPage() {
       else delete next[key];
       return next;
     });
-    setStatus("Правки применены");
+    setStatus(t("auction-status-edits-applied"));
   }
 
   const addDonations = useCallback(
@@ -511,16 +531,20 @@ export default function AuctionPage() {
       setTimerAppliedDonationIds(timerResult.appliedIds);
 
       if (announce) {
-        const tail = rejectedRows.length
-          ? `, отклонено после таймера: ${rejectedRows.length}`
-          : "";
-        setStatus(`Добавлено: ${acceptedRows.length}${tail}`);
+        setStatus(
+          rejectedRows.length
+            ? t("auction-status-added-rejected", {
+                accepted: acceptedRows.length,
+                rejected: rejectedRows.length,
+              })
+            : t("auction-status-added", { accepted: acceptedRows.length }),
+        );
       }
     },
-    [donations, extendTimerForDonations, isAuctionExpired],
+    [donations, extendTimerForDonations, isAuctionExpired, t],
   );
 
-  function drawWheel(canvas, segments) {
+  function drawWheel(canvas, segments, waitingLabel: string) {
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
@@ -540,7 +564,7 @@ export default function AuctionPage() {
       ctx.fillStyle = "#a8adb7";
       ctx.font = "700 36px Segoe UI, Arial";
       ctx.textAlign = "center";
-      ctx.fillText("Ждем игры", center, center);
+      ctx.fillText(waitingLabel, center, center);
       return;
     }
 
@@ -587,15 +611,15 @@ export default function AuctionPage() {
   }
 
   useEffect(() => {
-    drawWheel(canvasRef.current, weightedSegments);
-  }, [weightedSegments]);
+    drawWheel(canvasRef.current, weightedSegments, t("auction-wheel-waiting"));
+  }, [t, weightedSegments]);
 
   return (
     <main className={`${classes.app}${chaos ? " shaking chaos" : ""}`}>
       <section className={`${classes.panel} ${classes.controls}`}>
         <div className={`${classes.brand}`}>
           <div>
-            <h1>Аукцион</h1>
+            <h1>{t("auction-title")}</h1>
           </div>
           <div className={`${classes.status}`}>
             {status.length > 80 ? `${status.slice(0, 77)}...` : status}
@@ -603,12 +627,12 @@ export default function AuctionPage() {
         </div>
 
         <label className={`${classes.field}`}>
-          <span>Цель сбора</span>
+          <span>{t("auction-goal-title")}</span>
           <input
             value={goalFilter}
             onChange={(event) => setGoalFilter(event.target.value)}
             type="text"
-            placeholder="Например: Аукцион"
+            placeholder={t("auction-goal-filter-placeholder")}
           />
         </label>
 
@@ -618,12 +642,12 @@ export default function AuctionPage() {
             onChange={(event) => setTodayOnly(event.target.checked)}
             type="checkbox"
           />
-          <span>Брать только донаты за сегодня</span>
+          <span>{t("auction-today-only")}</span>
         </label>
 
         <div className={`${classes.timersettings}`}>
           <label className={`${classes.field}`}>
-            <span>Таймер, минут</span>
+            <span>{t("auction-timer-minutes")}</span>
             <input
               value={timerMinutes}
               onChange={(event) => setTimerMinutes(Number(event.target.value))}
@@ -633,7 +657,7 @@ export default function AuctionPage() {
             />
           </label>
           <label className={`${classes.field}`}>
-            <span>1 минута = ₽</span>
+            <span>{t("auction-rub-per-minute")}</span>
             <input
               value={rubPerMinute}
               onChange={(event) => setRubPerMinute(Number(event.target.value))}
@@ -646,29 +670,32 @@ export default function AuctionPage() {
 
         <div className={`${classes.buttonrow}`}>
           <button onClick={startAuctionTimer} className={`${classes.ghost}`}>
-            Запустить таймер
+            {t("auction-start-timer")}
           </button>
           <button onClick={resetAuctionTimer} className={`${classes.ghost}`}>
-            Сбросить таймер
+            {t("auction-reset-timer")}
           </button>
         </div>
 
         <label className={`${classes.field}`}>
-          <span>Ручной ввод</span>
+          <span>{t("auction-manual-input")}</span>
           <textarea
             value={manualInput}
             onChange={(event) => setManualInput(event.target.value)}
             rows={4}
-            placeholder="TheKennex 100₽ Ну и напоследок"
+            placeholder={t("auction-manual-placeholder")}
           />
         </label>
 
         <div className={`${classes.buttonrow}`}>
           <button
             onClick={() => {
-              const rows = parseManualRows(manualInput);
+              const rows = parseManualRows(
+                manualInput,
+                t("auction-no-nickname"),
+              );
               if (!rows.length) {
-                setStatus("Не вижу строк формата: ник сумма игра");
+                setStatus(t("auction-manual-invalid"));
                 return;
               }
               addDonations(rows);
@@ -676,10 +703,10 @@ export default function AuctionPage() {
             }}
             className="ghost"
           >
-            Добавить строки
+            {t("auction-add-rows")}
           </button>
           <button onClick={resetTournament} className={`${classes.danger}`}>
-            Сбросить турнир
+            {t("auction-reset-tournament")}
           </button>
         </div>
       </section>
@@ -693,13 +720,13 @@ export default function AuctionPage() {
         />
         <div className={`${classes.pointer}`} />
         <div className={`${classes.auctiontimer}`}>
-          <span>До конца аукциона</span>
+          <span>{t("auction-until-end")}</span>
           <strong className={timerExpired ? classes.expired : ""}>
             {formatTimer(timerEndAt, now)}
           </strong>
         </div>
         <div className={`${classes.winner}`}>
-          <span>Выбывает</span>
+          <span>{t("auction-eliminated")}</span>
           <strong>{currentPick}</strong>
         </div>
       </section>
@@ -707,15 +734,15 @@ export default function AuctionPage() {
       <section className={`${classes.panel} ${classes.spinpanel}`}>
         <div className={`${classes.metricgrid}`}>
           <div>
-            <span>Игр в колесе</span>
+            <span>{t("auction-games-in-wheel")}</span>
             <strong>{activeGames.length}</strong>
           </div>
           <div>
-            <span>Донатов</span>
+            <span>{t("auction-donations-count")}</span>
             <strong>{donations.length}</strong>
           </div>
           <div>
-            <span>Фонд</span>
+            <span>{t("auction-fund")}</span>
             <strong>{formatRub(totalAmount)}</strong>
           </div>
         </div>
@@ -724,14 +751,14 @@ export default function AuctionPage() {
           disabled={activeGames.length <= 1 || spinning}
           className={`${classes.spin}`}
         >
-          Крутить
+          {t("button-spin")}
         </button>
         <button
           onClick={() => spinWheel("windmill")}
           disabled={activeGames.length <= 1 || spinning}
           className={`${classes.windmill}`}
         >
-          Раскрутить как мельницу
+          {t("auction-spin-windmill")}
         </button>
         <div className={`${classes.final}`}>{finalText}</div>
       </section>
@@ -741,32 +768,32 @@ export default function AuctionPage() {
           <div
             className={`${classes.paneltabs}`}
             role="tablist"
-            aria-label="Нижняя панель"
+            aria-label={t("auction-bottom-panel")}
           >
             <button
               className={`${classes.tabbutton} ${bottomTab === "donations" ? classes.active : ""}`}
               onClick={() => setBottomTab("donations")}
               type="button"
             >
-              Донаты
+              {t("auction-tab-donations")}
             </button>
             <button
               className={`${classes.tabbutton} ${bottomTab === "edits" ? classes.active : ""}`}
               onClick={() => setBottomTab("edits")}
               type="button"
             >
-              Правки
+              {t("auction-tab-edits")}
             </button>
           </div>
           <div className={`${classes.tabletools}`}>
             <label>
-              <span>Сортировка</span>
+              <span>{t("auction-sort")}</span>
               <select
                 value={donationSort}
                 onChange={(event) => setDonationSort(event.target.value)}
               >
-                <option value="latest">Последние</option>
-                <option value="amount">Самые дорогие</option>
+                <option value="latest">{t("auction-sort-latest")}</option>
+                <option value="amount">{t("auction-sort-expensive")}</option>
               </select>
             </label>
             <span>{loadedAt}</span>
@@ -787,8 +814,8 @@ export default function AuctionPage() {
 
       <section className={`${classes.panel} ${classes.gamespanel}`}>
         <div className={`${classes.sectiontitle}`}>
-          <h2>Игры</h2>
-          <span>больше сумма - меньше шанс вылета</span>
+          <h2>{t("auction-games")}</h2>
+          <span>{t("auction-games-hint")}</span>
         </div>
         <div className={`${classes.gameslist}`}>
           {gamesList.map((game) => (

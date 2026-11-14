@@ -7,7 +7,7 @@ interface ShoutoutActionValue {}
 
 export class ShoutoutAction implements AutomationAction, Renderable {
   id = "twitch-shoutout";
-  name = "Сделать Twitch Shoutout";
+  name = "automation-action-shoutout";
   markup: ReactNode = (<></>);
   value: ShoutoutActionValue = {};
 
