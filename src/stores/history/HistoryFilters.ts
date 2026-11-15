@@ -100,98 +100,98 @@ export const HISTORY_FILTER_DEFINITIONS = [
     key: "showMemeAlertsCoins",
     system: "MemeAlerts",
     event: "payment",
-    label: "Покупки Meme Alerts",
+    label: "history-toggle-meme-alerts-purchases",
     group: "memealerts",
   },
   {
     key: "showBoostySubs",
     system: "Boosty",
     event: "subscription",
-    label: "Подписки",
+    label: "history-filter-subscriptions",
     group: "boosty",
   },
   {
     key: "showBoostyFollows",
     system: "Boosty",
     event: "follow",
-    label: "Отслеживания",
+    label: "history-filter-tracking",
     group: "boosty",
   },
   {
     key: "showTwitchFollows",
     system: "Twitch",
     event: "follow",
-    label: "Фолловы",
+    label: "history-filter-followers",
     group: "twitch",
   },
   {
     key: "showTwitchRaids",
     system: "Twitch",
     event: "raid",
-    label: "Рейды",
+    label: "history-filter-raids",
     group: "twitch",
   },
   {
     key: "showTwitchCheers",
     system: "Twitch",
     event: "cheer",
-    label: "Чиры",
+    label: "history-filter-cheers",
     group: "twitch",
   },
   {
     key: "showTwitchSubs",
     system: "Twitch",
     event: "subscription",
-    label: "Подписки",
+    label: "history-filter-subscriptions",
     group: "twitch",
   },
   {
     key: "showTwitchSubGifts",
     system: "Twitch",
     event: "subscription-gift",
-    label: "Подаренные подписки",
+    label: "history-filter-gifted-subscriptions",
     group: "twitch",
   },
   {
     key: "showKickFollows",
     system: "Kick",
     event: "follow",
-    label: "Фолловы",
+    label: "history-filter-followers",
     group: "kick",
   },
   {
     key: "showKickGifts",
     system: "Kick",
     event: "kick-gift",
-    label: "Подарки",
+    label: "history-filter-gifts",
     group: "kick",
   },
   {
     key: "showKickSubs",
     system: "Kick",
     event: "subscription",
-    label: "Подписки",
+    label: "history-filter-subscriptions",
     group: "kick",
   },
   {
     key: "showKickSubGifts",
     system: "Kick",
     event: "subscription-gift",
-    label: "Подаренные подписки",
+    label: "history-filter-gifted-subscriptions",
     group: "kick",
   },
   {
     key: "showVKLiveFollows",
     system: "VKLive",
     event: "follow",
-    label: "Фолловы",
+    label: "history-filter-followers",
     group: "vklive",
   },
   {
     key: "showVKLiveSubs",
     system: "VKLive",
     event: "subscription",
-    label: "Подписки",
+    label: "history-filter-subscriptions",
     group: "vklive",
   },
 ] as const satisfies readonly HistoryFilterDefinitionSource[];
@@ -202,12 +202,12 @@ export type HistoryFilterDefinition =
 export type HistoryFilterGroupKey = HistoryFilterDefinition["group"];
 
 const HISTORY_FILTER_GROUP_TITLES: Record<HistoryFilterGroupKey, string> = {
-  donations: "Донаты",
-  memealerts: "Meme Alerts",
-  boosty: "Boosty",
-  twitch: "Twitch",
-  kick: "Kick",
-  vklive: "VK Live",
+  donations: "history-group-donations",
+  memealerts: "history-group-meme-alerts",
+  boosty: "history-group-boosty",
+  twitch: "history-group-twitch",
+  kick: "history-group-kick",
+  vklive: "history-group-vk-live",
 };
 
 export const HISTORY_FILTER_GROUPS = Array.from(
@@ -223,21 +223,21 @@ const filtersBySystemAndEvent = new Map(
 
 export const HISTORY_PERIOD_OPTIONS: { label: string; value: HistoryPeriod }[] =
   [
-    { label: "Сутки", value: "day" },
-    { label: "Неделя", value: "week" },
-    { label: "Месяц", value: "month" },
-    { label: "Все время", value: "all" },
-    { label: "Задать", value: "custom" },
+    { label: "history-period-day", value: "day" },
+    { label: "history-period-week", value: "week" },
+    { label: "history-period-month", value: "month" },
+    { label: "history-period-all", value: "all" },
+    { label: "history-period-custom", value: "custom" },
   ];
 
 export const HISTORY_PERIOD_UNIT_OPTIONS: {
   label: string;
   value: HistoryPeriodUnit;
 }[] = [
-  { label: "Часы", value: "hour" },
-  { label: "Дни", value: "day" },
-  { label: "Недели", value: "week" },
-  { label: "Месяцы", value: "month" },
+  { label: "history-period-unit-hours", value: "hour" },
+  { label: "history-period-unit-days", value: "day" },
+  { label: "history-period-unit-weeks", value: "week" },
+  { label: "history-period-unit-months", value: "month" },
 ];
 
 const HISTORY_PERIOD_DURATIONS: Record<
