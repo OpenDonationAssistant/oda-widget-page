@@ -468,7 +468,7 @@ const PaymentAlerts = observer(
     useEffect(() => {
       // When SW_DONATIONS is enabled the service worker owns the donation
       // connections — skip the in-page duplicates.
-      if (isFeatureEnabled(features, SW_DONATIONS_FEATURE)) return;
+      if (!isFeatureEnabled(features, SW_DONATIONS_FEATURE)) return;
       const tokens = tokenStore.tokens.filter((token) => token.enabled);
       tokens
         .filter((token) => token.system === "DonationAlerts")

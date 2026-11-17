@@ -235,7 +235,8 @@ function registerDonationHandlers(
   const registrations: Array<[string, () => void]> = [
     [
       "StreamElements",
-      () => registerStreamElementsHandler(token, recipientId, eventbus!, tokens),
+      () =>
+        registerStreamElementsHandler(token, recipientId, eventbus!, tokens),
     ],
     [
       "DonationAlerts",
@@ -348,11 +349,17 @@ async function reloadHandler(handler: string, token: string) {
     },
     StreamElements: {
       register: () =>
-        registerStreamElementsHandler(token, recipientId, eventbus!, freshTokens),
+        registerStreamElementsHandler(
+          token,
+          recipientId,
+          eventbus!,
+          freshTokens,
+        ),
       deregister: deregisterStreamElementsHandler,
     },
     DonationAlerts: {
-      register: () => registerDonationAlertsHandler(token, recipientId, freshTokens),
+      register: () =>
+        registerDonationAlertsHandler(token, recipientId, freshTokens),
       deregister: deregisterDonationAlertsHandler,
     },
     DonatePay: {
@@ -360,12 +367,17 @@ async function reloadHandler(handler: string, token: string) {
       deregister: deregisterDonatePayHandler,
     },
     "DonatePay.eu": {
-      register: () => registerDonatePayEuHandler(token, recipientId, freshTokens),
+      register: () =>
+        registerDonatePayEuHandler(token, recipientId, freshTokens),
       deregister: deregisterDonatePayEuHandler,
     },
     UnofficialDonationAlerts: {
       register: () =>
-        registerUnofficialDonationAlertsHandler(token, recipientId, freshTokens),
+        registerUnofficialDonationAlertsHandler(
+          token,
+          recipientId,
+          freshTokens,
+        ),
       deregister: deregisterUnofficialDonationAlertsHandler,
     },
     DonateX: {
@@ -397,7 +409,7 @@ addMessageListener((event: WorkerMessageEvent) => {
   tokens.set(recipientId, token);
 
   const features = (info.features ?? []) as Feature[];
-  donationsEnabled = isFeatureEnabled(features, SW_DONATIONS_FEATURE);
+  donationsEnabled = !isFeatureEnabled(features, SW_DONATIONS_FEATURE);
 
   // One-time handlers — registered once, never duplicated on reload.
   // The log handler must be registered before any log() call so the SW_LOGS
@@ -406,7 +418,8 @@ addMessageListener((event: WorkerMessageEvent) => {
   registerWorkerStatusHandler(addMessageListener);
 
   log("INFO", "main worker received USER_AUTHORIZED");
-  log("INFO",
+  log(
+    "INFO",
     `SW_DONATIONS ${donationsEnabled ? "enabled" : "disabled"} — donation handlers ${donationsEnabled ? "will" : "will not"} be registered`,
   );
 
